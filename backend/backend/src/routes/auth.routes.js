@@ -4,7 +4,7 @@ const { signup, login } = require("../controllers/auth.controller");
 
 const router = express.Router();
 
-// Validation rules
+
 const validateSignup = [
     body("username").notEmpty().withMessage("Username is required"),
     body("email").isEmail().withMessage("Valid email is required"),
@@ -16,7 +16,7 @@ const validateLogin = [
     body("password").notEmpty().withMessage("Password is required"),
 ];
 
-// Routes with validation
+
 router.post("/signup", validateSignup, signup);
 router.get("/signup", (req, res) => res.status(200).json({ message: "Signup page" }));
 router.post("/login", validateLogin, login);
