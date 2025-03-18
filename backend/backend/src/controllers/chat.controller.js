@@ -1,6 +1,5 @@
 const Message = require("../models/message.model");
 
-// Send a new message
 exports.sendMessage = async (req, res) => {
   try {
     const { receiver, content } = req.body;
