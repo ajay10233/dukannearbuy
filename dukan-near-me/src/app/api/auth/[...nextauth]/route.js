@@ -1,33 +1,48 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import dbConnect from "@/utils/dbConnect";
-import User from "@/models/User";
+import GithubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
+import { prisma } from "@/utils/db";
 
 export const authOptions = {
   session: {
     strategy: "jwt",
   },
   providers: [
+      GithubProvider({
+        clientId: process.env.GITHUB_ID,
+        clientSecret: process.env.GITHUB_SECRET,
+      }),
+      GoogleProvider({
+        clientId: process.env.GOOGLE_ID,
+        clientSecret: process.env.GOOGLE_SECRET,
+      }),
     CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
+      // We don't need built-in credentials format...
+
+      // name: "Credentials",
+      // credentials: {
+      //   email: { label: "Email", type: "email" },
+      //   password: { label: "Password", type: "password" },
+      // },
       async authorize(credentials) {
-        await dbConnect();
-        const user = await User.findOne({ email: credentials.email });
+        console.log(credentials);
+        
+        const user = await prisma.user.findUnique({ where: {email: credentials.email} });
         if (!user) throw new Error("User not found");
 
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) throw new Error("Invalid credentials");
 
         return {
-          id: user._id.toString(),
-          name: user.name,
+          // id: user._id.toString(),   //MongoDB's ID is always a string
+          id: user._id, 
+          firstName: user.firstName,
+          lastName: user.lastName,
           email: user.email,
           role: user.role,
+          allowedRoutes: user.role === "ADMIN" ? ["/","/dashboard", "/admin"] : ["/","/dashboard"],
         };
       },
     }),
@@ -36,13 +51,21 @@ export const authOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
         token.role = user.role;
+        token.allowedRoutes = user.allowedRoutes;
       }
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.id;
-      session.user.role = token.role;
+      if(token){
+        session.user.id = token.id;
+        session.user.firstName = token.firstName;
+        session.user.lastName = token.lastName;
+        session.user.role = token.role;
+        session.user.allowedRoutes = token.allowedRoutes;
+      }
       return session;
     },
   },

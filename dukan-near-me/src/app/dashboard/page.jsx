@@ -10,8 +10,8 @@ export default async function Dashboard() {
   }
   return (
       <div>
-      <h1>Welcome, {session.user.name}!</h1>
-      <p>Your role: {session.user.role}</p>
+      <h1>Welcome, {session.user.firstName + session.user.lastName}!</h1>
+      <p className="lowercase">Your role: {session.user.role}</p>
       <LogoutButton />
     </div>
   );
