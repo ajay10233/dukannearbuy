@@ -27,17 +27,16 @@ export const authOptions = {
       //   password: { label: "Password", type: "password" },
       // },
       async authorize(credentials) {
-        console.log(credentials);
+        // console.log(credentials);
         
         const user = await prisma.user.findUnique({ where: {email: credentials.email} });
         if (!user) throw new Error("User not found");
 
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) throw new Error("Invalid credentials");
-
         return {
           // id: user._id.toString(),   //MongoDB's ID is always a string
-          id: user._id, 
+          id: user.id, 
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
@@ -56,6 +55,7 @@ export const authOptions = {
         token.role = user.role;
         token.allowedRoutes = user.allowedRoutes;
       }
+      // console.log("Updated JWT token: ", token);
       return token;
     },
     async session({ session, token }) {
@@ -66,6 +66,7 @@ export const authOptions = {
         session.user.role = token.role;
         session.user.allowedRoutes = token.allowedRoutes;
       }
+      // console.log("Updated session: ", session);
       return session;
     },
   },
