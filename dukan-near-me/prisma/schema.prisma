@@ -11,6 +11,7 @@ model User {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
   firstName String?
   lastName  String?
+<<<<<<< HEAD
   email     String?    @unique
   phone     String?    @unique
   password  String?
@@ -25,6 +26,89 @@ model User {
 
 }
 
+=======
+  email     String?  @unique
+  phone     String?  @unique
+  password  String?
+  role      String   @default("USER") 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sentMessages    Message[] @relation("UserSentMessages")
+  receivedMessages Message[] @relation("UserReceivedMessages")
+
+  @@map("users")
+}
+
+model Institution {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  email       String?  @unique
+  phone       String?  @unique
+  password    String?
+  role        String   @default("INSTITUTION") 
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sentMessages    Message[] @relation("InstitutionSentMessages")
+  receivedMessages Message[] @relation("InstitutionReceivedMessages")
+
+  @@map("institutions")
+}
+
+model Message {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  senderId      String   @db.ObjectId
+  senderType    SenderType
+  receiverId    String   @db.ObjectId
+  content       String
+  timestamp     DateTime @default(now())
+
+  senderUser       User?        @relation("UserSentMessages", fields: [senderId], references: [id])
+  receiverUser     User?        @relation("UserReceivedMessages", fields: [receiverId], references: [id])
+
+  senderInstitution   Institution? @relation("InstitutionSentMessages", fields: [senderId], references: [id])
+  receiverInstitution Institution? @relation("InstitutionReceivedMessages", fields: [receiverId], references: [id])
+
+  @@map("messages")
+}
+
+enum SenderType {
+  USER
+  INSTITUTION
+}
+
+
+
+
+// datasource db {
+//   provider = "mongodb"
+//   url      = env("DATABASE_URL")
+// }
+
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+// model User {
+//   id        String  @id @default(auto()) @map("_id") @db.ObjectId
+//   firstName String?
+//   lastName  String?
+//   email     String?    @unique
+//   phone     String?    @unique
+//   password  String?
+//   role      String     @default("USER") 
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   // image         String?
+//   // accounts      Account[]
+//   // sessions      Session[]
+//   // Optional for WebAuthn support
+//   // Authenticator Authenticator[]
+//   @@map("users")
+// }
+
+>>>>>>> e6b6e9921ef30959845a042675a50546bdb71741
 // model Account {
 //   id                String  @id @default(auto()) @map("_id") @db.ObjectId
 //   userId            String  @db.ObjectId

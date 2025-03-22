@@ -1,6 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import SocketInitializer from "@/components/SocketInitializer";
+import SessionProviderWrapper from "@/components/SessionProviderWrapper"; // Import client-side wrapper
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,11 +22,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-        <Toaster position="bottom-right" reverseOrder={false}/>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <SessionProviderWrapper> {/* ✅ Wrap in a client component */}
+          {children}
+          <Toaster position="bottom-right" reverseOrder={false} />
+          <SocketInitializer />
+        </SessionProviderWrapper>
       </body>
     </html>
   );
