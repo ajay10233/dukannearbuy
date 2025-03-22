@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import { useSession } from "next-auth/react";
-import { SenderType } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 export default function Chat() {
   const [message, setMessage] = useState("");
@@ -11,11 +11,10 @@ export default function Chat() {
   const [chatPartners, setChatPartners] = useState([]);
   const [selectedPartner, setSelectedPartner] = useState(null);
   const socketRef = useRef(null);
+  const router = useRouter();
   const { data: session, status } = useSession();
   const messagesEndRef = useRef(null);
 
-
-  // Initialize socket connection only once when session is available
   useEffect(() => {
     if (!session || socketRef.current) return;
 
@@ -27,9 +26,8 @@ export default function Chat() {
     });
 
     socketRef.current.on("receiveMessage", (msg) => {
-      console.log("📨 Message received:", msg);
-      if(msg.senderId === session.user.id) return;
-      if(msg.senderId == selectedPartner?.id){
+      if (msg.senderId === session.user.id) return;
+      if (msg.senderId == selectedPartner?.id) {
         setMessages((prev) => [...prev, msg]);
       }
     });
@@ -38,9 +36,8 @@ export default function Chat() {
       socketRef.current.disconnect();
       socketRef.current = null;
     };
-  }, [session,selectedPartner]);
+  }, [session, selectedPartner]);
 
-  // Fetch chat partners based on user role
   useEffect(() => {
     if (!session) return;
     const fetchChatPartners = async () => {
@@ -61,9 +58,8 @@ export default function Chat() {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]); // Runs when messages update
-  
-  // Fetch chat history when selecting a chat partner
+  }, [messages]);
+
   useEffect(() => {
     if (!selectedPartner) return;
 
@@ -71,7 +67,6 @@ export default function Chat() {
       try {
         const res = await fetch(`/api/messages/conversation?receiverId=${selectedPartner.id}`);
         const data = await res.json();
-        console.log("messages data: ", data);
         setMessages(data.data || []);
       } catch (error) {
         console.error("❌ Failed to fetch messages:", error);
@@ -93,7 +88,7 @@ export default function Chat() {
       content: message,
       SenderType: session.user.role
     };
-    console.log("📨 Sending message:", msgData);
+
     socketRef.current.emit("sendMessage", msgData);
     setMessages((prev) => [...prev, msgData]); // Optimistic UI update
     setMessage("");
@@ -111,17 +106,13 @@ export default function Chat() {
             chatPartners.map((partner) => (
               <button
                 key={partner.id}
-                onClick={() => {
-                  console.log("Selected Partner:", partner); // Debugging log
-                  setSelectedPartner({ ...partner }); // Ensure state updates
-                }}
+                onClick={() => setSelectedPartner({ ...partner })}
                 className={`w-full text-left px-4 text-black py-2 rounded-md transition ${
                   selectedPartner?.id === partner.id ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"
                 }`}
               >
                 {partner.firstName || partner.name || "Unknown"}
               </button>
-
             ))
           ) : (
             <p className="text-gray-500">No chat partners available</p>
@@ -133,32 +124,47 @@ export default function Chat() {
       <div className="w-full md:w-3/4 flex flex-col h-full p-4">
         {selectedPartner ? (
           <>
-            <div className="bg-white p-3 rounded-md shadow-md mb-2">
+            {/* Chat Header with Payment Buttons */}
+            <div className="bg-white p-3 rounded-md shadow-md mb-2 flex justify-between items-center">
               <h3 className="text-lg font-semibold text-gray-700">
                 Chat with {selectedPartner.name || selectedPartner.firstName || "Unknown"}
               </h3>
+
+              <div className="flex space-x-2">
+                {/* View Payment History Button */}
+                <button
+                  onClick={() => router.push(`/payments/history?receiverId=${selectedPartner.id}`)}
+                  className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition"
+                >
+                  View Payment History
+                </button>
+
+                {/* Show "Create Payment" button only for Institutions */}
+                {/* {session.user.role === "INSTITUTION" && (
+                  <button
+                    onClick={() => router.push(`/payments/create?receiverId=${selectedPartner.id}`)}
+                    className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+                  >
+                    Create Payment
+                  </button>
+                )} */}
+              </div>
             </div>
 
             {/* Messages Section */}
             <div className="flex-1 overflow-y-auto p-4 bg-white rounded-md shadow-md">
               {messages.length > 0 ? (
-                messages
-                  // .filter(
-                  //   (msg) =>
-                  //     (msg.receiverId === selectedPartner.id && msg.senderId === session.user.id) ||
-                  //     (msg.receiverId === session.user.id && msg.senderId === selectedPartner.id)
-                  // )
-                  .map((msg, index) => (
-                    <div
-                      key={index}
-                      ref={index === messages.length - 1 ? messagesEndRef : null}
-                      className={`p-2 my-2 w-fit max-w-[70%] rounded-md ${
-                        msg?.senderId === session.user.id ? "ml-auto bg-blue-500 text-white" : "bg-gray-200 text-black"
-                      }`}
-                    >
-                      <strong>{msg?.senderId === session.user.id ? "You" : selectedPartner.firstName}:</strong> {msg?.content}
-                    </div>
-                  ))
+                messages.map((msg, index) => (
+                  <div
+                    key={index}
+                    ref={index === messages.length - 1 ? messagesEndRef : null}
+                    className={`p-2 my-2 w-fit max-w-[70%] rounded-md ${
+                      msg?.senderId === session.user.id ? "ml-auto bg-blue-500 text-white" : "bg-gray-200 text-black"
+                    }`}
+                  >
+                    <strong>{msg?.senderId === session.user.id ? "You" : selectedPartner.firstName}:</strong> {msg?.content}
+                  </div>
+                ))
               ) : (
                 <p className="text-gray-500">No messages yet.</p>
               )}

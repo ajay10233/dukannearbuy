@@ -8,21 +8,39 @@ generator client {
 }
 
 model User {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  firstName String?
-  lastName  String?
-  email     String?  @unique
-  phone     String?  @unique
-  password  String?
-  role      String   @default("USER") 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  firstName         String?
+  lastName          String?
+  email            String?  @unique
+  phone            String?  @unique
+  password         String?
+  role             String   @default("USER") 
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  sentMessages    Message[] @relation("UserSentMessages")
+  sentMessages     Message[] @relation("UserSentMessages")
   receivedMessages Message[] @relation("UserReceivedMessages")
+
+  sentPayments     PaymentHistory[] @relation("UserSentPayments")
+  receivedPayments PaymentHistory[] @relation("UserReceivedPayments")
 
   @@map("users")
 }
+
+model PaymentHistory {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  senderId    String   @db.ObjectId
+  receiverId  String   @db.ObjectId
+  amount      Float
+  status      String   @default("PENDING") // PENDING, SUCCESS, FAILED
+  createdAt   DateTime @default(now())
+
+  sender      User @relation("UserSentPayments", fields: [senderId], references: [id])
+  receiver    User @relation("UserReceivedPayments", fields: [receiverId], references: [id])
+
+  @@map("payment_history")
+}
+
 
 model Institution {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId
@@ -34,8 +52,8 @@ model Institution {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  sentMessages    Message[] @relation("InstitutionSentMessages")
-  receivedMessages Message[] @relation("InstitutionReceivedMessages")
+  sentMessages     Message[]       @relation("InstitutionSentMessages")
+  receivedMessages Message[]       @relation("InstitutionReceivedMessages")
 
   @@map("institutions")
 }
@@ -57,11 +75,16 @@ model Message {
   @@map("messages")
 }
 
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
 enum SenderType {
   USER
   INSTITUTION
 }
-
 
 
 
