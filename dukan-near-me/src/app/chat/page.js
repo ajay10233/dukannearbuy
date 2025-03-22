@@ -12,6 +12,8 @@ export default function Chat() {
   const [selectedPartner, setSelectedPartner] = useState(null);
   const socketRef = useRef(null);
   const { data: session, status } = useSession();
+  const messagesEndRef = useRef(null);
+
 
   // Initialize socket connection only once when session is available
   useEffect(() => {
@@ -55,6 +57,12 @@ export default function Chat() {
     fetchChatPartners();
   }, [session]);
 
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]); // Runs when messages update
+  
   // Fetch chat history when selecting a chat partner
   useEffect(() => {
     if (!selectedPartner) return;
@@ -143,6 +151,7 @@ export default function Chat() {
                   .map((msg, index) => (
                     <div
                       key={index}
+                      ref={index === messages.length - 1 ? messagesEndRef : null}
                       className={`p-2 my-2 w-fit max-w-[70%] rounded-md ${
                         msg?.senderId === session.user.id ? "ml-auto bg-blue-500 text-white" : "bg-gray-200 text-black"
                       }`}
