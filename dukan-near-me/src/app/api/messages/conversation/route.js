@@ -1,21 +1,29 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/utils/db";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"; 
 
 export const GET = async (req) => {
   try {
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("userId");
-    const institutionId = searchParams.get("institutionId");
-
-    
-    if (!userId || !institutionId) {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user?.id) {
       return NextResponse.json(
-        { message: "userId and institutionId are required!" },
+        { message: "Unauthorized! Please log in." },
+        { status: 401 }
+      );
+    }
+
+    const userId = session.user.id;
+    const { searchParams } = new URL(req.url);
+    const institutionId = searchParams.get("receiverId");
+
+    if (!institutionId) {
+      return NextResponse.json(
+        { message: "institutionId is required!" },
         { status: 400 }
       );
     }
 
-    
     const messages = await prisma.message.findMany({
       where: {
         OR: [
