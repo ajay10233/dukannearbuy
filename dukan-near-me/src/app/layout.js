@@ -1,8 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
-import SocketInitializer from "@/components/SocketInitializer";
-import SessionProviderWrapper from "@/components/SessionProviderWrapper"; // Import client-side wrapper
+import SocketInitializer from "@/app/components/SocketInitializer";
+import SessionProviderWrapper from "@/app/components/SessionProviderWrapper"; // Import client-side wrapper
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
