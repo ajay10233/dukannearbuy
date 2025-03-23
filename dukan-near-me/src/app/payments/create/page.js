@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function CreatePayment() {
   const { data: session } = useSession();
@@ -11,9 +13,11 @@ export default function CreatePayment() {
 
   const [amount, setAmount] = useState("");
   const [status, setStatus] = useState("PENDING");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await fetch("/api/payments", {
         method: "POST",
@@ -27,19 +31,22 @@ export default function CreatePayment() {
       });
 
       if (response.ok) {
-        alert("✅ Payment created successfully!");
-        router.push("/chat");
+        toast.success("✅ Payment created successfully!");
+        setTimeout(() => router.push("/chat"), 2000);
       } else {
         throw new Error("❌ Failed to create payment");
       }
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-lg mx-auto mt-10 bg-white p-6 rounded-md shadow-md">
+    <div className="max-w-lg mx-auto text-black mt-10 bg-white p-6 rounded-md shadow-md">
+      <ToastContainer position="top-right" autoClose={2000} />
       <h2 className="text-xl font-bold mb-4">Create Payment</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
@@ -62,15 +69,16 @@ export default function CreatePayment() {
           >
             <option value="PENDING">Pending</option>
             <option value="SUCCESS">Success</option>
-            <option value="FAILED">Failed</option>
+            <option value="CONFLICT">Conflict</option>
           </select>
         </div>
 
         <button
           type="submit"
-          className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600"
+          className={`w-full text-white py-2 rounded-md transition ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green-600"}`}
+          disabled={loading}
         >
-          Create Payment
+          {loading ? "Processing..." : "Create Payment"}
         </button>
       </form>
     </div>

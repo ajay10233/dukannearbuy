@@ -7,17 +7,58 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// model User {
+//   id                String  @id @default(auto()) @map("_id") @db.ObjectId
+//   firstName         String?
+//   lastName          String?
+//   email            String?  @unique
+//   phone            String?  @unique
+//   password         String?
+//   role             String   @default("USER") 
+//   createdAt        DateTime @default(now())
+//   updatedAt        DateTime @updatedAt
+
+//   sentMessages     Message[] @relation("UserSentMessages")
+//   receivedMessages Message[] @relation("UserReceivedMessages")
+
+//   sentPayments     PaymentHistory[] @relation("UserSentPayments")
+//   receivedPayments PaymentHistory[] @relation("UserReceivedPayments")
+  
+
+//   @@map("users")
+// }
+
 model User {
   id                String  @id @default(auto()) @map("_id") @db.ObjectId
   firstName         String?
   lastName          String?
-  email            String?  @unique
-  phone            String?  @unique
-  password         String?
-  role             String   @default("USER") 
+  email            String  @unique
+  phone            String  @unique
+  password         String
+  role             String   @default("USER") // USER or INSTITUTION
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
+  // Common fields for both User & Institution
+  age              Int?
+  gender           String?  // "Male", "Female", "Other"
+  address          String?
+  mobileNumber     String?  @unique
+  profilePhoto     String?  // Cloudinary URL for profile photo
+
+  // Fields specific to Institution
+  firmName         String?  // Institution's name (only for role = INSTITUTION)
+  shopAddress      String?  
+  contactEmail     String?  @unique
+  paymentDetails   String?
+  description      String?
+  hashtags         String[]  // Array of tags like ["general store", "clothing"]
+  photos           String[] @default([]) // Cloudinary URLs (Min 1, Max 10)
+  shopOpenTime     String?  // e.g., "09:00 AM"
+  shopCloseTime    String?  // e.g., "09:00 PM"
+  shopOpenDays     String[] // e.g., ["Monday", "Tuesday", "Friday"]
+
+  // Relationships
   sentMessages     Message[] @relation("UserSentMessages")
   receivedMessages Message[] @relation("UserReceivedMessages")
 
@@ -26,6 +67,7 @@ model User {
 
   @@map("users")
 }
+
 
 model PaymentHistory {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -42,21 +84,21 @@ model PaymentHistory {
 }
 
 
-model Institution {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  email       String?  @unique
-  phone       String?  @unique
-  password    String?
-  role        String   @default("INSTITUTION") 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+// model Institution {
+//   id          String  @id @default(auto()) @map("_id") @db.ObjectId
+//   // name        String
+//   // email       String?  @unique
+//   // phone       String?  @unique
+//   // password    String?
+//   // role        String   @default("INSTITUTION") 
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
 
-  sentMessages     Message[]       @relation("InstitutionSentMessages")
-  receivedMessages Message[]       @relation("InstitutionReceivedMessages")
+//   sentMessages     Message[]       @relation("InstitutionSentMessages")
+//   receivedMessages Message[]       @relation("InstitutionReceivedMessages")
 
-  @@map("institutions")
-}
+//   @@map("institutions")
+// }
 
 model Message {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -69,22 +111,21 @@ model Message {
   senderUser       User?        @relation("UserSentMessages", fields: [senderId], references: [id])
   receiverUser     User?        @relation("UserReceivedMessages", fields: [receiverId], references: [id])
 
-  senderInstitution   Institution? @relation("InstitutionSentMessages", fields: [senderId], references: [id])
-  receiverInstitution Institution? @relation("InstitutionReceivedMessages", fields: [receiverId], references: [id])
-
   @@map("messages")
 }
 
 enum PaymentStatus {
   PENDING
-  COMPLETED
-  FAILED
+  SUCCESS
+  CONFLICT
 }
 
 enum SenderType {
   USER
   INSTITUTION
 }
+
+// !create a model for fav. profiles
 
 
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import PaymentHistoryTable from "@/components/PaymentHistoryTable";
 
 export default function PaymentHistory() {
   const [payments, setPayments] = useState([]);
@@ -28,6 +29,15 @@ export default function PaymentHistory() {
     fetchPayments();
   }, [session, receiverId]);
 
+  const handleUpdateStatus = (paymentId, updateData) => {
+    setPayments((prevPayments) =>
+      prevPayments.map((payment) =>
+        payment.id === paymentId ? { ...payment, ...updateData } : payment
+      )
+    );
+  };
+  
+
   if (status === "loading") return <p className="text-center text-gray-500">Loading...</p>;
   if (!session) return <p className="text-center text-red-500">You must be logged in to view payment history.</p>;
 
@@ -35,32 +45,8 @@ export default function PaymentHistory() {
     <div className="max-w-4xl mx-auto text-black mt-10 p-6 bg-white shadow-lg rounded-md">
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Payment History</h2>
 
-      {payments.length > 0 ? (
-        <table className="w-full border-collapse border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 px-4 py-2 text-left">Amount</th>
-              <th className="border border-gray-300 px-4 py-2 text-left">Status</th>
-              <th className="border border-gray-300 px-4 py-2 text-left">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {payments.map((payment) => (
-              <tr key={payment.id} className="border-t">
-                <td className="border border-gray-300 px-4 py-2">${payment.amount.toFixed(2)}</td>
-                <td className={`border border-gray-300 px-4 py-2 font-semibold ${payment.status === "SUCCESS" ? "text-green-600" : "text-red-600"}`}>
-                  {payment.status}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">{new Date(payment.createdAt).toLocaleString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p className="text-gray-500">No payment history available.</p>
-      )}
+      <PaymentHistoryTable payments={payments} onUpdate={handleUpdateStatus} />
 
-      {/* "Create Payment" button (visible only for Institutions) */}
       {session.user.role === "INSTITUTION" && (
         <button
           onClick={() => router.push(`/payments/create?receiverId=${receiverId}`)}
