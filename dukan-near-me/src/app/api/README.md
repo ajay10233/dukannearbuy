@@ -5,6 +5,8 @@
 - Edit details for payment
 - User can change status to conflict in only 48 hours
 
+- favourite institutions for users
+- as soon as chat is completed show a popup for satisfied or not and then fill it with favourites
 # Backend Details
 
 This document provides an overview of how frontend developers can interact with the backend authentication system.
