@@ -101,6 +101,11 @@ model User {
 
   conversationsAsUser1 Conversation[] @relation("User1Conversations")
   conversationsAsUser2 Conversation[] @relation("User2Conversations")
+
+  // New favorite system using FavoriteInstitution Model
+  favoritedInstitutions FavoriteInstitution[] @relation("UserFavorites")  // The institutions a user has favorited
+  favoritedByUsers      FavoriteInstitution[] @relation("InstitutionFavorites") // The users who favorited this institution
+
   @@map("users")
 }
 
@@ -157,14 +162,14 @@ enum SenderType {
 
 model FavoriteInstitution {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId        String   @db.ObjectId
-  institutionId String   @db.ObjectId
+  userId        String   @db.ObjectId  // User who favorited an institution
+  institutionId String   @db.ObjectId  // Institution being favorited
   createdAt     DateTime @default(now())
 
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  institution   User      @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  user          User @relation("UserFavorites", fields: [userId], references: [id], onDelete: Cascade)
+  institution   User @relation("InstitutionFavorites", fields: [institutionId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, institutionId])
+  @@unique([userId, institutionId]) // Prevent duplicate favorites
   @@map("favorite_institutions")
 }
 

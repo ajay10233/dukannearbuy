@@ -4,6 +4,8 @@ import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { HeartIcon } from "@heroicons/react/24/solid";
+
 
 export default function Chat() {
   const [message, setMessage] = useState("");
@@ -12,6 +14,7 @@ export default function Chat() {
   const [filteredConversations, setFilteredConversations] = useState([]);
   const [selectedPartner, setSelectedPartner] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
@@ -73,7 +76,20 @@ export default function Chat() {
     };
 
     fetchMessages();
+    checkIfFavorite();
   }, [selectedPartner]);
+
+  const checkIfFavorite = async () => {
+    if (!selectedPartner) return;
+    try {
+      const res = await fetch(`/api/favorites`);
+      const data = await res.json();
+      console.log(data);
+      setIsFavorite(data.favorites.some((fav) => fav.institutionId === selectedPartner.otherUser.id));
+    } catch (error) {
+      console.error("❌ Failed to check favorite status:", error);
+    }
+  };
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -114,6 +130,32 @@ export default function Chat() {
     socketRef.current.emit("sendMessage", msgData);
     setMessages((prev) => (Array.isArray(prev) ? [...prev, msgData] : [msgData]));// Optimistic UI update
     setMessage("");
+  };
+
+  // const handleLike = (user)=>{
+    
+    // }
+    const handleLike = async () => {
+      if (!selectedPartner) return;
+      const otherUserId = selectedPartner.otherUser.id;
+    try {
+      if (isFavorite) {
+        await fetch(`/api/favorites`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ institutionId: otherUserId }),
+        });
+      } else {
+        await fetch(`/api/favorites`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ institutionId: otherUserId }),
+        });
+      }
+      setIsFavorite(!isFavorite);
+    } catch (error) {
+      console.error("❌ Failed to toggle favorite:", error);
+    }
   };
 
   return (
@@ -158,7 +200,9 @@ export default function Chat() {
             <div className="bg-white p-3 rounded-md shadow-md mb-2 flex justify-between items-center">
               <h3 className="text-lg font-semibold text-gray-700">
                 Chat with {selectedPartner.firmName || selectedPartner.firstName || "Unknown"}
+                <HeartIcon className="h-6 w-6 text-red-500" onClick={() => handleLike(selectedPartner)}/>
               </h3>
+              
 
               <div className="flex space-x-2">
                 {/* View Payment History */}
