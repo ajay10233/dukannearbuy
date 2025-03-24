@@ -1,51 +1,51 @@
-"use client";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "@/schemas/validation";
-import toast from "react-hot-toast";
+"use client"
 
-export default function Login() {
-  const {register, handleSubmit, formState: {errors}} = useForm({
-    resolver: zodResolver(loginSchema)
-  })
-  const router = useRouter();
+import React from 'react'
+import LoginForm from '../components/Authentication/Login/LoginForm'
+import Image from 'next/image'
+import Link from 'next/link'
+import { signIn } from 'next-auth/react'
 
-  const onSubmit = async (data) => {
-    if(data){
-      const {email, password} = data;
-      
-      const toastId = toast.loading('Processing...');
-      try {
-        const res = await signIn("credentials", {
-          redirect: false,
-          email,
-          password
-        });
-        if(res.status === 200){
-          toast.success('Login successfully!', {id: toastId})
-          router.push("/dashboard");
-        }else{
-          toast.error(res.error, {id: toastId})
-        }
-      } catch (error) {
-        toast.error(res.error || 'Auth error', {id: toastId})
-        console.log(error);
-      }
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-96 mx-auto mt-10">
-      <div className="flex flex-col">
-        <input type="email" name="email" placeholder="Email" {...register('email')} className="p-2 border mb-2" />
-        <p className={`${errors?.email ? `visible` : `invisible`} text-red-500 text-sm`}>{errors?.email?.message || `Error`}</p>
-      </div>
-      <div className="flex flex-col">
-        <input type="password" name="password" placeholder="Password" {...register('password')} className="p-2 border mb-2" />
-      </div>
-      <button type="submit" className="bg-blue-500 text-white p-2">Login</button>
-    </form>
-  );
+export default function page() {
+    return (
+        <main className="flex min-h-screen w-full bg-[#FFF6F2] font-[var(--font-rubik)]">
+            <div className="flex flex-col justify-center w-1/2 px-16">
+                <h1 className="text-4xl font-bold text-[#424242] text-center mt-6 mb-1">Welcome Back!!</h1>
+                {/* Form */}
+                <LoginForm />
+  
+                <div className="mt-4 flex flex-col items-center justify-center">
+                    <span className="px-4 mb-2 text-lg font-normal tracking-[0.2px] leading-[140%] text-center text-[#553922] opacity-40">- or -</span>
+                    {/* Social Logins */}
+                    <div className="flex gap-6">
+                        <button onClick={() => signIn("google")} className="p-[15px] cursor-pointer">
+                            <Image src="/google.svg" alt="Google Icon" width={22} height={22}/>
+                        </button>
+                        <button onClick={() => signIn("facebook")} className="p-[15px] cursor-pointer">
+                            <Image src="/facebook.svg" alt="Facebook Icon" width={22} height={22}/>
+                        </button>
+                        <button onClick={() => signIn("apple")} className="p-[15px] cursor-pointer">
+                            <Image src="/apple.svg" alt="Apple Icon" width={22} height={22}/>
+                        </button>
+                    </div>
+                </div>
+        
+                <div className="mt-1 text-center gap-1">
+                    <span className='font-normal text-sm tracking-[0.2px] leading-[140%] opacity-40 text-[#553922]'>Don't have an account?{' '}</span>
+                    <Link href="/signup" className="text-[#C3824E] font-semibold text-sm tracking-[0.2px] leading-[140%]">
+                        Sign up
+                    </Link>
+                </div>
+            </div>
+  
+            {/* Right Side  */}
+            <div className="w-1/2 flex items-center justify-center relative overflow-hidden">
+                <div className='bg-[#FCE2CE] w-[350px] h-[563px] rounded-tl-[394px] rounded-tr-[394px] absolute left-[45%] top-[60px]'></div>        
+                    <div className="relative">
+                        <Image src="/login-illustration.svg" alt="Login illustration" height={435} width={435} className='object-contain z-10'/>
+                    </div>
+            </div>
+        </main>
+  
+    )
 }

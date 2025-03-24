@@ -1,61 +1,31 @@
-"use client";
-import { useRouter } from "next/navigation";
-import {useForm} from 'react-hook-form'
-import {zodResolver} from '@hookform/resolvers/zod'
-import { signupSchema } from "@/schemas/validation";
-import axios from "axios";
-import toast from "react-hot-toast";
+import Link from "next/link";
+import SignupForm from "../components/Authentication/Signup/SignupForm";
+import Image from 'next/image'
 
 export default function Signup() {
-  const {register, handleSubmit, formState: {errors}, watch} = useForm({
-    resolver: zodResolver(signupSchema)
-  })
-  
-  const router = useRouter();
-
-  const onSubmit = async(data) => {
-    console.log(data);
-    if(data){
-      const toastId = toast.loading('Processing...');
-      try {
-        const res = await axios.post('/api/auth/signup', data, {role: 'USER'});
-        if(res.status === 200){
-          toast.success('Register successfully!', {id: toastId});
-          router.push("/login");
-        }else{
-          toast.error(`Something went wrong!`, {id: toastId})
-        }
-      } catch (error) {
-        toast.error(`Api error!`, {id: toastId})
-        console.log(error);
-        
-      }
-    }
-  }
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-96 mx-auto mt-10">
-      <div className="flex flex-col">
-        <input type="text" name="firstName" placeholder="Your first name" {...register('firstName')} className="p-2 border mb-2" />
-        <p className={`${errors?.firstName ? `visible` : `invisible`} text-red-500 text-sm`}>{errors?.firstName?.message || `Error`}</p>
-      </div>
-      <div className="flex flex-col">
-        <input type="text" name="lastName" placeholder="Your last name" {...register('lastName')} className="p-2 border mb-2" />
-        <p className={`${errors?.lastName ? `visible` : `invisible`} text-red-500 text-sm`}>{errors?.lastName?.message || `Error`}</p>
-      </div>
-      <div className="flex flex-col">
-        <input type="text" name="phone" placeholder="Phone" {...register('phone')} className="p-2 border mb-2" maxLength={10}/>
-        <p className={`${errors?.phone ? `visible` : `invisible`} text-red-500 text-sm`}>{errors?.phone?.message || `Error`}</p>
-      </div>
-      <div className="flex flex-col">
-        <input type="email" name="email" placeholder="Email" {...register('email')} className="p-2 border mb-2" />
-        <p className={`${errors?.email ? `visible` : `invisible`} text-red-500 text-sm`}>{errors?.email?.message || `Error`}</p>
-      </div>
-      <div className="flex flex-col">
-        <input type="password" name="password" placeholder="Password" {...register('password')} className="p-2 border mb-2" />
-        <p className={`${errors?.password ? `visible` : `invisible`} text-red-500 text-sm`}>{errors?.password?.message || `Error`}</p>
-      </div>
-      <button type="submit" className="bg-green-500 text-white p-2">Sign Up</button>
-    </form>
-  );
+    return (
+        <main className="flex min-h-screen w-full bg-[#FFF6F2] font-[var(--font-rubik)]">
+            <div className="w-1/2 flex items-center justify-center relative overflow-hidden">
+                <div className='bg-[#FCE2CE] w-[350px] h-[563px] rounded-tl-[394px] rounded-tr-[394px] absolute left-[120px] top-[70px]'></div>        
+                    <div className="relative">
+                        <Image src="/signup-illustration.svg" alt="signup illustration" height={510} width={510} className='object-contain z-10'/>
+                    </div>
+            </div>
+            <div className="flex flex-col justify-center w-1/2 px-16 overflow-hidden">
+                <h1 className="text-4xl font-bold text-[#424242] text-center my-1">Create Account</h1>
+                {/* signup form */}
+                <SignupForm />
+                
+                <div className="mt-4 flex flex-col items-center justify-center">
+                    <span className="px-4 text-lg font-normal tracking-[0.2px] leading-[140%] text-center text-[#553922] opacity-40">- or -</span>
+                </div>
+                <div className="mt-1 text-center gap-1">
+                    <span className='font-normal text-sm tracking-[0.2px] leading-[140%] opacity-40 text-[#553922]'>Already have an account?{' '}</span>
+                        <Link href="/login" className="text-[#C3824E] font-semibold text-sm tracking-[0.2px] leading-[140%]">
+                            Sign in
+                        </Link>
+                </div>
+            </div>
+        </main>
+    )
 }

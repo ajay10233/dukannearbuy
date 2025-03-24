@@ -11,6 +11,22 @@ model User {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
   firstName String?
   lastName  String?
+<<<<<<< HEAD
+  email     String?    @unique
+  phone     String?    @unique
+  password  String?
+  role      String     @default("USER") 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  // image         String?
+  // accounts      Account[]
+  // sessions      Session[]
+  // Optional for WebAuthn support
+  // Authenticator Authenticator[]
+
+}
+
+=======
   email     String?  @unique
   phone     String?  @unique
   password  String?
@@ -92,6 +108,7 @@ enum SenderType {
 //   @@map("users")
 // }
 
+>>>>>>> e6b6e9921ef30959845a042675a50546bdb71741
 // model Account {
 //   id                String  @id @default(auto()) @map("_id") @db.ObjectId
 //   userId            String  @db.ObjectId
