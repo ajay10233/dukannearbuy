@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {useForm} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
 import { signupSchema } from "@/schemas/validation";
@@ -10,15 +10,19 @@ export default function Signup() {
   const {register, handleSubmit, formState: {errors}, watch} = useForm({
     resolver: zodResolver(signupSchema)
   })
+  const searchParams = useSearchParams();
+  const role = searchParams.get('role')
+  console.log(role);
   
   const router = useRouter();
+  
 
   const onSubmit = async(data) => {
     console.log(data);
     if(data){
       const toastId = toast.loading('Processing...');
       try {
-        const res = await axios.post('/api/auth/signup', data, {role: 'USER'});
+        const res = await axios.post('/api/auth/signup', data, {role: role});
         if(res.status === 200){
           toast.success('Register successfully!', {id: toastId});
           router.push("/login");
