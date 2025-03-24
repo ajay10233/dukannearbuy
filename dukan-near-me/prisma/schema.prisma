@@ -28,45 +28,6 @@ generator client {
 //   @@map("users")
 // }
 
-model User {
-  id                String  @id @default(auto()) @map("_id") @db.ObjectId
-  firstName         String?
-  lastName          String?
-  email            String  @unique
-  phone            String  @unique
-  password         String
-  role             String   @default("USER") // USER or INSTITUTION
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  // Common fields for both User & Institution
-  age              Int?
-  gender           String?  // "Male", "Female", "Other"
-  address          String?
-  mobileNumber     String?  @unique
-  profilePhoto     String?  // Cloudinary URL for profile photo
-
-  // Fields specific to Institution
-  firmName         String?  // Institution's name (only for role = INSTITUTION)
-  shopAddress      String?  
-  contactEmail     String?  @unique
-  paymentDetails   String?
-  description      String?
-  hashtags         String[]  // Array of tags like ["general store", "clothing"]
-  photos           String[] @default([]) // Cloudinary URLs (Min 1, Max 10)
-  shopOpenTime     String?  // e.g., "09:00 AM"
-  shopCloseTime    String?  // e.g., "09:00 PM"
-  shopOpenDays     String[] // e.g., ["Monday", "Tuesday", "Friday"]
-
-  // Relationships
-  sentMessages     Message[] @relation("UserSentMessages")
-  receivedMessages Message[] @relation("UserReceivedMessages")
-
-  sentPayments     PaymentHistory[] @relation("UserSentPayments")
-  receivedPayments PaymentHistory[] @relation("UserReceivedPayments")
-
-  @@map("users")
-}
 
 
 model PaymentHistory {
@@ -100,6 +61,49 @@ model PaymentHistory {
 //   @@map("institutions")
 // }
 
+model User {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  firstName         String?
+  lastName          String?
+  email             String  @unique
+  username          String? @unique
+  phone             String  @unique
+  password          String
+  role              String   @default("USER") // USER or INSTITUTION
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Common fields for both User & Institution
+  age              Int?
+  gender           String?  
+  address          String?
+  mobileNumber     String?
+  profilePhoto     String?
+
+  // Fields specific to Institution
+  firmName         String?  
+  shopAddress      String?  
+  contactEmail     String?
+  paymentDetails   String?
+  description      String?
+  hashtags         String[]  
+  photos           String[] @default([]) 
+  shopOpenTime     String?  
+  shopCloseTime    String?  
+  shopOpenDays     String[] 
+
+  // Relationships
+  sentMessages     Message[] @relation("UserSentMessages")
+  receivedMessages Message[] @relation("UserReceivedMessages")
+
+  sentPayments     PaymentHistory[] @relation("UserSentPayments")
+  receivedPayments PaymentHistory[] @relation("UserReceivedPayments")
+
+  conversationsAsUser1 Conversation[] @relation("User1Conversations")
+  conversationsAsUser2 Conversation[] @relation("User2Conversations")
+  @@map("users")
+}
+
 model Message {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   senderId      String   @db.ObjectId
@@ -108,11 +112,36 @@ model Message {
   content       String
   timestamp     DateTime @default(now())
 
-  senderUser       User?        @relation("UserSentMessages", fields: [senderId], references: [id])
-  receiverUser     User?        @relation("UserReceivedMessages", fields: [receiverId], references: [id])
+  conversationId String  @db.ObjectId
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+
+  senderUser     User? @relation("UserSentMessages", fields: [senderId], references: [id])
+  receiverUser   User? @relation("UserReceivedMessages", fields: [receiverId], references: [id])
 
   @@map("messages")
 }
+
+
+model Conversation {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  user1Id             String   @db.ObjectId
+  user2Id             String   @db.ObjectId
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user1               User?     @relation("User1Conversations", fields: [user1Id], references: [id])
+  user2               User?     @relation("User2Conversations", fields: [user2Id], references: [id])
+  messages            Message[] 
+
+  lastMessageId       String?  @db.ObjectId
+  lastMessageContent  String?  
+  lastMessageTimestamp DateTime?  
+  lastMessageSenderId String?  @db.ObjectId
+
+  @@unique([user1Id, user2Id])
+  @@map("conversations")
+}
+
 
 enum PaymentStatus {
   PENDING
@@ -123,6 +152,20 @@ enum PaymentStatus {
 enum SenderType {
   USER
   INSTITUTION
+}
+
+
+model FavoriteInstitution {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @db.ObjectId
+  institutionId String   @db.ObjectId
+  createdAt     DateTime @default(now())
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  institution   User      @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, institutionId])
+  @@map("favorite_institutions")
 }
 
 // !create a model for fav. profiles

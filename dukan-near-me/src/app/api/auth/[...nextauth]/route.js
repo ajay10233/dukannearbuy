@@ -18,32 +18,66 @@ export const authOptions = {
         clientId: process.env.GOOGLE_ID,
         clientSecret: process.env.GOOGLE_SECRET,
       }),
-    CredentialsProvider({
-      // We don't need built-in credentials format...
-      // name: "Credentials",
-      // credentials: {
-      //   email: { label: "Email", type: "email" },
-      //   password: { label: "Password", type: "password" },
-      // },
-      async authorize(credentials) {
-        // console.log(credentials);
+    // CredentialsProvider({
+    //   // We don't need built-in credentials format...
+    //   // name: "Credentials",
+    //   // credentials: {
+    //   //   email: { label: "Email", type: "email" },
+    //   //   password: { label: "Password", type: "password" },
+    //   // },
+    //   async authorize(credentials) {
+    //     // console.log(credentials);
         
-        const user = await prisma.user.findUnique({ where: {email: credentials.email} });
-        if (!user) throw new Error("User not found");
+    //     const user = await prisma.user.findUnique({ where: {email: credentials.email} });
+    //     if (!user) throw new Error("User not found");
 
+    //     const isValid = await bcrypt.compare(credentials.password, user.password);
+    //     if (!isValid) throw new Error("Invalid credentials");
+    //     return {
+    //       // id: user._id.toString(),   //MongoDB's ID is always a string
+    //       id: user.id, 
+    //       firstName: user.firstName,
+    //       lastName: user.lastName,
+    //       email: user.email,
+    //       role: user.role,
+    //       allowedRoutes: user.role === "ADMIN" ? ["/","/dashboard", "/admin"] : ["/","/dashboard"],
+    //     };
+    //   },
+    // }),
+    CredentialsProvider({
+      async authorize(credentials) {
+        if (!credentials.identifier || !credentials.password) {
+          throw new Error("Identifier and password are required");
+        }
+    
+        // Find user by email, username, or phone number
+        const user = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { email: credentials.identifier },
+              { username: credentials.identifier },
+              { phone: credentials.identifier },
+            ],
+          },
+        });
+    
+        if (!user) throw new Error("User not found");
+    
+        // Validate password
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) throw new Error("Invalid credentials");
+    
         return {
-          // id: user._id.toString(),   //MongoDB's ID is always a string
-          id: user.id, 
+          id: user.id,
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
           role: user.role,
-          allowedRoutes: user.role === "ADMIN" ? ["/","/dashboard", "/admin"] : ["/","/dashboard"],
+          allowedRoutes: user.role === "ADMIN" ? ["/", "/dashboard", "/admin"] : ["/", "/dashboard"],
         };
       },
     }),
+    
   ],
   callbacks: {
     async jwt({ token, user }) {

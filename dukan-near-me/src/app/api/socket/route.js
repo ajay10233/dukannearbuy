@@ -7,42 +7,49 @@ const pub = new Redis(process.env.REDIS_URL);
 const sub = new Redis(process.env.REDIS_URL);
 const redis = new Redis(process.env.REDIS_URL);
 
-// Ensure only one instance of io is created
 if (!global.io) {
   const io = new Server(3001, { cors: { origin: "*" } });
   global.io = io;
 
-  io.on("connection", async (socket) => {
+  io.on("connection", (socket) => {
     console.log("🔵 User connected:", socket.id);
 
-    // Register user in Redis
     socket.on("register", async (userId) => {
       await redis.set(`user:${userId}`, socket.id);
       console.log(`✅ User ${userId} registered with socket ID: ${socket.id}`);
     });
 
-    // Handle message sending
-    socket.on("sendMessage", async ({ senderId, SenderType, receiverId, content }) => {
-      if (!senderId || !receiverId || !content || !SenderType) {
-        console.error("❌ Missing data:", { senderId, SenderType, receiverId, content });
+    socket.on("sendMessage", async ({ senderId, senderType, conversationId, content }) => {
+      if (!senderId || !conversationId || !content || !senderType) {
+        console.error("❌ Missing data:", { senderId, senderType, conversationId, content });
         return;
       }
 
-      console.log(`📨 Sending message from ${senderId} to ${receiverId}: ${content}`);
+      console.log(`📨 Sending message in conversation ${conversationId}: ${content}`);
 
-      try {
-        // Publish message to Redis
-        await pub.publish("chat", JSON.stringify({ senderId, SenderType, receiverId, content }));
-        console.log("📡 Message published to Redis.");
-      } catch (error) {
-        console.error("❌ Error publishing to Redis:", error);
+      // Fetch user1 and user2 from the conversationId
+      const conversation = await prisma.conversation.findUnique({
+        where: { id: conversationId },
+        select: { user1Id: true, user2Id: true },
+      });
+
+      if (!conversation) {
+        console.error(`❌ Conversation not found: ${conversationId}`);
+        return;
       }
+
+      // Determine the receiverId (the other participant in the conversation)
+      const receiverId = conversation.user1Id === senderId ? conversation.user2Id : conversation.user1Id;
+
+      await pub.publish(
+        "chat",
+        JSON.stringify({ senderId, senderType, receiverId, content, conversationId })
+      );
     });
 
-    // Remove user from Redis on disconnect
     socket.on("disconnect", async () => {
       console.log("🔴 User disconnected:", socket.id);
-
+      
       try {
         const stream = redis.scanStream({ match: "user:*" });
         stream.on("data", async (keys) => {
@@ -62,33 +69,27 @@ if (!global.io) {
     });
   });
 
-  // Redis Subscriber listens for messages and forwards to users
   sub.subscribe("chat");
   sub.on("message", async (channel, message) => {
-    console.log("🔔 Received message from Redis:", message);
-    try {
-      const { senderId, SenderType, receiverId, content } = JSON.parse(message);
+    const { senderId, senderType, receiverId, content, conversationId } = JSON.parse(message);
+    
+    const newMessage = await prisma.message.create({
+      data: { senderId, senderType, receiverId, content, conversationId },
+    });
 
-      if (!senderId || !receiverId || !content || !SenderType) {
-        console.error("❌ Invalid message data:", { senderId, SenderType, receiverId, content });
-        return;
-      }
+    await prisma.conversation.update({
+      where: { id: conversationId },
+      data: {
+        lastMessageId: newMessage.id,
+        lastMessageContent: newMessage.content,
+        lastMessageTimestamp: newMessage.timestamp,
+        lastMessageSenderId: newMessage.senderId,
+      },
+    });
 
-      // Save message in MongoDB
-      const savedMessage = await prisma.message.create({
-        data: { senderId, senderType: SenderType, receiverId, content },
-      });
-      console.log("✅ Message saved:", savedMessage);
-
-      // Fetch receiver's socket ID from Redis
-      const receiverSocket = await redis.get(`user:${receiverId}`);
-
-      if (receiverSocket) {
-        global.io.to(receiverSocket).emit("receiveMessage", { senderId, SenderType, content });
-        console.log(`📤 Delivered message to ${receiverId} (Socket: ${receiverSocket})`);
-      }
-    } catch (error) {
-      console.error("❌ Error handling message:", error);
+    const receiverSocket = await redis.get(`user:${receiverId}`);
+    if (receiverSocket) {
+      global.io.to(receiverSocket).emit("receiveMessage", { senderId, senderType, content, conversationId });
     }
   });
 
