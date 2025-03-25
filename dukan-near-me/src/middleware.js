@@ -8,6 +8,8 @@ export default withAuth({
     authorized: ({ token, req }) => {
       const path = req.nextUrl.pathname;
 
+      // if (path === "/" || path === "/dashboard") return true;
+
       if (!token) return false;
 
       if (token.role === "admin") return true;
