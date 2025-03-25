@@ -6,14 +6,15 @@
 - Edit details for payment | done
 - User can change status to conflict in only 48 hours | done
 
-- favourite institutions for users
+- favourite institutions for users | done
 <!-- - as soon as chat is completed show a popup for satisfied or not and then fill it with favourites -->
-- only show rating option to the user only after minimum 5 responses from the insitution
+- only show rating option to the user only after minimum 5 responses from the insitution 
 - if the MI generate bill then allow to give reivew
 - chats will retain only for 48 hours but in gold plan it will persist accordingly to paid plans
+- create a model for conversation to keep track of conversations for user and MI & MI and MI | done
 
-- create a model for conversation to keep track of conversations for user and MI & MI and MI
-
+25/02/25
+- location part to fetch and show and store details for backend
 # Backend Details
 
 This document provides an overview of how frontend developers can interact with the backend authentication system.

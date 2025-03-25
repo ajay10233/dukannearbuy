@@ -76,7 +76,15 @@ model User {
   // Common fields for both User & Institution
   age              Int?
   gender           String?  
-  address          String?
+  // address          String?
+  houseNumber      String?  // House/Flat Number
+  street           String?  // Street Address
+  buildingName     String?  // Apartment/Building Name
+  landmark         String?  // Nearby Landmark
+  city             String?  // City
+  state            String?  // State
+  country          String?  // Country
+  zipCode          String?  // Postal Code
   mobileNumber     String?
   profilePhoto     String?
 
@@ -102,10 +110,10 @@ model User {
   conversationsAsUser1 Conversation[] @relation("User1Conversations")
   conversationsAsUser2 Conversation[] @relation("User2Conversations")
 
-  // New favorite system using FavoriteInstitution Model
-  favoritedInstitutions FavoriteInstitution[] @relation("UserFavorites")  // The institutions a user has favorited
-  favoritedByUsers      FavoriteInstitution[] @relation("InstitutionFavorites") // The users who favorited this institution
-
+  favoritedInstitutions FavoriteInstitution[] @relation("UserFavorites")  
+  favoritedByUsers      FavoriteInstitution[] @relation("InstitutionFavorites") 
+  latitude  Float?  
+  longitude Float?  
   @@map("users")
 }
 
