@@ -83,7 +83,7 @@ export default function SignupForm() {
                     <input className="w-full text-[#757575] text-sm border rounded-[63px] bg-[#FFF6F2] border-[#757575] pl-10 p-2.5 m-1 tracking-[0.2px] leading-[140%] cursor-pointer active:bg-[#FFF6F2] focus:border focus:border-[#757575] focus:outline-0"
                         type="text"
                         name="phone"
-                        placeholder="Phone" {...register('phone')} maxLength={10} />
+                        placeholder="Enter your phone number" {...register('phone')} maxLength={10} />
                 </div>
                 <p className={`${errors?.phone ? `visible` : `invisible`} text-red-500 text-sm`}>{errors?.phone?.message || `Error`}</p>
             </div>
@@ -98,7 +98,7 @@ export default function SignupForm() {
                     <input className="w-full text-[#757575] text-sm border rounded-[63px] bg-[#FFF6F2] border-[#757575] pl-10 p-2.5 m-1 tracking-[0.2px] leading-[140%] cursor-pointer active:bg-[#FFF6F2] focus:border focus:border-[#757575] focus:outline-0"
                         type="email"
                         name="email"
-                        placeholder="Email" {...register('email')} />
+                        placeholder="email@gmail.com" {...register('email')} />
                 </div>  
                 <p className={`${errors?.email ? `visible` : `invisible`} text-red-500 text-sm`}>{errors?.email?.message || `Error`}</p>
             </div>
@@ -117,10 +117,9 @@ export default function SignupForm() {
                     </span>
                 </div>
                 <p className={`${errors?.password ? `visible` : `invisible`} text-red-500 text-sm`}>{errors?.password?.message || `Error`}</p>
-            </div>
-          
+            </div>               
             {/* Signup button  */}
-        <button type="submit" className="bg-[#FCE2CE] p-2 rounded-[128px] font-semibold text-[#92613A] text-xl tracking-[0.2px] leading-[140%] mt-4 cursor-pointer">Sign Up</button>
+        <button type="submit" className="bg-[#FCE2CE] p-2 rounded-[128px] font-semibold text-[#92613A] text-xl tracking-[0.2px] leading-[140%] mt-4 cursor-pointer transition transform active:scale-90 duration-150 ease-out">Sign Up</button>
     </form>
   )
 }
