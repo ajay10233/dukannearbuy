@@ -181,7 +181,15 @@ model FavoriteInstitution {
   @@map("favorite_institutions")
 }
 
-// !create a model for fav. profiles
+model Session {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  token     String   @unique
+  device    String?
+  ip        String?
+  createdAt DateTime @default(now())
+}
+
 
 
 
