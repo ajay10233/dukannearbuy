@@ -21,6 +21,8 @@ export default function SidebarChat() {
                     <Search size={20} strokeWidth={1.5}  color='#9393C1' />
                     <input type="text"
                             placeholder="Search or start a new chat"
+                            value={searchQuery}
+                            onChange={(e) => handleSearch(e.target.value)}
                             className="bg-transparent outline-none text-sm flex-1 cursor-pointer"/>
                 </div>
             </div>

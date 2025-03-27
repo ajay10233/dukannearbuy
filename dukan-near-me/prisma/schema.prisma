@@ -7,53 +7,114 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  firstName String?
-  lastName  String?
-<<<<<<< HEAD
-  email     String?    @unique
-  phone     String?    @unique
-  password  String?
-  role      String     @default("USER") 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  // image         String?
-  // accounts      Account[]
-  // sessions      Session[]
-  // Optional for WebAuthn support
-  // Authenticator Authenticator[]
+// model User {
+//   id                String  @id @default(auto()) @map("_id") @db.ObjectId
+//   firstName         String?
+//   lastName          String?
+//   email            String?  @unique
+//   phone            String?  @unique
+//   password         String?
+//   role             String   @default("USER") 
+//   createdAt        DateTime @default(now())
+//   updatedAt        DateTime @updatedAt
 
+//   sentMessages     Message[] @relation("UserSentMessages")
+//   receivedMessages Message[] @relation("UserReceivedMessages")
+
+//   sentPayments     PaymentHistory[] @relation("UserSentPayments")
+//   receivedPayments PaymentHistory[] @relation("UserReceivedPayments")
+  
+
+//   @@map("users")
+// }
+
+
+
+model PaymentHistory {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  senderId    String   @db.ObjectId
+  receiverId  String   @db.ObjectId
+  amount      Float
+  status      String   @default("PENDING") // PENDING, SUCCESS, FAILED
+  createdAt   DateTime @default(now())
+
+  sender      User @relation("UserSentPayments", fields: [senderId], references: [id])
+  receiver    User @relation("UserReceivedPayments", fields: [receiverId], references: [id])
+
+  @@map("payment_history")
 }
 
-=======
-  email     String?  @unique
-  phone     String?  @unique
-  password  String?
-  role      String   @default("USER") 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  sentMessages    Message[] @relation("UserSentMessages")
+// model Institution {
+//   id          String  @id @default(auto()) @map("_id") @db.ObjectId
+//   // name        String
+//   // email       String?  @unique
+//   // phone       String?  @unique
+//   // password    String?
+//   // role        String   @default("INSTITUTION") 
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+
+//   sentMessages     Message[]       @relation("InstitutionSentMessages")
+//   receivedMessages Message[]       @relation("InstitutionReceivedMessages")
+
+//   @@map("institutions")
+// }
+
+model User {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  firstName         String?
+  lastName          String?
+  email             String  @unique
+  username          String? @unique
+  phone             String  @unique
+  password          String
+  role              String   @default("USER") // USER or INSTITUTION
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Common fields for both User & Institution
+  age              Int?
+  gender           String?  
+  // address          String?
+  houseNumber      String?  // House/Flat Number
+  street           String?  // Street Address
+  buildingName     String?  // Apartment/Building Name
+  landmark         String?  // Nearby Landmark
+  city             String?  // City
+  state            String?  // State
+  country          String?  // Country
+  zipCode          String?  // Postal Code
+  mobileNumber     String?
+  profilePhoto     String?
+
+  // Fields specific to Institution
+  firmName         String?  
+  shopAddress      String?  
+  contactEmail     String?
+  paymentDetails   String?
+  description      String?
+  hashtags         String[]  
+  photos           String[] @default([]) 
+  shopOpenTime     String?  
+  shopCloseTime    String?  
+  shopOpenDays     String[] 
+
+  // Relationships
+  sentMessages     Message[] @relation("UserSentMessages")
   receivedMessages Message[] @relation("UserReceivedMessages")
 
+  sentPayments     PaymentHistory[] @relation("UserSentPayments")
+  receivedPayments PaymentHistory[] @relation("UserReceivedPayments")
+
+  conversationsAsUser1 Conversation[] @relation("User1Conversations")
+  conversationsAsUser2 Conversation[] @relation("User2Conversations")
+
+  favoritedInstitutions FavoriteInstitution[] @relation("UserFavorites")  
+  favoritedByUsers      FavoriteInstitution[] @relation("InstitutionFavorites") 
+  latitude  Float?  
+  longitude Float?  
   @@map("users")
-}
-
-model Institution {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  email       String?  @unique
-  phone       String?  @unique
-  password    String?
-  role        String   @default("INSTITUTION") 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  sentMessages    Message[] @relation("InstitutionSentMessages")
-  receivedMessages Message[] @relation("InstitutionReceivedMessages")
-
-  @@map("institutions")
 }
 
 model Message {
@@ -64,13 +125,41 @@ model Message {
   content       String
   timestamp     DateTime @default(now())
 
-  senderUser       User?        @relation("UserSentMessages", fields: [senderId], references: [id])
-  receiverUser     User?        @relation("UserReceivedMessages", fields: [receiverId], references: [id])
+  conversationId String  @db.ObjectId
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
 
-  senderInstitution   Institution? @relation("InstitutionSentMessages", fields: [senderId], references: [id])
-  receiverInstitution Institution? @relation("InstitutionReceivedMessages", fields: [receiverId], references: [id])
+  senderUser     User? @relation("UserSentMessages", fields: [senderId], references: [id])
+  receiverUser   User? @relation("UserReceivedMessages", fields: [receiverId], references: [id])
 
   @@map("messages")
+}
+
+
+model Conversation {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  user1Id             String   @db.ObjectId
+  user2Id             String   @db.ObjectId
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user1               User?     @relation("User1Conversations", fields: [user1Id], references: [id])
+  user2               User?     @relation("User2Conversations", fields: [user2Id], references: [id])
+  messages            Message[] 
+
+  lastMessageId       String?  @db.ObjectId
+  lastMessageContent  String?  
+  lastMessageTimestamp DateTime?  
+  lastMessageSenderId String?  @db.ObjectId
+
+  @@unique([user1Id, user2Id])
+  @@map("conversations")
+}
+
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  CONFLICT
 }
 
 enum SenderType {
@@ -78,6 +167,21 @@ enum SenderType {
   INSTITUTION
 }
 
+
+model FavoriteInstitution {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @db.ObjectId  // User who favorited an institution
+  institutionId String   @db.ObjectId  // Institution being favorited
+  createdAt     DateTime @default(now())
+
+  user          User @relation("UserFavorites", fields: [userId], references: [id], onDelete: Cascade)
+  institution   User @relation("InstitutionFavorites", fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, institutionId]) // Prevent duplicate favorites
+  @@map("favorite_institutions")
+}
+
+// !create a model for fav. profiles
 
 
 
@@ -108,7 +212,6 @@ enum SenderType {
 //   @@map("users")
 // }
 
->>>>>>> e6b6e9921ef30959845a042675a50546bdb71741
 // model Account {
 //   id                String  @id @default(auto()) @map("_id") @db.ObjectId
 //   userId            String  @db.ObjectId
