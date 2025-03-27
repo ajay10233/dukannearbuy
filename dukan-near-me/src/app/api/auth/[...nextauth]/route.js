@@ -7,7 +7,7 @@ import { prisma } from "@/utils/db";
 import crypto from "crypto";
 import { ObjectId } from "mongodb"; 
 
-const MAX_DEVICES = 1; 
+const MAX_DEVICES = 3; 
 
 export const authOptions = {
   session: {

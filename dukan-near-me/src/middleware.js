@@ -9,6 +9,8 @@ export default withAuth({
     authorized: async ({ token, req }) => {
       const path = req.nextUrl.pathname;
 
+      // if (path === "/" || path === "/dashboard") return true;
+
       if (!token) return false;
 
       console.log("Session Token:", token.sessionToken);
