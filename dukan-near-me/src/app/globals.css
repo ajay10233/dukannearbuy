@@ -10,6 +10,10 @@
   --withdarkinnertext: #616161;
   --dark-btn: #92613A;
   --lightText: #553922;
+  --encryptionText-color: #312E40;
+  --encryptionBg-color: #FEECDC;
+  --chat-color: #128C7E;
+  --chatText-color: #09132C;
 }
 
 @theme inline {
