@@ -46,6 +46,7 @@ export const authOptions = {
     // }),
     CredentialsProvider({
       async authorize(credentials) {
+        console.log(credentials);
         if (!credentials.identifier || !credentials.password) {
           throw new Error("Identifier and password are required");
         }
@@ -73,6 +74,7 @@ export const authOptions = {
           lastName: user.lastName,
           email: user.email,
           role: user.role,
+          firnName:user.firnName,
           allowedRoutes: user.role === "ADMIN" ? ["/", "/dashboard", "/admin"] : ["/", "/dashboard"],
         };
       },

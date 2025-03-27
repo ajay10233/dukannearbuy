@@ -14,9 +14,9 @@ export default function ChatBox() {
 
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
-    const [conversations, setConversations] = useState([]);
+    const [conversations, setConversations] = useState([]); // left side coversation
     const [filteredConversations, setFilteredConversations] = useState([]);
-    const [selectedPartner, setSelectedPartner] = useState(null);
+    const [selectedPartner, setSelectedPartner] = useState(null); //selected partner
     const [searchQuery, setSearchQuery] = useState("");
     const [isFavorite, setIsFavorite] = useState(false);
   
@@ -24,7 +24,9 @@ export default function ChatBox() {
     const messagesEndRef = useRef(null);
     const router = useRouter();
     const { data: session, status } = useSession();
-
+    useEffect(()=>{
+      console.log(messages);
+    },[messages])
     useEffect(() => {
         if (!session || socketRef.current) return;
     
@@ -73,7 +75,8 @@ export default function ChatBox() {
           try {
             const res = await fetch(`/api/messages/conversation?conversationId=${selectedPartner.id}`);
             const data = await res.json();
-            setMessages(data?.data?.messages || []);
+            console.log(data);
+            setMessages(data.data?.messages || []);
           } catch (error) {
             console.error("❌ Failed to fetch messages:", error);
           }
@@ -196,7 +199,7 @@ export default function ChatBox() {
 
                 {/* Conversations List */}
                 <div className="w-full">
-                    {filteredConversations.length > 0 ? (
+                    {filteredConversations?.length > 0 ? (
                         filteredConversations.map((partner) => (
                             <div key={partner.id}
                                 className="flex justify-between gap-2.5 py-2 border-b border-gray-200">
@@ -287,7 +290,7 @@ export default function ChatBox() {
                                             ${msg.senderId === session.user.id ? 'rounded-tl-2xl rounded-tr-2xl rounded-br-2xl' 
                                             : 'rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl'}`}>
 
-                                            <p className='text-[#010101] opacity-85 font-normal text-sm'>{msg.text}</p>
+                                            <p className='text-[#010101] opacity-85 font-normal text-sm'>{msg.content}</p>
                                             <span className="text-xs text-[#0B3048] opacity-70 block text-right">{msg.time}</span>
                                         </div>
                                     </div>

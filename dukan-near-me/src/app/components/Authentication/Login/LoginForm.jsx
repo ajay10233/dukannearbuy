@@ -41,12 +41,12 @@ export default function LoginForm() {
   const onSubmit = async (data) => {
     if (data) {
       const { email, password } = data;
-
+      console.log(data);
       const toastId = toast.loading("Processing...");
       try {
         const res = await signIn("credentials", {
           redirect: false,
-          email,
+          identifier:email,
           password,
         });
         if (res.status === 200) {
