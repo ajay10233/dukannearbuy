@@ -33,9 +33,10 @@ export const authOptions = {
 
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) throw new Error("Invalid credentials");
+
         return {
           // id: user._id.toString(),   //MongoDB's ID is always a string
-          id: user.id, 
+          id: user._id, 
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
@@ -54,7 +55,6 @@ export const authOptions = {
         token.role = user.role;
         token.allowedRoutes = user.allowedRoutes;
       }
-      // console.log("Updated JWT token: ", token);
       return token;
     },
     async session({ session, token }) {
@@ -65,7 +65,6 @@ export const authOptions = {
         session.user.role = token.role;
         session.user.allowedRoutes = token.allowedRoutes;
       }
-      // console.log("Updated session: ", session);
       return session;
     },
   },
