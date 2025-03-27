@@ -4,11 +4,11 @@ import { prisma } from "@/utils/db";
 
 export const POST = async (req) => {
     try {
-        const { firstName, lastName, email, phone, password, role } = await req.json();
+        const { firstName, lastName, email, phone, password, role,username } = await req.json();
 
         const userExists = await prisma.user.findFirst({
             where: {
-                OR: [{ email }, { phone }],
+                OR: [{ email }, { phone },{username}],
             },
         });
 
@@ -26,6 +26,7 @@ export const POST = async (req) => {
                 phone,
                 password: hashPassword,
                 role,
+                username,
             },
         });
 
