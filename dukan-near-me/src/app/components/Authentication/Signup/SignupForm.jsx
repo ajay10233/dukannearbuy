@@ -27,11 +27,9 @@ export default function SignupForm() {
 
   const searchParams = useSearchParams();
   const role = searchParams.get("role");
-  console.log(role, typeof(role));
   
 
   const onSubmit = async (data) => {
-    console.log(data);
     if (data) {
       const toastId = toast.loading("Processing...");
       try {

@@ -29,7 +29,7 @@ export const POST = async (req) => {
             },
         });
 
-        return NextResponse.json(user, { status: 200 });
+        return NextResponse.json(user, {message: `${role} create successfully`} ,{ status: 200 });
     } catch (error) {
         console.error("Prisma Validation Error:", error);
         return NextResponse.json({ message: "Registration failed!", error: error.message }, { status: 500 });

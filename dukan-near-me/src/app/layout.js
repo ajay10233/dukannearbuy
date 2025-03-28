@@ -1,4 +1,4 @@
-import { Rubik } from "next/font/google";
+import { Plus_Jakarta_Sans, Rubik, Work_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import SocketInitializer from "@/app/components/SocketInitializer";
@@ -9,6 +9,16 @@ const rubik = Rubik({
   subsets: ["latin"],
   weight: '400'
 });
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: "--font-plusJakarta",
+  subsets: ["latin"],
+  weight: '400'
+})
+const workSans = Work_Sans({
+  variable: '--font-workSans',
+  subsets: ["latin"],
+  weight: '400'
+})
 
 export const metadata = {
   title: "Dukanwala",
@@ -18,7 +28,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${rubik.variable} antialiased`}>
+      <body className={`${rubik.variable} ${plusJakarta.variable} ${workSans.variable} antialiased`}>
         <SessionProviderWrapper> 
             {children}
             <Toaster position="bottom-right" reverseOrder={false} />
