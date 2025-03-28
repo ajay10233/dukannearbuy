@@ -185,7 +185,7 @@ export default function ChatBox() {
                 {/* toggle tab */}
                 <div className='flex items-center justify-center w-full'>
                     <button className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tl-xl rounded-bl-xl transition-all duration-500 cursor-pointer ${activeTab === "seller" ? "bg-[var(--chat-color)] text-white font-semibold" : "bg-white text-[#7D7D7D] font-normal"}`}
-                        onClick={() => setActiveTab("seller")}>
+                        onClick={() => setActiveTab("selle r")}>
                             Select a seller      
                     </button>
                     <button className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tr-xl rounded-br-xl transition-all duration-500 cursor-pointer ${activeTab === "favourite" ? "bg-[var(--chat-color)] text-white font-semibold" : "bg-white text-[#7D7D7D] font-normal"}`}
@@ -196,7 +196,7 @@ export default function ChatBox() {
 
                 {/* Conversations List */}
                 <div className="w-full">
-                    {filteredConversations.length > 0 ? (
+                    {filteredConversations?.length > 0 ? (
                         filteredConversations.map((partner) => (
                             <div key={partner.id}
                                 className="flex justify-between gap-2.5 py-2 border-b border-gray-200">
@@ -287,7 +287,7 @@ export default function ChatBox() {
                                             ${msg.senderId === session.user.id ? 'rounded-tl-2xl rounded-tr-2xl rounded-br-2xl' 
                                             : 'rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl'}`}>
 
-                                            <p className='text-[#010101] opacity-85 font-normal text-sm'>{msg.text}</p>
+                                            <p className='text-[#010101] opacity-85 font-normal text-sm'>{msg.content}</p>
                                             <span className="text-xs text-[#0B3048] opacity-70 block text-right">{msg.time}</span>
                                         </div>
                                     </div>

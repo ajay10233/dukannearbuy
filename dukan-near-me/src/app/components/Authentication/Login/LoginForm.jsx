@@ -46,7 +46,7 @@ export default function LoginForm() {
       try {
         const res = await signIn("credentials", {
           redirect: false,
-          email,
+          identifier:email, 
           password,
         });
         if (res.status === 200) {
