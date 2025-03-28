@@ -18,68 +18,33 @@ export const authOptions = {
         clientId: process.env.GOOGLE_ID,
         clientSecret: process.env.GOOGLE_SECRET,
       }),
-    // CredentialsProvider({
-    //   // We don't need built-in credentials format...
-    //   // name: "Credentials",
-    //   // credentials: {
-    //   //   email: { label: "Email", type: "email" },
-    //   //   password: { label: "Password", type: "password" },
-    //   // },
-    //   async authorize(credentials) {
-    //     // console.log(credentials);
-        
-    //     const user = await prisma.user.findUnique({ where: {email: credentials.email} });
-    //     if (!user) throw new Error("User not found");
-
-    //     const isValid = await bcrypt.compare(credentials.password, user.password);
-    //     if (!isValid) throw new Error("Invalid credentials");
-    //     return {
-    //       // id: user._id.toString(),   //MongoDB's ID is always a string
-    //       id: user.id, 
-    //       firstName: user.firstName,
-    //       lastName: user.lastName,
-    //       email: user.email,
-    //       role: user.role,
-    //       allowedRoutes: user.role === "ADMIN" ? ["/","/dashboard", "/admin"] : ["/","/dashboard"],
-    //     };
-    //   },
-    // }),
     CredentialsProvider({
+      // We don't need built-in credentials format...
+      // name: "Credentials",
+      // credentials: {
+      //   email: { label: "Email", type: "email" },
+      //   password: { label: "Password", type: "password" },
+      // },
       async authorize(credentials) {
-        console.log(credentials);
-        if (!credentials.identifier || !credentials.password) {
-          throw new Error("Identifier and password are required");
-        }
-    
-        // Find user by email, username, or phone number
-        const user = await prisma.user.findFirst({
-          where: {
-            OR: [
-              { email: credentials.identifier },
-              { username: credentials.identifier },
-              { phone: credentials.identifier },
-            ],
-          },
-        });
-    
+        // console.log(credentials);
+        
+        const user = await prisma.user.findUnique({ where: {email: credentials.email} });
         if (!user) throw new Error("User not found");
-    
-        // Validate password
+
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) throw new Error("Invalid credentials");
-    
+
         return {
-          id: user.id,
+          // id: user._id.toString(),   //MongoDB's ID is always a string
+          id: user._id, 
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
           role: user.role,
-          firnName:user.firnName,
-          allowedRoutes: user.role === "ADMIN" ? ["/", "/dashboard", "/admin"] : ["/", "/dashboard"],
+          allowedRoutes: user.role === "ADMIN" ? ["/","/dashboard", "/admin"] : ["/","/dashboard"],
         };
       },
     }),
-    
   ],
   callbacks: {
     async jwt({ token, user }) {
@@ -90,7 +55,6 @@ export const authOptions = {
         token.role = user.role;
         token.allowedRoutes = user.allowedRoutes;
       }
-      // console.log("Updated JWT token: ", token);
       return token;
     },
     async session({ session, token }) {
@@ -101,7 +65,6 @@ export const authOptions = {
         session.user.role = token.role;
         session.user.allowedRoutes = token.allowedRoutes;
       }
-      // console.log("Updated session: ", session);
       return session;
     },
   },

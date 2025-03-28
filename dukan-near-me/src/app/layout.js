@@ -2,8 +2,7 @@ import { Plus_Jakarta_Sans, Poppins, Rubik } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import SocketInitializer from "@/app/components/SocketInitializer";
-import SessionProviderWrapper from "@/app/components/SessionProviderWrapper"; // Import client-side wrapper
-import HeaderLocation from "./components/HeaderLocation";
+import SessionProviderWrapper from "@/app/components/SessionProviderWrapper";
 
 const rubik = Rubik({
   variable: "--font-rubik",
@@ -32,11 +31,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
         <body className={`${rubik.variable} ${plusJakartaSans.variable} ${poppins.variable} antialiased`}>
-        <HeaderLocation />
-        <SessionProviderWrapper> {/* ✅ Wrap in a client component */}
-          {children}
-          <Toaster position="bottom-right" reverseOrder={false} />
-          <SocketInitializer />
+        <SessionProviderWrapper> 
+            {children}
+            <Toaster position="bottom-right" reverseOrder={false} />
+            <SocketInitializer />
         </SessionProviderWrapper>
       </body>
     </html>

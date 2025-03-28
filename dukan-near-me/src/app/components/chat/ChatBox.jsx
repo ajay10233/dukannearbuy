@@ -188,7 +188,7 @@ export default function ChatBox() {
                 {/* toggle tab */}
                 <div className='flex items-center justify-center w-full'>
                     <button className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tl-xl rounded-bl-xl transition-all duration-500 cursor-pointer ${activeTab === "seller" ? "bg-[var(--chat-color)] text-white font-semibold" : "bg-white text-[#7D7D7D] font-normal"}`}
-                        onClick={() => setActiveTab("selle r")}>
+                        onClick={() => setActiveTab("seller")}>
                             Select a seller      
                     </button>
                     <button className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tr-xl rounded-br-xl transition-all duration-500 cursor-pointer ${activeTab === "favourite" ? "bg-[var(--chat-color)] text-white font-semibold" : "bg-white text-[#7D7D7D] font-normal"}`}
@@ -291,7 +291,7 @@ export default function ChatBox() {
                                             : 'rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl'}`}>
 
                                             <p className='text-[#010101] opacity-85 font-normal text-sm'>{msg.content}</p>
-                                            <span className="text-xs text-[#0B3048] opacity-70 block text-right">{msg.time}</span>
+                                            <span className="text-xs text-[#0B3048] opacity-70 block text-right">{msg.timestamp}</span>
                                         </div>
                                     </div>
                                     ))

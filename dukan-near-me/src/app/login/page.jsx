@@ -14,10 +14,10 @@ export default function page() {
             <div className="w-1/2 flex items-center justify-center relative overflow-hidden">
                 <div className='bg-[var(--secondary-color)] w-[350px] h-screen rounded-t-[394px] translate-y-20'>
                     <div className="relative -translate-x-20 w-[380px] h-[510px]">
-                        <Image src="/auth-illustration/login-illustration.svg" alt="signup illustration" fill sizes="480px" priority/>
+                        <Image src="/auth-illustration/login-illustration.svg" alt="signup illustration" fill sizes="480px" priority />
                     </div>
                 </div>
             </div>
-        </main>  
+        </main>
     )
 }
