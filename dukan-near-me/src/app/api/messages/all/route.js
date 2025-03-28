@@ -7,7 +7,7 @@ export const GET = async (req) => {
     const userId = searchParams.get("userId");
     const userType = searchParams.get("userType");
 
-    
+    // Validate input
     if (!userId || !userType) {
       return NextResponse.json(
         { message: "userId and userType are required!" },
@@ -22,25 +22,33 @@ export const GET = async (req) => {
       );
     }
 
-    
-    const messages = await prisma.message.findMany({
+    // Fetch conversations where the user is either user1 or user2
+    const conversations = await prisma.conversation.findMany({
       where: {
-        OR: [
-          { senderId: userId, senderType: userType },
-          { receiverId: userId },
-        ],
+        OR: [{ user1Id: userId }, { user2Id: userId }],
       },
-      orderBy: { timestamp: "desc" },
+      include: {
+        user1: {
+          select: { id: true, firstName: true, lastName: true, profilePhoto: true },
+        },
+        user2: {
+          select: { id: true, firstName: true, lastName: true, profilePhoto: true },
+        },
+        messages: {
+          orderBy: { timestamp: "desc" },
+        },
+      },
+      orderBy: { updatedAt: "desc" },
     });
 
     return NextResponse.json(
-      { message: "Messages fetched successfully!", data: messages },
+      { message: "Conversations fetched successfully!", data: conversations },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Fetch Messages Error:", error);
+    console.error("Fetch Conversations Error:", error);
     return NextResponse.json(
-      { message: "Failed to fetch messages!", error: error.message },
+      { message: "Failed to fetch conversations!", error: error.message },
       { status: 500 }
     );
   }

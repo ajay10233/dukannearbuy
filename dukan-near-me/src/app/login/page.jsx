@@ -2,6 +2,27 @@
 import LoginForm from '../components/Authentication/Login/LoginForm'
 import Image from 'next/image'
 
+// export default function Login() {
+//   const { register, handleSubmit, formState: { errors } } = useForm({
+//     resolver: zodResolver(loginSchema)
+//   });
+
+//   return (
+//     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-96 mx-auto mt-10">
+//       <div className="flex flex-col">
+//         <input type="text" name="email" placeholder="Email" {...register('email')} className="p-2 border mb-2" />
+//         <p className={`${errors?.email ? `visible` : `invisible`} text-red-500 text-sm`}>
+//           {errors?.email?.message || `Error`}
+//         </p>
+//       </div>
+//       <div className="flex flex-col">
+//         <input type="password" name="password" placeholder="Password" {...register('password')} className="p-2 border mb-2" />
+//       </div>
+//       <button type="submit" className="bg-blue-500 text-white p-2">Login</button>
+//     </form>
+//   );
+// }
+
 export default function page() {
     return (
         <main className="flex min-h-screen w-full overflow-hidden">

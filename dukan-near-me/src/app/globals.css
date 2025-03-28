@@ -11,7 +11,7 @@
   --dark-btn: #92613A;
   --lightText: #553922;
 }
-
+/* 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
