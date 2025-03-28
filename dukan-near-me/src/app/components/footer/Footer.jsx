@@ -48,12 +48,12 @@ export default function Footer() {
                 </p>
                 <div className="flex items-center space-x-3">
                     <div className="w-25 h-25 flex justify-center items-center">
-                        <Image src="/footer/Qrcode.svg" alt="QR Code" width={100} height={100} className="object-cover" priority />
+                        {/* <Image src="/footer/Qrcode.svg" alt="QR Code" width={100} height={100} className="object-cover" priority /> */}
                     </div>
 
                     <div className="flex flex-col space-y-2">
-                        <Image src="/footer/GooglePlay.svg" alt="Google Play" width={120} height={45} className="object-contain" priority />
-                        <Image src="/footer/AppStore.svg" alt="App Store" width={120} height={45} className="object-contain" priority />
+                        {/* <Image src="/footer/GooglePlay.svg" alt="Google Play" width={120} height={45} className="object-contain" priority /> */}
+                        {/* <Image src="/footer/AppStore.svg" alt="App Store" width={120} height={45} className="object-contain" priority /> */}
                     </div>
                 </div>
             </div>  
