@@ -15,6 +15,7 @@ export const POST = async (req) => {
         if (userExists) {
             return NextResponse.json({ message: "User already exists" }, { status: 400 });
         }
+        
 
         const hashPassword = await bcrypt.hash(password, 10);
 
