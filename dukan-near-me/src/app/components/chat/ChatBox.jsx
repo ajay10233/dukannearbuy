@@ -14,9 +14,9 @@ export default function ChatBox() {
 
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
-    const [conversations, setConversations] = useState([]);
+    const [conversations, setConversations] = useState([]); // left side coversation
     const [filteredConversations, setFilteredConversations] = useState([]);
-    const [selectedPartner, setSelectedPartner] = useState(null);
+    const [selectedPartner, setSelectedPartner] = useState(null); //selected partner
     const [searchQuery, setSearchQuery] = useState("");
     const [isFavorite, setIsFavorite] = useState(false);
   
@@ -24,7 +24,9 @@ export default function ChatBox() {
     const messagesEndRef = useRef(null);
     const router = useRouter();
     const { data: session, status } = useSession();
-
+    useEffect(()=>{
+      console.log(messages);
+    },[messages])
     useEffect(() => {
         if (!session || socketRef.current) return;
     
@@ -73,7 +75,8 @@ export default function ChatBox() {
           try {
             const res = await fetch(`/api/messages/conversation?conversationId=${selectedPartner.id}`);
             const data = await res.json();
-            setMessages(data?.data?.messages || []);
+            console.log(data);
+            setMessages(data.data?.messages || []);
           } catch (error) {
             console.error("❌ Failed to fetch messages:", error);
           }
