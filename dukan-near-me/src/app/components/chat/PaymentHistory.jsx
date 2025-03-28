@@ -40,7 +40,7 @@ export default function PaymentHistory() {
         </div>
       </div>
       <div className="flex flex-col gap-y-4">
-        {data.map((details, i) => (
+        {data?.map((details, i) => (
           <div className="flex items-center bg-white p-2 py-3 rounded-lg" key={i}>
             <ul className="flex items-center text-sm text-slate-500 *:w-1/3 w-full text-center"> 
               <li>{details.date}</li>

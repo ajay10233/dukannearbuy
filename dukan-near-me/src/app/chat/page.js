@@ -15,7 +15,7 @@ export default function Chat() {
   useEffect(() => {
     if (!session) return;
 
-    const newSocket = io("http://localhost:3001");
+    const newSocket = io("http://localhost:3000");
     setSocket(newSocket);
     console.log(session);
     newSocket.emit("register", session.user.id);
@@ -70,11 +70,11 @@ export default function Chat() {
           Chat with {session.user.role === "USER" ? "Institutions" : "Users"}
         </h2>
         <div className="space-y-2">
-          {chatPartners.length > 0 ? (
+          {chatPartners?.length > 0 ? (
             chatPartners.map((partner) => (
               <button
                 key={partner.id}
-                onClick={() => {setSelectedPartner(partner);console.log("Selected partner is: ",partner)}}
+                onClick={() => {setSelectedPartner(partner)}}
                 className={`w-full text-left px-4 text-black py-2 rounded-md transition ${
                   selectedPartner?.id === partner.id
                     ? "bg-blue-500 text-white"
@@ -104,7 +104,7 @@ export default function Chat() {
             {/* Messages Section */}
             <div className="flex-1 overflow-y-auto p-4 bg-white rounded-md shadow-md">
               {messages && messages
-                .filter(
+                ?.filter(
                   (msg) =>
                     // (msg.receiverId === selectedPartner.id &&
                     //   msg.senderId === session.user.id) ||

@@ -20,7 +20,6 @@ export const authOptions = {
       }),
     CredentialsProvider({
       // We don't need built-in credentials format...
-
       // name: "Credentials",
       // credentials: {
       //   email: { label: "Email", type: "email" },
