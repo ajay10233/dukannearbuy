@@ -9,8 +9,7 @@ import { io } from "socket.io-client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import PaymentHistory from '../Payments/PaymentHistory';
-
+import PaymentHistory from './Payments/PaymentHistory';
 
 export default function ChatBox() {
     const [activeTab, setActiveTab] = useState("seller");
@@ -86,7 +85,7 @@ export default function ChatBox() {
         };
     
         fetchMessages();
-        checkIfFavorite();
+        // checkIfFavorite();
       }, [selectedPartner]);
     
       const checkIfFavorite = async () => {
@@ -173,11 +172,13 @@ export default function ChatBox() {
       
 
     return (
-        <div className='flex flex-row h-screen bg-white font-[var(--font-plus-jakarta)]'>
+
+
+        <div className='flex flex-row h-[calc(100vh-60px)] bg-white font-[var(--font-plus-jakarta)]'>
             {/* sidebar chat  */}
             <aside className='w-1/4 bg-[#F5FAFC] p-4 flex flex-col gap-4'>
                 <div className="flex items-center gap-2">
-                    <button className="p-2 cursor-pointer">
+                    <button className="p-2 cursor-pointer" onClick={() => setFilteredConversations([])}>
                         <MoveLeft size={20} strokeWidth={1.5} />
                     </button>
 
@@ -271,30 +272,29 @@ export default function ChatBox() {
                             </div>
                             {/* view payment history */}
                             <div className='flex items-center gap-3'>
-                            <Dialog>
-      <DialogTrigger asChild>
-      <button onClick={() => router.push(`/payments/history?receiverId=${selectedPartner.id}`)}
-                                        className='bg-[var(--chart-2)] text-white gap-2.5 rounded-xl p-3 font-medium text-sm flex items-center cursor-pointer hover:bg-[#128c7e] transition'>
-                                        <Plus size={18} strokeWidth={1.5} color="#fff" />
-                                        Payment History
-                                </button>      </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px] h-4/5 rounded-xl border-none flex flex-col bg-[#F5FAFC] overflow-auto dialogScroll">
-        <DialogHeader>
-          <div className="hidden">
-            <DialogTitle></DialogTitle>
-            <DialogDescription></DialogDescription>
-          </div>
-          <div className="flex justify-center items-center font-[family-name:var(--font-plusJakarta)]">
-            <button className="bg-teal-700 p-3 w-3/4 outline-none rounded-xl text-white text-sm">Your all time transaction history</button>
-          </div>
-        </DialogHeader>
-        <div className="flex flex-col">
-          <PaymentHistory />
-        </div>
-      </DialogContent>
-    </Dialog>
-
-
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <button
+                                            className='bg-[var(--chart-2)] text-white gap-2.5 rounded-xl p-3 font-medium text-sm flex items-center cursor-pointer hover:bg-[#128c7e] transition'>
+                                            <Plus size={18} strokeWidth={1.5} color="#fff" />
+                                                Payment History
+                                        </button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-[500px] h-4/5 rounded-xl border-none flex flex-col bg-[#F5FAFC] overflow-auto dialogScroll">
+                                        <DialogHeader>
+                                            <div className="hidden">
+                                                <DialogTitle></DialogTitle>
+                                                <DialogDescription></DialogDescription>
+                                            </div>
+                                            <div className="flex justify-center items-center font-[family-name:var(--font-plusJakarta)]">
+                                                <button className="bg-teal-700 p-3 w-3/4 outline-none rounded-xl text-white text-sm">Your all time transaction history</button>
+                                            </div>
+                                        </DialogHeader>
+                                        <div className="flex flex-col">
+                                            <PaymentHistory />
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
                             </div>
                         </header>
 
