@@ -2,10 +2,17 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { CheckCircleIcon, ExclamationCircleIcon, XCircleIcon, PencilIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  XCircleIcon,
+  PencilIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/solid";
 
 export default function PaymentHistoryTable({ payments, onUpdate }) {
   const { data: session } = useSession();
+  const isInstitution = session?.user?.role === "INSTITUTION";
   const [updating, setUpdating] = useState(null);
   const [editingPayment, setEditingPayment] = useState(null);
   const [newAmount, setNewAmount] = useState("");
@@ -13,7 +20,6 @@ export default function PaymentHistoryTable({ payments, onUpdate }) {
   const handleUpdatePayment = async (paymentId, updateData) => {
     setUpdating(paymentId);
     try {
-      // If amount is updated, ensure status is set to "PENDING" if not provided
       if (updateData.amount !== undefined && updateData.status === undefined) {
         updateData.status = "PENDING";
       }
@@ -26,9 +32,7 @@ export default function PaymentHistoryTable({ payments, onUpdate }) {
 
       if (!res.ok) throw new Error("Failed to update payment");
 
-      // Reflect the changes in the UI immediately
       onUpdate(paymentId, updateData);
-
       setEditingPayment(null);
       setNewAmount("");
     } catch (error) {
@@ -67,30 +71,42 @@ export default function PaymentHistoryTable({ payments, onUpdate }) {
                 </td>
                 <td
                   className={`border border-gray-300 px-4 py-2 font-semibold flex items-center gap-2 ${
-                    payment.status === "COMPLETED" ? "text-green-600" :
-                    payment.status === "CONFLICT" ? "text-red-600" :
-                    "text-yellow-500"
+                    payment.status === "COMPLETED"
+                      ? "text-green-600"
+                      : payment.status === "CONFLICT"
+                      ? "text-red-600"
+                      : "text-yellow-500"
                   }`}
                 >
-                  {payment.status === "COMPLETED" && <CheckCircleIcon className="w-5 h-5 text-green-500" />}
-                  {payment.status === "CONFLICT" && <XCircleIcon className="w-5 h-5 text-red-500" />}
-                  {payment.status === "PENDING" && <ExclamationCircleIcon className="w-5 h-5 text-yellow-500" />}
+                  {payment.status === "COMPLETED" && (
+                    <CheckCircleIcon className="w-5 h-5 text-green-500" />
+                  )}
+                  {payment.status === "CONFLICT" && (
+                    <XCircleIcon className="w-5 h-5 text-red-500" />
+                  )}
+                  {payment.status === "PENDING" && (
+                    <ExclamationCircleIcon className="w-5 h-5 text-yellow-500" />
+                  )}
                   {payment.status}
                 </td>
-                <td className="border border-gray-300 px-4 py-2">{new Date(payment.createdAt).toLocaleString()}</td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {new Date(payment.createdAt).toLocaleString()}
+                </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {payment.status === "PENDING" ? (
                     <div className="flex gap-2">
-                      <button
-                        className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition flex items-center gap-1"
-                        disabled={updating === payment.id}
-                        onClick={() => handleUpdatePayment(payment.id, { status: "CONFLICT" })}
-                      >
-                        <XCircleIcon className="w-4 h-4" />
-                        {updating === payment.id ? "Updating..." : "Mark as Conflict"}
-                      </button>
+                      {!isInstitution && (
+                        <button
+                          className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition flex items-center gap-1"
+                          disabled={updating === payment.id}
+                          onClick={() => handleUpdatePayment(payment.id, { status: "CONFLICT" })}
+                        >
+                          <XCircleIcon className="w-4 h-4" />
+                          {updating === payment.id ? "Updating..." : "Mark as Conflict"}
+                        </button>
+                      )}
 
-                      {session?.user?.role === "INSTITUTION" && (
+                      {isInstitution && (
                         <button
                           className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition flex items-center gap-1"
                           disabled={updating === payment.id}
@@ -101,7 +117,7 @@ export default function PaymentHistoryTable({ payments, onUpdate }) {
                         </button>
                       )}
                     </div>
-                  ) : payment.status !== "COMPLETED" && session?.user?.role === "INSTITUTION" ? (
+                  ) : payment.status !== "COMPLETED" && isInstitution ? (
                     <div className="mt-2 flex gap-2">
                       {editingPayment === payment.id ? (
                         <>

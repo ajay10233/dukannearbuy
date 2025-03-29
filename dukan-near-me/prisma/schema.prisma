@@ -7,18 +7,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-<<<<<<< HEAD
-model User {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  firstName String?
-  lastName  String?
-  email     String?  @unique
-  phone     String?  @unique
-  password  String?
-  role      String   @default("USER") 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-=======
 // model User {
 //   id                String  @id @default(auto()) @map("_id") @db.ObjectId
 //   firstName         String?
@@ -56,7 +44,6 @@ model PaymentHistory {
   @@map("payment_history")
 }
 
->>>>>>> 5c0ab0975bf378e5030eb67b7192e882bae5b387
 
 // model Institution {
 //   id          String  @id @default(auto()) @map("_id") @db.ObjectId

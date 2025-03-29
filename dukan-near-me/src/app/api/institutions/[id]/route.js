@@ -39,8 +39,6 @@ export const PUT = async (req, { params }) => {
   }
 };
 
-import { NextResponse } from "next/server";
-import { prisma } from "@/utils/db";
 
 export const DELETE = async (req, { params }) => {
   try {

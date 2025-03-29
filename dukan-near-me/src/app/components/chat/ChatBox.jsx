@@ -8,6 +8,9 @@ import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import PaymentHistory from '../PaymentHistory';
+
 
 export default function ChatBox() {
     const [activeTab, setActiveTab] = useState("seller");
@@ -143,8 +146,11 @@ export default function ChatBox() {
         
         // }
         const handleLike = async () => {
+            
           if (!selectedPartner) return;
-          const otherUserId = selectedPartner.otherUser.id;
+            const otherUserId = selectedPartner.otherUser.id;
+            console.log("Selected partner:", selectedPartner);
+
         try {
           if (isFavorite) {
             await fetch(`/api/favorites`, {
@@ -164,6 +170,7 @@ export default function ChatBox() {
           console.error("❌ Failed to toggle favorite:", error);
         }
       };
+      
 
     return (
         <div className='flex flex-row h-screen bg-white font-[var(--font-plus-jakarta)]'>
@@ -175,7 +182,7 @@ export default function ChatBox() {
                     </button>
 
                     {/* search bar  */}
-                    <div className="flex-1 flex items-center gap-2 bg-white px-4 py-3 rounded-3xl border border-[#D1E4E8]">
+                    <div className="flex-1 flex items-center gap-2 bg-white px-4 py-3 rounded-3xl border border-[var(--withdarktext)]">
                         <Search size={20} strokeWidth={1.5}  color='#9393C1' />
                         <input type="text"
                             placeholder="Search or start a new chat"
@@ -187,11 +194,11 @@ export default function ChatBox() {
               
                 {/* toggle tab */}
                 <div className='flex items-center justify-center w-full'>
-                    <button className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tl-xl rounded-bl-xl transition-all duration-500 cursor-pointer ${activeTab === "seller" ? "bg-[var(--chat-color)] text-white font-semibold" : "bg-white text-[#7D7D7D] font-normal"}`}
+                    <button className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tl-xl rounded-bl-xl transition-all duration-500 cursor-pointer ${activeTab === "seller" ? "bg-[var(--chart-2)] text-white font-semibold" : "bg-white text-[var(--withdarktext)] font-normal"}`}
                         onClick={() => setActiveTab("seller")}>
                             Select a seller      
                     </button>
-                    <button className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tr-xl rounded-br-xl transition-all duration-500 cursor-pointer ${activeTab === "favourite" ? "bg-[var(--chat-color)] text-white font-semibold" : "bg-white text-[#7D7D7D] font-normal"}`}
+                    <button className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tr-xl rounded-br-xl transition-all duration-500 cursor-pointer ${activeTab === "favourite" ? "bg-[var(--chart-2)] text-white font-semibold" : "bg-white text-[var(--withdarktext)] font-normal"}`}
                         onClick={() => setActiveTab("favourite")}>
                             Favourite      
                     </button>
@@ -215,23 +222,25 @@ export default function ChatBox() {
                                     <div className="flex flex-col justify-center gap-1 flex-grow">
                                         <Link href="#"  onClick={(e) => { e.preventDefault();
                                             setSelectedPartner({ ...partner }); }}
-                                            className={`font-medium text-[var(--chatText-color)] 
-                                                ${ selectedPartner?.id === partner.id && "font-bold" }`} >
+                                            className={`font-medium text-[var(--secondary-foreground)] 
+                                                ${ selectedPartner?.id === partner.id && "font-medium" }`} >
                                                     {partner.firmName || partner.firstName || "Unknown"}
                                         </Link>
-                                        <span className="text-[var(--chatText-color)] font-normal text-[12px]">
+                                        <span className="text-gray-500 font-normal text-[12px]">
                                             {/* Last message here... */}
+                                            {partner.lastMessageContent ? partner.lastMessageContent : "No messages yet"}
                                         </span>
                                     </div>
                                 </div>
                             <div className="flex flex-col items-end justify-center gap-1">
                                 <span className="text-[var(--chat-color)] text-sm">
-                                    {/* Display the exact time when message was sent/received */}
+                                    {/* Display the time */}
+                                    {partner.lastMessageTimestamp ? new Date(partner.lastMessageTimestamp).toLocaleTimeString() : " "}
                                 </span>
                                 <div className="flex items-center gap-2">
-                                    <div className="w-5 h-5 flex items-center justify-center bg-[var(--chat-color)] text-white text-xs rounded-full">
+                                    {/* <div className="w-5 h-5 flex items-center justify-center bg-[var(--chat-color)] text-white text-xs rounded-full"> */}
                                         {/* no. of unread messages */}
-                                    </div>
+                                    {/* </div> */}
                                 </div>
                             </div>
                         </div>
@@ -243,7 +252,7 @@ export default function ChatBox() {
             </aside>
 
             {/* chat box */}
-            <main className='w-3/4 flex flex-col bg-[#FAFAFA]'>
+            <main className='w-3/4 flex flex-col h-full bg-[#FAFAFA]'>
                 {selectedPartner ? (
                     <>
                         {/* chat header */}
@@ -257,24 +266,43 @@ export default function ChatBox() {
                                         {selectedPartner.firmName || selectedPartner.firstName || "Unknown"}
                                         <Heart size={20} color="#DA3036" strokeWidth={1.5} className='cursor-pointer' onClick={() => handleLike(selectedPartner)}/>  
                                     </p>
-                                    <p className="text-sm text-green-500">Online</p>
+                                    {/* <p className="text-sm text-green-500">Online</p> */}
                                 </div>
                             </div>
                             {/* view payment history */}
                             <div className='flex items-center gap-3'>
-                                <button onClick={() => router.push(`/payments/history?receiverId=${selectedPartner.id}`)}
-                                        className='bg-[var(--chat-color)] text-white gap-2.5 rounded-xl p-3 font-medium text-sm flex items-center cursor-pointer hover:bg-[#128c7eeb] transition'>
+                            <Dialog>
+      <DialogTrigger asChild>
+      <button onClick={() => router.push(`/payments/history?receiverId=${selectedPartner.id}`)}
+                                        className='bg-[var(--chart-2)] text-white gap-2.5 rounded-xl p-3 font-medium text-sm flex items-center cursor-pointer hover:bg-[#128c7e] transition'>
                                         <Plus size={18} strokeWidth={1.5} color="#fff" />
                                         Payment History
-                                </button>
+                                </button>      </DialogTrigger>
+      <DialogContent className="sm:max-w-[500px] h-4/5 rounded-xl border-none flex flex-col bg-[#F5FAFC] overflow-auto dialogScroll">
+        <DialogHeader>
+          <div className="hidden">
+            <DialogTitle></DialogTitle>
+            <DialogDescription></DialogDescription>
+          </div>
+          <div className="flex justify-center items-center font-[family-name:var(--font-plusJakarta)]">
+            <button className="bg-teal-700 p-3 w-3/4 outline-none rounded-xl text-white text-sm">Your all time transaction history</button>
+          </div>
+        </DialogHeader>
+        <div className="flex flex-col">
+          <PaymentHistory />
+        </div>
+      </DialogContent>
+    </Dialog>
+
+
                             </div>
                         </header>
 
                         {/* Message container */}
-                        <div className='pt-1.5 pb-4 px-4 overflow-y-auto flex flex-col gap-3'>
+                        <div className='flex-1 pt-1.5 pb-4 px-4 overflow-y-auto flex flex-col gap-3'>
                             {/* Encryption message */}
                             <div className='flex justify-center'>
-                                <span className="bg-[var(--encryptionBg-color)] text-[var(--encryptionText-color)] text-sm py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
+                                <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] text-sm py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
                                     <LockKeyhole size={20} strokeWidth={1.5} />
                                     Chats will be automatically deleted after 48 hours of last chat
                                 </span>
@@ -286,9 +314,9 @@ export default function ChatBox() {
                                         ref={index === messages.length - 1 ? messagesEndRef : null}
                                         className={`flex ${msg.senderId === session.user.id ? "justify-end" : "justify-start"}`}>
 
-                                        <div className={`p-4 ${msg.senderId === session.user.id ? 'bg-white' : 'bg-[#D7F8F4]'} 
-                                            ${msg.senderId === session.user.id ? 'rounded-tl-2xl rounded-tr-2xl rounded-br-2xl' 
-                                            : 'rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl'}`}>
+                                        <div className={`p-2.5 ${msg.senderId === session.user.id ? 'bg-[#D7F8F4]' : 'bg-white'} 
+                                            ${msg.senderId === session.user.id ? 'rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl' 
+                                            : 'rounded-tl-2xl rounded-tr-2xl rounded-br-2xl'} flex items-center justify-between gap-1.5`}>
 
                                             <p className='text-[#010101] opacity-85 font-normal text-sm'>{msg.content}</p>
                                             <span className="text-xs text-[#0B3048] opacity-70 block text-right">{msg.timestamp}</span>
@@ -296,7 +324,7 @@ export default function ChatBox() {
                                     </div>
                                     ))
                                 )  : (
-                                    <p className="p-4 text-center text-gray-500">Select a conversation to start chatting.</p>
+                                    <p className="p-4 text-center text-gray-500">No messages yet.</p>
                                 )}
                         </div>
                                 
@@ -312,7 +340,12 @@ export default function ChatBox() {
                             </div>
                             <input type="text"
                                    value={message}
-                                    onChange={(e) => setMessage(e.target.value)}        
+                                    onChange={(e) => setMessage(e.target.value)}  
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                        sendMessage();
+                                        }
+                                }}
                                     placeholder="Type a message..."
                                     className="flex-1 py-2 px-4 rounded-full bg-white focus:outline-none shadow-sm" />
                             <button className="p-2 cursor-pointer" onClick={sendMessage}>

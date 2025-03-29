@@ -37,31 +37,51 @@ export default function LoginForm() {
   //     name: 'apple'
   //   },
   // ]
+  const getIpAddress = async () => {
+        try {
+          const res = await fetch("https://api64.ipify.org?format=json");
+          const data = await res.json();
+          return data.ip;
+        } catch (error) {
+          console.error("Error fetching IP:", error);
+          return "Unknown IP";
+        }
+      };
 
+  
   const onSubmit = async (data) => {
     if (data) {
       const { email, password } = data;
       console.log(data);
       const toastId = toast.loading("Processing...");
+
       try {
+        // Fetch IP address
+        const ip = await getIpAddress();
+        // Get device info
+        const device = navigator.userAgent || "Unknown Device";
+
         const res = await signIn("credentials", {
           redirect: false,
-          email,
+          identifier: email, // Change 'email' to 'identifier'
           password,
+          device,
+          ip,
         });
+
         if (res.status === 200) {
           toast.success("Login successfully!", { id: toastId });
           router.push("/dashboard");
         } else {
-          toast.error(res.error, { id: toastId });
+          toast.error(res.error || "Invalid credentials", { id: toastId });
         }
       } catch (error) {
-        toast.error(res.error || "Auth error", { id: toastId });
-        console.log(error);
+        toast.error("Auth error", { id: toastId });
+        console.error(error);
       }
     }
   };
-
+  
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}

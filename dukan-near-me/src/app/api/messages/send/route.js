@@ -87,14 +87,14 @@ export const POST = async (req) => {
     });
 
     return NextResponse.json(
-      { message: "Message sent successfully!", data: newMessage },
-      { status: 201 }
+        { message: "Message sent successfully!", data: newMessage },
+        { status: 201 }
     );
   } catch (error) {
     console.error("Send Message Error:", error);
     return NextResponse.json(
-      { message: "Failed to send message!", error: error.message },
-      { status: 500 }
+        { message: "Failed to send message!", error: error.message },
+        { status: 500 }
     );
   }
 };

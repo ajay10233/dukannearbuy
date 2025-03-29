@@ -8,6 +8,7 @@ export const GET = async (req) => {
   try {
     // Get authenticated user session
     const session = await getServerSession(authOptions);
+    console.log(session.user)
     if (!session || !session.user?.id) {
       return NextResponse.json(
         { message: "Unauthorized! Please log in." },

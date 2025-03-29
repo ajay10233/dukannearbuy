@@ -20,7 +20,7 @@ export default function Chat() {
   const messagesEndRef = useRef(null);
   const router = useRouter();
   const { data: session, status } = useSession();
-
+  // for socket connexction
   useEffect(() => {
     if (!session || socketRef.current) return;
 

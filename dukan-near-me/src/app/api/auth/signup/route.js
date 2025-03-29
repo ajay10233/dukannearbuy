@@ -4,11 +4,11 @@ import { prisma } from "@/utils/db";
 
 export const POST = async (req) => {
     try {
-        const { firstName, lastName, email, phone, password, role } = await req.json();
+        const { firstName, lastName, email, phone, password, role,username } = await req.json();
 
         const userExists = await prisma.user.findFirst({
             where: {
-                OR: [{ email }, { phone }],
+                OR: [{ email }, { phone },{username}],
             },
         });
 
@@ -26,10 +26,11 @@ export const POST = async (req) => {
                 phone,
                 password: hashPassword,
                 role,
+                username,
             },
         });
 
-        return NextResponse.json(user, { status: 200 });
+        return NextResponse.json(user, {message: `${role} create successfully`} ,{ status: 200 });
     } catch (error) {
         console.error("Prisma Validation Error:", error);
         return NextResponse.json({ message: "Registration failed!", error: error.message }, { status: 500 });
