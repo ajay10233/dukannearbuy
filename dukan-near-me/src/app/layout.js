@@ -2,7 +2,8 @@ import { Plus_Jakarta_Sans, Rubik, Work_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import SocketInitializer from "@/app/components/SocketInitializer";
-import SessionProviderWrapper from "@/app/components/SessionProviderWrapper";
+import SessionProviderWrapper from "@/app/components/SessionProviderWrapper"; // Import client-side wrapper
+import HeaderLocation from "./components/HeaderLocation";
 
 const rubik = Rubik({
   variable: "--font-rubik",
@@ -28,11 +29,13 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${rubik.variable} ${plusJakarta.variable} ${workSans.variable} antialiased`}>
-        <SessionProviderWrapper> 
-            {children}
-            <Toaster position="bottom-right" reverseOrder={false} />
-            <SocketInitializer />
+      {/* <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}> */}
+      <body>
+      <HeaderLocation />
+        <SessionProviderWrapper> {/* ✅ Wrap in a client component */}
+          {children}
+          <Toaster position="bottom-right" reverseOrder={false} />
+          <SocketInitializer />
         </SessionProviderWrapper>
       </body>
     </html>
