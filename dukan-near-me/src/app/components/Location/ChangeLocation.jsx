@@ -1,5 +1,5 @@
 "use client";
-import LocationSelector from "@/app/components/LocationSelector";
+import LocationSelector from "@/app/components/Location/LocationSelector";
 import { useRouter } from "next/navigation";
 
 export default function ChangeLocationPage() {

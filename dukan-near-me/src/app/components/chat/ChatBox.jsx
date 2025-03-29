@@ -9,7 +9,7 @@ import { io } from "socket.io-client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import PaymentHistory from '../PaymentHistory';
+import PaymentHistory from '../Payments/PaymentHistory';
 
 
 export default function ChatBox() {
