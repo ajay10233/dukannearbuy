@@ -21,7 +21,6 @@ export default function ChatBox() {
   const [selectedPartner, setSelectedPartner] = useState(null); //selected partner
   const [searchQuery, setSearchQuery] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
-  const [locationLoading, setlocationLoading] = useState(false);
 
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
@@ -33,7 +32,6 @@ export default function ChatBox() {
 
 
   const SendLiveLocation = () => {
-    setlocationLoading(true);
     if (typeof window !== "undefined" && "geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -51,7 +49,6 @@ export default function ChatBox() {
       alert("Geolocation is not supported in this browser.");
       return null;
     }
-    setlocationLoading(false);
   };
 
   useEffect(() => {
@@ -465,13 +462,7 @@ export default function ChatBox() {
                   <SmilePlus size={20} strokeWidth={1.5} color="#130F26" />
                 </button>
                 <button className="p-2 cursor-pointer relative">
-                  {locationLoading ? (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="h-5 w-5 border-b-2 border-white rounded-full animate-spin"></div>
-                    </div>
-                  ) : (
                     <MapPin size={20} strokeWidth={1.5} color="#130F26" onClick={() => SendLiveLocation()} />
-                  )}
                 </button>
               </div>
               <input type="text"
