@@ -80,7 +80,7 @@ export default function ChatBox() {
             console.log(data);
             setMessages(data.data?.messages || []);
           } catch (error) {
-            console.error("❌ Failed to fetch messages:", error);
+            console.error("Failed to fetch messages:", error);
           }
         };
     
