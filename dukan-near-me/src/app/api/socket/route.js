@@ -56,12 +56,10 @@ if (!global.io) {
 
       console.log(`📨 Sending message in conversation ${conversationId}: ${content}`);
 
-      // Save message to the database
       const newMessage = await prisma.message.create({
         data: { senderId, senderType, receiverId, content, conversationId },
       });
 
-      // Update conversation with last message details
       await prisma.conversation.update({
         where: { id: conversationId },
         data: {
@@ -72,14 +70,12 @@ if (!global.io) {
         },
       });
 
-      // Publish message via Redis for real-time syncing
       await pub.publish(
         "chat",
         JSON.stringify({ senderId, senderType, receiverId, content, conversationId,timestamp })
       );
     });
 
-    // Handle user disconnection
     socket.on("disconnect", async () => {
       console.log("🔴 User disconnected:", socket.id);
 
@@ -104,7 +100,6 @@ if (!global.io) {
     });
   });
 
-  // Subscribe to Redis chat messages
   sub.subscribe("chat");
   sub.on("message", async (channel, message) => {
     if (channel !== "chat") return;
@@ -113,7 +108,6 @@ if (!global.io) {
 
     console.log(`📩 Redis event received: Message from ${senderId} to ${receiverId} in conversation ${conversationId}`);
 
-    // Fetch receiver's socket ID from Redis
     const receiverSocket = await redis.get(`user:${receiverId}`);
     if (receiverSocket) {
       global.io.to(receiverSocket).emit("receiveMessage", { senderId, senderType, receiverId, content, conversationId,timestamp });
