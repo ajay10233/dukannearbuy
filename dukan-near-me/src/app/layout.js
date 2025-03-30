@@ -38,7 +38,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       {/* <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}> */}
       <body className={`${rubik.variable} ${plusJakartaSans.variable} ${poppins.variable} antialiased`}>
-      <HeaderLocation />
+      {/* <HeaderLocation /> */}
         <SessionProviderWrapper> {/* ✅ Wrap in a client component */}
           {children}
           <Toaster position="bottom-right" reverseOrder={false} />
