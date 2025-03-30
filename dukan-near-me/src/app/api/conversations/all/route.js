@@ -16,7 +16,7 @@ export const GET = async (req) => {
     }
 
     const userId = session.user.id; // Keep it as a string for comparison
-    console.log("Logged-in user ID:", userId);
+    // console.log("Logged-in user ID:", userId);
     // Fetch all conversations where the user is either user1 or user2
     const conversations = await prisma.conversation.findMany({
       where: {
@@ -68,7 +68,7 @@ export const GET = async (req) => {
       }
 
       return {
-        id: conversation.id,
+        conversationId: conversation.id,
         otherUser: {
           id: otherUser.id,
           name: otherUser.role === "INSTITUTION" 

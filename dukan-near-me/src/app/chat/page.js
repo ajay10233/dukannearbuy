@@ -118,14 +118,26 @@ export default function Chat() {
 
   const sendMessage = () => {
     if (!message.trim() || !socketRef.current || !selectedPartner) return;
-
-    const msgData = {
-      senderId: session.user.id,
-      senderType: session.user.role,
-      conversationId: selectedPartner.id,
-      content: message,
-      // conversationId: selectedPartner.conversationId,
-    };
+    let msgData;
+    console.log("Selected partner:",selectedPartner);
+    if(selectedPartner.conversationId){
+      msgData = {
+        senderId: session.user.id,
+        senderType: session.user.role,
+        // conversationId: selectedPartner.id,
+        receiverId:null,
+        content: message,
+        conversationId: selectedPartner.conversationId,
+      };
+    }else{
+      msgData = {
+        senderId: session.user.id,
+        senderType: session.user.role,
+        receiverId: selectedPartner.id,
+        content: message,
+        conversationId:null
+      };
+    }
     console.log("msg data: ",msgData);
     socketRef.current.emit("sendMessage", msgData);
     setMessages((prev) => (Array.isArray(prev) ? [...prev, msgData] : [msgData]));

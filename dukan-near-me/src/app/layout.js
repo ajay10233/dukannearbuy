@@ -38,8 +38,8 @@ export default function RootLayout({ children }) {
     <html lang="en">
       {/* <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}> */}
       <body className={`${rubik.variable} ${plusJakartaSans.variable} ${poppins.variable} antialiased`}>
-      <HeaderLocation />
-        <SessionProviderWrapper> {/* ✅ Wrap in a client component */}
+      <SessionProviderWrapper> {/* ✅ Wrap in a client component */}
+        <HeaderLocation />
           {children}
           <Toaster position="bottom-right" reverseOrder={false} />
           <SocketInitializer />

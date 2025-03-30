@@ -4,7 +4,7 @@ import LogoutButton from "@/app/components/LogoutButton";
 
 export default async function Dashboard() {
   const session = await getServerSession(authOptions);
-  console.log(session)
+  console.log("session: ",session);
   if (!session) {
     return <p>You are not logged in</p>;
   }

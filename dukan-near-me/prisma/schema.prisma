@@ -174,8 +174,8 @@ model FavoriteInstitution {
   institutionId String   @db.ObjectId  // Institution being favorited
   createdAt     DateTime @default(now())
 
-  user          User @relation("UserFavorites", fields: [userId], references: [id], onDelete: Cascade)
-  institution   User @relation("InstitutionFavorites", fields: [institutionId], references: [id], onDelete: Cascade)
+  user          User? @relation("UserFavorites", fields: [userId], references: [id], onDelete: Cascade)
+  institution   User? @relation("InstitutionFavorites", fields: [institutionId], references: [id], onDelete: Cascade)
 
   @@unique([userId, institutionId]) // Prevent duplicate favorites
   @@map("favorite_institutions")
