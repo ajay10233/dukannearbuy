@@ -11,7 +11,8 @@ export const phoneNumberSchema = z
                                 .string()
                                 .refine((val) => (/^[6-9]\d{9}$/).test(val), {message: 'Invalid phone number!'})
 
-export const emailVerificationSchema = z.string().email().toLowerCase().trim()
+export const emailVerificationSchema = z.string().toLowerCase().trim()
+// export const emailVerificationSchema = z.string().email().toLowerCase().trim()
 export const passwordVerificationSchema = z
                                           .string()
                                           .min(4, {message: "Password must be at least 4 characters"})
