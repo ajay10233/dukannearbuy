@@ -328,7 +328,7 @@ export default function ChatBox() {
                 </div>
                 <div className='gap-1'>
                   <p className="text-[var(--chatText-color)] text-lg flex items-center gap-2">
-                    {selectedPartner.firmName || selectedPartner.firstName || "Unknown"}
+                    {selectedPartner?.otherUser?.firmName|| selectedPartner?.otherUser?.firmName || selectedPartner?.firmName || selectedPartner?.firstName ||"Unknown"}
                     <Heart size={20} color="#DA3036" fill='#DA3036' strokeWidth={1.5} className='cursor-pointer' onClick={() => handleLike(selectedPartner)} />
                   </p>
                   {/* <p className="text-sm text-green-500">Online</p> */}
