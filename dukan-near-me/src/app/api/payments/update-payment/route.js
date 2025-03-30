@@ -29,7 +29,7 @@ export async function POST(req) {
       if (!allowedStatuses.includes(status)) {
         return new Response(JSON.stringify({ error: "Invalid status value" }), { status: 400 });
       }
-      if (status === "COMPLETED" && session.user.role !== "INSTITUTION") {
+      if (status === "COMPLETED" && session.user.role !== "INSTITUTION" && session.user.role !== "SHOP_OWNER") {
         return new Response(JSON.stringify({ error: "Permission denied" }), { status: 403 });
       }
       updateData.status = status;
@@ -37,7 +37,7 @@ export async function POST(req) {
 
     // Handle amount update (Only institutions can update)
     if (amount !== undefined) {
-      if (session.user.role !== "INSTITUTION") {
+      if (session.user.role !== "INSTITUTION" && session.user.role !== "SHOP_OWNER") {
         return new Response(JSON.stringify({ error: "Permission denied" }), { status: 403 });
       }
       if (isNaN(amount) || amount <= 0) {

@@ -73,7 +73,7 @@ model User {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  // Common fields for both User & Institution
+  // Common fields for both User & Institution & shop owner
   age              Int?
   gender           String?  
   // address          String?
@@ -165,6 +165,7 @@ enum PaymentStatus {
 enum SenderType {
   USER
   INSTITUTION
+  SHOP_OWNER
 }
 
 

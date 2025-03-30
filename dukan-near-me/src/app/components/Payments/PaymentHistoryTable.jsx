@@ -12,7 +12,7 @@ import {
 
 export default function PaymentHistoryTable({ payments, onUpdate }) {
   const { data: session } = useSession();
-  const isInstitution = session?.user?.role === "INSTITUTION";
+  const isInstitution = session?.user?.role === "INSTITUTION" || session?.user?.role === "SHOP_OWNER";
   const [updating, setUpdating] = useState(null);
   const [editingPayment, setEditingPayment] = useState(null);
   const [newAmount, setNewAmount] = useState("");

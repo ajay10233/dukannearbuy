@@ -19,7 +19,7 @@ export default function RolesCard() {
       icon: <Store size={50} strokeWidth={1.3} color="#92613a" />,
       name: "Shop owner",
       desc: "Business with us",
-      role: "PARTNER",
+      role: "SHOP_OWNER",
     },
   ];
   return (

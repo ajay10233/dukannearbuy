@@ -16,7 +16,7 @@ export async function POST(req) {
     const user = await prisma.user.findUnique({ where: { id: session.user.id } });
     if (!user) return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
 
-    if (user.role === "INSTITUTION") {
+    if (user.role === "INSTITUTION" || user.role === "SHOP_OWNER") {
       return new Response(JSON.stringify({ error: "Institutions should use the institution upload route" }), { status: 403 });
     }
 

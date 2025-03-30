@@ -10,7 +10,7 @@ export async function GET(req) {
 
   const institutions = await prisma.user.findMany({
     where: {
-      role: "INSTITUTION",
+      role: { in: ["INSTITUTION", "SHOP_OWNER"] },
       OR: [
         { city: { contains: search, mode: "insensitive" } },
         { state: { contains: search, mode: "insensitive" } },

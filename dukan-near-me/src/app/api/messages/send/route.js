@@ -13,7 +13,7 @@ export const POST = async (req) => {
     }
 
     // Validate senderType
-    if (senderType !== "USER" && senderType !== "INSTITUTION") {
+    if (senderType !== "USER" && senderType !== "INSTITUTION" && senderType !== "SHOP_OWNER") {
       return NextResponse.json(
         { message: "Invalid senderType. Must be 'USER' or 'INSTITUTION'." },
         { status: 400 }

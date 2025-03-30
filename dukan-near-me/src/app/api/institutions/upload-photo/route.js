@@ -14,7 +14,7 @@ export async function POST(req) {
     }
 
     const user = await prisma.user.findUnique({ where: { id: session.user.id } });
-    if (!user || user.role !== "INSTITUTION") {
+    if (!user || user.role !== "INSTITUTION" && user.role !== "SHOP_OWNER") {
       return new Response(JSON.stringify({ error: "Only institutions can upload multiple images" }), { status: 403 });
     }
 

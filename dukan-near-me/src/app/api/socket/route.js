@@ -22,12 +22,13 @@ if (!global.io) {
     });
 
     // Send message event
-    socket.on("sendMessage", async ({ senderId, senderType, receiverId, conversationId, content }) => {
+    socket.on("sendMessage", async ({ senderId, senderType, receiverId, conversationId, content,timestamp }) => {
       
       if (!senderId || !receiverId || !content || !senderType) {
         console.error("❌ Missing required fields:", { senderId, senderType, receiverId, conversationId, content });
         return;
       }
+      console.log("senderId: ", senderId, " receiverId: ", receiverId, " conversationId: ", conversationId, " content: ", content);
 
       if (!conversationId) {
         console.log("senderId: ", senderId, " receiverId: ", receiverId,"_______________________");
@@ -74,7 +75,7 @@ if (!global.io) {
       // Publish message via Redis for real-time syncing
       await pub.publish(
         "chat",
-        JSON.stringify({ senderId, senderType, receiverId, content, conversationId })
+        JSON.stringify({ senderId, senderType, receiverId, content, conversationId,timestamp })
       );
     });
 
@@ -108,14 +109,14 @@ if (!global.io) {
   sub.on("message", async (channel, message) => {
     if (channel !== "chat") return;
 
-    const { senderId, senderType, receiverId, content, conversationId } = JSON.parse(message);
+    const { senderId, senderType, receiverId, content, conversationId,timestamp } = JSON.parse(message);
 
     console.log(`📩 Redis event received: Message from ${senderId} to ${receiverId} in conversation ${conversationId}`);
 
     // Fetch receiver's socket ID from Redis
     const receiverSocket = await redis.get(`user:${receiverId}`);
     if (receiverSocket) {
-      global.io.to(receiverSocket).emit("receiveMessage", { senderId, senderType, content, conversationId });
+      global.io.to(receiverSocket).emit("receiveMessage", { senderId, senderType, receiverId, content, conversationId,timestamp });
       console.log(`📤 Message sent to ${receiverId} via socket ${receiverSocket}`);
     }
   });

@@ -24,7 +24,7 @@ export async function GET(req) {
       // Users can only search for institutions
       searchResults = await prisma.user.findMany({
         where: {
-          role: "INSTITUTION",
+          role: {in: ["INSTITUTION", "SHOP_OWNER"] },
           id: { not: session.user.id }, // Exclude the logged-in user
           OR: [
             { firmName: { contains: query, mode: "insensitive" } },
@@ -48,11 +48,11 @@ export async function GET(req) {
           role: true,
         },
       });
-    } else if (session.user.role === "INSTITUTION") {
+    } else if (session.user.role === "INSTITUTION" || session.user.role === "SHOP_OWNER") {
       // Institutions can only search for other institutions
       searchResults = await prisma.user.findMany({
         where: {
-          role: "INSTITUTION",
+          role: {in: ["INSTITUTION", "SHOP_OWNER"] },
           id: { not: session.user.id }, // Exclude the logged-in user
           OR: [
             { firmName: { contains: query, mode: "insensitive" } },
@@ -77,6 +77,8 @@ export async function GET(req) {
           role: true,
         },
       });
+
+      console.log("Search results for institutions:", searchResults);
     }
 
     return NextResponse.json({ data: searchResults }, { status: 200 });
