@@ -114,6 +114,9 @@ model User {
   favoritedByUsers      FavoriteInstitution[] @relation("InstitutionFavorites") 
   latitude  Float?  
   longitude Float?  
+    // New Relations for Token Management
+  tokensAsUser         Token[] @relation("UserTokens")
+  tokensAsInstitution  Token[] @relation("InstitutionTokens")
   @@map("users")
 }
 
@@ -189,6 +192,21 @@ model Session {
   device    String?
   ip        String?
   createdAt DateTime @default(now())
+}
+
+model Token {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  tokenNumber   Int
+  userId        String  @db.ObjectId
+  institutionId String  @db.ObjectId
+  createdAt     DateTime @default(now())
+  expiresAt     DateTime?
+  completed     Boolean @default(false) // Add the `completed` field here
+  
+  user          User  @relation("UserTokens", fields: [userId], references: [id], onDelete: Cascade)
+  institution   User  @relation("InstitutionTokens", fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@map("tokens")
 }
 
 

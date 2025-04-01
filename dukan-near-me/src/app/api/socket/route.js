@@ -13,7 +13,58 @@ if (!global.io) {
 
   io.on("connection", (socket) => {
     console.log("🔵 User connected:", socket.id);
+    // * institution application functionality for live token updation
+    socket.on("joinInstitutionRoom", async (institutionId) => {
+      if (!institutionId) return console.error("❌ Missing institutionId");
+      socket.join(`institution:${institutionId}`);
+      console.log(`👥 User joined institution room: ${institutionId}`);
+      const activeToken = await prisma.token.findFirst({
+        where: { institutionId, completed: false },
+        orderBy: { createdAt: "desc" },
+      });
 
+      const completedTokens = await prisma.token.findMany({
+        where: { institutionId, completed: true },
+        orderBy: { createdAt: "desc" },
+        take: 10,
+      });
+
+      socket.emit("tokenUpdated", activeToken);
+      socket.emit("completedTokensUpdated", completedTokens);
+    });
+
+    // Emit new token to all users viewing the institution's page
+    socket.on("newToken", async ({ institutionId, token }) => {
+      console.log(`🎫 New token for institution ${institutionId}:`, token);
+      io.to(`institution:${institutionId}`).emit("tokenUpdated", token);
+    });
+
+    // Handle token completion & notify all users in the room
+    socket.on("completeToken", async ({ institutionId, tokenId }) => {
+      console.log(`✅ Token ${tokenId} completed for institution ${institutionId}`);
+
+      await prisma.token.update({
+        where: { id: tokenId },
+        data: { completed: true },
+      });
+
+      const completedTokens = await prisma.token.findMany({
+        where: { institutionId, completed: true },
+        orderBy: { createdAt: "desc" },
+        take: 10,
+      });
+
+      io.to(`institution:${institutionId}`).emit("completedTokensUpdated", completedTokens);
+    });
+
+
+
+
+
+
+
+
+    // * chat application functionality
     // Register user with their socket ID
     socket.on("register", async (userId) => {
       if (!userId) return console.error("❌ Missing userId in register event");
