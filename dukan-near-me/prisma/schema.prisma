@@ -117,6 +117,10 @@ model User {
     // New Relations for Token Management
   tokensAsUser         Token[] @relation("UserTokens")
   tokensAsInstitution  Token[] @relation("InstitutionTokens")
+
+  // Bill Relations
+  billsAsUser       Bill[] @relation("User")
+  billsAsInstitution Bill[] @relation("Institution")
   @@map("users")
 }
 
@@ -205,10 +209,30 @@ model Token {
   
   user          User  @relation("UserTokens", fields: [userId], references: [id], onDelete: Cascade)
   institution   User  @relation("InstitutionTokens", fields: [institutionId], references: [id], onDelete: Cascade)
-
+  name          String? 
+  phoneNumber   String?
   @@map("tokens")
 }
 
+model Bill {
+  id               String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String  @db.ObjectId // Reference to User model
+  institutionId    String  @db.ObjectId // Reference to Institution model
+  gstNumber        String? @unique // GSTIN (Optional but unique)
+  email           String? @unique // Shop email (optional but unique)
+  taxType         String  // TEXT(GST/SGST)
+  taxPercentage   Float   // Tax percentage
+  proprietorSign  String  // Image file path (Max 150KB)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user           User  @relation("User",fields: [userId], references: [id], onDelete: Cascade)
+  institution    User  @relation("Institution",fields: [institutionId], references: [id], onDelete: Cascade)
+
+
+  @@map("bills")
+}
 
 
 

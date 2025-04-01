@@ -15,9 +15,9 @@ export default function InstitutionProfile() {
 
     socket.emit("joinInstitutionRoom", institutionId);
 
-    socket.on("tokenUpdated", (institutionId, token) => {
-      console.log("Token updated:", token);
-      setCurrentToken(token);
+    socket.on("tokenUpdated", (data) => {
+      console.log("Token updated:", data);
+      setCurrentToken(data?.newToken);
     });
 
     socket.on("completedTokensUpdated", (tokens) => {
