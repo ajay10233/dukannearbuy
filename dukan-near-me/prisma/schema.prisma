@@ -118,9 +118,10 @@ model User {
   tokensAsUser         Token[] @relation("UserTokens")
   tokensAsInstitution  Token[] @relation("InstitutionTokens")
 
-  // Bill Relations
-  billsAsUser       Bill[] @relation("User")
-  billsAsInstitution Bill[] @relation("Institution")
+  // // Bill Relations
+  // billsAsUser       Bill[] @relation("User")
+  // billsAsInstitution Bill[] @relation("Institution")
+  billFormatForUser  BillFormat[] @relation("BillFormatForUser")
   @@map("users")
 }
 
@@ -201,39 +202,71 @@ model Session {
 model Token {
   id            String  @id @default(auto()) @map("_id") @db.ObjectId
   tokenNumber   Int
-  userId        String  @db.ObjectId
-  institutionId String  @db.ObjectId
+  userId        String?  @db.ObjectId
+  institutionId String?  @db.ObjectId
   createdAt     DateTime @default(now())
   expiresAt     DateTime?
   completed     Boolean @default(false) // Add the `completed` field here
   
-  user          User  @relation("UserTokens", fields: [userId], references: [id], onDelete: Cascade)
-  institution   User  @relation("InstitutionTokens", fields: [institutionId], references: [id], onDelete: Cascade)
+  user          User?  @relation("UserTokens", fields: [userId], references: [id], onDelete: Cascade)
+  institution   User?  @relation("InstitutionTokens", fields: [institutionId], references: [id], onDelete: Cascade)
+
   name          String? 
   phoneNumber   String?
+
+
+  // billrelation  Bill[] @relation("TokenInBill")
   @@map("tokens")
 }
 
-model Bill {
-  id               String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId           String  @db.ObjectId // Reference to User model
-  institutionId    String  @db.ObjectId // Reference to Institution model
-  gstNumber        String? @unique // GSTIN (Optional but unique)
-  email           String? @unique // Shop email (optional but unique)
-  taxType         String  // TEXT(GST/SGST)
-  taxPercentage   Float   // Tax percentage
-  proprietorSign  String  // Image file path (Max 150KB)
+model BillFormat{
+  id                      String  @id @default(auto()) @map("_id") @db.ObjectId
+  institutionId           String @db.ObjectId @unique
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  user           User  @relation("User",fields: [userId], references: [id], onDelete: Cascade)
-  institution    User  @relation("Institution",fields: [institutionId], references: [id], onDelete: Cascade)
-
-
-  @@map("bills")
+  // * mandatory fields from institution relation to user, optional fields below
+  gstNumber               String? @unique 
+  taxType                 String?  
+  taxPercentage           String?  // Tax percentage
+  proprietorSign          String?  // Image file path (Max 150KB)
+  extraText               String? 
+  institutionRelation     User @relation("BillFormatForUser",fields: [institutionId],references: [id],onDelete: Cascade)
 }
 
+// to be completed soon
+// model Bill {
+//   id               String  @id @default(auto()) @map("_id") @db.ObjectId
+//   userId           String?  @db.ObjectId // Reference to User model
+//   institutionId    String?  @db.ObjectId // Reference to Institution model
+//   gstNumber        String? @unique // GSTIN (Optional but unique)
+//   email           String? @unique // Shop email (optional but unique)
+//   taxType         String?  // TEXT(GST/SGST)
+//   taxPercentage   Float?  // Tax percentage
+//   proprietorSign  String?  // Image file path (Max 150KB)
+
+//   createdAt       DateTime @default(now())
+//   updatedAt       DateTime @updatedAt
+
+//   user           User?  @relation("User",fields: [userId], references: [id], onDelete: Cascade)
+//   institution    User?  @relation("Institution",fields: [institutionId], references: [id], onDelete: Cascade)
+
+//   name          String? 
+//   phoneNumber   String?
+
+//   // token number
+//   tokenId       String?  @db.ObjectId
+//   tokenNumber   Token? @relation("TokenInBill",fields: [tokenId],references: [id],onDelete: Cascade)
+
+//   shortBill     ShortBill[] @relation("BillToShortBill")
+//   @@map("bills")
+// }
+
+// model ShortBill{
+//   id               String  @id @default(auto()) @map("_id") @db.ObjectId
+//   billId   String? @db.ObjectId
+//   bill     Bill?   @relation("BillToShortBill", fields: [billId], references: [id], onDelete: Cascade)
+//   // amount
+//   // items
+// }
 
 
 // datasource db {
