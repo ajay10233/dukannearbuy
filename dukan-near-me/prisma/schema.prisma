@@ -122,6 +122,7 @@ model User {
   // billsAsUser       Bill[] @relation("User")
   // billsAsInstitution Bill[] @relation("Institution")
   billFormatForUser  BillFormat[] @relation("BillFormatForUser")
+  userResponse       UserResponse[] @relation("UserResponse")
   @@map("users")
 }
 
@@ -232,6 +233,23 @@ model BillFormat{
   institutionRelation     User @relation("BillFormatForUser",fields: [institutionId],references: [id],onDelete: Cascade)
 }
 
+model UserResponse {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  content     String       
+  userId      String? @db.ObjectId
+  name        String?
+  email       String?
+  type        FeedbackType @default(FEEDBACK)
+  user        User?         @relation("UserResponse", fields: [userId], references: [id])
+}
+
+enum FeedbackType {
+  FEEDBACK
+  COMPLAINT
+}
 // to be completed soon
 // model Bill {
 //   id               String  @id @default(auto()) @map("_id") @db.ObjectId
@@ -269,6 +287,21 @@ model BillFormat{
 // }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// * oldcode
 // datasource db {
 //   provider = "mongodb"
 //   url      = env("DATABASE_URL")
