@@ -1,8 +1,3 @@
-// import formidable from 'formidable'
-// import cloudinary from '@/utils/cloudinary'
-
-
-
 import { getServerSession } from 'next-auth'
 import { prisma } from '@/utils/db'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'

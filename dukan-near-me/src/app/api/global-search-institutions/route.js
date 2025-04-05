@@ -1,6 +1,7 @@
 import { prisma } from '@/utils/db'
 import { NextResponse } from 'next/server'
 
+// take distance from frontend like taking shops within 5km range or 10km range
 function getClosestMatch(word, options) {
   const levenshtein = (a, b) => {
     const dp = Array.from({ length: a.length + 1 }, () =>
