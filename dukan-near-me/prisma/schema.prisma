@@ -292,7 +292,10 @@ model Bill {
   institution    User?      @relation("Institution", fields: [institutionId], references: [id], onDelete: Cascade)
   tokenNumber    Token?     @relation("TokenInBill", fields: [tokenId], references: [id], onDelete: Cascade)
 
-  items          BillItem[] @relation("BillToBillItem")
+  fileUrl        String?
+  fileType       String?
+
+  items         BillItem[] @relation("BillToBillItem")
   shortBill  ShortBill?
   @@map("bills")
 }

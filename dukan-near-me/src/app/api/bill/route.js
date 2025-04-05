@@ -1,16 +1,78 @@
-import { NextResponse } from 'next/server'
-import { prisma } from '@/utils/db'
+// import formidable from 'formidable'
+// import cloudinary from '@/utils/cloudinary'
+
+
+
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/utils/authOptions'
+import { prisma } from '@/utils/db'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { NextResponse } from 'next/server'
+import { v2 as cloudinary } from 'cloudinary'
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+})
 
 export async function POST(req) {
   try {
     const session = await getServerSession(authOptions)
     if (!session || !['INSTITUTION', 'SHOP_OWNER'].includes(session.user.role)) {
-      return new Response(JSON.stringify({ error: 'Unauthorized: Only institutions or shop owners can generate bills' }), { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const institutionId = session.user.id
+    const contentType = req.headers.get('content-type') || ''
+
+    // Handle multipart/form-data
+    if (contentType.includes('multipart/form-data')) {
+      const form = await req.formData()
+
+      const file = form.get('file')
+      const userId = form.get('userId')
+      const tokenId = form.get('tokenId')
+      const remarks = form.get('remarks')
+      const invoiceNumber = form.get('invoiceNumber')
+
+      if (!file || typeof file === 'string') {
+        return NextResponse.json({ success: false, error: 'No file uploaded' }, { status: 400 })
+      }
+
+      const arrayBuffer = await file.arrayBuffer()
+      const buffer = Buffer.from(arrayBuffer)
+
+      const uploadResult = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          {
+            resource_type: 'auto',
+            folder: 'bills',
+          },
+          (err, result) => {
+            if (err) reject(err)
+            else resolve(result)
+          }
+        ).end(buffer)
+      })
+
+      const bill = await prisma.bill.create({
+        data: {
+          user: { connect: { id: userId } },
+          institution: { connect: { id: institutionId } },
+          tokenNumber: { connect: { id: tokenId } },
+          remarks,
+          invoiceNumber,
+          totalAmount: 0,
+          fileUrl: uploadResult.secure_url,
+          fileType: file.type || null,
+          paymentStatus: 'PENDING',
+        },
+      })
+
+      return NextResponse.json({ success: true, bill })
+    }
+
+    // Handle JSON request
     const body = await req.json()
     const {
       userId,
@@ -24,15 +86,15 @@ export async function POST(req) {
       generateShortBill = true,
     } = body
 
-    if (typeof otherCharges === 'string') {
-      const parsed = parseFloat(otherCharges)
-      if (isNaN(parsed)) {
-        return NextResponse.json({ success: false, error: 'Invalid otherCharges' }, { status: 400 })
-      }
-      body.otherCharges = parsed
+    const parsedCharges = typeof otherCharges === 'string' ? parseFloat(otherCharges) : otherCharges
+    if (isNaN(parsedCharges)) {
+      return NextResponse.json({ success: false, error: 'Invalid otherCharges' }, { status: 400 })
     }
 
-    const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0) + (body.otherCharges || 0)
+    const totalAmount = items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    ) + (parsedCharges || 0)
 
     const bill = await prisma.bill.create({
       data: {
@@ -45,7 +107,7 @@ export async function POST(req) {
         paymentStatus: 'PENDING',
         remarks,
         invoiceNumber,
-        otherCharges: body.otherCharges,
+        otherCharges: parsedCharges,
         items: {
           create: items.map((item) => ({
             name: item.name,
