@@ -85,7 +85,7 @@ export default function LoginForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col gap-y-7 w-3/5 items-center"
+      className="flex flex-col gap-y-7 w-4/5 md:w-3/5 items-center"
     >
       <div className="flex flex-col gap-y-2 w-full text-[var(--withdarktext)]">
         {/* Email */}
@@ -94,12 +94,12 @@ export default function LoginForm() {
             <input
               type="text"
               id="email"
-              className="w-full border rounded-full outline-none px-5 py-2.5 peer text-[var(--withdarkinnertext)] lowercase"
+              className="w-full border rounded-full outline-none px-5 py-2 md:py-2.5 text-sm md:text-base peer text-[var(--withdarkinnertext)] lowercase"
               {...register("email")}
             />
             <label
               htmlFor="email"
-              className={`capitalize absolute top-1/2 -translate-y-1/2 left-5 peer-focus:-translate-y-8.5 peer-focus:scale-90 peer-focus:-translate-x-2 bg-[var(--background)] px-1 transition-all duration-200 ${
+              className={`capitalize absolute top-1/2 -translate-y-1/2 left-5 peer-focus:-translate-y-8.5 peer-focus:scale-90 peer-focus:-translate-x-2 bg-[#C8D7D7] px-1 transition-all duration-200 ${
                 watch("email") && `-translate-x-2 scale-90 -translate-y-8.5`
               }`}
             >
@@ -121,12 +121,12 @@ export default function LoginForm() {
             <input
               type={!show ? "password" : "text"}
               id="password"
-              className="w-full border rounded-full outline-none px-5 py-2.5 pr-14 peer text-[var(--withdarkinnertext)]"
+              className="w-full border rounded-full outline-none px-5 py-2 md:py-2.5 pr-14 text-sm md:text-base peer text-[var(--withdarkinnertext)]"
               {...register("password")}
             />
             <label
               htmlFor="password"
-              className={`capitalize absolute top-1/2 -translate-y-1/2 left-5 peer-focus:-translate-y-8.5 peer-focus:scale-90 peer-focus:-translate-x-2 bg-[var(--background)] px-1 transition-all duration-200 ${
+              className={`capitalize absolute top-1/2 -translate-y-1/2 left-5 peer-focus:-translate-y-8.5 peer-focus:scale-90 peer-focus:-translate-x-2 bg-[#C0D0D1] px-1 transition-all duration-200 ${
                 watch("password") && `-translate-x-2 scale-90 -translate-y-8.5`
               }`}
             >
@@ -151,11 +151,11 @@ export default function LoginForm() {
       <div className="flex flex-col gap-y-4 items-center w-full">
         <button
           type="submit"
-          className="bg-[var(--secondary-color)] py-3 w-full text-[var(--dark-btn)] rounded-full font-bold cursor-pointer"
+          className="bg-blue-600 py-2 md:py-3 w-full text-white text-sm md:text-base rounded-full font-bold cursor-pointer"
         >
           Login
         </button>
-        <span className="text-[var(--lightText)] text-sm">- or -</span>
+        <span className="text-gray-600 text-sm">- or -</span>
         {/* <div className="flex justify-around gap-x-5 w-1/2">
         {
           providers.map((prov, i) => (
@@ -165,9 +165,9 @@ export default function LoginForm() {
           ))
         }
         </div> */}
-        <p className="text-[var(--lightText)] text-md">
-          New user?{" "}
-          <Link href="/getstarted" className="text-[var(--dark-btn)]">
+        <p className="text-gray-600 text-md">
+          Don't have an account?{" "}
+          <Link href="/getstarted" className="text-gray-800 font-semibold">
             Sign up
           </Link>
         </p>

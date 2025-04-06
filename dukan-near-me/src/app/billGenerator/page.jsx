@@ -1,5 +1,5 @@
 import BillGenerator from "../components/BillGenerator";
-import Footer from "../components/footer/Footer";
+import Footer from "../components/userProfile/footer/Footer";
 
 export default function Page() {
     return (
