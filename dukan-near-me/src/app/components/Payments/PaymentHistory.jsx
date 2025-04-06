@@ -45,7 +45,7 @@ export default function PaymentHistory() {
 
       <PaymentHistoryTable payments={payments} onUpdate={handleUpdateStatus} />
 
-      {session.user.role === "INSTITUTION" && receiverId && (
+      {session.user.role === "INSTITUTION" || session.user.role === "SHOP_OWNER" && receiverId && (
         <button
           onClick={() => router.push(`/payments/create?receiverId=${receiverId}`)}
           className="mt-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"

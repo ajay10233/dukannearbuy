@@ -42,6 +42,36 @@ export default function LocationSelector({ onSave }) {
     fetchUserLocation();
   }, [setValue]);
 
+  const fetchCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const { latitude, longitude } = position.coords;
+        setValue("lat", latitude);
+        setValue("lng", longitude);
+
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+          const data = await res.json();
+          const address = data.address || {};
+          setValue("houseNumber", address.house_number || "");
+          setValue("street", address.road || "");
+          setValue("buildingName", "");
+          setValue("landmark", "");
+          setValue("city", address.city || address.town || address.village || "");
+          setValue("state", address.state || "");
+          setValue("country", address.country || "");
+          setValue("zipCode", address.postcode || "");
+        } catch (error) {
+          console.error("Error fetching address details:", error);
+        }
+      }, (error) => {
+        console.error("Error getting geolocation:", error);
+      });
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  };
+
   const onSubmit = async (data) => {
     await fetch("/api/users/location", {
       method: "PUT",
@@ -53,18 +83,30 @@ export default function LocationSelector({ onSave }) {
 
   return (
     <div className="flex flex-col p-6 space-y-6 bg-gray-100 rounded-lg shadow-md w-full">
-      <Map setLocation={(newLocation) => {
-        setValue("lat", newLocation.lat);
-        setValue("lng", newLocation.lng);
-        setValue("houseNumber", newLocation.houseNumber || "");
-        setValue("street", newLocation.street || "");
-        setValue("buildingName", newLocation.buildingName || "");
-        setValue("landmark", newLocation.landmark || "");
-        setValue("city", newLocation.city || "");
-        setValue("state", newLocation.state || "");
-        setValue("country", newLocation.country || "");
-        setValue("zipCode", newLocation.zipCode || "");
-      }} />
+      <Map 
+        setLocation={(newLocation) => {
+          setValue("lat", newLocation.lat);
+          setValue("lng", newLocation.lng);
+          setValue("houseNumber", newLocation.houseNumber || "");
+          setValue("street", newLocation.street || "");
+          setValue("buildingName", newLocation.buildingName || "");
+          setValue("landmark", newLocation.landmark || "");
+          setValue("city", newLocation.city || "");
+          setValue("state", newLocation.state || "");
+          setValue("country", newLocation.country || "");
+          setValue("zipCode", newLocation.zipCode || "");
+        }} 
+        location={{ lat: getValues("lat"), lng: getValues("lng") }}
+      />
+
+      <button
+        onClick={() => {
+          fetchCurrentLocation();
+        }}
+        className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+      >
+        Use Current Location
+      </button>
 
       {/* Address Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 rounded-lg shadow">

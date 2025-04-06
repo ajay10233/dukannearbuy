@@ -42,9 +42,9 @@ export const authOptions = {
           where: { userId: userId },
         });
 
-        if (activeSessions.length >= MAX_DEVICES) {
-          throw new Error(`You have exceeded the allowed login limit (${MAX_DEVICES} devices).`);
-        }
+        // if (activeSessions.length >= MAX_DEVICES) {
+        //   throw new Error(`You have exceeded the allowed login limit (${MAX_DEVICES} devices).`);
+        // }
 
         // Generate a session token
         const sessionToken = crypto.randomBytes(32).toString("hex");

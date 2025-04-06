@@ -3,7 +3,7 @@ import { prisma } from "@/utils/db";
 
 export const GET = async () => {
   try {
-    const institutions = await prisma.user.findMany({ where: { role: "INSTITUTION" } });
+    const institutions = await prisma.user.findMany({ where: { in: ["INSTITUTION", "SHOP_OWNER"]  } });
     return NextResponse.json({ data: institutions }, { status: 200 });
   } catch (error) {
     console.log("error",error);

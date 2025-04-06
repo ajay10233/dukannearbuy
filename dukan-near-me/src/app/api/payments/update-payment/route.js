@@ -24,20 +24,27 @@ export async function POST(req) {
     const updateData = {};
     const allowedStatuses = ["PENDING", "COMPLETED", "CONFLICT"];
 
+    // Check if user is authorized to mark payment as COMPLETED
+    if (status === "COMPLETED") {
+      if (session.user.role !== "INSTITUTION" && session.user.role !== "SHOP_OWNER") {
+        return new Response(JSON.stringify({ error: "Permission denied" }), { status: 403 });
+      }
+      if (session.user.id !== payment.senderId) {
+        return new Response(JSON.stringify({ error: "Only the sender can complete the payment" }), { status: 403 });
+      }
+    }
+
     // Handle status update
     if (status) {
       if (!allowedStatuses.includes(status)) {
         return new Response(JSON.stringify({ error: "Invalid status value" }), { status: 400 });
       }
-      if (status === "COMPLETED" && session.user.role !== "INSTITUTION") {
-        return new Response(JSON.stringify({ error: "Permission denied" }), { status: 403 });
-      }
       updateData.status = status;
     }
 
-    // Handle amount update (Only institutions can update)
+    // Handle amount update (Only institutions/shop owners can update)
     if (amount !== undefined) {
-      if (session.user.role !== "INSTITUTION") {
+      if (session.user.role !== "INSTITUTION" && session.user.role !== "SHOP_OWNER") {
         return new Response(JSON.stringify({ error: "Permission denied" }), { status: 403 });
       }
       if (isNaN(amount) || amount <= 0) {

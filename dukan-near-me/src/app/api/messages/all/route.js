@@ -15,9 +15,9 @@ export const GET = async (req) => {
       );
     }
 
-    if (userType !== "USER" && userType !== "INSTITUTION") {
+    if (userType !== "USER" && userType !== "INSTITUTION" && userType !== "SHOP_OWNER") {
       return NextResponse.json(
-        { message: "Invalid userType. Must be 'USER' or 'INSTITUTION'." },
+        { message: "Invalid userType. Must be 'USER' or 'INSTITUTION' or 'SHOP_OWNER'." },
         { status: 400 }
       );
     }

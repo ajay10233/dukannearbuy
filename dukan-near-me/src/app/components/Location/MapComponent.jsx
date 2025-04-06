@@ -59,23 +59,30 @@ export default function MapComponent({ setLocation }) {
 		return {};
 	};
 
-	function LocationMarker() {
-		useMapEvents({
-			click: async (e) => {
-				const { lat, lng } = e.latlng;
-				setPosition({ lat, lng });
-				const addressData = await fetchAddress(lat, lng);
-				setLocation({ lat, lng, ...addressData });
-			},
+	function LocationMarker({ position }) {
+		const map = useMapEvents({
+		  click: async (e) => {
+			const { lat, lng } = e.latlng;
+			setPosition({ lat, lng });
+			const addressData = await fetchAddress(lat, lng);
+			setLocation({ lat, lng, ...addressData });
+		  },
 		});
-
+	  
+		useEffect(() => {
+		  if (position.lat && position.lng) {
+			map.setView(position, 13); // Center the map when position changes
+		  }
+		}, [position, map]);
+	  
 		return <Marker position={position} icon={customIcon} />;
-	}
+	  }
+	  
 
 	return (
 		<MapContainer center={position} zoom={13} className="h-96" style={{ width: "80vw" }}>
 			<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-			<LocationMarker />
+			<LocationMarker position={position} />
 		</MapContainer>
 	);
 }

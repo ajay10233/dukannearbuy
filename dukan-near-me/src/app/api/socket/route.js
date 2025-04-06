@@ -13,7 +13,58 @@ if (!global.io) {
 
   io.on("connection", (socket) => {
     console.log("🔵 User connected:", socket.id);
+    // * institution application functionality for live token updation
+    socket.on("joinInstitutionRoom", async (institutionId) => {
+      if (!institutionId) return console.error("❌ Missing institutionId");
+      socket.join(`institution:${institutionId}`);
+      console.log(`👥 User joined institution room: ${institutionId}`);
+      const activeToken = await prisma.token.findFirst({
+        where: { institutionId, completed: false },
+        orderBy: { createdAt: "desc" },
+      });
 
+      const completedTokens = await prisma.token.findMany({
+        where: { institutionId, completed: true },
+        orderBy: { createdAt: "desc" },
+        take: 10,
+      });
+
+      socket.emit("tokenUpdated", activeToken);
+      socket.emit("completedTokensUpdated", completedTokens);
+    });
+
+    // Emit new token to all users viewing the institution's page
+    socket.on("newToken", async ({ institutionId, token }) => {
+      console.log(`🎫 New token for institution ${institutionId}:`, token);
+      io.to(`institution:${institutionId}`).emit("tokenUpdated", token);
+    });
+
+    // Handle token completion & notify all users in the room
+    socket.on("completeToken", async ({ institutionId, tokenId }) => {
+      console.log(`✅ Token ${tokenId} completed for institution ${institutionId}`);
+
+      await prisma.token.update({
+        where: { id: tokenId },
+        data: { completed: true },
+      });
+
+      const completedTokens = await prisma.token.findMany({
+        where: { institutionId, completed: true },
+        orderBy: { createdAt: "desc" },
+        take: 10,
+      });
+
+      io.to(`institution:${institutionId}`).emit("completedTokensUpdated", completedTokens);
+    });
+
+
+
+
+
+
+
+
+    // * chat application functionality
     // Register user with their socket ID
     socket.on("register", async (userId) => {
       if (!userId) return console.error("❌ Missing userId in register event");
@@ -22,12 +73,13 @@ if (!global.io) {
     });
 
     // Send message event
-    socket.on("sendMessage", async ({ senderId, senderType, receiverId, conversationId, content }) => {
+    socket.on("sendMessage", async ({ senderId, senderType, receiverId, conversationId, content,timestamp }) => {
       
       if (!senderId || !receiverId || !content || !senderType) {
         console.error("❌ Missing required fields:", { senderId, senderType, receiverId, conversationId, content });
         return;
       }
+      console.log("senderId: ", senderId, " receiverId: ", receiverId, " conversationId: ", conversationId, " content: ", content);
 
       if (!conversationId) {
         console.log("senderId: ", senderId, " receiverId: ", receiverId,"_______________________");
@@ -55,12 +107,10 @@ if (!global.io) {
 
       console.log(`📨 Sending message in conversation ${conversationId}: ${content}`);
 
-      // Save message to the database
       const newMessage = await prisma.message.create({
         data: { senderId, senderType, receiverId, content, conversationId },
       });
 
-      // Update conversation with last message details
       await prisma.conversation.update({
         where: { id: conversationId },
         data: {
@@ -71,14 +121,12 @@ if (!global.io) {
         },
       });
 
-      // Publish message via Redis for real-time syncing
       await pub.publish(
         "chat",
-        JSON.stringify({ senderId, senderType, receiverId, content, conversationId })
+        JSON.stringify({ senderId, senderType, receiverId, content, conversationId,timestamp })
       );
     });
 
-    // Handle user disconnection
     socket.on("disconnect", async () => {
       console.log("🔴 User disconnected:", socket.id);
 
@@ -103,19 +151,17 @@ if (!global.io) {
     });
   });
 
-  // Subscribe to Redis chat messages
   sub.subscribe("chat");
   sub.on("message", async (channel, message) => {
     if (channel !== "chat") return;
 
-    const { senderId, senderType, receiverId, content, conversationId } = JSON.parse(message);
+    const { senderId, senderType, receiverId, content, conversationId, timestamp } = JSON.parse(message);
 
     console.log(`📩 Redis event received: Message from ${senderId} to ${receiverId} in conversation ${conversationId}`);
 
-    // Fetch receiver's socket ID from Redis
     const receiverSocket = await redis.get(`user:${receiverId}`);
     if (receiverSocket) {
-      global.io.to(receiverSocket).emit("receiveMessage", { senderId, senderType, content, conversationId });
+      global.io.to(receiverSocket).emit("receiveMessage", { senderId, senderType, receiverId, content, conversationId,timestamp });
       console.log(`📤 Message sent to ${receiverId} via socket ${receiverSocket}`);
     }
   });

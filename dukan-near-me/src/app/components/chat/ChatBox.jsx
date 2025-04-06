@@ -83,6 +83,7 @@ export default function ChatBox() {
         const res = await fetch(`/api/conversations/all`);
         const data = await res.json();
         setConversations(data.data);
+        console.log("Conversations: ",data);
         setFilteredConversations(data.data);
       } catch (error) {
         console.error("❌ Failed to fetch conversations:", error);
@@ -98,7 +99,7 @@ export default function ChatBox() {
     console.log("Selected partner:", selectedPartner);
 
     const fetchMessages = async () => {
-      if (selectedPartner?.conversationId === null) return;
+      if (!selectedPartner?.conversationId) return;
 
       try {
         const res = await fetch(
@@ -144,6 +145,7 @@ export default function ChatBox() {
     try {
       const res = await fetch(`/api/users/search?query=${query}`);
       const data = await res.json();
+      console.log(data);
       setFilteredConversations(data.data);
     } catch (error) {
       console.error("❌ Search failed:", error);
@@ -182,12 +184,9 @@ export default function ChatBox() {
       const newConversation = {
         otherUser: {
           id: selectedPartner?.id,
-          name:
-            selectedPartner?.role === "INSTITUTION"
-              ? selectedPartner?.firmName
-              : `${selectedPartner?.firstName || ""} ${
-                  selectedPartner?.lastName || ""
-                }`.trim(),
+          name: selectedPartner?.role === "INSTITUTION" || selectedPartner?.role === "SHOP_OWNER"
+            ? selectedPartner?.firmName 
+            : `${selectedPartner?.firstName || ""} ${selectedPartner?.lastName || ""}`.trim(),
           profilePhoto: selectedPartner?.profilePhoto || null,
           firmName: selectedPartner?.firmName || null,
           role: selectedPartner?.role,
@@ -381,12 +380,8 @@ export default function ChatBox() {
                         setSelectedPartner({ ...partner });
                       }}
                       className={`font-medium text-[var(--secondary-foreground)] 
-                                                ${
-                                                  selectedPartner?.id ===
-                                                    partner.id && "font-medium"
-                                                }`}
-                    >
-                      {partner.firmName || partner.firstName || "Unknown"}
+                                                ${selectedPartner?.id === partner.id && "font-medium"}`} >
+                      {partner?.otherUser?.firmName || partner?.firmName || partner?.firstName || partner?.otherUser?.lastName || "Unknown"}
                     </Link>
                     <span className="text-gray-500 font-normal text-[12px]">
                       {/* Last message here... */}

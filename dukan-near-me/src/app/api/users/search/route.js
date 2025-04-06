@@ -18,20 +18,20 @@ export async function GET(req) {
 
   try {
     let searchResults = [];
+    let userResults = [];
     console.log("User's role is:", session.user.role);
 
     if (session.user.role === "USER") {
-      // Users can only search for institutions
       searchResults = await prisma.user.findMany({
         where: {
-          role: "INSTITUTION",
-          id: { not: session.user.id }, // Exclude the logged-in user
+          role: {in: ["INSTITUTION", "SHOP_OWNER"] },
+          id: { not: session.user.id },
           OR: [
             { firmName: { contains: query, mode: "insensitive" } },
             { shopAddress: { contains: query, mode: "insensitive" } },
             { contactEmail: { contains: query, mode: "insensitive" } },
             { description: { contains: query, mode: "insensitive" } },
-            { hashtags: { hasSome: [query] } }, // Search within hashtags
+            { hashtags: { hasSome: [query] } },
           ],
         },
         select: {
@@ -48,12 +48,34 @@ export async function GET(req) {
           role: true,
         },
       });
-    } else if (session.user.role === "INSTITUTION") {
-      // Institutions can only search for other institutions
+
+      userResults = await prisma.user.findMany({
+        where: {
+          role: "USER",
+          id: { not: session.user.id },
+          username: query,
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          email: true,
+          description: true,
+          profilePhoto: true,
+          hashtags: true,
+          role: true, 
+        },
+      })
+
+      console.log("Search results for users:", userResults);
+      return NextResponse.json({ data: searchResults,users:userResults }, { status: 200 });
+
+    } else if (session.user.role === "INSTITUTION" || session.user.role === "SHOP_OWNER") {
       searchResults = await prisma.user.findMany({
         where: {
-          role: "INSTITUTION",
-          id: { not: session.user.id }, // Exclude the logged-in user
+          role: {in: ["INSTITUTION", "SHOP_OWNER"] },
+          id: { not: session.user.id },
           OR: [
             { firmName: { contains: query, mode: "insensitive" } },
             { username: { contains: query, mode: "insensitive" } },
@@ -77,9 +99,12 @@ export async function GET(req) {
           role: true,
         },
       });
+      console.log("Search results for institutions:", searchResults);
+      return NextResponse.json({ data: searchResults }, { status: 200 });
     }
 
-    return NextResponse.json({ data: searchResults }, { status: 200 });
+
+    
   } catch (error) {
     console.error("❌ Error searching users:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

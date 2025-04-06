@@ -71,7 +71,7 @@ export const GET = async (req) => {
         conversationId: conversation.id,
         otherUser: {
           id: otherUser.id,
-          name: otherUser.role === "INSTITUTION" 
+          name: otherUser.role === "INSTITUTION" || otherUser.role === "SHOP_OWNER"
             ? otherUser.firmName 
             : `${otherUser.firstName || ""} ${otherUser.lastName || ""}`.trim(),
           profilePhoto: otherUser.profilePhoto || null,

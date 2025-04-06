@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import PaymentHistory from "./components/chat/PaymentHistory";
 import SessionManager from "./components/SessionManager/SessionManager";
+import GlobalSearchBar from "./components/GlobalSearchComponent";
 
 export default function Home() {
   return (

@@ -73,7 +73,7 @@ model User {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  // Common fields for both User & Institution
+  // Common fields for both User & Institution & shop owner
   age              Int?
   gender           String?  
   // address          String?
@@ -114,7 +114,26 @@ model User {
   favoritedByUsers      FavoriteInstitution[] @relation("InstitutionFavorites") 
   latitude  Float?  
   longitude Float?  
+    // New Relations for Token Management
+  tokensAsUser         Token[] @relation("UserTokens")
+  tokensAsInstitution  Token[] @relation("InstitutionTokens")
+
+  // // Bill Relations
+  billsAsUser       Bill[] @relation("User")
+  billsAsInstitution Bill[] @relation("Institution")
+  billFormatForUser  BillFormat[] @relation("BillFormatForUser")
+  userResponse       UserResponse[] @relation("UserResponse")
+  resetTokens PasswordResetToken[]
   @@map("users")
+}
+
+model PasswordResetToken {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  token     String   @unique
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 
 model Message {
@@ -165,6 +184,7 @@ enum PaymentStatus {
 enum SenderType {
   USER
   INSTITUTION
+  SHOP_OWNER
 }
 
 
@@ -190,9 +210,128 @@ model Session {
   createdAt DateTime @default(now())
 }
 
+model Token {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  tokenNumber   Int
+  userId        String?  @db.ObjectId
+  institutionId String?  @db.ObjectId
+  createdAt     DateTime @default(now())
+  expiresAt     DateTime?
+  completed     Boolean @default(false) // Add the `completed` field here
+  
+  user          User?  @relation("UserTokens", fields: [userId], references: [id], onDelete: Cascade)
+  institution   User?  @relation("InstitutionTokens", fields: [institutionId], references: [id], onDelete: Cascade)
+
+  name          String? 
+  phoneNumber   String?
+
+
+  billrelation  Bill[] @relation("TokenInBill")
+  @@map("tokens")
+}
+
+model BillFormat{
+  id                      String  @id @default(auto()) @map("_id") @db.ObjectId
+  institutionId           String @db.ObjectId @unique
+
+  // * mandatory fields from institution relation to user, optional fields below
+  gstNumber               String? @unique 
+  taxType                 String?  
+  taxPercentage           String?  // Tax percentage
+  proprietorSign          String?  // Image file path (Max 150KB)
+  extraText               String? 
+  institutionRelation     User @relation("BillFormatForUser",fields: [institutionId],references: [id],onDelete: Cascade)
+}
+
+model UserResponse {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  content     String       
+  userId      String? @db.ObjectId
+  name        String?
+  email       String?
+  type        FeedbackType @default(FEEDBACK)
+  user        User?         @relation("UserResponse", fields: [userId], references: [id])
+}
+
+enum FeedbackType {
+  FEEDBACK
+  COMPLAINT
+}
+
+model Bill {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  userId         String?    @db.ObjectId
+  institutionId  String?    @db.ObjectId
+  tokenId        String?    @db.ObjectId
+
+  name           String?
+  phoneNumber    String?
+  totalAmount    Float?     // Total cost of the bill
+  paymentStatus  String?    // e.g. "PAID", "PENDING"
+  remarks        String?    // Additional notes if any
+  invoiceNumber  String?
+  otherCharges   Float?
+
+  user           User?      @relation("User", fields: [userId], references: [id], onDelete: Cascade)
+  institution    User?      @relation("Institution", fields: [institutionId], references: [id], onDelete: Cascade)
+  tokenNumber    Token?     @relation("TokenInBill", fields: [tokenId], references: [id], onDelete: Cascade)
+
+  fileUrl        String?
+  fileType       String?
+
+  items         BillItem[] @relation("BillToBillItem")
+  shortBill  ShortBill?
+  @@map("bills")
+}
+
+model BillItem {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  billId    String   @db.ObjectId
+  name      String   
+  price     Float    
+  quantity  Int?     @default(1)    
+  total     Float?    
+
+  bill      Bill     @relation("BillToBillItem", fields: [billId], references: [id], onDelete: Cascade)
+
+  @@map("bill_items")
+}
+
+
+model ShortBill {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  billId     String   @unique @db.ObjectId // <-- Add @unique here
+  summary    String
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+
+  bill       Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
+
+  @@map("short_bills")
+}
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+// * oldcode
 // datasource db {
 //   provider = "mongodb"
 //   url      = env("DATABASE_URL")
