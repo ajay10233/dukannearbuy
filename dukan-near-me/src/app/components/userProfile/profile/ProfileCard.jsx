@@ -27,7 +27,7 @@ export default function ProfileCard({ user }) {
 
         const data = await res.json();
         if (res.ok) {
-          // setImage(data.url);
+          setImage(data?.url);
           console.log(data);
           toast.success("Profile photo uploaded successfully!");
         } else {
@@ -49,7 +49,7 @@ export default function ProfileCard({ user }) {
     <div className="bg-gradient-to-tl from-[#e7f0ec] via-[#aabec2] to-[#005d6e] rounded-lg p-6 w-full md:max-w-xs flex flex-col items-center gap-4 shadow-md">
       <div className="w-32 h-32 rounded-full relative bg-gray-200 shadow-lg flex items-center justify-center overflow-hidden cursor-pointer">
         {image ? (
-          <Image src={`${image}`} alt="Profile" fill className="object-cover" priority />
+          <Image src={image} alt="Profile" fill className="object-cover" priority />
         ) : (
           <input
             type="file"

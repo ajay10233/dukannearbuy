@@ -155,7 +155,7 @@ if (!global.io) {
   sub.on("message", async (channel, message) => {
     if (channel !== "chat") return;
 
-    const { senderId, senderType, receiverId, content, conversationId,timestamp } = JSON.parse(message);
+    const { senderId, senderType, receiverId, content, conversationId, timestamp } = JSON.parse(message);
 
     console.log(`📩 Redis event received: Message from ${senderId} to ${receiverId} in conversation ${conversationId}`);
 
