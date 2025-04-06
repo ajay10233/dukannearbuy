@@ -99,14 +99,14 @@ export default function LocationSelector({ onSave }) {
         location={{ lat: getValues("lat"), lng: getValues("lng") }}
       />
 
-      <button
+      {/* <button
         onClick={() => {
           fetchCurrentLocation();
         }}
         className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
       >
         Use Current Location
-      </button>
+      </button> */}
 
       {/* Address Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 rounded-lg shadow">
