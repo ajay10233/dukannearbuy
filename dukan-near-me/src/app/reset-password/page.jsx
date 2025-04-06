@@ -1,38 +1,11 @@
-"use client";
-import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+
+import { Suspense } from 'react';
+import ResetPasswordComponent from '../components/userProfile/ResetPasswordComponent';
 
 export default function ResetPassword() {
-  const searchParams = useSearchParams();
-  const token = searchParams.get('token');
-  
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const res = await fetch('/api/auth/reset-password', {
-      method: 'POST',
-      body: JSON.stringify({ token, password }),
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    const data = await res.json();
-    setMessage(data.message);
-  };
-
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="password"
-        placeholder="New password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <button type="submit">Reset Password</button>
-      {message && <p>{message}</p>}
-    </form>
+    <Suspense fallback={<p>Loading...</p>}>
+      <ResetPasswordComponent/>
+    </Suspense>
   );
 }
