@@ -139,7 +139,13 @@ body {
     @apply bg-background text-foreground;
   }
 } */
-
+.dialogScroll::-webkit-scrollbar-button {
+  display: none; /* Hide top and bottom buttons */
+  background: transparent;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
 .dialogScroll::-webkit-scrollbar{
   width: 18px;
   height: 18px;
@@ -150,3 +156,4 @@ body {
   border-radius: 20px;
   background-clip: content-box;
 }
+
