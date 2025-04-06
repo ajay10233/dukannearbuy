@@ -8,7 +8,7 @@ export const GET = async (req) => {
   try {
     // Get authenticated user session
     const session = await getServerSession(authOptions);
-    console.log(session.user)
+    // console.log("Session",session)
     if (!session || !session.user?.id) {
       return NextResponse.json(
         { message: "Unauthorized! Please log in." },
@@ -30,8 +30,8 @@ export const GET = async (req) => {
 
     const conversationId = new ObjectId(conversationIdStr);
 
-    console.log("Logged-in user ID:", userId);
-    console.log("Fetching conversation ID:", conversationId);
+    // console.log("Logged-in user ID:", userId);
+    // console.log("Fetching conversation ID:", conversationId);
 
     // Fetch the conversation by conversationId
     const conversation = await prisma.conversation.findUnique({
@@ -84,7 +84,7 @@ export const GET = async (req) => {
     }
 
     const formattedConversation = {
-      id: conversation.id,
+      conversationId: conversation.id,
       otherUser: {
         id: otherUser.id,
         name:

@@ -3,41 +3,9 @@ import Redis from "ioredis";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-let pub, sub, redis;
-let redisConnected = false;
-
-// Create in-memory storage as a fallback
-const userSockets = new Map(); // { userId: socketId }
-
-// Redis Configuration with Proper Error Handling
-const redisOptions = {
-  host: process.env.REDIS_HOST || "127.0.0.1",
-  port: process.env.REDIS_PORT || 6379,
-  retryStrategy: (times) => Math.min(times * 100, 2000), // Retry every 2s max
-};
-
-try {
-  pub = new Redis(redisOptions);
-  sub = new Redis(redisOptions);
-  redis = new Redis(redisOptions);
-
-  pub.on("error", handleRedisError);
-  sub.on("error", handleRedisError);
-  redis.on("error", handleRedisError);
-
-  redis.on("connect", () => {
-    redisConnected = true;
-    console.log("✅ Redis connected successfully");
-  });
-} catch (error) {
-  handleRedisError(error);
-}
-
-// Function to handle Redis errors and switch to fallback
-function handleRedisError(error) {
-  console.error("❌ Redis connection failed:", error.message);
-  redisConnected = false;
-}
+const pub = new Redis(process.env.REDIS_URL);
+const sub = new Redis(process.env.REDIS_URL);
+const redis = new Redis(process.env.REDIS_URL);
 
 if (!global.io) {
   const io = new Server(3001, { cors: { origin: "*" } });
@@ -46,129 +14,111 @@ if (!global.io) {
   io.on("connection", (socket) => {
     console.log("🔵 User connected:", socket.id);
 
-    // Register user socket ID
+    // Register user with their socket ID
     socket.on("register", async (userId) => {
-      if (redisConnected) {
-        try {
-          await redis.set(`user:${userId}`, socket.id);
-        } catch (error) {
-          console.error("❌ Redis SET error:", error.message);
-          userSockets.set(userId, socket.id); // Fallback
-        }
-      } else {
-        userSockets.set(userId, socket.id);
-      }
+      if (!userId) return console.error("❌ Missing userId in register event");
+      await redis.set(`user:${userId}`, socket.id);
       console.log(`✅ User ${userId} registered with socket ID: ${socket.id}`);
     });
 
-    // Handle sending messages
-    socket.on("sendMessage", async ({ senderId, senderType, conversationId, content }) => {
-      if (!senderId || !conversationId || !content || !senderType) {
-        console.error("❌ Missing data:", { senderId, senderType, conversationId, content });
+    // Send message event
+    socket.on("sendMessage", async ({ senderId, senderType, receiverId, conversationId, content }) => {
+      
+      if (!senderId || !receiverId || !content || !senderType) {
+        console.error("❌ Missing required fields:", { senderId, senderType, receiverId, conversationId, content });
         return;
+      }
+
+      if (!conversationId) {
+        console.log("senderId: ", senderId, " receiverId: ", receiverId,"_______________________");
+        const existingConversation = await prisma.conversation.findFirst({
+          where: {
+            OR: [
+              { user1Id: senderId, user2Id: receiverId },
+              { user1Id: receiverId, user2Id: senderId },
+            ],
+          },
+          select: { id: true },
+        });
+
+        console.log("existingConversation: ", existingConversation);
+
+        if (existingConversation) {
+          conversationId = existingConversation.id;
+        } else {
+          const newConversation = await prisma.conversation.create({
+            data: { user1Id: senderId, user2Id: receiverId },
+          });
+          conversationId = newConversation.id;
+        }
       }
 
       console.log(`📨 Sending message in conversation ${conversationId}: ${content}`);
 
-      // Fetch conversation participants
-      const conversation = await prisma.conversation.findUnique({
-        where: { id: conversationId },
-        select: { user1Id: true, user2Id: true },
+      // Save message to the database
+      const newMessage = await prisma.message.create({
+        data: { senderId, senderType, receiverId, content, conversationId },
       });
 
-      if (!conversation) {
-        console.error(`❌ Conversation not found: ${conversationId}`);
-        return;
-      }
+      // Update conversation with last message details
+      await prisma.conversation.update({
+        where: { id: conversationId },
+        data: {
+          lastMessageId: newMessage.id,
+          lastMessageContent: newMessage.content,
+          lastMessageTimestamp: newMessage.timestamp,
+          lastMessageSenderId: newMessage.senderId,
+        },
+      });
 
-      const receiverId = conversation.user1Id === senderId ? conversation.user2Id : conversation.user1Id;
-
-      if (redisConnected) {
-        try {
-          await pub.publish(
-            "chat",
-            JSON.stringify({ senderId, senderType, receiverId, content, conversationId })
-          );
-        } catch (error) {
-          console.error("❌ Redis PUB error:", error.message);
-          sendMessageFallback(receiverId, senderId, senderType, content, conversationId);
-        }
-      } else {
-        sendMessageFallback(receiverId, senderId, senderType, content, conversationId);
-      }
+      // Publish message via Redis for real-time syncing
+      await pub.publish(
+        "chat",
+        JSON.stringify({ senderId, senderType, receiverId, content, conversationId })
+      );
     });
-
-    // Fallback function to send messages using Socket.io directly
-    function sendMessageFallback(receiverId, senderId, senderType, content, conversationId) {
-      const receiverSocket = userSockets.get(receiverId);
-      if (receiverSocket) {
-        io.to(receiverSocket).emit("receiveMessage", { senderId, senderType, content, conversationId });
-      }
-    }
 
     // Handle user disconnection
     socket.on("disconnect", async () => {
       console.log("🔴 User disconnected:", socket.id);
 
-      if (redisConnected) {
-        try {
-          const stream = redis.scanStream({ match: "user:*" });
-          stream.on("data", async (keys) => {
-            for (const key of keys) {
-              const storedSocketId = await redis.get(key);
-              if (storedSocketId === socket.id) {
-                await redis.del(key);
-                console.log(`🗑️ Removed ${key.split(":")[1]} from Redis`);
-                return;
-              }
+      try {
+        const stream = redis.scanStream({ match: "user:*" });
+
+        stream.on("data", async (keys) => {
+          for (const key of keys) {
+            const storedSocketId = await redis.get(key);
+            if (storedSocketId === socket.id) {
+              await redis.del(key);
+              console.log(`🗑️ Removed user ${key.split(":")[1]} from Redis`);
+              return;
             }
-          });
-          stream.on("error", (err) => console.error("❌ Redis scan error:", err));
-        } catch (error) {
-          console.error("❌ Error removing user from Redis:", error);
-        }
-      } else {
-        // Fallback: Remove user from in-memory map
-        for (const [userId, sockId] of userSockets.entries()) {
-          if (sockId === socket.id) {
-            userSockets.delete(userId);
-            console.log(`🗑️ Removed ${userId} from in-memory storage`);
-            break;
           }
-        }
+        });
+
+        stream.on("error", (err) => console.error("❌ Redis scan error:", err));
+      } catch (error) {
+        console.error("❌ Error removing user from Redis:", error);
       }
     });
   });
 
-  if (redisConnected) {
-    sub.subscribe("chat");
-    sub.on("message", async (channel, message) => {
-      try {
-        const { senderId, senderType, receiverId, content, conversationId } = JSON.parse(message);
+  // Subscribe to Redis chat messages
+  sub.subscribe("chat");
+  sub.on("message", async (channel, message) => {
+    if (channel !== "chat") return;
 
-        const newMessage = await prisma.message.create({
-          data: { senderId, senderType, receiverId, content, conversationId },
-        });
+    const { senderId, senderType, receiverId, content, conversationId } = JSON.parse(message);
 
-        await prisma.conversation.update({
-          where: { id: conversationId },
-          data: {
-            lastMessageId: newMessage.id,
-            lastMessageContent: newMessage.content,
-            lastMessageTimestamp: newMessage.timestamp,
-            lastMessageSenderId: newMessage.senderId,
-          },
-        });
+    console.log(`📩 Redis event received: Message from ${senderId} to ${receiverId} in conversation ${conversationId}`);
 
-        const receiverSocket = await redis.get(`user:${receiverId}`);
-        if (receiverSocket) {
-          io.to(receiverSocket).emit("receiveMessage", { senderId, senderType, content, conversationId });
-        }
-      } catch (error) {
-        console.error("❌ Redis SUB error:", error.message);
-      }
-    });
-  }
+    // Fetch receiver's socket ID from Redis
+    const receiverSocket = await redis.get(`user:${receiverId}`);
+    if (receiverSocket) {
+      global.io.to(receiverSocket).emit("receiveMessage", { senderId, senderType, content, conversationId });
+      console.log(`📤 Message sent to ${receiverId} via socket ${receiverSocket}`);
+    }
+  });
 
   console.log("🚀 Socket.io server initialized!");
 }

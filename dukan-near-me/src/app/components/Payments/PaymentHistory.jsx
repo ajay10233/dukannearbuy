@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import PaymentHistoryTable from "@/app/components/PaymentHistoryTable";
+import PaymentHistoryTable from "@/app/components/Payments/PaymentHistoryTable";
 
 export default function PaymentHistory() {
   const [payments, setPayments] = useState([]);

@@ -6,7 +6,7 @@ export const GET = async (req) => {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
     const userType = searchParams.get("userType");
-
+    
     // Validate input
     if (!userId || !userType) {
       return NextResponse.json(
