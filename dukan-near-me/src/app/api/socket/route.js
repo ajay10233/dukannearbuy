@@ -40,22 +40,39 @@ if (!global.io) {
     });
 
     // Handle token completion & notify all users in the room
-    socket.on("completeToken", async ({ institutionId, tokenId }) => {
-      console.log(`✅ Token ${tokenId} completed for institution ${institutionId}`);
-
-      await prisma.token.update({
+    // Socket Server
+    socket.on("startProcessing", async ({ institutionId, tokenId }) => {
+      await prisma.token.updateMany({
+        where: { institutionId },
+        data: { processing: false }, // Unset all processing
+      });
+    
+      const processingToken = await prisma.token.update({
         where: { id: tokenId },
-        data: { completed: true },
+        data: { processing: true },
       });
-
-      const completedTokens = await prisma.token.findMany({
-        where: { institutionId, completed: true },
-        orderBy: { createdAt: "desc" },
-        take: 10,
-      });
-
-      io.to(`institution:${institutionId}`).emit("completedTokensUpdated", completedTokens);
+    
+      io.to(`institution:${institutionId}`).emit("processingTokenUpdated", processingToken);
     });
+    
+
+
+  // Set a token to completed
+  socket.on("completeToken", async ({ institutionId, tokenId }) => {
+    const completedToken = await prisma.token.update({
+      where: { id: tokenId },
+      data: { completed: true, processing: false },
+    });
+
+    const completedTokens = await prisma.token.findMany({
+      where: { institutionId, completed: true },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+    });
+
+    io.to(`institution:${institutionId}`).emit("completedTokensUpdated", completedTokens);
+  });
+
 
 
 
@@ -68,11 +85,16 @@ if (!global.io) {
     // Register user with their socket ID
     socket.on("register", async (userId) => {
       if (!userId) return console.error("❌ Missing userId in register event");
-      await redis.set(`user:${userId}`, socket.id);
-      console.log(`✅ User ${userId} registered with socket ID: ${socket.id}`);
+      const userKey = `user:${userId}:sockets`;
+      // Add socket ID to the user's socket set
+      await redis.sadd(userKey, socket.id);
+      await redis.set(`user:${userId}:status`, "online");
+      // await redis.expire(`user:${userId}:status`, 60 * 5);
+      await redis.expire(`user:${userId}:status`, 60);
+      console.log(`\n\n\nRegistration invoked\n\n\n`);
+      pub.publish("presence", JSON.stringify({ userId, status: "online" }));
     });
 
-    // Send message event
     socket.on("sendMessage", async ({ senderId, senderType, receiverId, conversationId, content,timestamp }) => {
       
       if (!senderId || !receiverId || !content || !senderType) {
@@ -128,27 +150,27 @@ if (!global.io) {
     });
 
     socket.on("disconnect", async () => {
-      console.log("🔴 User disconnected:", socket.id);
-
-      try {
-        const stream = redis.scanStream({ match: "user:*" });
-
-        stream.on("data", async (keys) => {
-          for (const key of keys) {
-            const storedSocketId = await redis.get(key);
-            if (storedSocketId === socket.id) {
-              await redis.del(key);
-              console.log(`🗑️ Removed user ${key.split(":")[1]} from Redis`);
-              return;
-            }
+      const stream = redis.scanStream({ match: "user:*:sockets" });
+    
+      stream.on("data", async (keys) => {
+        for (const key of keys) {
+          const userId = key.split(":")[1];
+          const removed = await redis.srem(key, socket.id);
+    
+          // If that was the last socket, set status to offline
+          const remainingSockets = await redis.scard(key);
+          if (remainingSockets === 0) {
+            await redis.set(`user:${userId}:status`, "offline");
+            await redis.del(key);
+            pub.publish("presence", JSON.stringify({ userId, status: "offline" }));
+            console.log(`⚫ User ${userId} is offline`);
           }
-        });
-
-        stream.on("error", (err) => console.error("❌ Redis scan error:", err));
-      } catch (error) {
-        console.error("❌ Error removing user from Redis:", error);
-      }
+        }
+      });
+    
+      stream.on("error", (err) => console.error("❌ Redis scan error on disconnect:", err));
     });
+    
   });
 
   sub.subscribe("chat");
@@ -164,6 +186,15 @@ if (!global.io) {
       global.io.to(receiverSocket).emit("receiveMessage", { senderId, senderType, receiverId, content, conversationId,timestamp });
       console.log(`📤 Message sent to ${receiverId} via socket ${receiverSocket}`);
     }
+  });
+
+  sub.subscribe("presence");
+
+  sub.on("message", (channel, message) => {
+    if (channel !== "presence") return;
+    const { userId, status } = JSON.parse(message);
+    console.log(`🔄 Presence update: ${userId} is now ${status}`);
+    global.io.emit("presenceUpdate", { userId, status });
   });
 
   console.log("🚀 Socket.io server initialized!");

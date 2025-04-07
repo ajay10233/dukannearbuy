@@ -218,7 +218,7 @@ model Token {
   createdAt     DateTime @default(now())
   expiresAt     DateTime?
   completed     Boolean @default(false) // Add the `completed` field here
-  
+  processing    Boolean  @default(false)
   user          User?  @relation("UserTokens", fields: [userId], references: [id], onDelete: Cascade)
   institution   User?  @relation("InstitutionTokens", fields: [institutionId], references: [id], onDelete: Cascade)
 
