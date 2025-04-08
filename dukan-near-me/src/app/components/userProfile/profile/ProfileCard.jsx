@@ -6,8 +6,7 @@ import { BadgeCheck, UserRound, Star, Award } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function ProfileCard({ user }) {
-  console.log("User in ProfileCard:", user); // 👈 YAHI HAI
-
+  console.log("User in ProfileCard:", user);
   const [image, setImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
