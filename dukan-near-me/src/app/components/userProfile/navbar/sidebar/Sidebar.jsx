@@ -13,12 +13,12 @@ export default function Sidebar({ isOpen, onClose }) {
             <div className={`fixed top-0 right-0 p-4 w-75 h-full flex flex-col bg-white shadow-xl transform transition-all duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
                 {/* offcanvas header */}
                 <div className="flex justify-between items-center p-2 border-b border-gray-200">
-                    <Link href="/userProfile" className='hover:text-blue-500 transition duration-200 cursor-pointer'>
+                    {/* <Link href="/userProfile" className='hover:text-blue-500 transition duration-200 cursor-pointer'> */}
                         <div className='flex justify-start items-center gap-3'>
                             <UserRound size={28} strokeWidth={2} className="text-blue-700" />
                             <h2 className="text-xl font-bold text-blue-700 uppercase">Profile</h2>
                         </div>
-                    </Link>
+                    {/* </Link> */}
                     <button onClick={onClose} className="text-xl cursor-pointer">
                         <X size={20} strokeWidth={1.5} className='text-gray-600'/>
                     </button>
@@ -28,6 +28,11 @@ export default function Sidebar({ isOpen, onClose }) {
                 <div className="flex flex-col pt-8 px-4 pb-4 space-y-4 flex-grow">
                     <h2 className='font-semibold  text-lg uppercase text-gray-800'> overview</h2>
                     <div className="flex flex-col space-y-3">
+                        <Link href="/userProfile"
+                            className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
+                            <UserRound size={20} strokeWidth={1.5} />
+                                My Profile
+                        </Link>
                         <Link href="/chat"
                             className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
                             <MessageCircleMore size={20} strokeWidth={1.5} />

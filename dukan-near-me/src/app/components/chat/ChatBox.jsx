@@ -559,18 +559,20 @@ export default function ChatBox() {
                                 href={msg.content}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-2 text-blue-600 font-medium hover:text-blue-800 transition duration-300"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="currentColor"
-                                  className="w-5 h-5 text-red-500 animate-bounce"
-                                >
-                                  <path d="M12 2C8.134 2 5 5.134 5 9c0 3.178 4.28 8.445 6.174 10.606a1.5 1.5 0 002.652 0C14.72 17.445 19 12.178 19 9c0-3.866-3.134-7-7-7zm0 9.25a2.25 2.25 0 110-4.5 2.25 2.25 0 010 4.5z"></path>
-                                </svg>
-                                <span className="underline text-red-500">
-                                  Live Location
+                                className="flex items-center gap-2 text-blue-600 font-medium hover:text-blue-800 transition duration-300">
+                                                                    {/* className="w-5 h-5 text-red-500 animate-bounce" */}
+
+                                  <div className="relative w-8 h-8">
+                                    <Image
+                                      src="/nearbuydukan-Logo/Logo.svg"
+                                      alt="nearbuydukan"
+                                      fill
+                                      sizes="35px"
+                                      priority
+                                    />
+                                  </div>
+                                  <span className="underline text-red-500">
+                                    Live Location
                                 </span>
                               </a>
                             ) : (

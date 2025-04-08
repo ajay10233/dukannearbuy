@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { BadgeCheck } from 'lucide-react';
+import { BadgeCheck, UserRound, Star, Award } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function ProfileCard({ user }) {
+  console.log("User in ProfileCard:", user); // 👈 YAHI HAI
+
   const [image, setImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -47,32 +49,56 @@ export default function ProfileCard({ user }) {
 
   return (
     <div className="bg-gradient-to-tl from-[#e7f0ec] via-[#aabec2] to-[#005d6e] rounded-lg p-6 w-full md:max-w-xs flex flex-col items-center gap-4 shadow-md">
-      <div className="w-32 h-32 rounded-full relative bg-gray-200 shadow-lg flex items-center justify-center overflow-hidden cursor-pointer">
-        {image ? (
-          <Image src={image} alt="Profile" fill className="object-cover" priority />
-        ) : (
-          <input
-            type="file"
-            accept="image/*"
-            className="absolute inset-0 opacity-0 cursor-pointer"
-            onChange={handleImageChange}
-          />
-        )}
-        {isUploading && (
-          <div className="absolute inset-0 bg-white/60 flex items-center justify-center text-sm text-gray-700 font-medium">
-            Uploading...
-          </div>
-        )}
-      </div>
+      <div className="w-32 h-32 rounded-full relative bg-gray-300 shadow-lg flex items-center justify-center cursor-pointer">
+  {image || user.image ?  (
+    <Image
+      src={image || user.image}
+      alt="Profile"
+      fill
+      className="object-cover"
+      priority
+    />
+  ) : (
+    <UserRound size={120} strokeWidth={1} color="#fff" />
+  )}
+
+  <input
+    type="file"
+    accept="image/*"
+    className="absolute inset-0 opacity-0 cursor-pointer"
+    onChange={handleImageChange}
+  />
+
+  {isUploading && (
+    <div className="absolute inset-0 bg-white/60 flex items-center justify-center text-sm text-gray-700 font-medium">
+      Uploading...
+    </div>
+  )}
+
+        {/* Badge based on plan */}
+  {(user.plan === 'business' || user.plan === 'premium') && (
+    <div className="absolute bottom-1 right-1 rounded-full p-1 shadow-md z-10">
+      <Star
+        size={24}
+        strokeWidth={2}
+        fill={user.plan === 'premium' ? '#FFD700' : '#C0C0C0'} 
+        color={user.plan === 'premium' ? '#FFD700' : '#C0C0C0'}
+      />
+    </div>
+  )}
+</div>
+
 
       <h3 className="text-lg font-semibold text-gray-800">Identity Verification</h3>
       <p className="text-sm text-gray-500 text-center">
         We verify profiles to ensure trust and authenticity for all users.
       </p>
 
-      <p className="font-semibold text-gray-600">
-        {user.name.split(' ')[0]} - {user.role}
-      </p>
+      {user?.name && user?.role && (
+        <p className="font-semibold text-gray-600">
+          {user.firstName} {user.lastName} {user.role ? `- ${user.role}` : ""}
+        </p>
+      )}
 
       {user.emailConfirmed && user.mobileConfirmed && (
         <div className="text-slate-500 text-sm mt-2 space-y-1 flex flex-col items-center justify-center">

@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:3001'); // or your server URL
+const socket = io('http://localhost:3001'); 
 
 export default function CreateToken() {
   const { data: session } = useSession();
