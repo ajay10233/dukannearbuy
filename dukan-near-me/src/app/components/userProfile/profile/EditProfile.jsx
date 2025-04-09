@@ -122,6 +122,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
       <div className="grid grid-cols-2 gap-4">
         <input
           name="age"
+          type='number'
           value={formData?.age || ''}
           onChange={handleChange}
           placeholder="Age"

@@ -63,7 +63,6 @@ export default function Profile() {
 //       toast.error(error.message);
 //     }
 // };
-
   
     if (status === 'loading' || loading) return <p className="text-center py-20">Fetching user profile...</p>;
     if (!session?.user) return <p className="text-center py-20 text-gray-700">No user data found.</p>;
