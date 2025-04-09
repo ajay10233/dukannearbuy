@@ -16,9 +16,9 @@ export default function QRCodeComponent({ params }) {
           src: '/nearbuydukan-Logo/Logo.svg', 
           x: undefined,
           y: undefined,
-          height: 50,
-          width: 50,
-          excavate: true, 
+          height: 100,
+          width: 100,
+        //   excavate: true, 
         }}
       />
       <p className="mt-4 text-gray-500">User ID: {params.id}</p>

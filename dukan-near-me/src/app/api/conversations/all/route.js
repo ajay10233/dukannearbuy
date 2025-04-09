@@ -69,6 +69,8 @@ export const GET = async (req) => {
 
       return {
         conversationId: conversation.id,
+        accepted: conversation.accepted,
+        hidden:conversation.hidden,
         otherUser: {
           id: otherUser.id,
           name: otherUser.role === "INSTITUTION" || otherUser.role === "SHOP_OWNER"
@@ -81,7 +83,7 @@ export const GET = async (req) => {
         lastMessage: conversation.messages[0] || null,
         updatedAt: conversation.updatedAt,
       };
-    }).filter(Boolean); // Remove null values
+    }).filter(Boolean);
 
     return NextResponse.json(
       { message: "Conversations fetched successfully!", data: formattedConversations },
