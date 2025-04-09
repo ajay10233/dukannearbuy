@@ -74,7 +74,7 @@ model User {
   updatedAt         DateTime @updatedAt
 
   // Common fields for both User & Institution & shop owner
-  age              Int?
+  age              String?
   gender           String?  
   // address          String?
   houseNumber      String?  // House/Flat Number
@@ -164,6 +164,8 @@ model Conversation {
   user1               User?     @relation("User1Conversations", fields: [user1Id], references: [id])
   user2               User?     @relation("User2Conversations", fields: [user2Id], references: [id])
   messages            Message[] 
+  accepted            Boolean   @default(false)
+  hidden            Boolean   @default(false)
 
   lastMessageId       String?  @db.ObjectId
   lastMessageContent  String?  

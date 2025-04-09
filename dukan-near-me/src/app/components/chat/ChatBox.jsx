@@ -478,7 +478,46 @@ export default function ChatBox() {
 
             {/* Message container */}
             <div className="flex-1 pt-1.5 pb-4 px-4 overflow-y-auto flex flex-col gap-3">
+            {selectedPartner && selectedPartner.accepted === false && (
+              <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg mb-4 flex justify-between items-center">
+                <div>
+                  <p className="font-medium">
+                    You haven’t accepted this chat request yet.
+                  </p>
+                  <p className="text-sm">Do you want to start chatting with this person?</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    className="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded"
+                    onClick={async () => {
+                      const res = await fetch(`/api/conversations/${selectedPartner.conversationId}/accept`, {
+                        method: "PATCH",
+                      });
+                      if (res.ok) {
+                        setSelectedPartner((prev) => ({ ...prev, accepted: true }));
+                      }
+                    }}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
+                    onClick={async () => {
+                      const res = await fetch(`/api/conversations/${selectedPartner.conversationId}/reject`, {
+                        method: "PATCH",
+                      });
+                      if (res.ok) {
+                        setSelectedPartner(null); // or trigger re-fetch
+                      }
+                    }}
+                  >
+                    Reject
+                  </button>
+                </div>
+              </div>
+            )}
               {/* Encryption message */}
+
               <div className="flex justify-center">
                 <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] text-sm py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
                   <LockKeyhole size={20} strokeWidth={1.5} />
