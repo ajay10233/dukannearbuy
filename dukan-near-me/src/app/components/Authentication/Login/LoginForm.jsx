@@ -109,8 +109,7 @@ export default function LoginForm() {
           <p
             className={`${
               errors?.email ? `visible` : `invisible`
-            } pl-2 text-red-500 text-sm`}
-          >
+            } pl-2 text-red-500 text-sm`}>
             {errors?.email?.message || `Error`}
           </p>
         </div>
@@ -128,8 +127,7 @@ export default function LoginForm() {
               htmlFor="password"
               className={`capitalize absolute top-1/2 -translate-y-1/2 left-5 peer-focus:-translate-y-8.5 peer-focus:scale-90 peer-focus:-translate-x-2 bg-[#C0D0D1] px-1 transition-all duration-200 ${
                 watch("password") && `-translate-x-2 scale-90 -translate-y-8.5`
-              }`}
-            >
+              }`}>
               password
             </label>
             <span className="absolute right-5 top-1/2 -translate-y-1/2">
@@ -151,9 +149,8 @@ export default function LoginForm() {
       <div className="flex flex-col gap-y-4 items-center w-full">
         <button
           type="submit"
-          className="bg-blue-600 py-2 md:py-3 w-full text-white text-sm md:text-base rounded-full font-bold cursor-pointer"
-        >
-          Login
+          className="bg-blue-600 py-2 md:py-3 w-full text-white text-sm md:text-base rounded-full font-bold cursor-pointer">
+            Login
         </button>
         <span className="text-gray-600 text-sm">- or -</span>
         {/* <div className="flex justify-around gap-x-5 w-1/2">

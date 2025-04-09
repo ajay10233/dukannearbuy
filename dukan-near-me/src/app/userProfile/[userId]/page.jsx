@@ -1,13 +1,12 @@
-"use client"
-
-import { useParams } from "next/navigation"
+import React from 'react'
+import Navbar from '@/app/components/userProfile/navbar/Navbar';
+import Profile from '@/app/components/userProfile/profile/Profile';
 
 export default function page() {
-    const { userId } = useParams();
-    alert(userId);
-  return (
-    <div>
-      {userId}
-    </div>
-  )
+    return (
+        <>
+            <Navbar />
+            <Profile />
+        </>
+    )
 }

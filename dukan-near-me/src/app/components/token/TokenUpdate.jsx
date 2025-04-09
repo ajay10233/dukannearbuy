@@ -4,11 +4,15 @@ import { useState, useEffect, useRef } from "react";
 import { MoveRight, MoveLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import io from "socket.io-client";
+
+
+const socket = io("http://localhost:3001");
 
 export default function TokenUpdate() {
     const [liveToken, setLiveToken] = useState(null);
     const [previousToken, setPreviousToken] = useState([]);
-    const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
     const inputRef = useRef(null); 
 
     useEffect(() => {
