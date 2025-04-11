@@ -64,6 +64,9 @@ model User {
   shopOpenTime     String?  
   shopCloseTime    String?  
   shopOpenDays     String[] 
+  upi_id           String?
+  latitude         Float?  
+  longitude        Float?  
 
   // Relationships
   sentMessages     Message[] @relation("UserSentMessages")
@@ -77,8 +80,6 @@ model User {
 
   favoritedInstitutions FavoriteInstitution[] @relation("UserFavorites")  
   favoritedByUsers      FavoriteInstitution[] @relation("InstitutionFavorites") 
-  latitude  Float?  
-  longitude Float?  
     // New Relations for Token Management
   tokensAsUser         Token[] @relation("UserTokens")
   tokensAsInstitution  Token[] @relation("InstitutionTokens")
@@ -91,9 +92,9 @@ model User {
   resetTokens PasswordResetToken[]
   reviewsGiven      Review[] @relation("UserReviewGiven")
   reviewsReceived   Review[] @relation("UserReviewReceived")
-  subscriptionPlan SubscriptionPlan @default(FREE)
-  planActivatedAt  DateTime?        // When the current plan started
-  planExpiresAt    DateTime?        // Optional: when it ends
+  subscriptionPlan  SubscriptionPlan?
+  planActivatedAt   DateTime?        // When the current plan started
+  planExpiresAt     DateTime?        // Optional: when it ends
 
   @@map("users")
 }
