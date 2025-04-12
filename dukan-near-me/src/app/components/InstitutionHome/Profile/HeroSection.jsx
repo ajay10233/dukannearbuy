@@ -5,10 +5,10 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import useEmblaCarousel from "embla-carousel-react";
+import { Plus, X } from "lucide-react";
 
 export default function HeroSection() {
   const { data: session } = useSession();
-  console.log("session:", session);
   const [images, setImages] = useState([]);
   const [imageCount, setImageCount] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
@@ -18,8 +18,7 @@ export default function HeroSection() {
     if (!emblaApi) return;
     const interval = setInterval(() => {
       emblaApi.scrollNext();
-    }, 3000); 
-
+    }, 3000);
     return () => clearInterval(interval);
   }, [emblaApi]);
 
@@ -31,55 +30,49 @@ export default function HeroSection() {
   const handleImageChange = async (e) => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
-  
+
     const remainingSlots = 10 - imageCount;
     const filesToUpload = files.slice(0, remainingSlots);
-  
+
+    setIsUploading(true);
+
     for (const file of filesToUpload) {
       if (file.size > 2 * 1024 * 1024) {
         toast.error(`File ${file.name} is too large (max 2MB).`);
         continue;
       }
-  
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64String = reader.result;
-  
-        try {
-          setIsUploading(true);
-          const res = await fetch("/api/institutions/upload-photo", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ images: [base64String] })
-          });
-  
-          const data = await res.json();
-          if (res.ok) {
-            setImages((prev) => [...prev, data?.urls?.[0]]);
-            setImageCount((prev) => prev + 1);
-            toast.success("Image uploaded!");
-          } else {
-            toast.error(data.error || "Upload failed.");
-          }
-        } catch (err) {
-          toast.error("Something went wrong.");
-        } finally {
-          setIsUploading(false);
-        }
-      };
-  
-      reader.readAsDataURL(file);
+
+      const base64String = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = () => reject("Failed to read file.");
+        reader.readAsDataURL(file);
+      });
+
+      // Simulating upload
+      setImages((prev) => [...prev, base64String]);
+      setImageCount((prev) => prev + 1);
+      toast.success(`Uploaded ${file.name}`);
     }
+
+    setIsUploading(false);
   };
 
-    return (
-    <div className="w-full bg-white rounded-lg shadow-md text-center pt-15">
-      <div className="w-full h-70 relative rounded-md overflow-hidden shadow-inner">
+  const handleDeleteImage = (indexToDelete) => {
+    const updatedImages = images.filter((_, i) => i !== indexToDelete);
+    setImages(updatedImages);
+    setImageCount(updatedImages.length);
+    toast.success("Image deleted");
+  };
+
+  return (
+    <div className="w-full not-visited:text-center">
+      <div className="w-full h-72 bg-gray-100 relative overflow-hidden shadow-inner">
         {(images.length > 0 || session?.user?.image) ? (
           <div className="h-full" ref={emblaRef}>
             <div className="flex h-full">
               {(images.length > 0 ? images : [session.user.image]).map((img, index) => (
-                <div className="flex-[0_0_100%] relative h-full" key={index}>
+                <div className="flex-[0_0_100%] relative h-full group" key={index}>
                   <Image
                     src={img}
                     alt={`Uploaded ${index + 1}`}
@@ -87,25 +80,45 @@ export default function HeroSection() {
                     className="object-cover"
                     priority
                   />
+
+                  {images.includes(img) && (
+                    <button
+                      onClick={() => handleDeleteImage(index)}
+                      className="absolute top-2 right-2 bg-white/80 hover:bg-white text-red-500 rounded-full p-1 shadow group-hover:opacity-100 opacity-0 transition"
+                      title="Delete Image">
+                        <X size={20} color="#000000" strokeWidth={1.5} />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
           </div>
-        ) : (
+        ) : !isUploading && (
           <p className="text-gray-500 flex items-center justify-center h-full">
-            No image
+            Upload Images here...
           </p>
         )}
 
-        <input
-          type="file"
-          accept="image/*"
-          title="Upload an image"
-          aria-label="Upload image"
-          className="absolute inset-0 opacity-0 cursor-pointer"
-          onChange={handleImageChange}
-        />
+        {/* Plus Icon to Upload More images */}
+        {imageCount < 10 && (
+          <div className="absolute bottom-2 right-2 z-10">
+            <label htmlFor="upload-more" title="Upload up to 10 images">
+              <div className="bg-white/80 hover:bg-white p-2 rounded-full cursor-pointer shadow-md">
+                <Plus className="w-6 h-6 text-gray-700" />
+              </div>
+            </label>
+            <input
+              id="upload-more"
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageChange}
+              className="hidden"
+            />
+          </div>
+        )}
 
+        {/* Uploading overlay */}
         {isUploading && (
           <div className="absolute inset-0 bg-white/60 flex items-center justify-center text-sm text-gray-700 font-medium">
             Uploading...

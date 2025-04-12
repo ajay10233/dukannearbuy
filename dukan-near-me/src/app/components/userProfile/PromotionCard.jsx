@@ -51,7 +51,7 @@ export default function PromotionCard() {
             <ul className="list-disc pl-5 text-sm text-gray-600 mb-2">
               <li>₹99 per day</li>
               <li>Maximum 14 days per month</li>
-              <li>Special 30% discount for Platinum users</li>
+              <li>Special 30% discount for Premium users</li>
             </ul>
             <span className="text-xs text-blue-600 mt-1 italic">
               Click to explore your promotion plan
