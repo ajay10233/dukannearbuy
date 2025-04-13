@@ -28,14 +28,12 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
 
   const handleSave = async () => {
     try {
-      // Construct backend-compatible payload
       const payload = {
         ...formData,
         ...formData.address,
-        mobileNumber: formData.phone, // backend expects mobileNumber
+        mobileNumber: formData.phone, 
       };
 
-      // Clean up
       delete payload.address;
       delete payload.phone;
 

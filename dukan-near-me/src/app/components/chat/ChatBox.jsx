@@ -470,7 +470,7 @@ export default function ChatBox() {
 
             {/* Message container */}
             <div className="flex-1 pt-1.5 pb-4 px-4 overflow-y-auto flex flex-col gap-3">
-            {selectedPartner && selectedPartner.accepted === false && (
+            {/* {selectedPartner && selectedPartner.accepted === false && (
               <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg mb-4 flex justify-between items-center">
                 <div>
                   <p className="font-medium">
@@ -507,14 +507,13 @@ export default function ChatBox() {
                   </button>
                 </div>
               </div>
-            )}
+            )} */}
               {/* Encryption message */}
 
               <div className="flex justify-center">
                 <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] text-sm py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
                   <LockKeyhole size={20} strokeWidth={1.5} />
-                  Chats will be automatically deleted after 48 hours of last
-                  chat
+                  Chats will be automatically deleted after 48 hours of last chat
                 </span>
               </div>
 
@@ -640,42 +639,86 @@ export default function ChatBox() {
               )}
             </div>
 
-            {/* chat footer  */}
-            <footer className="p-4 flex items-center bg-[#F6F6F6] gap-3">
-              <div className="gap-4">
-                <button
-                  className="p-2 cursor-pointer"
-                  onClick={() => {
-                    setShowEmojiPicker(!showEmojiPicker);
-                  }}
-                >
-                  <SmilePlus size={20} strokeWidth={1.5} color="#130F26" />
-                </button>
-                <button className="p-2 cursor-pointer relative">
-                  <MapPin
-                    size={20}
-                    strokeWidth={1.5}
-                    color="#130F26"
-                    onClick={() => SendLiveLocation()}
-                  />
-                </button>
+            {/* Accept/Reject Chat UI */}
+            {selectedPartner && selectedPartner.accepted === false && (
+              <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg m-4 flex justify-between items-center">
+                <div>
+                  <p className="font-medium">
+                    You haven’t accepted this chat request yet.
+                  </p>
+                  <p className="text-sm">Do you want to start chatting with this person?</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    className="bg-green-500 hover:bg-green-600 cursor-pointer text-white py-1 px-3 rounded"
+                    onClick={async () => {
+                      const res = await fetch(`/api/conversations/${selectedPartner.conversationId}/accept`, {
+                        method: "PATCH",
+                      });
+                      if (res.ok) {
+                        setSelectedPartner((prev) => ({ ...prev, accepted: true }));
+                      }
+                    }}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    className="bg-red-500 hover:bg-red-600 cursor-pointer text-white py-1 px-3 rounded"
+                    onClick={async () => {
+                      const res = await fetch(`/api/conversations/${selectedPartner.conversationId}/reject`, {
+                        method: "PATCH",
+                      });
+                      if (res.ok) {
+                        setSelectedPartner(null); // optional: or trigger re-fetch
+                      }
+                    }}
+                  >
+                    Reject
+                  </button>
+                </div>
               </div>
-              <input
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    sendMessage();
-                  }
-                }}
-                placeholder="Type a message..."
-                className="flex-1 py-2 px-4 rounded-full bg-white focus:outline-none shadow-sm"
-              />
-              <button className="p-2 cursor-pointer" onClick={sendMessage}>
-                <SendHorizontal size={20} strokeWidth={1.5} />
-              </button>
-            </footer>
+            )}    
+
+            {selectedPartner && selectedPartner.accepted && (
+              <>
+                {/* chat footer  */}
+                <footer className="p-4 flex items-center bg-[#F6F6F6] gap-3">
+                  <div className="gap-4">
+                    <button
+                      className="p-2 cursor-pointer"
+                      onClick={() => {
+                        setShowEmojiPicker(!showEmojiPicker);
+                      }}
+                    >
+                      <SmilePlus size={20} strokeWidth={1.5} color="#130F26" />
+                    </button>
+                    <button className="p-2 cursor-pointer relative">
+                      <MapPin
+                        size={20}
+                        strokeWidth={1.5}
+                        color="#130F26"
+                        onClick={() => SendLiveLocation()}
+                      />
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        sendMessage();
+                      }
+                    }}
+                    placeholder="Type a message..."
+                    className="flex-1 py-2 px-4 rounded-full bg-white focus:outline-none shadow-sm"
+                  />
+                  <button className="p-2 cursor-pointer" onClick={sendMessage}>
+                    <SendHorizontal size={20} strokeWidth={1.5} />
+                  </button>
+                </footer>
+              </>
+            )}    
           </>
         ) : (
           <p className="p-4 text-center text-gray-500">

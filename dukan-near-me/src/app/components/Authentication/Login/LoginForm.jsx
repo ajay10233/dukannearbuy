@@ -1,5 +1,5 @@
 "use client";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,10 +9,12 @@ import { useBoolToggle } from "react-haiku";
 import { Eye, EyeClosed } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect } from "react";
 
 export default function LoginForm() {
   const router = useRouter();
   const [show, setShow] = useBoolToggle();
+  const { data: session, status } = useSession();
 
   const {
     register,
@@ -80,6 +82,25 @@ export default function LoginForm() {
       }
     }
   };
+  
+  useEffect(() => {
+    if (session?.user?.role) {
+      const role = session.user.role;
+
+      if (role === "SHOP_OWNER") {
+        router.push("/InstitutionHomePage");
+      } else if (role === "INSTITUTION") {
+        router.push("/InstitutionHomePage");
+      } else if (role === "USER") {
+        router.push("/UserHomePage");
+      } else {
+        router.push("/dashboard");
+      }
+    } else {
+      router.push("/login");
+    }
+  }, [session, router]);
+
   
   return (
     <form
