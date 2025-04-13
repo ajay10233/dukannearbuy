@@ -29,7 +29,7 @@ export const authOptions = {
           },
         });
       
-        console.log("User is:", user);
+        // console.log("User is:", user);
         if (!user) throw new Error("User not found");
       
         const isValid = await bcrypt.compare(credentials.password, user.password);

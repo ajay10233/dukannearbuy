@@ -8,65 +8,61 @@ import toast from 'react-hot-toast';
 import EditProfile from './EditProfile';
 
 export default function Profile() {
-    const { data: session, status } = useSession();
-    console.log("session:", session);
-    console.log("address type:", typeof session?.user?.address);
-    console.log("address value:", session?.user?.address);
-
+  const { data: session, status } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   // const [user, setUser] = useState(session?.user);
-//   const [editedUser, setEditedUser] = useState({});
-  const [loading, setLoading] = useState(false);       
-//   const [error, setError] = useState(null);           
+  //   const [editedUser, setEditedUser] = useState({});
+  const [loading, setLoading] = useState(false);
+  //   const [error, setError] = useState(null);           
 
   // useEffect(() => {
-    // if (status === 'authenticated') {
-    //   fetch('/api/users')
-    //     .then(res => {
-    //       if (!res.ok) throw new Error('User not found');
-    //       return res.json();
-    //     })
-    //     .then(data => {
-    //       setUser(data);
-    //       setEditedUser(data);
-    //       setLoading(false);
-    //     })
-    //     .catch(err => {
-    //       console.error('Error loading profile:', err);
-    //       setError(err.message);
-    //       setLoading(false);
-    //     });
-    // }
+  // if (status === 'authenticated') {
+  //   fetch('/api/users')
+  //     .then(res => {
+  //       if (!res.ok) throw new Error('User not found');
+  //       return res.json();
+  //     })
+  //     .then(data => {
+  //       setUser(data);
+  //       setEditedUser(data);
+  //       setLoading(false);
+  //     })
+  //     .catch(err => {
+  //       console.error('Error loading profile:', err);
+  //       setError(err.message);
+  //       setLoading(false);
+  //     });
+  // }
   // }, [status]);
-    
-//   const handleChange = (e) => {
-//     setEditedUser({ ...editedUser, [e.target.name]: e.target.value });
-//   };
 
-//   const handleSave = async () => {
-//     try {
-//       const response = await fetch('/api/users', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify(editedUser),
-//       });
+  //   const handleChange = (e) => {
+  //     setEditedUser({ ...editedUser, [e.target.name]: e.target.value });
+  //   };
 
-//       const result = await response.json();
-//       if (!response.ok) throw new Error(result.error || 'Something went wrong');
+  //   const handleSave = async () => {
+  //     try {
+  //       const response = await fetch('/api/users', {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify(editedUser),
+  //       });
 
-//       toast.success('Profile updated!');
-//       setUser(editedUser);
-//       setIsEditing(false);
-//     } catch (error) {
-//       toast.error(error.message);
-//     }
-// };
-  
-    if (status === 'loading' || loading) return <p className="text-center py-20">Fetching user profile...</p>;
-    if (!session?.user) return <p className="text-center py-20 text-gray-700">No user data found.</p>;
-  
+  //       const result = await response.json();
+  //       if (!response.ok) throw new Error(result.error || 'Something went wrong');
+
+  //       toast.success('Profile updated!');
+  //       setUser(editedUser);
+  //       setIsEditing(false);
+  //     } catch (error) {
+  //       toast.error(error.message);
+  //     }
+  // };
+
+  if (status === 'loading' || loading) return <p className="text-center py-20">Fetching user profile...</p>;
+  if (!session?.user) return <p className="text-center py-20 text-gray-700">No user data found.</p>;
+
   return (
     <section className="min-h-screen bg-white pt-13 px-4">
       <div className="flex flex-col md:flex-row gap-x-8 gap-y-6 px-12 py-8">
@@ -81,7 +77,7 @@ export default function Profile() {
               <button
                 className="border border-gray-600 px-4 py-1 rounded-md cursor-pointer hover:bg-gray-100 transition"
                 onClick={() => {
-                //   setEditedUser(user);
+                  //   setEditedUser(user);
                   setIsEditing(true);
                 }}>
                 Edit Profile
@@ -99,13 +95,13 @@ export default function Profile() {
             <>
               <hr className="py-4 border-gray-200" />
               <div className="gap-6 space-y-3 px-2">
-              {session?.user?.address && typeof session.user.address === 'object' && (
-                <p className="text-base text-gray-800 pb-1">
+                {session?.user?.address && typeof session.user.address === 'object' && (
+                  <p className="text-base text-gray-800 pb-1">
                     <span className="font-semibold text-gray-600">Address:</span>{' '}
                     {Object.values(session.user.address || {})
-                    .filter((val) => val && val.trim() !== '')
-                    .join(', ') || 'Not provided'}
-                </p>
+                      .filter((val) => val && val.trim() !== '')
+                      .join(', ') || 'Not provided'}
+                  </p>
                 )}
 
                 {session?.user.age && (
@@ -124,10 +120,10 @@ export default function Profile() {
                   </p>
                 )}
                 {session?.user.phone && (
-                    <p className="text-base text-gray-800 pb-1">
-                        <span className="font-semibold text-gray-600">Phone:</span> {session.user.phone}
-                    </p>
-                    )}
+                  <p className="text-base text-gray-800 pb-1">
+                    <span className="font-semibold text-gray-600">Phone:</span> {session.user.phone}
+                  </p>
+                )}
               </div>
 
               {session?.user.emailConfirmed && session?.user.mobileConfirmed && (

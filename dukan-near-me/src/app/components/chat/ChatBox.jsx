@@ -26,9 +26,6 @@ export default function ChatBox() {
   const messagesEndRef = useRef(null);
   const router = useRouter();
   const { data: session, status } = useSession();
-  useEffect(() => {
-    console.log(messages);
-  }, [messages]);
 
   const SendLiveLocation = () => {
     if (typeof window !== "undefined" && "geolocation" in navigator) {
@@ -83,7 +80,6 @@ export default function ChatBox() {
         const res = await fetch(`/api/conversations/all`);
         const data = await res.json();
         setConversations(data.data);
-        console.log("Conversations: ",data);
         setFilteredConversations(data.data);
       } catch (error) {
         console.error("❌ Failed to fetch conversations:", error);
@@ -95,9 +91,6 @@ export default function ChatBox() {
 
   useEffect(() => {
     if (!selectedPartner) return;
-
-    console.log("Selected partner:", selectedPartner);
-
     const fetchMessages = async () => {
       if (!selectedPartner?.conversationId) return;
 
@@ -106,7 +99,6 @@ export default function ChatBox() {
           `/api/messages/conversation?conversationId=${selectedPartner.conversationId}`
         );
         const data = await res.json();
-        console.log(data);
         setMessages(data.data?.messages || []);
       } catch (error) {
         console.error("❌ Failed to fetch messages:", error);

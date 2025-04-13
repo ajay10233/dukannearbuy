@@ -8,7 +8,6 @@ import useEmblaCarousel from "embla-carousel-react";
 
 export default function HeroSection() {
   const { data: session } = useSession();
-  console.log("session:", session);
   const [images, setImages] = useState([]);
   const [imageCount, setImageCount] = useState(0);
   const [isUploading, setIsUploading] = useState(false);

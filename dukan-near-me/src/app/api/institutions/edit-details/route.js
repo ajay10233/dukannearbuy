@@ -5,7 +5,6 @@ import cloudinary from "@/utils/cloudinary";
 
 export async function POST(req) {
     const session = await getServerSession(authOptions);
-    console.log(session.user.role);
     if (!session || (session.user.role != "INSTITUTION" && session.user.role != "SHOP_OWNER")) {
         return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     }
@@ -14,11 +13,9 @@ export async function POST(req) {
         const body = await req.json();
 
         const user = await prisma.user.findUnique({ where: { id: session.user.id } });
-        console.log("user is: ",user);
         if (!user) {
             return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
         }
-        console.log("user role is: ",user.role);
         if (user.role != "INSTITUTION" || user.role != "SHOP_OWNER") {
             return new Response(JSON.stringify({ error: "Only partners can update this profile" }), { status: 403 });
         }

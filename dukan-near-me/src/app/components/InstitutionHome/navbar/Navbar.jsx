@@ -25,8 +25,6 @@ export default function Navbar() {
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
                     const { latitude, longitude } = position.coords;
-                    console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-
                     try {
                         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
                         const data = await res.json();

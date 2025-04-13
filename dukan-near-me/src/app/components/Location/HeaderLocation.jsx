@@ -48,7 +48,6 @@ export default function HeaderLocation() {
           const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
           const data = await res.json();
           const address = data.address || {};
-          console.log(address);
           setLocation(`${address.road}, ${address.city}, ${address.state}, ${address.postcode}`);
         } catch (error) {
           console.error("Error fetching address details:", error);

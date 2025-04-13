@@ -62,7 +62,6 @@ export const POST = async (req) => {
       );
     }
 
-    console.log("Conversation ID:", conversation.id);
 
     // Create and attach message to the conversation
     const newMessage = await prisma.message.create({

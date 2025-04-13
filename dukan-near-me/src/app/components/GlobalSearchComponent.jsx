@@ -72,7 +72,6 @@ export default function GlobalSearchBar() {
     try {
       const res = await fetch(`/api/global-search-institutions?search=${encodeURIComponent(query)}`)
       const data = await res.json()
-      console.log(data);
       setResults(data.results || [])
       setSuggestions(data.suggestions || [])
     } catch (err) {

@@ -19,7 +19,6 @@ export async function GET(req) {
   try {
     let searchResults = [];
     let userResults = [];
-    console.log("User's role is:", session.user.role);
 
     if (session.user.role === "USER") {
       searchResults = await prisma.user.findMany({
@@ -68,7 +67,6 @@ export async function GET(req) {
         },
       })
 
-      console.log("Search results for users:", userResults);
       return NextResponse.json({ data: searchResults,users:userResults }, { status: 200 });
 
     } else if (session.user.role === "INSTITUTION" || session.user.role === "SHOP_OWNER") {
@@ -99,7 +97,6 @@ export async function GET(req) {
           role: true,
         },
       });
-      console.log("Search results for institutions:", searchResults);
       return NextResponse.json({ data: searchResults }, { status: 200 });
     }
 

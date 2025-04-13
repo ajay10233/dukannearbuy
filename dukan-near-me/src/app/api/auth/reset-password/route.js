@@ -5,7 +5,6 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req) {
   const { token, password } = await req.json();
-  console.log(token, password);
 
   const tokenRecord = await prisma.passwordResetToken.findUnique({ where: { token } });
 

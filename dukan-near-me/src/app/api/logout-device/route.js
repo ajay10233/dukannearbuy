@@ -10,7 +10,6 @@ export async function POST(req) {
   }
 
   const { sessionToken } = await req.json();
-  console.log("Received session token:", sessionToken);
 
   if (sessionToken) {
     try {

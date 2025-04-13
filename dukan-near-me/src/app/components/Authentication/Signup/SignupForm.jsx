@@ -43,7 +43,6 @@ export default function SignupForm() {
         }
       } catch (error) {
         toast.error(`Api error!`, { id: toastId });
-        console.log(error);
       }
     }
   };

@@ -52,7 +52,6 @@ export default function LoginForm() {
   const onSubmit = async (data) => {
     if (data) {
       const { email, password } = data;
-      console.log(data);
       const toastId = toast.loading("Processing...");
 
       try {

@@ -16,7 +16,7 @@ export default function BillHistoryTable() {
     { invoiceId: '#10005', billingDate: "18 Dec 2024", customerName: 'Hare Krsna', amount: "₹100", status: "Paid" },
     { invoiceId: '#10006', billingDate: "29 Nov 2023", customerName: 'Hare Krsna', amount: "₹100", status: "Pending" },
   ];
-  console.log(data[0]);
+  // console.log(data[0]);
   const invoiceHead = Object.keys(data[0]);
   
   return (
@@ -25,7 +25,7 @@ export default function BillHistoryTable() {
         <ul className="flex *:w-1/5 w-full">
         {
             invoiceHead.map((head, i) => {
-              console.log(head)
+              // console.log(head)
               return(
               <li className="flex justify-center " key={i}>
                 <span className="flex justify-center gap-x-1 cursor-pointer w-fit">

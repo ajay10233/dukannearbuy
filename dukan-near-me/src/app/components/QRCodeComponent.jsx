@@ -3,7 +3,6 @@
 import { QRCodeCanvas } from 'qrcode.react';
 
 export default function QRCodeComponent({ params }) {
-  console.log(params);
   const profileUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/profile/${params.id}`;
 
   return (
