@@ -103,6 +103,8 @@ model User {
   subscriptionPlanId   String?  @db.ObjectId
   planActivatedAt      DateTime?
   planExpiresAt        DateTime?
+  paidProfilesGiven    PaidProfile[] @relation("PaidProfilePayer")
+
   @@map("users")
 }
 
@@ -340,3 +342,13 @@ model Review {
 }
 
 
+model PaidProfile {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId
+  amountPaid      Float
+  createdAt       DateTime @default(now())
+  expiresAt       DateTime?
+  notes           String?
+  user            User     @relation("PaidProfilePayer", fields: [userId], references: [id])
+  @@map("paid_profiles")
+}
