@@ -350,5 +350,6 @@ model PaidProfile {
   expiresAt       DateTime?
   notes           String?
   user            User     @relation("PaidProfilePayer", fields: [userId], references: [id])
+  image           String?
   @@map("paid_profiles")
 }

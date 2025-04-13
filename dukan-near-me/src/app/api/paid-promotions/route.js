@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/utils/db';
+import cloudinary from "@/utils/cloudinary";
 
 export async function GET(req) {
   const session = await getServerSession(authOptions);
@@ -27,15 +28,18 @@ export async function POST(req) {
   }
   const userId = session.user.id;
   try {
-    const { amountPaid, notes, timeInDays } = await req.json();
-
+    const { amountPaid, notes, timeInDays,image } = await req.json();
+    let image_src = null;
     if (!amountPaid || !timeInDays) {
       return NextResponse.json({ error: "Amount and timeInDays are required" }, { status: 400 });
     }
 
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + timeInDays);
-
+    if(image){
+        let result = await cloudinary.v2.uploader.upload(image, { folder: "paid_profiles" });
+        image_src = result.secure_url;
+    }
     const paidProfile = await prisma.paidProfile.create({
       data: {
         userId,
