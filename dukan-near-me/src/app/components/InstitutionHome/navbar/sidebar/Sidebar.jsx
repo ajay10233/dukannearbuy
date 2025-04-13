@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import { UserRound, X, MessageCircleMore,Home, MessageSquareWarning, QrCode, ScanLine, BookCheck, FolderDown, Settings, LogOut } from "lucide-react";
+import { UserRound, X, MessageCircleMore, Home, MessageSquareWarning, QrCode, ScanLine, BookCheck, FolderDown, Settings, LogOut } from "lucide-react";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -30,9 +30,9 @@ export default function Sidebar({ isOpen, onClose }) {
                 <div className="flex flex-col pt-8 px-4 pb-4 space-y-4 flex-grow">
                     <h2 className='font-semibold  text-lg uppercase text-gray-800'> overview</h2>
                     <div className="flex flex-col space-y-3">
-                    
-                        {pathName !== "/UserHomePage" && (
-                            <Link href="/UserHomePage"
+
+                        {pathName !== "#" && (
+                            <Link href="#"
                                 className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
                                 <Home size={20} strokeWidth={1.5} />
                                 Home

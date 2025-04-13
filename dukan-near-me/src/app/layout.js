@@ -2,7 +2,7 @@ import { Plus_Jakarta_Sans, Rubik, Work_Sans, Poppins, Roboto } from "next/font/
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import SocketInitializer from "@/app/components/SocketInitializer";
-import SessionProviderWrapper from "@/app/components/SessionManager/SessionProviderWrapper"; // Import client-side wrapper
+import SessionProviderWrapper from "@/app/components/SessionManager/SessionProviderWrapper"; 
 import HeaderLocation from "./components/Location/HeaderLocation";
 
 const rubik = Rubik({

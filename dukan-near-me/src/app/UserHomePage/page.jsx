@@ -7,6 +7,7 @@ import Faq from '../components/userProfile/faQ/Faq'
 import Review from '../components/userProfile/review/Review'
 import TopSeller from '../components/userProfile/TopSeller/TopSeller'
 import Subscription from '../components/userProfile/offer/Subscription'
+import PromotionCard from '../components/userProfile/PromotionCard'
 
 export default function page() {
     
@@ -21,10 +22,13 @@ export default function page() {
             </section>
             <section className='bg-gradient-to-t from-[#A7BEC2] via-[#005d6e] to-[#0f0f0f]'>
                 <TopSeller />
-                <Subscription/>
-                <Review />  
+          <Subscription />
+          <PromotionCard/>
+          <Review /> 
+          <Faq />  
+
             </section>
-            <Faq />  
+            {/* <Faq />   */}
         </main>  
         <Footer />
     </>

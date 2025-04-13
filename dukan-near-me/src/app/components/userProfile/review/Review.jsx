@@ -65,10 +65,10 @@ const Review = () => {
   };
 
   return (
-    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8">
+    <div className="h-full py-16 px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-y-10 max-w-7xl mx-auto">
         <div className="flex flex-col text-center gap-y-2 md:gap-y-5">
-            <h2 className="text-xl md:text-3xl font-bold text-gray-800">Trusted by Thousands of Happy Customer</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Trusted by Thousands of Happy Customer</h2>
             <p className="text-md text-gray-200 max-w-2xl mx-auto">
                 These are the stories of our customers who have joined us with great pleasure when using this crazy feature.
             </p>

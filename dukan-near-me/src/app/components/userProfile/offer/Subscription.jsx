@@ -24,7 +24,7 @@ export default function Subscription() {
     const offers = [
         {
           id: 1,
-          title: "FREE PLAN",
+          title: "BASIC",
           price: 0,
           features: [
             "Near by shop",
@@ -32,11 +32,10 @@ export default function Subscription() {
             "Data Privacy",
             "Works only in single device"
           ],
-          image: "/free.png"
         },
         {
           id: 2,
-          title: "GOLD PLAN",
+          title: "BUSINESS",
           price: 50,
           features: [
             "Token Generation",
@@ -45,11 +44,10 @@ export default function Subscription() {
             "Bill record in Excel format",
             "Weekly marketing mail"
           ],
-          image: "/gold.png"
         },
         {
           id: 3,
-          title: "PLATINUM PLAN",
+          title: "PREMIUM",
           price: 120,
           features: [
             "Token Generation",
@@ -58,7 +56,6 @@ export default function Subscription() {
             "Bill record in Excel format",
             "30% off on Paid Promotion"
           ],
-          image: "/platinum.png"
         }
     ];
         
@@ -79,9 +76,14 @@ export default function Subscription() {
                 <div className="w-full flex flex-wrap justify-center md:justify-around gap-6">
                     {plans.map((plan) => (
                         <div
-                            key={plan.id}
-                            className={`w-250px h-300px md:w-[300px] md:h-[350px] rounded-lg p-4 gap-y-4 flex flex-col justify-between items-center border border-gray-200 bg-white transition-all duration-300 transform hover:-translate-y-2 hover:shadow-black`}>
-                            
+                        key={plan.id}
+                        className={`w-[250px] h-[300px] md:w-[300px] md:h-[350px] rounded-xl p-4 gap-y-4 flex flex-col justify-between items-center transition-all duration-300 transform
+                            ${
+                              plan.title === "BASIC"
+                                ? "bg-gradient-to-tr from-white to-gray-300 border-2 hover:shadow-md hover:scale-105 border-yellow-400 hover:ring-2 hover:ring-yellow-300"
+                                : "bg-gradient-to-tr from-blue-50 via-blue-100 to-cyan-100 border-2 border-yellow-300 hover:scale-110 hover:rotate-[1deg] hover:text-gray-600 hover:shadow-xl hover:shadow-yellow-500/50 hover:ring-2 hover:ring-offset-2 hover:ring-orange-300 hover:bg-gradient-to-tr hover:from-yellow-200 hover:via-orange-200 hover:to-pink-200 animate-premium-pop"
+                            }`}>
+
                         {/* <Image src={plan.image} alt={plan.title} width={80} height={80} /> */}
                         <h3 className="text-2xl font-bold mt-4">{plan.title}</h3>
 
@@ -100,12 +102,17 @@ export default function Subscription() {
                         </div>
                             
                         <Link href="#">
-                            <button onClick={handleClick} className={`px-6 py-2 tracking-wide cursor-pointer rounded-full text-sm font-semibold transition 
-                                ${activePlan === plan.title
-                                ? 'bg-yellow-500 text-white'
-                                : 'border border-yellow-500 text-yellow-500 hover:bg-yellow-100' }`}>
-                                    Select
-                            </button>            
+                        <button
+                                onClick={handleClick}
+                                className={`px-6 py-2 tracking-wide cursor-pointer rounded-full text-sm font-semibold transition
+                                    ${
+                                    plan.title === "BASIC"
+                                        ? "border border-yellow-500 text-yellow-500 hover:bg-yellow-100"
+                                        : "border border-yellow-500 text-yellow-500 bg-yellow-100"
+                                    }
+                                    ${activePlan === plan.title ? "ring-2 ring-yellow-300" : ""}`}>
+                                Select
+                                </button>
                         </Link>
                         </div>
                     </div>

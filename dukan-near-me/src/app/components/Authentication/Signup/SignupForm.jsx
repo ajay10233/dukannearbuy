@@ -32,8 +32,9 @@ export default function SignupForm() {
   const onSubmit = async (data) => {
     if (data) {
       const toastId = toast.loading("Processing...");
+      data["role"] = role;
       try {
-        const res = await axios.post("/api/auth/signup", data, { role });
+        const res = await axios.post("/api/auth/signup", data);
         if (res.status === 200) {
           toast.success("Register successfully!", { id: toastId });
           router.push("/login");
