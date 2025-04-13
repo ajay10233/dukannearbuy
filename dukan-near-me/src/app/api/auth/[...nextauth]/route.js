@@ -5,8 +5,6 @@ import { prisma } from "@/utils/db";
 import crypto from "crypto";
 import { ObjectId } from "mongodb"; 
 
-const MAX_DEVICES = 10; 
-
 export const authOptions = {
   session: {
     strategy: "jwt",
@@ -17,8 +15,7 @@ export const authOptions = {
         if (!credentials.identifier || !credentials.password) {
           throw new Error("Identifier and password are required");
         }
-
-        // Find user by email, username, or phone number
+      
         const user = await prisma.user.findFirst({
           where: {
             OR: [
@@ -27,38 +24,53 @@ export const authOptions = {
               { phone: credentials.identifier },
             ],
           },
+          include: {
+            subscriptionPlan: true,
+          },
         });
-
+      
+        console.log("User is:", user);
         if (!user) throw new Error("User not found");
-
-        // Validate password
+      
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) throw new Error("Invalid credentials");
-
+      
         const userId = new ObjectId(user.id);
-
-        // Check active sessions
+        const plan = user.subscriptionPlan?.name?.toLowerCase();
+        let maxDevices = 1;
+      
+        if (plan === "business") {
+          maxDevices = 2;
+        } else if (plan === "premium") {
+          maxDevices = 4;
+        }
+      
         const activeSessions = await prisma.session.findMany({
-          where: { userId: userId },
+          where: { userId },
+          orderBy: { createdAt: "asc" }
         });
-
-        // if (activeSessions.length >= MAX_DEVICES) {
-        //   throw new Error(`You have exceeded the allowed login limit (${MAX_DEVICES} devices).`);
-        // }
-
-        // Generate a session token
+      
+        if (activeSessions.length >= maxDevices) {
+          const sessionsToRemove = activeSessions.length - maxDevices + 1; 
+          const sessionsToDelete = activeSessions.slice(0, sessionsToRemove);
+          for (const session of sessionsToDelete) {
+            await prisma.session.delete({
+              where: { id: session.id },
+            });
+          }
+        }
+      
         const sessionToken = crypto.randomBytes(32).toString("hex");
-
-        // Store session in DB
+      
         await prisma.session.create({
           data: {
-            userId: userId,
+            userId,
             token: sessionToken,
             device: credentials.device || "Unknown Device",
             ip: credentials.ip || "Unknown IP",
           },
         });
-
+      
         return {
           id: user.id,
           firstName: user.firstName,
@@ -95,8 +107,16 @@ export const authOptions = {
           longitude: user.longitude,
           allowedRoutes: user.role === "ADMIN" ? ["/", "/dashboard", "/admin"] : ["/", "/dashboard"],
           sessionToken,
+          subscriptionPlan: user.subscriptionPlan ? {
+            id: user.subscriptionPlan.id,
+            name: user.subscriptionPlan.name,
+            price: user.subscriptionPlan.price,
+            durationInDays: user.subscriptionPlan.durationInDays,
+            features: user.subscriptionPlan.features,
+          } : null,
         };
-      },
+      }
+      
     }),
   ],
   callbacks: {
@@ -128,6 +148,7 @@ export const authOptions = {
         token.longitude = user.longitude;
         token.allowedRoutes = user.allowedRoutes;
         token.sessionToken = user.sessionToken;
+        token.subscriptionPlan = user.subscriptionPlan;
       }
       return token;
     },
@@ -158,6 +179,7 @@ export const authOptions = {
         session.user.latitude = token.latitude;
         session.user.longitude = token.longitude;
         session.user.allowedRoutes = token.allowedRoutes;
+        session.user.subscriptionPlan = token.subscriptionPlan;
       }
       return session;
     },

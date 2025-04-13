@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/utils/db";
+import cloudinary from "@/utils/cloudinary";
 
 export async function POST(req) {
     const session = await getServerSession(authOptions);
@@ -18,9 +19,9 @@ export async function POST(req) {
             return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
         }
         console.log("user role is: ",user.role);
-        // if (user.role != "INSTITUTION" || user.role != "SHOP_OWNER") {
-        //     return new Response(JSON.stringify({ error: "Only partners can update this profile" }), { status: 403 });
-        // }
+        if (user.role != "INSTITUTION" || user.role != "SHOP_OWNER") {
+            return new Response(JSON.stringify({ error: "Only partners can update this profile" }), { status: 403 });
+        }
 
         const updateData = {};
 
@@ -59,6 +60,12 @@ export async function POST(req) {
             if (body[field] !== undefined) {
                 updateData[field] = body[field];
             }
+        }
+
+        let scanner_image = body.scanner_image;
+        if (scanner_image) {
+            let result = await cloudinary.uploader.upload(img, { folder: "scanner_images" });
+            updateData.scanner_image = result.secure_url;
         }
 
         if (Object.keys(updateData).length === 0) {

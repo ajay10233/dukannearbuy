@@ -16,6 +16,7 @@ export default function ReviewComponent({user}) {
     axios.get('/api/institutions')
       .then((res) => setInstitutions(res.data?.data))
       .catch(() => toast.error("Failed to fetch institutions"));
+    
   }, []);
 
   useEffect(() => {
