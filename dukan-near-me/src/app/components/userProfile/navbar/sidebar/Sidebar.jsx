@@ -41,7 +41,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
                         <Link href="/userProfile"
                             className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
-                            <MessageCircleMore size={20} strokeWidth={1.5} />
+                            <UserRound size={20} strokeWidth={1.5} />
                                 My Profile
                         </Link>
                         <Link href="/chat"

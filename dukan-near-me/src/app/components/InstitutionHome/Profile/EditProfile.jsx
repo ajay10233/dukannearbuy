@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { X, MapPin } from "lucide-react";
 import toast from "react-hot-toast";
 
-export default function EditProfile({ formData, setFormData, errors, handleChange, handleSave, setShowModal }) {
+export default function EditProfile({ setShowModal, errors, handleChange, handleSubmit, form, setForm, setProfileUpdated, message, setMessage }) {
   const handleLocationFetch = () => {
     if (!navigator.geolocation) {
       toast.error("Geolocation not supported");
@@ -15,14 +15,44 @@ export default function EditProfile({ formData, setFormData, errors, handleChang
       (pos) => {
         const { latitude, longitude } = pos.coords;
         const mapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
-        setFormData((prev) => ({
+        setForm((prev) => ({
           ...prev,
-          currentLocation: mapsUrl,
+          shopAddress: mapsUrl,
         }));
         toast.success("Location URL fetched");
       },
       () => toast.error("Location access denied")
     );
+  };
+  
+  // const [message, setMessage] = useState('');
+  
+  const daysOfWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+  
+  const handleDayToggle = (e) => {
+    const selectedDay = e.target.value;
+    const isChecked = e.target.checked;
+  
+    setForm((prev) => {
+      const updatedDays = isChecked
+        ? [...(prev.shopOpenDays || []), selectedDay]
+        : prev.shopOpenDays.filter((day) => day !== selectedDay);
+  
+      return {
+        ...prev,
+        shopOpenDays: updatedDays.sort(
+          (a, b) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b)
+        ),
+      };
+    });
   };
   
   return (
@@ -35,13 +65,15 @@ export default function EditProfile({ formData, setFormData, errors, handleChang
           </button>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
+          
           {/* Firm Name */}
           <div>
             <label className="font-medium text-gray-700">Firm Name</label>
             <input
+              type="text"
               name="firmName"
-              value={formData?.firmName || ""}
+              value={form?.firmName}
               onChange={handleChange}
               placeholder="Enter Firm Name"
               className="border p-2 rounded w-full"
@@ -49,14 +81,27 @@ export default function EditProfile({ formData, setFormData, errors, handleChang
             {errors?.firmName && <span className="text-sm text-red-500">{errors.firmName}</span>}
           </div>
 
+          {/* Shop address */}
+          <div>
+          <label className="font-medium text-gray-700">Address</label>
+              <input
+                name="shopAddress"
+                value={form?.shopAddress}
+                onChange={handleChange}
+                placeholder="Address"
+                className="border p-2 rounded w-full pr-10"
+              />
+          </div>
+
           {/* Description */}
           <div>
             <label className="font-medium text-gray-700">Description</label>
             <textarea
               name="description"
-              value={formData?.description || ""}
+              value={form?.description}
               onChange={handleChange}
               placeholder="Enter Description"
+              maxLength={300}
               className="border p-2 rounded w-full"
             />
             {errors?.description && <span className="text-sm text-red-500">{errors.description}</span>}
@@ -67,7 +112,7 @@ export default function EditProfile({ formData, setFormData, errors, handleChang
             <label className="font-medium text-gray-700">Hashtags</label>
             <input
               name="hashtags"
-              value={formData?.hashtags || ""}
+              value={form?.hashtags}
               onChange={handleChange}
               placeholder="Comma separated (e.g. doctor, clinic)"
               className="border p-2 rounded w-full"
@@ -79,62 +124,83 @@ export default function EditProfile({ formData, setFormData, errors, handleChang
           <div>
             <label className="font-medium text-gray-700">Open Time</label>
             <input
-              name="openTime"
+                name="shopOpenTime"
               type="time"
-              value={formData?.openTime || ""}
+              value={form?.shopOpenTime}
               onChange={handleChange}
               className="border p-2 rounded w-full"
             />
-            {errors?.openTime && <span className="text-sm text-red-500">{errors.openTime}</span>}
+            {errors?.shopOpenTime && <span className="text-sm text-red-500">{errors.shopOpenTime}</span>}
           </div>
 
           {/* Close Time */}
           <div>
             <label className="font-medium text-gray-700">Close Time</label>
             <input
-              name="closeTime"
+              name="shopCloseTime"
               type="time"
-              value={formData?.closeTime || ""}
+              value={form?.shopCloseTime}
               onChange={handleChange}
               className="border p-2 rounded w-full"
             />
-            {errors?.closeTime && <span className="text-sm text-red-500">{errors.closeTime}</span>}
+            {errors?.shopCloseTime && <span className="text-sm text-red-500">{errors.shopCloseTime}</span>}
+          </div>
+
+          {/* Shop Open Days */}
+          <div className="flex flex-col gap-y-2">
+            <label className="font-medium text-gray-700">Shop Open Days</label>
+            <div className="grid grid-cols-2 pl-4 gap-2 text-sm text-gray-700">
+              {daysOfWeek.map((day) => (
+                <label key={day} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    value={day}
+                    checked={form?.shopOpenDays?.includes(day)}
+                    onChange={handleDayToggle}
+                    className="accent-blue-600"
+                  />
+                  <span>{day}</span>
+                </label>
+              ))}
+            </div>
           </div>
 
           {/* UPI ID */}
           <div>
             <label className="font-medium text-gray-700">UPI ID</label>
             <input
-              name="upiId"
-              value={formData?.upiId || ""}
+              name="upi_id"
+              value={form?.upi_id}
               onChange={handleChange}
               placeholder="Enter UPI ID"
               className="border p-2 rounded w-full"
             />
-            {errors?.upiId && <span className="text-sm text-red-500">{errors.upiId}</span>}
+            {errors?.upi_id && <span className="text-sm text-red-500">{errors.upi_id}</span>}
           </div>
 
           {/* Scanner Image */}
           <div>
-            <label className="font-medium text-gray-700">Scanner QR Image</label>
+            <label className="font-medium text-gray-700">Upload Scanner Image</label>
             <input
-              name="scannerImage"
+              name="paymentDetails"
+              placeholder="Upload Scanner QR Image"
               type="file"
+              accept="image/*"
               onChange={handleChange}
               className="border p-2 rounded w-full"
             />
             {errors?.scannerImage && <span className="text-sm text-red-500">{errors.scannerImage}</span>}
           </div>
 
-          {/* Latitude */}
+          {/* current location */}
           <div>
             <label className="font-medium text-gray-700">Current Location</label>
             <div className="relative">
               <input
                 name="currentLocation"
-                value={formData?.currentLocation || ""}
+                value={form?.shopAddress}
                 onChange={handleChange}
-                placeholder="Enter or fetch location"
+                placeholder="Type or fetch location"
                 className="border p-2 rounded w-full pr-10"
               />
               <button
@@ -145,16 +211,18 @@ export default function EditProfile({ formData, setFormData, errors, handleChang
                 <MapPin size={18} />
               </button>
             </div>
-            {errors?.currentLocation && <span className="text-sm text-red-500">{errors.currentLocation}</span>}
+            {errors?.shopAddress && <span className="text-sm text-red-500">{errors.shopAddress}</span>}
           </div>
 
-        </div>
-
-        <button
-          onClick={handleSave}
+          <button type="submit"
+          // onClick={handleSave}
           className="mt-4 w-full px-4 py-2 cursor-pointer bg-blue-600 text-white rounded hover:bg-blue-700">
-          Save Changes
+          Save
         </button>
+
+        </form>
+        {message && <p className="mt-4 text-sm">{message}</p>}
+
       </div>
     </div>
   );

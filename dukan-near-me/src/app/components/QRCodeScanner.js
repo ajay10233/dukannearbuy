@@ -19,6 +19,8 @@ export default function QRCodeScanner() {
         (decodedText, decodedResult) => {
           alert(`Scanned QR Code: ${decodedText}`);
 
+          
+
           // Optionally stop scanning after a successful scan
           html5QrCode.stop().then(() => {
             html5QrCode.clear();

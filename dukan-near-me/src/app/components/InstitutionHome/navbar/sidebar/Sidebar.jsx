@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import { UserRound, X, MessageCircleMore, Home, MessageSquareWarning, QrCode, ScanLine, BookCheck, FolderDown, Settings, LogOut } from "lucide-react";
+import { UserRound, X, TableOfContents, MessageCircleMore, Home, MessageSquareWarning, QrCode, ScanLine, BookCheck, FolderDown, Settings, LogOut } from "lucide-react";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -12,7 +12,7 @@ export default function Sidebar({ isOpen, onClose }) {
             <div className={`fixed inset-0 bg-black transition-opacity duration-300 ease-in-out ${isOpen ? 'opacity-40' : 'opacity-0 pointer-events-none'}`}
                 onClick={onClose}></div>
 
-            <div className={`fixed top-0 right-0 p-4 w-75 h-full flex flex-col bg-white shadow-xl transform transition-all duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+            <div className={`fixed top-0 right-0 p-4 w-65 h-full flex flex-col bg-white shadow-xl transform transition-all duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
                 {/* offcanvas header */}
                 <div className="flex justify-between items-center p-2 border-b border-gray-200">
                     <Link href="/userProfile" className='hover:text-blue-500 transition duration-200 cursor-pointer'>
@@ -31,7 +31,7 @@ export default function Sidebar({ isOpen, onClose }) {
                     <h2 className='font-semibold  text-lg uppercase text-gray-800'> overview</h2>
                     <div className="flex flex-col space-y-3">
 
-                        {pathName !== "#" && (
+                        {pathName !== "/InstitutionHomePage" && (
                             <Link href="#"
                                 className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
                                 <Home size={20} strokeWidth={1.5} />
@@ -39,12 +39,12 @@ export default function Sidebar({ isOpen, onClose }) {
                             </Link>
                         )}
 
-                        <Link href="/institutionProfile"
+                        <Link href="#"
                             className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
-                            <MessageCircleMore size={20} strokeWidth={1.5} />
+                            <UserRound size={20} strokeWidth={1.5} />
                                 My Profile
                         </Link>
-                        <Link href="/chat"
+                        {/* <Link href="/chat"
                             className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
                             <MessageCircleMore size={20} strokeWidth={1.5} />
                                 Chats
@@ -53,7 +53,7 @@ export default function Sidebar({ isOpen, onClose }) {
                             className=" flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
                             <MessageSquareWarning size={20} strokeWidth={1.5} />
                                 Notification
-                        </Link>
+                        </Link> */}
                         <Link href="#"
                             className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
                             <QrCode size={20} strokeWidth={1.5} />
@@ -67,7 +67,7 @@ export default function Sidebar({ isOpen, onClose }) {
                         <Link href="#"
                             className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200"> 
                             <ScanLine size={20} strokeWidth={1.5} />
-                            My Token
+                            Token
                         </Link>
                         <Link href="#"
                             className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
@@ -78,6 +78,11 @@ export default function Sidebar({ isOpen, onClose }) {
                             className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
                             <FolderDown size={20} strokeWidth={1.5} />
                             My Plans
+                        </Link>
+                        <Link href="#"
+                            className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
+                            <TableOfContents size={20} strokeWidth={1.5} />
+                            FAQ
                         </Link>
                     </div>
                 </div>

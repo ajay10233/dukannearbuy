@@ -65,7 +65,7 @@ export default function Subscription() {
     
     return (
         <div className="min-h-screen px-6 py-10 flex items-center justify-center">
-            <div className="w-full max-w-[1200px] flex flex-col items-center gap-10">
+            <div className="w-full max-w-[1200px] flex flex-col items-center gap-5 md:gap-10">
                 <div className="text-center gap-y-2 p-4">
                     <h2 className="text-3xl font-bold text-gray-200">Choose Your Plan</h2>
                     <p className="text-gray-400">
@@ -73,11 +73,11 @@ export default function Subscription() {
                     </p>
                 </div>
 
-                <div className="w-full flex flex-wrap justify-center md:justify-around gap-6">
+                <div className="w-full flex flex-wrap justify-center md:justify-around gap-8">
                     {plans.map((plan) => (
                         <div
                         key={plan.id}
-                        className={`w-[250px] h-[300px] md:w-[300px] md:h-[350px] rounded-xl p-4 gap-y-4 flex flex-col justify-between items-center transition-all duration-300 transform
+                        className={`w-[260px] h-[330px] md:w-[300px] md:h-[350px] rounded-xl p-4 gap-y-4 flex flex-col justify-between items-center transition-all duration-300 transform
                             ${
                               plan.title === "BASIC"
                                 ? "bg-gradient-to-tr from-white to-gray-300 border-2 hover:shadow-md hover:scale-105 border-yellow-400 hover:ring-2 hover:ring-yellow-300"
@@ -85,7 +85,7 @@ export default function Subscription() {
                             }`}>
 
                         {/* <Image src={plan.image} alt={plan.title} width={80} height={80} /> */}
-                        <h3 className="text-2xl font-bold mt-4">{plan.title}</h3>
+                        <h3 className="text-2xl font-bold mt-0 md:mt-4">{plan.title}</h3>
 
                         <ul className="gap-y-4 text-gray-600 text-sm text-left w-full px-2">
                             {plan.features.map((feature, i) => (

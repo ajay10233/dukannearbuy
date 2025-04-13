@@ -5,7 +5,8 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import useEmblaCarousel from "embla-carousel-react";
-import { Plus, X } from "lucide-react";
+import { Plus, X, RefreshCcwDot } from "lucide-react";
+import ProfileWrapper from "./ProfileWrapper";
 
 export default function HeroSection() {
   const { data: session } = useSession();
@@ -49,7 +50,6 @@ export default function HeroSection() {
         reader.readAsDataURL(file);
       });
 
-      // Simulating upload
       setImages((prev) => [...prev, base64String]);
       setImageCount((prev) => prev + 1);
       toast.success(`Uploaded ${file.name}`);
@@ -65,9 +65,18 @@ export default function HeroSection() {
     toast.success("Image deleted");
   };
 
+  const handleSetPrimary = (index) => {
+    const rotated = [...images.slice(index), ...images.slice(0, index)];
+    setImages(rotated);
+    toast.success("Primary image updated!");
+  };
+  
+  
+
   return (
-    <div className="w-full not-visited:text-center">
-      <div className="w-full h-72 bg-gray-100 relative overflow-hidden shadow-inner">
+    <div className="w-full bg-gradient-to-tl from-sky-200 to-white">
+      {/* <ProfileWrapper/> */}
+      <div className="w-full h-72 relative overflow-hidden shadow-inner border border-dashed border-white">
         {(images.length > 0 || session?.user?.image) ? (
           <div className="h-full" ref={emblaRef}>
             <div className="flex h-full">
@@ -81,14 +90,31 @@ export default function HeroSection() {
                     priority
                   />
 
+                  {/* Label for Primary image */}
+                  {index === 0 && (
+                    <span className="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full shadow">
+                      Primary
+                    </span>
+                  )}
+
                   {images.includes(img) && (
                     <button
                       onClick={() => handleDeleteImage(index)}
-                      className="absolute top-2 right-2 bg-white/80 hover:bg-white text-red-500 rounded-full p-1 shadow group-hover:opacity-100 opacity-0 transition"
+                      className="absolute top-2 right-2 cursor-pointer bg-white/80 hover:bg-white rounded-full p-1 shadow group-hover:opacity-100 opacity-0 transition"
                       title="Delete Image">
                         <X size={20} color="#000000" strokeWidth={1.5} />
                     </button>
                   )}
+
+                  {/* Set as Primary Button */}
+                    {images.includes(img) && index !== 0 && (
+                      <button
+                        onClick={() => handleSetPrimary(index)}
+                        className="absolute bottom-2 left-2 cursor-pointer bg-white/80 hover:bg-white rounded-full p-1 shadow group-hover:opacity-100 opacity-0 transition"
+                        title="Set as Primary Image">
+                        <RefreshCcwDot size={20} color="#000000" strokeWidth={1.5} />
+                      </button>
+                    )}
                 </div>
               ))}
             </div>
@@ -103,7 +129,7 @@ export default function HeroSection() {
         {imageCount < 10 && (
           <div className="absolute bottom-2 right-2 z-10">
             <label htmlFor="upload-more" title="Upload up to 10 images">
-              <div className="bg-white/80 hover:bg-white p-2 rounded-full cursor-pointer shadow-md">
+              <div className="bg-white/80 hover:bg-white p-0.5 md:p-2 rounded-full cursor-pointer shadow-md">
                 <Plus className="w-6 h-6 text-gray-700" />
               </div>
             </label>
@@ -124,6 +150,23 @@ export default function HeroSection() {
             Uploading...
           </div>
         )}
+      </div>
+      <div className="flex w-full p-4 md:px-12 md:pt-8 justify-between items-start">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl md:text-3xl pb-3 md:pb-6 font-bold text-blue-600 flex items-center gap-2">
+            {session?.user?.role === "INSTITUTION" ? (                            
+              <>
+                <Plus size={30} strokeWidth={2.5} color="#1751c4" />
+                {session?.user?.firmName || "Medical Institute"}
+              </>
+                ) : session?.user?.role === "SHOP_OWNER" ? (
+              <>
+                <Store size={30} strokeWidth={2.5} color="#1751c4" />
+                {session?.user?.firmName || "Shop Owner"}
+              </>
+            ) : null}
+          </h1>
+        </div>
       </div>
     </div>
   );

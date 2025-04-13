@@ -5,14 +5,16 @@ import Review from '@/app/components/InstitutionHome/Profile/Review';
 import ProfileWrapper from '@/app/components/InstitutionHome/Profile/ProfileWrapper';
 
 export default function page() {
+    
     return (
         <>
             <Navbar />
-            <ProfileWrapper>
+            <ProfileWrapper >
                 <HeroSection />
                 <About />
-                <Review />
             </ProfileWrapper>
+            <Review />
+
         </>
     );
 }

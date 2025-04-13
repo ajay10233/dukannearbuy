@@ -120,7 +120,7 @@ export default function TopSeller() {
   return (
     <div className="w-full flex flex-col items-center px-6 py-10">
       <div className="w-full max-w-[1000px] flex flex-col gap-8">
-        <h2 className="flex justify-center items-center p-4 text-xl md:text-3xl font-bold text-gray-100">
+        <h2 className="flex justify-center items-center text-center p-4 text-xl md:text-3xl font-bold text-gray-100">
           Most trusted partners near you
         </h2>
 
