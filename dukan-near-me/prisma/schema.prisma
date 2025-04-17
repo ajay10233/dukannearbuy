@@ -104,6 +104,7 @@ model User {
   planActivatedAt      DateTime?
   planExpiresAt        DateTime?
   paidProfilesGiven    PaidProfile[] @relation("PaidProfilePayer")
+  abusiveCommentsReported AbusiveComment[] @relation("UserReportedAbuse")
 
   @@map("users")
 }
@@ -336,7 +337,7 @@ model Review {
 
   user           User     @relation("UserReviewGiven", fields: [userId], references: [id])
   institution    User     @relation("UserReviewReceived", fields: [institutionId], references: [id])
-
+  abuseReports AbusiveComment[] @relation("ReviewAbuseReports")
   // @@unique([userId, institutionId]) // Optional: prevent duplicate reviews per user
   @@map("reviews")
 }
@@ -351,5 +352,22 @@ model PaidProfile {
   notes           String?
   user            User     @relation("PaidProfilePayer", fields: [userId], references: [id])
   image           String?
+
+
   @@map("paid_profiles")
+}
+
+
+model AbusiveComment {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  reviewId   String   @db.ObjectId
+  reason     String
+  reportedBy String   @db.ObjectId
+  // status     String   @default("PENDING") // PENDING | ACCEPTED | DENIED
+  createdAt  DateTime @default(now())
+
+  review     Review   @relation("ReviewAbuseReports", fields: [reviewId], references: [id])
+  reporter   User     @relation("UserReportedAbuse", fields: [reportedBy], references: [id])
+
+  @@map("abusive_comments")
 }

@@ -9,59 +9,63 @@ import EditProfile from './EditProfile';
 
 export default function Profile() {
   const { data: session, status } = useSession();
+  console.log("session:", session);
+
   const [isEditing, setIsEditing] = useState(false);
-  // const [user, setUser] = useState(session?.user);
-  //   const [editedUser, setEditedUser] = useState({});
-  const [loading, setLoading] = useState(false);
-  //   const [error, setError] = useState(null);           
+  const [user, setUser] = useState();
+  const [editedUser, setEditedUser] = useState({});
+  const [loading, setLoading] = useState(false);       
+  const [error, setError] = useState(null);           
 
   // useEffect(() => {
-  // if (status === 'authenticated') {
-  //   fetch('/api/users')
-  //     .then(res => {
-  //       if (!res.ok) throw new Error('User not found');
-  //       return res.json();
-  //     })
-  //     .then(data => {
-  //       setUser(data);
-  //       setEditedUser(data);
-  //       setLoading(false);
-  //     })
-  //     .catch(err => {
-  //       console.error('Error loading profile:', err);
-  //       setError(err.message);
-  //       setLoading(false);
-  //     });
-  // }
-  // }, [status]);
-
-  //   const handleChange = (e) => {
-  //     setEditedUser({ ...editedUser, [e.target.name]: e.target.value });
-  //   };
-
-  //   const handleSave = async () => {
-  //     try {
-  //       const response = await fetch('/api/users', {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //         body: JSON.stringify(editedUser),
+  //   if (status === 'authenticated') {
+  //     fetch('/api/users')
+  //       .then(res => {
+  //         if (!res.ok) throw new Error('User not found');
+  //         return res.json();
+  //       })
+  //       .then(data => {
+  //         setUser(data);
+  //         setEditedUser(data);
+  //         setLoading(false);
+  //       })
+  //       .catch(err => {
+  //         console.error('Error loading profile:', err);
+  //         setError(err.message);
+  //         setLoading(false);
   //       });
+  //   }
+  // }, [status]);
+    
+  const handleChange = (e) => {
+    setEditedUser({ ...editedUser, [e.target.name]: e.target.value });
+  };
 
-  //       const result = await response.json();
-  //       if (!response.ok) throw new Error(result.error || 'Something went wrong');
+  // const handleSave = async () => {
+  //   try {
+  //     const response = await fetch('/api/users', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(editedUser),
+  //     });
 
-  //       toast.success('Profile updated!');
-  //       setUser(editedUser);
-  //       setIsEditing(false);
-  //     } catch (error) {
-  //       toast.error(error.message);
-  //     }
-  // };
+  //     const result = await response.json();
+  //     if (!response.ok) throw new Error(result.error || 'Something went wrong');
 
-  if (status === 'loading' || loading) return <p className="text-center py-20">Fetching user profile...</p>;
-  if (!session?.user) return <p className="text-center py-20 text-gray-700">No user data found.</p>;
+  //     toast.success('Profile updated!');
+  //     setUser(editedUser);
+  //     setIsEditing(false);
+  //   } catch (error) {
+  //     toast.error(error.message);
+  //   }
+  //   };
+    
+    if (status === 'loading' || loading) return <p className="text-center py-20">Fetching user profile...</p>;
+    if (error) return <p className="text-center py-20 text-red-600">{error}</p>;
+    // if (!user) return <p className="text-center py-20 text-gray-700">No user data found.</p>;
+  
 
   return (
     <section className="min-h-screen bg-white pt-13 px-4">
@@ -70,8 +74,8 @@ export default function Profile() {
         <div className="flex-1 px-8">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-xl font-bold">Hello, {session?.user.firstName || session?.user.lastName}</h2>
-              <p className="text-sm text-gray-500">Joined in {session?.user.createdAt || 2025}</p>
+              <h2 className="text-xl font-bold">Helloasdfadsd, {session?.user?.firmName}</h2>
+              <p className="text-sm text-gray-500">Joined in {user?.createdAt || 2025}</p>
             </div>
             {!isEditing && (
               <button
@@ -95,38 +99,34 @@ export default function Profile() {
             <>
               <hr className="py-4 border-gray-200" />
               <div className="gap-6 space-y-3 px-2">
-                {session?.user?.address && typeof session.user.address === 'object' && (
+                {user?.address && (
                   <p className="text-base text-gray-800 pb-1">
-                    <span className="font-semibold text-gray-600">Address:</span>{' '}
-                    {Object.values(session.user.address || {})
-                      .filter((val) => val && val.trim() !== '')
-                      .join(', ') || 'Not provided'}
+                    <span className="font-semibold text-gray-600">Address:</span> {user?.address}
                   </p>
                 )}
-
-                {session?.user.age && (
+                {user?.age && (
                   <p className="text-base text-gray-800 pb-1">
-                    <span className="font-semibold text-gray-600">Age:</span> {session.user.age}
+                    <span className="font-semibold text-gray-600">Age:</span> {user?.age}
                   </p>
                 )}
-                {session?.user.gender && (
+                {user?.gender && (
                   <p className="text-base text-gray-800 pb-1">
-                    <span className="font-semibold text-gray-600">Gender:</span> {session.user.gender}
+                    <span className="font-semibold text-gray-600">Gender:</span> {user?.gender}
                   </p>
                 )}
-                {session?.user.email && (
+                {user?.email && (
                   <p className="text-base text-gray-800 pb-1">
-                    <span className="font-semibold text-gray-600">Email:</span> {session.user.email}
+                    <span className="font-semibold text-gray-600">Email:</span> {user?.email}
                   </p>
                 )}
-                {session?.user.phone && (
+                {user?.mobile && (
                   <p className="text-base text-gray-800 pb-1">
-                    <span className="font-semibold text-gray-600">Phone:</span> {session.user.phone}
+                    <span className="font-semibold text-gray-600">Mobile:</span> {user?.mobile}
                   </p>
                 )}
               </div>
 
-              {session?.user.emailConfirmed && session?.user.mobileConfirmed && (
+              {user?.emailConfirmed && user?.mobileConfirmed && (
                 <div className="flex items-center gap-2 text-gray-900 font-medium mt-2">
                   <BadgeCheck
                     size={18}

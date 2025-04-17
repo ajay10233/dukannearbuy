@@ -3,7 +3,6 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import SocketInitializer from "@/app/components/SocketInitializer";
 import SessionProviderWrapper from "@/app/components/SessionManager/SessionProviderWrapper"; 
-import HeaderLocation from "./components/Location/HeaderLocation";
 
 const rubik = Rubik({
   variable: "--font-rubik",
