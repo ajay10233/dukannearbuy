@@ -160,7 +160,7 @@ export default function Subscription() {
   
     fetchPlans();
   }, []);
-  
+
 
   return (
     <div className="min-h-screen px-6 py-10 flex items-center justify-center">
@@ -173,6 +173,7 @@ export default function Subscription() {
         </div>
 
         <div className="w-full flex flex-wrap justify-center md:justify-around gap-8">
+          
           {plans.map((plan) => (
             <div
               key={plan.id}
