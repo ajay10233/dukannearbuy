@@ -347,7 +347,7 @@ model Review {
 model Coupon {
   id                    String   @id @default(auto()) @map("_id") @db.ObjectId
   name                  String?
-  discountPercentage    Float?
+  discountPercentage    Float
   startDate             DateTime?
   durationInDays        Int?
   expiresAt             DateTime
@@ -387,8 +387,9 @@ model AbusiveComment {
   // status     String   @default("PENDING") // PENDING | ACCEPTED | DENIED
   createdAt  DateTime @default(now())
 
-  review     Review   @relation("ReviewAbuseReports", fields: [reviewId], references: [id])
-  reporter   User     @relation("UserReportedAbuse", fields: [reportedBy], references: [id])
+  review Review @relation("ReviewAbuseReports", fields: [reviewId], references: [id], onDelete: Cascade)
+  reporter   User     @relation("UserReportedAbuse", fields: [reportedBy], references: [id],onDelete: Cascade)
 
   @@map("abusive_comments")
 }
+
