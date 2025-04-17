@@ -26,10 +26,11 @@ model Plan {
   price          Float    @default(0)
   description    String?
   features       String[] 
-  durationInDays Int
+  durationInDays Int?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   users          User[]   @relation("PlanUsers")
+  image          String?
 }
 
 model User {
@@ -340,6 +341,26 @@ model Review {
   abuseReports AbusiveComment[] @relation("ReviewAbuseReports")
   // @@unique([userId, institutionId]) // Optional: prevent duplicate reviews per user
   @@map("reviews")
+}
+
+
+model Coupon {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  name                  String?
+  discountPercentage    Float?
+  startDate             DateTime?
+  durationInDays        Int?
+  expiresAt             DateTime
+  createdAt             DateTime? @default(now())
+  updatedAt             DateTime? @updatedAt
+  purpose               Purpose?
+
+  @@map("coupons")
+}
+
+enum Purpose {
+  PLAN
+  PROMOTION
 }
 
 
