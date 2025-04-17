@@ -113,6 +113,7 @@ export const authOptions = {
             price: user.subscriptionPlan.price,
             durationInDays: user.subscriptionPlan.durationInDays,
             features: user.subscriptionPlan.features,
+            maxUploadSizeMB: user.subscriptionPlan.maxUploadSizeMB,
           } : null,
         };
       }

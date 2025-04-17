@@ -31,6 +31,7 @@ model Plan {
   updatedAt      DateTime @updatedAt
   users          User[]   @relation("PlanUsers")
   image          String?
+  maxUploadSizeMB Int      @default(1)
 }
 
 model User {
@@ -378,7 +379,7 @@ model Coupon {
   createdAt             DateTime? @default(now())
   updatedAt             DateTime? @updatedAt
   purpose               Purpose?
-
+  limit                 Int?
   @@map("coupons")
 }
 
@@ -397,7 +398,7 @@ model PaidProfile {
   notes           String?
   user            User     @relation("PaidProfilePayer", fields: [userId], references: [id])
   image           String?
-
+  range           Int?
 
   @@map("paid_profiles")
 }

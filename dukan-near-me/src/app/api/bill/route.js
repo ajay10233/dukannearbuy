@@ -2,13 +2,8 @@ import { getServerSession } from 'next-auth'
 import { prisma } from '@/utils/db'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { NextResponse } from 'next/server'
-import { v2 as cloudinary } from 'cloudinary'
+import cloudinary from "@/utils/cloudinary";
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-})
 
 export async function POST(req) {
   try {
@@ -23,20 +18,30 @@ export async function POST(req) {
     // Handle multipart/form-data
     if (contentType.includes('multipart/form-data')) {
       const form = await req.formData()
-
+    
       const file = form.get('file')
       const userId = form.get('userId')
       const tokenId = form.get('tokenId')
       const remarks = form.get('remarks')
       const invoiceNumber = form.get('invoiceNumber')
-
+    
       if (!file || typeof file === 'string') {
         return NextResponse.json({ success: false, error: 'No file uploaded' }, { status: 400 })
       }
-
+    
+      const maxSizeMB = session.user.subscriptionPlan?.maxUploadSizeMB || 1;
+      const maxSizeBytes = maxSizeMB * 1024 * 1024
+    
+      if (file.size > maxSizeBytes) {
+        return NextResponse.json({
+          success: false,
+          error: `File exceeds the upload limit of ${maxSizeMB}MB`,
+        }, { status: 400 })
+      }
+    
       const arrayBuffer = await file.arrayBuffer()
       const buffer = Buffer.from(arrayBuffer)
-
+    
       const uploadResult = await new Promise((resolve, reject) => {
         cloudinary.uploader.upload_stream(
           {
@@ -49,7 +54,7 @@ export async function POST(req) {
           }
         ).end(buffer)
       })
-
+    
       const bill = await prisma.bill.create({
         data: {
           user: { connect: { id: userId } },
@@ -63,9 +68,10 @@ export async function POST(req) {
           paymentStatus: 'PENDING',
         },
       })
-
+    
       return NextResponse.json({ success: true, bill })
     }
+    
 
     // Handle JSON request
     const body = await req.json()
