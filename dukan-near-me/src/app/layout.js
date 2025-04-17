@@ -10,6 +10,7 @@ const rubik = Rubik({
   subsets: ["latin"],
   weight: '400'
 });
+
 const workSans = Work_Sans({
   variable: '--font-workSans',
   subsets: ["latin"],

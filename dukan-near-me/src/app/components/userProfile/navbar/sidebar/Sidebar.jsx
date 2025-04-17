@@ -79,6 +79,11 @@ export default function Sidebar({ isOpen, onClose }) {
                             <FolderDown size={20} strokeWidth={1.5} />
                             My Plans
                         </Link>
+                        <Link href="#"
+                            className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
+                            <FolderDown size={20} strokeWidth={1.5} />
+                            Favourite 
+                        </Link>
                     </div>
                 </div>
 

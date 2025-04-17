@@ -27,7 +27,7 @@ export default function About({ profileUpdated }) {
     const [copiedEmail, setCopiedEmail] = useState(false);
 
     const handleCopyUpi = () => {
-        const upi = session?.user?.paymentDetails?.upi_id;
+        const upi = session?.user?.upi_id;
         if (upi) {
             navigator.clipboard.writeText(upi);
             setCopiedUPI(true);
@@ -38,6 +38,7 @@ export default function About({ profileUpdated }) {
 
     const handleCopyEmail = () => {
         const email = session?.user?.email;
+        // const email = session?.user?.contactEmail;
         if (email) {
             navigator.clipboard.writeText(email);
             setCopiedEmail(true);
@@ -84,24 +85,25 @@ export default function About({ profileUpdated }) {
         return selected.map((d) => shortDay[d]).join(", ");
       };
       
-
         return (
             <div className="flex flex-col items-start p-4 w-full bg-white">
                 <div className="flex w-full p-0 pb-6 md:px-8 md:py-2 justify-between items-start"> {/* py-4 */}
                     <div className="flex flex-col gap-1">
-                        {/* <h1 className="text-3xl pb-6 font-bold text-blue-600 flex items-center gap-2">
-                            {session?.user?.role === "INSTITUTION" ? (                            
-                                <>
-                                    <Plus size={30} strokeWidth={2.5} color="#1751c4" />
-                                    {session?.user?.firmName || "Medical Institute"}
-                                </>
-                            ) : session?.user?.role === "SHOP_OWNER" ? (
-                                <>
-                                    <Store size={30} strokeWidth={2.5} color="#1751c4" />
-                                    {session?.user?.firmName || "Shop Owner"}
-                                </>
-                            ) : null}
-                        </h1> */}
+                        {/* 
+                            <h1 className="text-3xl pb-6 font-bold text-blue-600 flex items-center gap-2">
+                                {session?.user?.role === "INSTITUTION" ? (                            
+                                    <>
+                                        <Plus size={30} strokeWidth={2.5} color="#1751c4" />
+                                        {session?.user?.firmName || "Medical Institute"}
+                                    </>
+                                ) : session?.user?.role === "SHOP_OWNER" ? (
+                                    <>
+                                        <Store size={30} strokeWidth={2.5} color="#1751c4" />
+                                        {session?.user?.firmName || "Shop Owner"}
+                                    </>
+                                ) : null}
+                            </h1> 
+                        */}
                         <div className="pl-2 md:pl-8 flex flex-col gap-y-1">
                             <p className="text-md text-gray-500">User ID: {session?.user?.id}</p>
                             <p className="text-md text-gray-700 flex items-center gap-2">
@@ -129,6 +131,38 @@ export default function About({ profileUpdated }) {
                                     <span>N/A</span>
                                 )}
                             </p>
+                            {profileUpdated && (
+                                <>
+                                    <div className="flex items-start gap-x-2">
+                                        <span className="font-semibold flex items-center gap-x-1">
+                                            <Phone size={20} strokeWidth={1.5} color="#1751c4" />
+                                            {/* Phone: */}
+                                        </span>
+                                        {session?.user?.mobileNumber ? (
+                                            <a
+                                                href={`tel:${session.user.mobileNumber}`}
+                                                className="hover:text-gray-600 transition ease-in-out hover:not-first:underline">
+                                                {session.user.mobileNumber}
+                                            </a>
+                                        ) : (
+                                            <span>N/A</span>
+                                        )}
+                                    </div>
+                                    <div className="text-md text-gray-700 flex items-center gap-2">
+                                        <Mail size={20} strokeWidth={1.5} color="#1751c4" />
+                                        {/* <span className="font-medium">Email:</span>{" "} */}
+                                        <span className="hover:text-gray-600 flex gap-x-1.5 transition ease-in-out">{session?.user?.contactEmail || "N/A"} 
+                                            <button onClick={handleCopyEmail} title="Copy Email">
+                                                {copiedEmail ? (
+                                                    <Check className="text-green-600 cursor-pointer" size={14} />
+                                                    ) : (
+                                                    <Copy size={14} className="text-gray-500 cursor-pointer hover:text-blue-600" />
+                                                )}
+                                            </button>
+                                        </span>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         {/* <div className="flex items-center gap-2">
@@ -245,8 +279,8 @@ export default function About({ profileUpdated }) {
                             </div>
                         </div>
     
-                        {session?.user?.paymentDetails?.upi_id &&
-                            session?.user?.paymentDetails && (
+                        {session?.user?.upi_id &&
+                            // session?.user?.paymentDetails && (
                                 <button
                                     title="Scan Qr code"
                                     onClick={() => setShowQRModal(true)}
@@ -254,7 +288,8 @@ export default function About({ profileUpdated }) {
                                     <IndianRupee size={20} strokeWidth={1.5} />
                                     Pay Now
                                 </button>
-                            )}
+                            // )
+                            }
                     
                         {session?.user?.description && (
                             <div className="p-4 md:p-8">
@@ -282,7 +317,7 @@ export default function About({ profileUpdated }) {
                                     </h2>
                                     <div className="p-4">
                                         <img
-                                            src={session?.user?.paymentDetails?.qr_code}
+                                            src={session?.user?.scanner_image}
                                             alt="QR Code"
                                             className="w-48 h-48 mx-auto object-contain"
                                         />
@@ -290,7 +325,7 @@ export default function About({ profileUpdated }) {
                                     <p className="pt-4 flex items-center justify-center gap-2 *:text-center text-gray-600">
                                         <span className="text-gray-800 text-sm font-medium">
                                             UPI ID: {" "}
-                                            <span className="font-normal">{session?.user?.paymentDetails?.upi_id}</span>
+                                            <span className="font-normal">{session?.user?.upi_id}</span>
                                         </span>
                                         <button onClick={handleCopyUpi} title="Copy UPI ID">
                                             {copiedUPI ? <Check className="text-green-600" size={18} /> : <Copy size={18} />}

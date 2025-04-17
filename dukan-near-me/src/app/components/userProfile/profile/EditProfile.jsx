@@ -54,7 +54,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
   };
 
   return (
-    <div className="grid gap-4 mb-4">
+    <form onSubmit={handleSave} className="grid gap-4 mb-4">
 
       {/* Address Fields */}
       <div className="grid grid-cols-2 gap-4">
@@ -64,6 +64,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
           onChange={handleChange}
           placeholder="House Number"
           className="p-2 border rounded"
+          required
         />
         <input
           name="address.street"
@@ -71,6 +72,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
           onChange={handleChange}
           placeholder="Street"
           className="p-2 border rounded"
+          required
         />
         <input
           name="address.buildingName"
@@ -78,6 +80,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
           onChange={handleChange}
           placeholder="Building Name"
           className="p-2 border rounded"
+          required
         />
         <input
           name="address.landmark"
@@ -85,6 +88,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
           onChange={handleChange}
           placeholder="Landmark"
           className="p-2 border rounded"
+          required
         />
         <input
           name="address.city"
@@ -92,6 +96,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
           onChange={handleChange}
           placeholder="City"
           className="p-2 border rounded"
+          required
         />
         <input
           name="address.state"
@@ -99,6 +104,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
           onChange={handleChange}
           placeholder="State"
           className="p-2 border rounded"
+          required
         />
         <input
           name="address.country"
@@ -106,6 +112,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
           onChange={handleChange}
           placeholder="Country"
           className="p-2 border rounded"
+          required
         />
         <input
           name="address.zipCode"
@@ -113,6 +120,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
           onChange={handleChange}
           placeholder="Zip Code"
           className="p-2 border rounded"
+          required
         />
       </div>
 
@@ -125,6 +133,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
           onChange={handleChange}
           placeholder="Age"
           className="p-2 border rounded"
+          required
         />
         <div className="flex justify-around items-center gap-4">
           {['Male', 'Female', 'Other'].map((gender) => (
@@ -135,6 +144,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
                 value={gender}
                 checked={formData?.gender === gender}
                 onChange={handleChange}
+                required
               />
               {gender}
             </label>
@@ -149,6 +159,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
           onChange={handleChange}
           placeholder="Email"
           className="p-2 border rounded"
+          required
         />
         <input
           name="phone"
@@ -156,22 +167,31 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
           onChange={handleChange}
           placeholder="Phone"
           className="p-2 border rounded"
+          required
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <input
+          name="username"
+          value={formData?.username || ''}
+          onChange={handleChange}
+          placeholder="Username"
+          className="p-2 border rounded"
         />
       </div>
 
       {/* Buttons */}
       <div className="flex gap-4">
-        <button
-          onClick={handleSave}
+        <button type="submit"
           className="bg-blue-600 text-white px-4 py-1 cursor-pointer rounded-md hover:bg-blue-500 transition">
           Save Changes
         </button>
-        <button
+        <button type='button'
           onClick={onCancel}
           className="border border-gray-600 px-4 py-1 cursor-pointer rounded-md hover:bg-gray-100 transition">
           Cancel
         </button>
       </div>
-    </div>
+    </form>
   );
 }

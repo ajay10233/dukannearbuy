@@ -9,6 +9,7 @@ import EditProfile from './EditProfile';
 
 export default function Profile() {
   const { data: session, status } = useSession();
+  console.log("session:", session);
   const [isEditing, setIsEditing] = useState(false);
   // const [user, setUser] = useState(session?.user);
   //   const [editedUser, setEditedUser] = useState({});
@@ -71,7 +72,13 @@ export default function Profile() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-xl font-bold">Hello, {session?.user.firstName || session?.user.lastName}</h2>
-              <p className="text-sm text-gray-500">Joined in {session?.user.createdAt || 2025}</p>
+              <p className="text-sm text-gray-500">
+                Joined on {session?.user?.createdAt ? new Date(session?.user?.createdAt).toLocaleDateString('en-GB') : 'N/A'}
+              </p>
+              
+              <div className='pr-4 py-3 flex items-center gap-2'>
+                <span className='text-sm text-gray-700 font-semibold'>User Id: </span><p className='text-sm text-gray-600'>{session?.user?.username}</p>
+              </div>
             </div>
             {!isEditing && (
               <button
@@ -94,7 +101,7 @@ export default function Profile() {
           ) : (
             <>
               <hr className="py-4 border-gray-200" />
-              <div className="gap-6 space-y-3 px-2">
+            <div className="gap-6 space-y-3 px-2">
                 {session?.user?.address && typeof session.user.address === 'object' && (
                   <p className="text-base text-gray-800 pb-1">
                     <span className="font-semibold text-gray-600">Address:</span>{' '}

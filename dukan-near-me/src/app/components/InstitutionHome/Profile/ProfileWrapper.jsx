@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from "react";
 import EditProfile from "./EditProfile";
 import toast from "react-hot-toast";
-import { FaEdit } from "react-icons/fa";
-import { Share2 } from "lucide-react";
+import { FaEdit} from "react-icons/fa";
+import { Share2, X, Heart } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 
@@ -39,13 +39,19 @@ export default function ProfileWrapper({ children, images, setImages  }) {
         shopAddress: '',
         contactEmail: '',
         description: '',
-        upi_id: '',
-        paymentDetails: '',
+        upi_id: "",
+        latitude: null,
+        longitude: null,
+        scanner_image: "",
         shopOpenTime: '',
         shopCloseTime: '',
         shopOpenDays: '',
         shopOpenDays: '',
-        hashtags: ''
+        hashtags: '',
+        mobileNumber: '',
+        contactEmail: '',
+        pastShopAddress: '',
+        id: ''
       });
   
   useEffect(() => {
@@ -142,11 +148,52 @@ export default function ProfileWrapper({ children, images, setImages  }) {
             .then(() => toast.success("Profile link copied!"))
             .catch((err) => toast.error("Failed to copy link"));
         }
-    };
+  };
+  
+  const handleDeleteImageWrapper = async (indexToDelete) => {
+    console.log("images:", images);
+    console.log("images[0]:", images?.[0]);
+
+    if (!images || !images[indexToDelete]) {
+      toast.error("No image found to delete");
+      return;
+    }
+    const imageToDelete = images[indexToDelete];
+  
+    try {
+      const response = await fetch("/api/institutions/delete-photo", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ imageUrl: imageToDelete }),
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to delete image");
+      }
+  
+      const updatedImages = images.filter((_, i) => i !== indexToDelete);
+      setImages(updatedImages);
+      toast.success("Image deleted successfully");
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      toast.error(error.message || "Failed to delete image");
+    }
+  };
+  
 
     return (
         <>
-        <div className="w-full px-4 pb-2 md:px-8 pt-14 pb-3 flex justify-between items-center">
+        <div className={`w-full px-4 pb-2 md:px-8 pt-14 flex justify-between items-center ${
+          session?.user?.role === "INSTITUTION"
+            ? "bg-gradient-to-tr from-white to-sky-100"
+            : session?.user?.role === "SHOP_OWNER"
+            ? "bg-gradient-to-tl from-lime-100 to-white"
+            : ""
+        }`}>
         <button
           onClick={handleEditClick}
           className="flex items-center cursor-pointer text-blue-600 hover:text-blue-700 transition">
@@ -154,11 +201,30 @@ export default function ProfileWrapper({ children, images, setImages  }) {
           {/* Edit Profile */}
         </button>
 
-        <button
-          onClick={handleShare}
-          className="cursor-pointer text-gray-800 rounded hover:text-gray-500 transition">
-          <Share2 size={20} strokeWidth={1.5} />
-        </button>
+        <div className="flex items-center gap-x-8">
+          {/*  Heart Icon */}
+          <button
+            className="transition cursor-pointer">
+            <Heart size={20} strokeWidth={1.5}  color="#ff0000" />
+          </button>
+
+          {/* Share Icon */}
+          <button
+            onClick={handleShare}
+            className="cursor-pointer text-gray-800 hover:text-gray-500 transition">
+            <Share2 size={20} strokeWidth={1.5} />
+          </button>
+
+          {/* Delete Icon */}
+          <X
+            size={20}
+            strokeWidth={1.5}
+            className="cursor-pointer text-gray-800 hover:text-gray-500 transition"
+            title="Delete Image"
+            onClick={() => handleDeleteImageWrapper(0)}
+          />
+        </div>
+
       </div>
 
       {children}
