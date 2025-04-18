@@ -11,24 +11,32 @@ import {
 import Link from "next/link";
 import { BadgeIndianRupee, SquareCheckBig, UserPlus, BadgeCheck, Smile, Megaphone, Sparkles, Rocket, Flame, Store} from "lucide-react";
 import CustomDropdown from "./CustomDropdown";
+import KilometerDropdown from "./KiloMeterDropdown";
 
 export default function PromotionCard() {
-  const [days, setDays] = useState(1);
-  const [isPremium, setIsPremium] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+    const [days, setDays] = useState(1);
+    const [isPremium, setIsPremium] = useState(false);
+    const [selectedKm, setSelectedKm] = useState(5); 
 
-  const costPerDay = 99;
-  const totalCost = days * costPerDay;
-  const discountedCost = isPremium ? totalCost * 0.7 : totalCost;
-
-  const handleDaysChange = (e) => {
-    const value = Math.min(14, Math.max(1, Number(e.target.value)));
-    setDays(value);
-  };
-
-  const min = 1;
-  const max = 10;
-  const percentage = ((days - min) / (max - min)) * 100;
+    const kmCosts = {
+      5: 99,
+      20: 199,
+      50: 500,
+      100: 800,
+    };
+  
+    const costPerKm = kmCosts[selectedKm];
+    const totalCost = days * costPerKm;
+    const discountedCost = isPremium ? totalCost * 0.7 : totalCost;
+  
+    const handleDaysChange = (e) => {
+      const value = Math.min(14, Math.max(1, Number(e.target.value)));
+      setDays(value);
+    };
+  
+    const min = 1;
+    const max = 10;
+    const percentage = ((days - min) / (max - min)) * 100;
   
   return (
     <section className="w-full flex flex-col items-center py-10 px-4 gap-y-10">
@@ -37,8 +45,9 @@ export default function PromotionCard() {
         <DialogTrigger asChild>
           <div
             className="cursor-pointer flex-col gap-y-2 bg-gradient-to-r from-pink-100 to-teal-100 transition-all shadow-xl rounded-xl p-6 md:px-8 md:py-12 w-full max-w-4xl min-h-[450px] flex justify-between duration-300 ease-in-out transform"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}>
+            // onMouseEnter={() => setIsHovered(true)}
+            // onMouseLeave={() => setIsHovered(false)}
+          >
             <div className="flex flex-col gap-y-1">
                 <div className="flex justify-between flex-col gap-y-1">
                     <h2 className="text-2xl font-semibold text-start text-gray-800">
@@ -161,7 +170,12 @@ export default function PromotionCard() {
     Choose how long you'd like to promote your listing and the type of spotlight you want.
   </DialogDescription>
 
-  <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
+        <div>
+            <KilometerDropdown selectedKm={selectedKm} onKmChange={setSelectedKm} />                 
+        </div>
+                  
+    {/* no. of days */}
     <label htmlFor="days" className="font-medium text-gray-700">
       Select Duration (1-10 days)
     </label>
@@ -185,7 +199,7 @@ export default function PromotionCard() {
     />
 
     <p className="text-sm text-gray-700 flex items-center gap-2">
-        <BadgeIndianRupee size={24} color="#ffbb00" /> Total: ₹{costPerDay} x {days} days = <strong>₹{totalCost}</strong>
+    <BadgeIndianRupee size={24} color="#ffbb00" /> Total: ₹{costPerKm} x {days} days = <strong>₹{totalCost}</strong>
     </p>
 
     {isPremium && (
@@ -200,21 +214,22 @@ export default function PromotionCard() {
         <option value="sale"><Flame color="#ffbb00" /> On Sale</option>
         <option value="new"><Store color="#05fbff" /> New Shop</option>
         <option value="popular"><Store color="#05fbff" /> Popular Reach</option>
-      </select> */} <CustomDropdown/>
+      </select> */}
+        <CustomDropdown />
     </div>
 
     <button className="p-2 flex items-center justify-center gap-2 cursor-pointer bg-gradient-to-r from-teal-500 to-blue-600 text-white font-medium rounded-md hover:opacity-90 transition duration-300">
-    <SquareCheckBig color="#fff" /> Confirm & Boost Now
+        <SquareCheckBig color="#fff" /> Confirm & Boost Now
     </button>
   </div>
 
-  <div className="pt-4 text-sm text-gray-500">
-    By clicking confirm, you agree to our{" "}
-    <Link href="/terms-and-conditions" className="text-teal-500 underline">
-      Terms and Conditions
-    </Link>.
-  </div>
-</DialogContent>
+    <div className="pt-4 text-sm text-gray-500">
+        By clicking confirm, you agree to our{" "}
+        <Link href="/terms-and-conditions" className="text-teal-500 underline">
+        Terms and Conditions
+        </Link>.
+    </div>
+    </DialogContent>
 
       </Dialog>
     </section>

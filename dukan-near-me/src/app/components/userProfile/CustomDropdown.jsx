@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Flame, Store, BadgeCheck, ChevronDown, ChevronUp } from "lucide-react";
+import { Flame, Store, BadgeCheck, ChevronDown, ChevronUp, Gift, Package, HandCoins } from "lucide-react";
 
 export default function CustomDropdown() {
   const [selectedOption, setSelectedOption] = useState("");
@@ -13,7 +13,7 @@ export default function CustomDropdown() {
   return (
     <div className="relative">
       <button
-        className="w-full border rounded px-2 py-1 text-left flex justify-between items-center"
+        className="w-full border rounded px-2 py-1 text-left flex justify-between items-center cursor-pointer"
         onClick={() => setIsOpen(!isOpen)} // Toggle dropdown open/close
       >
         <span>{selectedOption || "Select Promotion Type"}</span>
@@ -52,6 +52,27 @@ export default function CustomDropdown() {
         >
           <BadgeCheck color="#14b909" />
           <span>Reach</span>
+        </div>
+        <div
+          className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
+          onClick={() => handleSelectChange("New Product")}
+        >
+          <Package color="#6366f1" />
+          <span>New Product</span>
+        </div>
+        <div
+          className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
+          onClick={() => handleSelectChange("New Services")}
+        >
+          <HandCoins size={20} strokeWidth={1.5} color="#f97316" />
+          <span>New Services</span>
+        </div>
+        <div
+          className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
+          onClick={() => handleSelectChange("Festive Offers")}
+        >
+          <Gift color="#ec4899" />
+          <span>Festive Offers</span>
         </div>
       </div>
     </div>
