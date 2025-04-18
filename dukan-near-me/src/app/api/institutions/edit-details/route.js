@@ -16,9 +16,7 @@ export async function POST(req) {
         if (!user) {
             return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
         }
-        if (user.role != "INSTITUTION" || user.role != "SHOP_OWNER") {
-            return new Response(JSON.stringify({ error: "Only partners can update this profile" }), { status: 403 });
-        }
+      
 
         const updateData = {};
 

@@ -5,6 +5,7 @@ import QRCodeComponent from "../components/QRCodeComponent";
 import ClientQRCodeSection from "../components/ClientQRCodeSection";
 import ReviewComponent from "../components/Reviews/ReviewComponent";
 import EditInstitution from "../components/EditInstitution";
+import ChangePastAddress from "../components/ChangePastAddress";
 
 
 export default async function Dashboard() {
@@ -17,11 +18,12 @@ export default async function Dashboard() {
       <h1>Welcome, {session.user.firstName + session.user.lastName}!</h1>
       <p className="lowercase">Your role: {session.user.role}</p>
       <LogoutButton />
-
+{/* 
       <ReviewComponent user={session.user}/>
       <QRCodeComponent params={{ id: session.user.id }} />
       <EditInstitution/>
-      <ClientQRCodeSection />
+      <ClientQRCodeSection /> */}
+      <ChangePastAddress/>
     </div>
   );
 }
