@@ -12,7 +12,28 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const institutionId = session.user.id
+    const institutionId = session.user.id;
+
+    const institution = await prisma.user.findUnique({
+      where: {
+        id: institutionId,
+      },
+      include: {
+        subscriptionPlan: true,
+      },
+    });
+    
+
+    if (!institution) {
+      return NextResponse.json({ error: 'Institution not found' }, { status: 404 })
+    }
+    const expiresAt = new Date();
+    expiresAt.setMonth(expiresAt.getMonth() + 1);
+    if (institution?.subscriptionPlan?.name === "PREMIUM") {
+      expiresAt.setMonth(expiresAt.getMonth() + 6);
+    } else if (institution?.subscriptionPlan?.name === "BUSINESS") {
+      expiresAt.setMonth(expiresAt.getMonth() + 15);
+    }
     const contentType = req.headers.get('content-type') || ''
 
     // Handle multipart/form-data
@@ -66,6 +87,7 @@ export async function POST(req) {
           fileUrl: uploadResult.secure_url,
           fileType: file.type || null,
           paymentStatus: 'PENDING',
+          expiresAt:expiresAt,
         },
       })
     
@@ -117,6 +139,7 @@ export async function POST(req) {
             total: item.price * item.quantity,
           })),
         },
+        expiresAt:expiresAt
       },
       include: { items: true },
     })

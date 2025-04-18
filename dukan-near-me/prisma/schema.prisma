@@ -107,12 +107,12 @@ model User {
   planExpiresAt        DateTime?
   paidProfilesGiven    PaidProfile[] @relation("PaidProfilePayer")
   abusiveCommentsReported AbusiveComment[] @relation("UserReportedAbuse")
+  favoriteBills FavoriteBills[]
 
   pastAddresses PastAddress[]
   
   @@map("users")
 }
-
 
 model PastAddress {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -299,6 +299,7 @@ model Bill {
   id             String     @id @default(auto()) @map("_id") @db.ObjectId
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
+  expiresAt      DateTime
 
   userId         String?    @db.ObjectId
   institutionId  String?    @db.ObjectId
@@ -318,9 +319,11 @@ model Bill {
 
   fileUrl        String?
   fileType       String?
-
+  
   items         BillItem[] @relation("BillToBillItem")
   shortBill  ShortBill?
+  favoritedByUsers FavoriteBills[]
+
   @@map("bills")
 }
 
@@ -372,7 +375,7 @@ model Review {
 model Coupon {
   id                    String   @id @default(auto()) @map("_id") @db.ObjectId
   name                  String?
-  discountPercentage    Float
+  discountPercentage    Float?
   startDate             DateTime?
   durationInDays        Int?
   expiresAt             DateTime
@@ -418,3 +421,24 @@ model AbusiveComment {
   @@map("abusive_comments")
 }
 
+model FavoriteBills {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String @db.ObjectId
+  billId  String @db.ObjectId
+
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bill    Bill   @relation(fields: [billId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, billId]) // A user can't favorite the same bill twice
+  @@map("favorite_bills")
+}
+
+
+model AdminImages{
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  link       String?
+  details    String?
+  createdAt  DateTime @default(now())
+}

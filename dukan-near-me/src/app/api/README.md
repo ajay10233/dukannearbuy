@@ -1,3 +1,123 @@
+# Farvorite bills routes
+## 📍 Base URL
+
+```
+/api/favorite-bills/
+```
+
+---
+
+## 🔹 `GET` – Get All Favorite Bills for a User
+
+### ✅ **Query Params:**
+
+| Param   | Type   | Required | Description             |
+|---------|--------|----------|-------------------------|
+| userId  | String | ✅ Yes   | ID of the user          |
+
+### 🔐 Auth:
+- Requires session with role `USER`
+
+### 🧾 **Example Request:**
+```http
+GET /api/favorite-bills?userId=661fe1d4b82e0b5db75f8e1f
+```
+
+### ✅ **Success Response:**
+```json
+[
+  {
+    "id": "66220b5cc55cc0e3a0a1f489",
+    "userId": "661fe1d4b82e0b5db75f8e1f",
+    "billId": "661fe5c7c88a91d845c3ed8b",
+    "bill": {
+      "id": "661fe5c7c88a91d845c3ed8b",
+      "totalAmount": 200.5,
+      "paymentStatus": "PAID",
+      "invoiceNumber": "INV-20250412",
+      ...
+    }
+  }
+]
+```
+
+### ❌ Error Responses:
+- `401 Unauthorized` – if no valid session or not a `USER`
+- `400 Bad Request` – if `userId` is missing
+
+---
+
+## 🔹 `POST` – Add a Favorite Bill
+
+### 📦 **Request Body:**
+```json
+{
+  "userId": "661fe1d4b82e0b5db75f8e1f",
+  "billId": "661fe5c7c88a91d845c3ed8b"
+}
+```
+
+### 🔐 Auth:
+- Requires session with role `USER`
+
+### ✅ **Success Response:**
+```json
+{
+  "id": "66220b5cc55cc0e3a0a1f489",
+  "userId": "661fe1d4b82e0b5db75f8e1f",
+  "billId": "661fe5c7c88a91d845c3ed8b"
+}
+```
+
+### ⚠️ If Already Favorited:
+```json
+{
+  "message": "Already favorited",
+  "favorite": {
+    "id": "66220b5cc55cc0e3a0a1f489",
+    "userId": "661fe1d4b82e0b5db75f8e1f",
+    "billId": "661fe5c7c88a91d845c3ed8b"
+  }
+}
+```
+
+### ❌ Error Responses:
+- `401 Unauthorized` – if no valid session or not a `USER`
+- `400 Bad Request` – missing fields
+- `500 Server Error` – Prisma/internal error
+
+---
+
+## 🔹 `DELETE` – Remove a Favorite Bill
+
+### ✅ **Query Params:**
+
+| Param          | Type   | Required | Description              |
+|----------------|--------|----------|--------------------------|
+| favoriteBillId | String | ✅ Yes   | ID of the favorite entry |
+
+### 🔐 Auth:
+- Requires session with role `USER`
+
+### 🧾 **Example Request:**
+```http
+DELETE /api/favorite-bills?favoriteBillId=66220b5cc55cc0e3a0a1f489
+```
+
+### ✅ **Success Response:**
+```json
+{
+  "message": "Removed from favorites"
+}
+```
+
+### ❌ Error Responses:
+- `401 Unauthorized` – if not logged in or not a `USER`
+- `400 Bad Request` – missing `favoriteBillId`
+- `404 Not Found` – favorite record doesn't exist
+- `500 Server Error` – Prisma/internal error
+
+
 # Updated Work
 
 - Users can login via email, phone or username as well | done

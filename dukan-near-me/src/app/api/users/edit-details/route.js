@@ -46,6 +46,13 @@ export async function POST(req) {
       }
     }
 
+    if (updateData.username) {
+      const existing = await prisma.user.findUnique({ where: { username: updateData.username } });
+      if (existing && existing.id !== session.user.id) {
+        return new Response(JSON.stringify({ error: "Username already taken" }), { status: 409 });
+      }
+    }
+
     if (Object.keys(updateData).length === 0) {
       return new Response(JSON.stringify({ error: "No valid fields provided to update" }), { status: 400 });
     }
