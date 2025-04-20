@@ -60,7 +60,7 @@ export default function TokenUpdate() {
     return (
         <section className="flex flex-col items-center h-[calc(100vh-50px)] justify-start px-8 pb-8 pt-16 gap-y-4 bg-white">
             <div className="flex items-center justify-between w-full">
-                <Link href="/UserHomePage" className="flex items-center gap-1">
+                <Link href="/InstitutionHome" className="flex items-center gap-1">
                     <MoveLeft size={20} strokeWidth={1.5} />
                 </Link>
                 <h2 className="text-2xl font-bold text-gray-700 text-center flex-1">

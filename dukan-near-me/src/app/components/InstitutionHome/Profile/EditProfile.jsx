@@ -157,7 +157,7 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
             <input
               type="id"
               name="id"
-              value={form?.id}
+              value={form?.username}
               onChange={handleChange}
               placeholder="Type your User Id"
               className="border p-2 rounded w-full"

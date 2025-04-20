@@ -15,9 +15,9 @@ export default function ProfileWrapper({ children, images, setImages  }) {
   const [errors, setErrors] = useState({});
   const [shareUrl, setShareUrl] = useState("");
   const [profileUpdated, setProfileUpdated] = useState(false);
-    const [message, setMessage] = useState('');
+  const [message, setMessage] = useState('');
+  const [isFavorite, setIsFavorite] = useState(false);
   
-
   // const [formData, setFormData] = useState({
   //   firmName: "",
   //   address: "",
@@ -50,8 +50,7 @@ export default function ProfileWrapper({ children, images, setImages  }) {
         hashtags: '',
         mobileNumber: '',
         contactEmail: '',
-        pastShopAddress: '',
-        id: ''
+        username: ''
       });
   
   useEffect(() => {
@@ -183,7 +182,39 @@ export default function ProfileWrapper({ children, images, setImages  }) {
       toast.error(error.message || "Failed to delete image");
     }
   };
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      const res = await fetch("/api/favorites");
+      const data = await res.json();
+      const currentInstitutionId = pathname.split("/").pop(); 
+      const ids = data.favorites.map(fav => fav.institutionId);
+      setIsFavorite(ids.includes(currentInstitutionId));
+    };
+    fetchFavorites();
+  }, []);  
+
+  const handleFavoriteToggle = async () => {
+    const currentInstitutionId = pathname.split("/").pop(); // Adjust to get the institution ID dynamically
+    
+    try {
+      const res = await fetch("/api/favorites", {
+        method: isFavorite ? "DELETE" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ institutionId: currentInstitutionId }),
+      });
   
+      if (res.ok) {
+        // Update the state after a successful API call
+        setIsFavorite(!isFavorite);
+      } else {
+        // Handle errors
+        console.error("Failed to update favorite status");
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+    }
+  };
 
     return (
         <>
@@ -203,10 +234,22 @@ export default function ProfileWrapper({ children, images, setImages  }) {
 
         <div className="flex items-center gap-x-8">
           {/*  Heart Icon */}
-          <button
+          {/* <button
             className="transition cursor-pointer">
             <Heart size={20} strokeWidth={1.5}  color="#ff0000" />
-          </button>
+          </button> */}
+            <button
+              onClick={handleFavoriteToggle}
+              className="transition cursor-pointer"
+            >
+              <Heart
+                size={20}
+                strokeWidth={1.5}
+                className={`transition-all duration-300 ${
+                  isFavorite ? "fill-red-500 text-red-500" : "text-gray-600"
+                }`}
+              />
+            </button>
 
           {/* Share Icon */}
           <button
