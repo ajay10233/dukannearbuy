@@ -16,15 +16,15 @@ export default function TokenUpdate() {
 
     useEffect(() => {
         if (!institutionId) return;
-    
+
         socket.emit("joinInstitutionRoom", institutionId);
-    
+
         // 1. Get all processing tokens initially
         socket.emit("getCurrentProcessingTokens", institutionId, (tokens) => {
             console.log("🔄 Initially fetched processing tokens:", tokens);
             setCurrentTokens(tokens || []);
         });
-    
+
         // 2. Handle newly updated processing token
         socket.on("processingTokenUpdated", (token) => {
             console.log("🟡 Token is now processing:", token);
@@ -37,25 +37,25 @@ export default function TokenUpdate() {
                 }
             });
         });
-    
+
         // 3. Handle completed token list update
         socket.on("completedTokensUpdated", (tokens) => {
             console.log("✅ Completed tokens updated:", tokens);
             setCompletedTokens(tokens);
-    
+
             // Remove completed tokens from processing list
             setCurrentTokens((prev) =>
                 prev.filter((token) => !tokens.some((t) => t.id === token.id))
             );
         });
-    
+
         // Cleanup listeners
         return () => {
             socket.off("processingTokenUpdated");
             socket.off("completedTokensUpdated");
         };
     }, [institutionId]);
-    
+
 
     return (
         <section className="flex flex-col items-center h-[calc(100vh-50px)] justify-start px-8 pb-8 pt-16 gap-y-4 bg-white">
@@ -88,17 +88,17 @@ export default function TokenUpdate() {
                                     {token.completed
                                         ? "✅ Completed"
                                         : token.processing
-                                        ? "🟡 Processing"
-                                        : "🕒 Waiting"}
+                                            ? "🟡 Processing"
+                                            : "🕒 Waiting"}
                                 </p>
-                                {token.name && (
+                                {token?.user?.username && (
                                     <p>
-                                        <span className="font-medium">Name:</span> {token.name}
+                                        <span className="font-medium">Name:</span> {token.user.username}
                                     </p>
                                 )}
-                                {token.phoneNumber && (
+                                {token?.user?.mobileNumber && (
                                     <p>
-                                        <span className="font-medium">Phone:</span> {token.phoneNumber}
+                                        <span className="font-medium">Phone:</span> {token.user.mobileNumber}
                                     </p>
                                 )}
                             </div>
@@ -124,9 +124,22 @@ export default function TokenUpdate() {
                                     key={token.id}
                                     className="border border-gray-400 px-3 py-2 rounded"
                                 >
-                                    Token #{token.tokenNumber} {token.name && `(${token.name})`}
+                                    <p>
+                                        <span className="font-medium">Token #</span> {token.tokenNumber}
+                                    </p>
+                                    {token?.user?.username && (
+                                        <p>
+                                            <span className="font-medium">Name:</span> {token.user.username}
+                                        </p>
+                                    )}
+                                    {token?.user?.mobileNumber && (
+                                        <p>
+                                            <span className="font-medium">Phone:</span> {token.user.mobileNumber}
+                                        </p>
+                                    )}
                                 </li>
                             ))}
+
                         </ul>
                     )}
                 </div>
