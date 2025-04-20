@@ -4,6 +4,7 @@ import React from 'react'
 import { UserRound, X, MessageCircleMore,Home, MessageSquareWarning, QrCode, ScanLine, BookCheck, FolderDown, Settings, LogOut } from "lucide-react";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import FavProfile from '@/app/components/FavProfile';
 
 export default function Sidebar({ isOpen, onClose }) {
     const pathName = usePathname();
@@ -69,7 +70,7 @@ export default function Sidebar({ isOpen, onClose }) {
                             <ScanLine size={20} strokeWidth={1.5} />
                             My Token
                         </Link>
-                        <Link href="#"
+                        <Link href="/billRecord"
                             className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
                             <BookCheck size={20} strokeWidth={1.5} />
                             Bill Record
@@ -79,11 +80,12 @@ export default function Sidebar({ isOpen, onClose }) {
                             <FolderDown size={20} strokeWidth={1.5} />
                             My Plans
                         </Link>
-                        <Link href="#"
+                        <Link href="/favprofile"
                             className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
                             <FolderDown size={20} strokeWidth={1.5} />
-                            Favourite 
+                            Favorites 
                         </Link>
+                        {/* <FavProfile/> */}
                     </div>
                 </div>
 

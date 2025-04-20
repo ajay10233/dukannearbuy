@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 export default function EditProfile({ user, onCancel, onSuccess }) {
   const [formData, setFormData] = useState({ ...user });
   const [otpRequired, setOtpRequired] = useState(false);
-
+  const router = useRouter();
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
@@ -38,7 +39,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
       const payload = {
         ...formData,
         ...formData.address,
-        mobileNumber: formData.phone, 
+        mobileNumber: formData.phone,
       };
 
       delete payload.address;
@@ -56,7 +57,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
       toast.success('Profile updated!');
 
       if (formData.email !== previousEmail || formData.phone !== previousPhone) {
-        router.push(`/verify-otp?email=${formData.email}&phone${formData.phone}`);
+        router.push(`/verify-otp?email=${formData.email}&phone=${formData.phone}`);
       } else {
         onSuccess();
       }
@@ -67,9 +68,47 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
 
   return (
     <form onSubmit={handleSave} className="grid gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input
+          name="email"
+          value={formData?.email || ''}
+          onChange={handleChange}
+          placeholder="Email"
+          className="p-2 border rounded"
+          required
+        />
+        <input
+          name="phone"
+          value={formData?.phone || ''}
+          onChange={handleChange}
+          placeholder="Phone"
+          className="p-2 border rounded"
+          required
+        />
+      </div>
+
+      {/* Other Fields */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input
+          name="age"
+          type="number"
+          value={formData?.age || ''}
+          onChange={handleChange}
+          placeholder="Age"
+          className="p-2 border rounded"
+          required
+        />
+        <input
+          name="username"
+          value={formData?.username || ''}
+          onChange={handleChange}
+          placeholder="Username"
+          className="p-2 border rounded"
+        />
+      </div>
 
       {/* Address Fields */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <input
           name="address.houseNumber"
           value={formData.address?.houseNumber || ''}
@@ -136,73 +175,12 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
         />
       </div>
 
-      {/* Other Profile Fields */}
-      <div className="grid grid-cols-2 gap-4">
-        <input
-          name="age"
-          type='number'
-          value={formData?.age || ''}
-          onChange={handleChange}
-          placeholder="Age"
-          className="p-2 border rounded"
-          required
-        />
-        {/* <div className="flex justify-around items-center gap-4">
+      {/* Gender */}
+      <div className="flex flex-col md:flex-row gap-4 justify-start items-start md:items-center">
+        <label className="text-sm font-medium text-gray-700">Gender:</label>
+        <div className="flex flex-wrap gap-4">
           {['Male', 'Female', 'Other'].map((gender) => (
-            <label key={gender} className="flex items-center gap-1">
-              <input
-                type="radio"
-                name="gender"
-                value={gender}
-                checked={formData?.gender === gender}
-                onChange={handleChange}
-                required
-              />
-              {gender}
-            </label>
-          ))}
-        </div> */}
-        {/* <div className="grid grid-cols-2 gap-4"> */}
-        <input
-          name="username"
-          value={formData?.username || ''}
-          onChange={handleChange}
-          placeholder="Username"
-          className="p-2 border rounded"
-        />
-      {/* </div> */}
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <input
-          name="email"
-          value={formData?.email || ''}
-          onChange={handleChange}
-          placeholder="Email"
-          className="p-2 border rounded"
-          required
-        />
-        <input
-          name="phone"
-          value={formData?.phone || ''}
-          onChange={handleChange}
-          placeholder="Phone"
-          className="p-2 border rounded"
-          required
-        />
-      </div>
-      {/* <div className="grid grid-cols-2 gap-4">
-        <input
-          name="username"
-          value={formData?.username || ''}
-          onChange={handleChange}
-          placeholder="Username"
-          className="p-2 border rounded"
-        />
-      </div> */}
-      <div className="flex justify-center md:justify-around items-center gap-2 md:gap-4">
-          {['Male', 'Female', 'Other'].map((gender) => (
-            <label key={gender} className="flex items-center gap-1">
+            <label key={gender} className="flex items-center gap-2">
               <input
                 type="radio"
                 name="gender"
@@ -215,16 +193,21 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
             </label>
           ))}
         </div>
+      </div>
 
-      {/* Buttons */}
-      <div className="flex gap-4">
-        <button type="submit"
-          className="bg-blue-600 text-white px-4 py-1 cursor-pointer rounded-md hover:bg-blue-500 transition">
+      {/* Action Buttons */}
+      <div className="flex flex-col md:flex-row gap-4">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500 transition"
+        >
           Save Changes
         </button>
-        <button type='button'
+        <button
+          type="button"
           onClick={onCancel}
-          className="border border-gray-600 px-4 py-1 cursor-pointer rounded-md hover:bg-gray-100 transition">
+          className="border border-gray-600 px-4 py-2 rounded-md hover:bg-gray-100 transition"
+        >
           Cancel
         </button>
       </div>

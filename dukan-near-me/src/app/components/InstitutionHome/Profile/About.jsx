@@ -11,6 +11,10 @@ export default function About({ profileUpdated }) {
     const { data: session } = useSession();
     console.log("session:", session);
     const [showQRModal, setShowQRModal] = useState(false);
+    const [showManageOptions, setShowManageOptions] = useState(false);
+    const [editingAddress, setEditingAddress] = useState(false);
+    const [changingAddress, setChangingAddress] = useState(false);
+
   
     const router = useRouter();
 
@@ -105,10 +109,11 @@ export default function About({ profileUpdated }) {
                             </h1> 
                         */}
                         <div className="pl-2 md:pl-8 flex flex-col gap-y-1">
-                            <p className="text-md text-gray-500">User ID: {session?.user?.id}</p>
-                            <p className="text-md text-gray-700 flex items-center gap-2">
+                            <p className="text-md text-gray-500">User ID: {session?.user?.username}</p>
+
+
+                            {/* <p className="text-md text-gray-700 flex items-center gap-2">
                                 <Mail size={20} strokeWidth={1.5} color="#1751c4" />
-                                {/* <span className="font-medium">Email:</span>{" "} */}
                                 <span className="hover:text-gray-600 flex gap-x-1.5 transition ease-in-out">{session?.user?.email || "N/A"} 
                                 <button onClick={handleCopyEmail} title="Copy Email">
                                     {copiedEmail ? (
@@ -130,7 +135,8 @@ export default function About({ profileUpdated }) {
                                 ) : (
                                     <span>N/A</span>
                                 )}
-                            </p>
+                            </p> */}
+
                             {profileUpdated && (
                                 <>
                                     <div className="flex items-start gap-x-2">
@@ -165,6 +171,15 @@ export default function About({ profileUpdated }) {
                             )}
                         </div>
 
+                        {session?.user?.id && (
+                            <Link
+                                href={`/tokenupdate/${session.user.id}`}
+                                className="text-blue-600 cursor-po hover:text-blue-800 transition font-medium pl-2 md:pl-8">
+                                 View Live Token
+                            </Link>
+                            )}
+                        
+
                         {/* <div className="flex items-center gap-2">
                             <Phone size={20} strokeWidth={1.5} color="#1751c4" />
                             <span className="hover:text-gray-600 transition ease-in-out">
@@ -177,6 +192,13 @@ export default function About({ profileUpdated }) {
                             <span className="text-gray-800 font-medium">{avgRating}</span>
                             <span className="text-sm text-gray-500">({avgRating > 0 ? "based on reviews" : "No ratings yet"})</span>
                         </div> */}
+                    </div>
+
+                    <div className="flex flex-col items-center gap-2">
+                        <button onClick={() => setShowManageOptions(true)}
+                            className="text-blue-600 hover:text-blue-800 cursor-pointer text-sm font-medium transition">
+                            Manage Address
+                        </button>
                     </div>
   
                     <div className="fixed bottom-30 right-4 z-50 flex flex-col items-center gap-2">
@@ -205,15 +227,10 @@ export default function About({ profileUpdated }) {
                                     </div>
                                 )}
                             </div>
-    
-                            {/* <div className="flex items-start gap-x-2">
-                <span className="font-semibold flex items-center gap-x-1">
-                    <Info size={20} strokeWidth={1.5} color="#1751c4"/>
-                    Description:
-                </span>
-                <span className="hover:text-gray-600 transition ease-in-out">{session?.user?.description || "Not Provided"}</span>
-                </div> */}
-    
+
+                            {/* past address */}
+
+                         
                             <div className="flex items-start gap-x-2">
                                 <span className="font-semibold flex items-center gap-x-1">
                                     <Hash size={20} strokeWidth={1.5} color="#1751c4" />
@@ -337,6 +354,42 @@ export default function About({ profileUpdated }) {
 
                     </div>
                 )}
+
+                {showManageOptions && (
+                <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
+                    <div className="bg-white rounded-lg shadow-lg w-150 h-60 p-4">
+                    <div className="flex justify-between items-center border-b pb-2 mb-4">
+                        <h2 className="text-lg font-semibold text-blue-700">Manage Address</h2>
+                        <button onClick={() => setShowManageOptions(false)}>
+                        <X size={20} className="cursor-pointer text-gray-500 hover:text-gray-700" />
+                        </button>
+                    </div>
+
+                    <div className="flex flex-row items-center justify-center gap-3">
+                        <button
+                        onClick={() => {
+                            setEditingAddress(true);
+                            setShowManageOptions(false);
+                        }}
+                        className="bg-blue-600 transition hover:bg-blue-700 cursor-pointer text-white px-5 py-2 rounded"
+                        >
+                        Edit Address
+                        </button>
+
+                        <button
+                        onClick={() => {
+                            setChangingAddress(true);
+                            setShowManageOptions(false);
+                        }}
+                        className="bg-gray-100 transition hover:bg-gray-200 cursor-pointer text-gray-700 px-4 py-2 rounded"
+                        >
+                        Change Address
+                        </button>
+                    </div>
+                    </div>
+                </div>
+                )}
+
             </div>
         );
     }
