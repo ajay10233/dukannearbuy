@@ -42,10 +42,10 @@ if (!global.io) {
     // Handle token completion & notify all users in the room
     // Socket Server
     socket.on("startProcessing", async ({ institutionId, tokenId }) => {
-      await prisma.token.updateMany({
-        where: { institutionId },
-        data: { processing: false }, // Unset all processing
-      });
+      // await prisma.token.updateMany({
+      //   where: { institutionId },
+      //   data: { processing: false }, // Unset all processing
+      // });
     
       const processingToken = await prisma.token.update({
         where: { id: tokenId },
@@ -72,6 +72,27 @@ if (!global.io) {
 
     io.to(`institution:${institutionId}`).emit("completedTokensUpdated", completedTokens);
   });
+
+  socket.on("getCurrentProcessingTokens", async (institutionId, callback) => {
+    if (!institutionId) return callback([]);
+  
+    try {
+      const processingTokens = await prisma.token.findMany({
+        where: {
+          institutionId,
+          processing: true,
+          completed: false,
+        },
+        orderBy: { createdAt: "asc" },
+      });
+  
+      callback(processingTokens);
+    } catch (error) {
+      console.error("❌ Error fetching processing tokens:", error);
+      callback([]);
+    }
+  });
+  
 
 
 
