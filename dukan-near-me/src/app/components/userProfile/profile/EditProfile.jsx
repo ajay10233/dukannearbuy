@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 
 export default function EditProfile({ user, onCancel, onSuccess }) {
   const [formData, setFormData] = useState({ ...user });
+  const [otpRequired, setOtpRequired] = useState(false);
+
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
@@ -26,7 +28,12 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (e) => {
+    e.preventDefault();
+
+    const previousEmail = user.email;
+    const previousPhone = user.phone;
+
     try {
       const payload = {
         ...formData,
@@ -47,7 +54,12 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
       if (!res.ok) throw new Error(result.error || 'Something went wrong');
 
       toast.success('Profile updated!');
-      onSuccess();
+
+      if (formData.email !== previousEmail || formData.phone !== previousPhone) {
+        router.push(`/verify-otp?email=${formData.email}&phone${formData.phone}`);
+      } else {
+        onSuccess();
+      }
     } catch (err) {
       toast.error(err.message);
     }
@@ -135,7 +147,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
           className="p-2 border rounded"
           required
         />
-        <div className="flex justify-around items-center gap-4">
+        {/* <div className="flex justify-around items-center gap-4">
           {['Male', 'Female', 'Other'].map((gender) => (
             <label key={gender} className="flex items-center gap-1">
               <input
@@ -149,7 +161,16 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
               {gender}
             </label>
           ))}
-        </div>
+        </div> */}
+        {/* <div className="grid grid-cols-2 gap-4"> */}
+        <input
+          name="username"
+          value={formData?.username || ''}
+          onChange={handleChange}
+          placeholder="Username"
+          className="p-2 border rounded"
+        />
+      {/* </div> */}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -170,7 +191,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
           required
         />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      {/* <div className="grid grid-cols-2 gap-4">
         <input
           name="username"
           value={formData?.username || ''}
@@ -178,7 +199,22 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
           placeholder="Username"
           className="p-2 border rounded"
         />
-      </div>
+      </div> */}
+      <div className="flex justify-center md:justify-around items-center gap-2 md:gap-4">
+          {['Male', 'Female', 'Other'].map((gender) => (
+            <label key={gender} className="flex items-center gap-1">
+              <input
+                type="radio"
+                name="gender"
+                value={gender}
+                checked={formData?.gender === gender}
+                onChange={handleChange}
+                required
+              />
+              {gender}
+            </label>
+          ))}
+        </div>
 
       {/* Buttons */}
       <div className="flex gap-4">

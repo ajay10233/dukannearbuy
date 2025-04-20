@@ -217,10 +217,19 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
               value={form?.description}
               onChange={handleChange}
               placeholder="Enter Description"
-              maxLength={300}
+              maxLength={1000}
               className="border p-2 rounded w-full"
               required
             />
+            <div className="text-sm mt-1 text-right">
+              {/* <span className={form?.description?.length === 1000 ? "text-red-500 font-semibold" : "text-gray-500"}>
+                {form?.description?.length || 0}/1000
+              </span> */}
+              {form?.description?.length === 1000 && (
+                <p className="text-red-500 text-xs font-medium mt-1">You have reached the maximum character limit.</p>
+              )}
+            </div>
+
             {errors?.description && <span className="text-sm text-red-500">{errors.description}</span>}
           </div>
 

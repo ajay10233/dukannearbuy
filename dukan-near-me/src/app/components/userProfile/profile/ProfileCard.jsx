@@ -68,9 +68,9 @@ export default function ProfileCard() {
 
   return (
     <>
-      <div className="relative bg-gradient-to-tl from-[#e7f0ec] via-[#aabec2] to-[#005d6e] rounded-lg p-6 w-full h-110 md:max-w-xs flex flex-col items-center gap-4 shadow-md">
+      <div className="relative bg-gradient-to-tl from-[#e7f0ec] via-[#aabec2] to-[#005d6e] rounded-lg p-6 w-full h-50 md:h-110 md:max-w-xs flex flex-col items-center gap-3 md:gap-4 shadow-md">
 
-        {/* ❌ Delete Button */}
+        {/* Delete Button */}
         {(image || session?.user?.image) && (
           <button
             onClick={() => setShowDeleteModal(true)}
@@ -117,7 +117,7 @@ export default function ProfileCard() {
             </div>
           )}
 
-          {(session?.user?.subscriptionPlan?.name === 'BUSINESS' || session?.user?.subscriptionPlan?.name === 'PREMIUM') &&
+          {/* {(session?.user?.subscriptionPlan?.name === 'BUSINESS' || session?.user?.subscriptionPlan?.name === 'PREMIUM') &&
             session?.user?.role !== 'INSTITUTION' && session?.user?.role !== 'SHOP_OWNER' && (
               <div className="absolute bottom-1 right-1 rounded-full p-1 shadow-md z-10">
                 <Star
@@ -127,13 +127,16 @@ export default function ProfileCard() {
                   color={session?.user?.subscriptionPlan?.name === 'PREMIUM' ? '#f0d000' : '#AFAFAF'}
                 />
               </div>
-            )}
+            )} */}
         </div>
 
-        <h3 className="text-lg font-semibold text-gray-800">Identity Verification</h3>
-        <p className="text-sm text-gray-600 text-center">
-          We verify profiles to ensure trust and authenticity for all users.
-        </p>
+        <div className="hidden md:block text-center">
+            <h3 className="text-lg font-semibold text-gray-800">Identity Verification</h3>
+            <p className="text-sm text-gray-600">
+                We verify profiles to ensure trust and authenticity for all users.
+            </p>
+        </div>
+
 
         {(session?.user?.firstName || session?.user?.lastName || session?.user?.role) && (
           <p className="font-semibold text-gray-600">
@@ -145,7 +148,7 @@ export default function ProfileCard() {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-          <div className="bg-white rounded-lg p-6 shadow-xl animate-fadeIn max-w-sm w-full">
+          <div className="bg-white rounded-lg p-6 shadow-xl animate-fadeIn max-w-70 md:max-w-sm w-full">
             <h2 className="text-lg font-semibold mb-2 text-gray-800">Delete Profile Photo?</h2>
             <p className="text-sm text-gray-600 mb-4">Are you sure you want to delete your profile photo?</p>
 

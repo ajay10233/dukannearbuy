@@ -17,6 +17,8 @@ export default function PromotionCard() {
     const [days, setDays] = useState(1);
     const [isPremium, setIsPremium] = useState(false);
     const [selectedKm, setSelectedKm] = useState(5); 
+    const [agreed, setAgreed] = useState(false);
+
 
     const kmCosts = {
       5: 99,
@@ -224,10 +226,27 @@ export default function PromotionCard() {
   </div>
 
     <div className="pt-4 text-sm text-gray-500">
-        By clicking confirm, you agree to our{" "}
+        {/* By clicking confirm, you agree to our{" "}
         <Link href="/terms-and-conditions" className="text-teal-500 underline">
         Terms and Conditions
-        </Link>.
+        </Link>. */}
+            
+      <input
+        type="checkbox"
+        id="agree"
+        checked={agreed}
+        onChange={(e) => setAgreed(e.target.checked)}
+        className="w-4 h-4 accent-teal-600 border-gray-300 rounded"
+      />
+      <span className="pl-2 text-sm text-gray-700">
+        I agree to the{" "}
+          <Link
+            href="/terms-and-conditions"
+            className="underline text-teal-500"
+          >
+            Terms & Conditions
+          </Link>
+    </span>   
     </div>
     </DialogContent>
 

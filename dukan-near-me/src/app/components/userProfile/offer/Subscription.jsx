@@ -161,7 +161,6 @@ export default function Subscription() {
     fetchPlans();
   }, []);
 
-
   return (
     <div className="min-h-screen px-6 py-10 flex items-center justify-center">
       <div className="w-full max-w-[1200px] flex flex-col items-center gap-5 md:gap-10">
@@ -213,9 +212,8 @@ export default function Subscription() {
                         ? "border border-yellow-500 text-yellow-500 hover:bg-yellow-100"
                         : "border border-yellow-500 text-yellow-500 bg-yellow-100"
                       }
-                      ${activePlan === plan.name ? "ring-2 ring-yellow-300" : ""}`}
-                  >
-                    Select
+                      ${activePlan === plan.name ? "ring-2 ring-yellow-300" : ""}`} >
+                        {activePlan === plan.name ? "Selected" : "Select"}
                   </button>
                 </Link>
               </div>

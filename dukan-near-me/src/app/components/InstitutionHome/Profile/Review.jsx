@@ -227,7 +227,7 @@ export default function Review({ user }) {
     )}
 
     {/* Display Reviews */}
-    {reviews.length > 0 && (
+    {reviews.length > 0 ? (
       <div className="flex flex-col gap-y-3">
         <h3 className="text-2xl font-semibold mb-2 text-gray-800">Reviews</h3>
         <ul className="flex flex-col gap-y-3">
@@ -262,6 +262,8 @@ export default function Review({ user }) {
           ))}
         </ul>
       </div>
+    ) : (
+      <div className="text-gray-500 text-center py-4">No reviews yet</div>
     )}
   </div>
 </div>
