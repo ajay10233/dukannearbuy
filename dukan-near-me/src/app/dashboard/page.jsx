@@ -1,29 +1,42 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+"use client";
+
+import { useEffect, useState } from "react";
+import axios from "axios";
 import LogoutButton from "@/app/components/LogoutButton";
-import QRCodeComponent from "../components/QRCodeComponent";
-import ClientQRCodeSection from "../components/ClientQRCodeSection";
-import ReviewComponent from "../components/Reviews/ReviewComponent";
-import EditInstitution from "../components/EditInstitution";
 import ChangePastAddress from "../components/ChangePastAddress";
+// import other components as needed
 
+export default function Dashboard() {
+  const [user, setUser] = useState(null);
 
-export default async function Dashboard() {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return <p>You are not logged in</p>;
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const res = await axios.get("/api/users/me");
+        console.log("🔐 Full User Data:", res.data);
+        setUser(res.data);
+      } catch (error) {
+        console.error("❌ Failed to fetch user details:", error);
+      }
+    };
+
+    fetchUserDetails();
+  }, []);
+
+  if (!user) {
+    return <p>Loading user details...</p>;
   }
+
   return (
     <div>
-      <h1>Welcome, {session.user.firstName + session.user.lastName}!</h1>
-      <p className="lowercase">Your role: {session.user.role}</p>
+      <h1>Welcome, {user.firstName + " " + user.lastName}!</h1>
+      <p className="lowercase">Your role: {user.role}</p>
       <LogoutButton />
-{/* 
-      <ReviewComponent user={session.user}/>
-      <QRCodeComponent params={{ id: session.user.id }} />
-      <EditInstitution/>
+      {/* <ReviewComponent user={user}/>
+      <QRCodeComponent params={{ id: user.id }} />
+      <EditInstitution />
       <ClientQRCodeSection /> */}
-      <ChangePastAddress/>
+      <ChangePastAddress />
     </div>
   );
 }
