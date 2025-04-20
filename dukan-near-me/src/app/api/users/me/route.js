@@ -21,8 +21,6 @@ export async function GET() {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const sessionToken = session?.user?.email; // You can change this if using JWT or other token
-
   return NextResponse.json({
     id: user.id,
     firstName: user.firstName,
@@ -57,11 +55,11 @@ export async function GET() {
     shopOpenDays: user.shopOpenDays,
     latitude: user.latitude,
     longitude: user.longitude,
+    createdAt:user.createdAt,
     allowedRoutes:
       user.role === "ADMIN"
         ? ["/", "/dashboard", "/admin"]
         : ["/", "/dashboard"],
-    sessionToken,
     subscriptionPlan: user.subscriptionPlan
       ? {
           id: user.subscriptionPlan.id,
@@ -72,5 +70,6 @@ export async function GET() {
           maxUploadSizeMB: user.subscriptionPlan.maxUploadSizeMB,
         }
       : null,
+    
   });
 }
