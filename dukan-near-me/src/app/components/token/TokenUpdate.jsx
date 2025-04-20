@@ -91,7 +91,7 @@ export default function TokenUpdate() {
                                             ? "🟡 Processing"
                                             : "🕒 Waiting"}
                                 </p>
-                                {token?.user?.username && (
+                                {/* {token?.user?.username && (
                                     <p>
                                         <span className="font-medium">Name:</span> {token.user.username}
                                     </p>
@@ -100,7 +100,7 @@ export default function TokenUpdate() {
                                     <p>
                                         <span className="font-medium">Phone:</span> {token.user.mobileNumber}
                                     </p>
-                                )}
+                                )} */}
                             </div>
                         ))
                     ) : (
@@ -127,7 +127,7 @@ export default function TokenUpdate() {
                                     <p>
                                         <span className="font-medium">Token #</span> {token.tokenNumber}
                                     </p>
-                                    {token?.user?.username && (
+                                    {/* {token?.user?.username && (
                                         <p>
                                             <span className="font-medium">Name:</span> {token.user.username}
                                         </p>
@@ -136,7 +136,7 @@ export default function TokenUpdate() {
                                         <p>
                                             <span className="font-medium">Phone:</span> {token.user.mobileNumber}
                                         </p>
-                                    )}
+                                    )} */}
                                 </li>
                             ))}
 
