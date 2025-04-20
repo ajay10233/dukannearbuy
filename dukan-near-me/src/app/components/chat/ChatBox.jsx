@@ -669,7 +669,7 @@ export default function ChatBox() {
                         method: "PATCH",
                       });
                       if (res.ok) {
-                        setSelectedPartner(null); // optional: or trigger re-fetch
+                        setSelectedPartner(null); 
                       }
                     }}
                   >

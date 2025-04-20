@@ -6,6 +6,7 @@ import PromotionCard from '../components/userProfile/PromotionCard'
 import SearchBar from '../components/userProfile/searchBar/SearchBar'
 import Footer from '../components/userProfile/footer/Footer'
 import Faq from '../components/InstitutionHome/Faq/Faq'
+import Cards from '../components/InstitutionHome/cards/Cards'
 
 export default function page() {
     return (
@@ -17,9 +18,9 @@ export default function page() {
                     <HeroSection />  
                 </section>
                 <section className='bg-gradient-to-t from-[#A7BEC2] via-[#005d6e] to-[#0f0f0f]'>
-                    <Subscription />
+                    <Cards/>
                     <PromotionCard/>
-                    {/* <Review />  */}
+                    <Subscription />
                     <Faq/>
                 </section>
             </main>  

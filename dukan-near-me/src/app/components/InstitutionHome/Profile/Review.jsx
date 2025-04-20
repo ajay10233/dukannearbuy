@@ -93,14 +93,16 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { Star } from "lucide-react";
 import { useParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function Review({ user }) {
-  const { institutionId } = useParams();
-  const [comment, setComment] = useState("");
-  const [rating, setRating] = useState(0);
-  const [reviews, setReviews] = useState([]);
-  const [editingId, setEditingId] = useState(null);
-  const [avgRating, setAvgRating] = useState(0);
+    const { institutionId } = useParams();
+    const { data: session } = useSession();
+    const [comment, setComment] = useState("");
+    const [rating, setRating] = useState(0);
+    const [reviews, setReviews] = useState([]);
+    const [editingId, setEditingId] = useState(null);
+    const [avgRating, setAvgRating] = useState(0);
 
 
   useEffect(() => {
@@ -164,66 +166,70 @@ export default function Review({ user }) {
   return (
 <div className="flex justify-center py-4 md:py-6">
   <div className="w-75 md:w-3/4 px-4 py-3 md:px-8 md:py-6 flex flex-col gap-y-4 border border-gray-300 rounded-lg shadow-md bg-white transition-all duration-300 hover:shadow-lg">
-    <h2 className="text-2xl font-semibold pb-0 md:pb-2 text-gray-800">
-      {editingId ? "Edit Review" : "Write a Review"}
-    </h2>
+    
+    {session?.user?.role === "USER" && (
+        <>
+            <h2 className="text-2xl font-semibold pb-0 md:pb-2 text-gray-800">
+            {editingId ? "Edit Review" : "Write a Review"}
+            </h2>
 
-    <form onSubmit={handleSubmit} className="flex flex-col gap-y-4">
-      {/* Star Rating */}
-      <div className="flex items-center gap-x-2">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            type="button"
-            key={star}
-            onClick={() => setRating(star)}
-            className="transform transition-transform hover:scale-110"
-          >
-            <Star
-              className={`w-6 h-6 cursor-pointer transition-colors duration-200 ${
-                star <= rating
-                  ? "text-yellow-400 fill-yellow-400"
-                  : "text-gray-300"
-              }`}
-            />
-          </button>
-        ))}
-      </div>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-y-4">
+                {/* Star Rating */}
+                <div className="flex items-center gap-x-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                        type="button"
+                        key={star}
+                        onClick={() => setRating(star)}
+                        className="transform transition-transform hover:scale-110"
+                    >
+                        <Star
+                        className={`w-6 h-6 cursor-pointer transition-colors duration-200 ${
+                            star <= rating
+                            ? "text-yellow-400 fill-yellow-400"
+                            : "text-gray-300"
+                        }`}
+                        />
+                    </button>
+                    ))}
+                </div>
 
-      {/* Comment Input */}
-      <textarea
-        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200"
-        rows="4"
-        placeholder="Write your feedback..."
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-      ></textarea>
+                {/* Comment Input */}
+                <textarea
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200"
+                    rows="4"
+                    placeholder="Write your feedback..."
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}>
+                </textarea>
 
-      <div>
-        <button
-          type="submit"
-          className="px-2.5 md:px-5 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200">
-          {editingId ? "Update Review" : "Post Review"}
-        </button>
-        {editingId && (
-          <button
-            type="button"
-            onClick={() => {
-              setComment("");
-              setRating(0);
-              setEditingId(null);
-            }}
-            className="ml-4 text-gray-500 hover:text-gray-700 underline transition-colors duration-200"
-          >
-            Cancel Edit
-          </button>
-        )}
-      </div>
-    </form>
+                <div>
+                    <button
+                        type="submit"
+                        className="px-2.5 md:px-5 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200">
+                        {editingId ? "Update Review" : "Post Review"}
+                    </button>
+                    {editingId && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                            setComment("");
+                            setRating(0);
+                            setEditingId(null);
+                            }}
+                            className="ml-4 text-gray-500 hover:text-gray-700 underline transition-colors duration-200">
+                            Cancel Edit
+                        </button>
+                    )}
+                </div>
+            </form>              
+        </>
+    )}
 
     {/* Display Reviews */}
-    {reviews.length > 0 && (
+    {reviews.length > 0 ? (
       <div className="flex flex-col gap-y-3">
-        <h3 className="text-lg font-semibold mb-2 text-gray-800">Reviews</h3>
+        <h3 className="text-2xl font-semibold mb-2 text-gray-800">Reviews</h3>
         <ul className="flex flex-col gap-y-3">
           {reviews.map((review, i) => (
             <li
@@ -231,9 +237,9 @@ export default function Review({ user }) {
               className="p-2.5 md:p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
             >
               <div className="flex items-center mb-2 text-yellow-400 text-sm">
-                <span className="px-2 text-gray-700 text-xs">
+                {/* <span className="px-2 text-gray-700 text-xs">
                   ({review.rating})
-                </span>
+                </span> */}
                 {[...Array(review.rating)].map((_, idx) => (
                   <Star
                     key={idx}
@@ -248,8 +254,7 @@ export default function Review({ user }) {
               {review.userId === user?.id && (
                 <button
                   className="text-blue-600 text-sm pt-2 hover:underline"
-                  onClick={() => handleEdit(review)}
-                >
+                  onClick={() => handleEdit(review)}>
                   Edit
                 </button>
               )}
@@ -257,6 +262,8 @@ export default function Review({ user }) {
           ))}
         </ul>
       </div>
+    ) : (
+      <div className="text-gray-500 text-center py-4">No reviews yet</div>
     )}
   </div>
 </div>

@@ -3,12 +3,15 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import SocketInitializer from "@/app/components/SocketInitializer";
 import SessionProviderWrapper from "@/app/components/SessionManager/SessionProviderWrapper"; 
+import HeaderLocation from "./components/Location/HeaderLocation";
+import LoaderWrapper from "./components/LoaderWrapper";
 
 const rubik = Rubik({
   variable: "--font-rubik",
   subsets: ["latin"],
   weight: '400'
 });
+
 const workSans = Work_Sans({
   variable: '--font-workSans',
   subsets: ["latin"],
@@ -45,7 +48,9 @@ export default function RootLayout({ children }) {
       <body className={`${rubik.variable} ${plusJakartaSans.variable} ${poppins.variable} antialiased`}>
       {/* <HeaderLocation /> */}
         <SessionProviderWrapper> {/* ✅ Wrap in a client component */}
-          {children}
+        {/* <LoaderWrapper>  */}
+            {children}
+          {/* </LoaderWrapper> */}
           <Toaster position="bottom-right" reverseOrder={false} />
             <SocketInitializer />
         </SessionProviderWrapper>

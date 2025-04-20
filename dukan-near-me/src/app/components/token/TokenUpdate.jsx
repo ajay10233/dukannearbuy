@@ -37,8 +37,11 @@ export default function TokenUpdate() {
       const [currentToken, setCurrentToken] = useState(null);
       const [completedTokens, setCompletedTokens] = useState([]);
     
-      useEffect(() => {
-        if (!institutionId) return;
+    useEffect(() => {
+        console.log("run")
+
+          if (!institutionId) return;
+        //   console.log("run")
     
         socket.emit("joinInstitutionRoom", institutionId);
     
@@ -65,7 +68,7 @@ export default function TokenUpdate() {
           socket.off("processingTokenUpdated");
           socket.off("completedTokensUpdated");
         };
-      }, [institutionId]);
+      }, []);
     
     return (
         <section className="flex flex-col items-center h-[calc(100vh-50px)] justify-start px-8 pb-8 pt-16 gap-y-4 bg-white">
@@ -79,20 +82,20 @@ export default function TokenUpdate() {
             </div>
 
             {/* display live token */}
-            <div className="w-full max-w-5xl rounded-xl flex flex-col gap-y-4 border border-gray-400 bg-gray-100 py-4 px-8 md:p-8 shadow-md">
+            <div className="w-full max-w-5xl rounded-xl flex flex-col gap-y-4 border border-gray-400 bg-gray-100 p-4 md:p-8 shadow-md">
                 <div className="flex flex-row gap-3 md:gap-6 items-center justify-between">
-                    <label className="text-xl sm:text-3xl font-bold text-teal-900">
+                    <label className="text-lg sm:text-3xl font-bold text-teal-900">
                         Live Token Number :
                     </label>
                     {currentToken ? (
-                        <div className="border border-dashed border-amber-600 py-2 px-4">
+                        <div className="border border-dashed border-amber-600 py-2 px-4 text-sm md:text-md">
                             <p><span className="font-medium">Token #</span> {currentToken.tokenNumber}</p>
                             <p><span className="font-medium">Status:</span> {currentToken.completed ? '✅ Completed' : currentToken.processing ? '🟡 Processing' : '🕒 Waiting'}</p>
                             {currentToken.name && <p><span className="font-medium">Name:</span> {currentToken.name}</p>}
                             {currentToken.phoneNumber && <p><span className="font-medium">Phone:</span> {currentToken.phoneNumber}</p>}
                         </div>
                         ) : (
-                        <p>No token is currently being processed.</p>
+                        <p className="text-sm md:text-md">No token is currently being processed.</p>
                         )}
                             {/* className="w-20 md:w-35 px-3 py-2 text-center border-2 border-dashed border-yellow-500 text-sm md:text-md font-semibold text-slate-700"/> */}
                 </div>
@@ -108,10 +111,10 @@ export default function TokenUpdate() {
 
             {/* Display previous token */}
                 <div className="w-full max-w-5xl rounded-xl bg-white p-6 border border-gray-300 shadow-md">
-                    <h2 className="text-2xl font-semibold text-teal-900 mb-4">Previous Tokens</h2>
+                    <h2 className="text-xl md:text-2xl font-semibold text-teal-900 mb-4">Previous Tokens</h2>
                     <div className="flex flex-col gap-3 max-h-64 overflow-y-auto pr-2 dialogScroll">
                         {completedTokens.length === 0 ? (
-                            <p>No completed tokens yet.</p>
+                            <p className="text-sm md:text-md">No completed tokens yet.</p>
                         ) : (
                             <ul className="flex flex-col gap-y-2">
                                 {completedTokens.map((token) => (

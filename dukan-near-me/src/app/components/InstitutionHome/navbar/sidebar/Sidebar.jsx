@@ -32,7 +32,7 @@ export default function Sidebar({ isOpen, onClose }) {
                     <div className="flex flex-col space-y-3">
 
                         {pathName !== "/InstitutionHomePage" && (
-                            <Link href="#"
+                            <Link href="/InstitutionHomePage"
                                 className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
                                 <Home size={20} strokeWidth={1.5} />
                                 Home
@@ -67,8 +67,18 @@ export default function Sidebar({ isOpen, onClose }) {
                         <Link href="#"
                             className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200"> 
                             <ScanLine size={20} strokeWidth={1.5} />
-                            Token
+                            Token 
                         </Link>
+                        {/* <Link href="#"
+                            className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200"> 
+                            <ScanLine size={20} strokeWidth={1.5} />
+                            Token Generate
+                        </Link>
+                        <Link href="#"
+                            className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200"> 
+                            <ScanLine size={20} strokeWidth={1.5} />
+                            Live Token Update
+                        </Link> */}
                         <Link href="#"
                             className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
                             <BookCheck size={20} strokeWidth={1.5} />
@@ -79,11 +89,11 @@ export default function Sidebar({ isOpen, onClose }) {
                             <FolderDown size={20} strokeWidth={1.5} />
                             My Plans
                         </Link>
-                        <Link href="#"
+                        {/* <Link href="#"
                             className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
                             <TableOfContents size={20} strokeWidth={1.5} />
                             FAQ
-                        </Link>
+                        </Link> */}
                     </div>
                 </div>
 

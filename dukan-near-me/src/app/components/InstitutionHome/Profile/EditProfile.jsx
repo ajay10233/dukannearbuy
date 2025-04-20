@@ -12,18 +12,34 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
     }
   
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      async (pos) => {
         const { latitude, longitude } = pos.coords;
-        const mapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
-        setForm((prev) => ({
-          ...prev,
-          shopAddress: mapsUrl,
-        }));
-        toast.success("Location URL fetched");
+  
+        try {
+          // Fetch address from coordinates
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+          );
+          const data = await response.json();
+  
+          const address = data.display_name || `Lat: ${latitude}, Long: ${longitude}`;
+  
+          setForm((prev) => ({
+            ...prev,
+            latitude,
+            longitude,
+            currentLocation: address,
+          }));
+  
+          toast.success("Location fetched successfully");
+        } catch (err) {
+          toast.error("Failed to fetch address");
+        }
       },
       () => toast.error("Location access denied")
     );
   };
+  
   
   // const [message, setMessage] = useState('');
   
@@ -54,6 +70,30 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
       };
     });
   };
+
+  const handlePastAddressChange = (e) => {
+    const { value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      pastShopAddress: value,
+    }));
+  };
+
+  const handlePastAddressFromChange = (e) => {
+    const { value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      pastShopAddressFrom: value,
+    }));
+  };
+
+  const handlePastAddressToChange = (e) => {
+    const { value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      pastShopAddressTo: value,
+    }));
+  };
   
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-auto">
@@ -77,8 +117,52 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
               onChange={handleChange}
               placeholder="Enter Firm Name"
               className="border p-2 rounded w-full"
+              required
             />
             {errors?.firmName && <span className="text-sm text-red-500">{errors.firmName}</span>}
+          </div>
+
+          {/* contact email */}
+          <div>
+            <label className="font-medium text-gray-700"> Email</label>
+            <input
+              type="email"
+              name="contactEmail"
+              value={form?.contactEmail}
+              onChange={handleChange}
+              placeholder="Type your Email"
+              className="border p-2 rounded w-full"
+              required
+            />
+            {errors?.contactEmail && <span className="text-sm text-red-500">{errors.contactEmail}</span>}
+          </div>
+
+          {/* contact number */}
+          <div>
+            <label className="font-medium text-gray-700">Contact Number</label>
+            <input
+              type="number"
+              name="mobileNumber"
+              value={form?.mobileNumber}
+              onChange={handleChange}
+              placeholder="Enter Contact number"
+              className="border p-2 rounded w-full"
+              required
+            />
+            {errors?.mobileNumber && <span className="text-sm text-red-500">{errors.mobileNumber}</span>}
+          </div>
+
+          <div>
+            <label className="font-medium text-gray-700"> User Id:</label>
+            <input
+              type="id"
+              name="id"
+              value={form?.id}
+              onChange={handleChange}
+              placeholder="Type your User Id"
+              className="border p-2 rounded w-full"
+              required
+            />
           </div>
 
           {/* Shop address */}
@@ -90,8 +174,40 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
                 onChange={handleChange}
                 placeholder="Address"
                 className="border p-2 rounded w-full pr-10"
+                required
               />
           </div>
+
+          {/* previous address */}
+          <div>
+            <label className="font-medium text-gray-700">Past Address</label>
+            <input
+              type="text"
+              name="pastShopAddress"
+              value={form?.pastShopAddress || ""}
+              onChange={handlePastAddressChange}
+              placeholder="Enter Past Address"
+              className="border p-2 rounded w-full"
+              
+            />
+            <div className="flex gap-2 mt-2">
+              <input
+                type="month"
+                name="pastShopAddressFrom"
+                value={form?.pastShopAddressFrom || ""}
+                onChange={handlePastAddressFromChange}
+                className="border p-2 rounded w-1/2"
+              />
+              <input
+                type="month"
+                name="pastShopAddressTo"
+                value={form?.pastShopAddressTo || ""}
+                onChange={handlePastAddressToChange}
+                className="border p-2 rounded w-1/2"
+              />
+            </div>
+          </div>
+
 
           {/* Description */}
           <div>
@@ -101,9 +217,19 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
               value={form?.description}
               onChange={handleChange}
               placeholder="Enter Description"
-              maxLength={300}
+              maxLength={1000}
               className="border p-2 rounded w-full"
+              required
             />
+            <div className="text-sm mt-1 text-right">
+              {/* <span className={form?.description?.length === 1000 ? "text-red-500 font-semibold" : "text-gray-500"}>
+                {form?.description?.length || 0}/1000
+              </span> */}
+              {form?.description?.length === 1000 && (
+                <p className="text-red-500 text-xs font-medium mt-1">You have reached the maximum character limit.</p>
+              )}
+            </div>
+
             {errors?.description && <span className="text-sm text-red-500">{errors.description}</span>}
           </div>
 
@@ -116,6 +242,7 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
               onChange={handleChange}
               placeholder="Comma separated (e.g. doctor, clinic)"
               className="border p-2 rounded w-full"
+              required
             />
             {errors?.hashtags && <span className="text-sm text-red-500">{errors.hashtags}</span>}
           </div>
@@ -129,6 +256,7 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
               value={form?.shopOpenTime}
               onChange={handleChange}
               className="border p-2 rounded w-full"
+              required
             />
             {errors?.shopOpenTime && <span className="text-sm text-red-500">{errors.shopOpenTime}</span>}
           </div>
@@ -142,6 +270,7 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
               value={form?.shopCloseTime}
               onChange={handleChange}
               className="border p-2 rounded w-full"
+              required
             />
             {errors?.shopCloseTime && <span className="text-sm text-red-500">{errors.shopCloseTime}</span>}
           </div>
@@ -151,7 +280,7 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
             <label className="font-medium text-gray-700">Shop Open Days</label>
             <div className="grid grid-cols-2 pl-4 gap-2 text-sm text-gray-700">
               {daysOfWeek.map((day) => (
-                <label key={day} className="flex items-center space-x-2">
+                <label key={day} className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
                     value={day}
@@ -173,7 +302,7 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
               value={form?.upi_id}
               onChange={handleChange}
               placeholder="Enter UPI ID"
-              className="border p-2 rounded w-full"
+              className="border p-2 rounded w-full" required
             />
             {errors?.upi_id && <span className="text-sm text-red-500">{errors.upi_id}</span>}
           </div>
@@ -182,27 +311,28 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
           <div>
             <label className="font-medium text-gray-700">Upload Scanner Image</label>
             <input
-              name="paymentDetails"
+              name="scanner_image"
               placeholder="Upload Scanner QR Image"
               type="file"
               accept="image/*"
               onChange={handleChange}
-              className="border p-2 rounded w-full"
+              className="border p-2 rounded w-full" required
             />
-            {errors?.scannerImage && <span className="text-sm text-red-500">{errors.scannerImage}</span>}
+            {errors?.scanner_image && <span className="text-sm text-red-500">{errors.scanner_image}</span>}
           </div>
 
           {/* current location */}
           <div>
             <label className="font-medium text-gray-700">Current Location</label>
             <div className="relative">
-              <input
-                name="currentLocation"
-                value={form?.shopAddress}
-                onChange={handleChange}
-                placeholder="Type or fetch location"
-                className="border p-2 rounded w-full pr-10"
-              />
+            <input
+              name="currentLocation"
+              value={form.currentLocation}
+              onChange={handleChange}
+              placeholder="Type or Click on Icon to get current location..."
+              className="border p-2 rounded w-full pr-10"
+              required
+            />
               <button
                 type="button"
                 onClick={handleLocationFetch}
@@ -211,7 +341,6 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
                 <MapPin size={18} />
               </button>
             </div>
-            {errors?.shopAddress && <span className="text-sm text-red-500">{errors.shopAddress}</span>}
           </div>
 
           <button type="submit"
