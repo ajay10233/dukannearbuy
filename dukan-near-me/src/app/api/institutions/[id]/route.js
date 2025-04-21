@@ -4,7 +4,7 @@ import { prisma } from "@/utils/db";
 export const GET = async (req, { params }) => {
   try {
     const { id } = params;
-
+    
     const institution = await prisma.institution.findUnique({
       where: { id },
     });
