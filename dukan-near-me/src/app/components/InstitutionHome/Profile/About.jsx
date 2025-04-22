@@ -144,7 +144,8 @@ export default function About({ profileUpdated }) {
 
                 <div className="fixed bottom-30 right-4 z-50 flex flex-col items-center gap-2">
                     <button
-                        onClick={() => setShowQRModal(true)}
+                        // onClick={() => setShowQRModal(true)}
+                        onClick={handleChat}
                         className="bg-blue-600 text-white p-2 cursor-pointer rounded-full hover:bg-blue-700 transition transform hover:scale-110 animate-bounce"
                         title="Chat with firm"
                     >
