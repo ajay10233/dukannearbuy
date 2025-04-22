@@ -329,7 +329,7 @@ export default function About({ profileUpdated }) {
                 <div className="p-4 md:p-8">
                     <h2 className="text-2xl font-bold text-blue-700 mb-2">About</h2>
                     <div className="relative group transition-all duration-500">
-                        <div className="bg-gradient-to-r from-blue-100 via-white to-blue-50 border-gray-300 w-full h-40 rounded-xl p-4 shadow-md transition-all duration-300 transform">
+                        <div className="bg-gradient-to-r from-blue-100 via-white to-blue-50 border-gray-300 w-300 h-40 rounded-xl p-4 shadow-md transition-all duration-300 transform">
                             <p className="text-gray-700 text-base leading-relaxed tracking-wide">
                                 {userData.description}
                             </p>
