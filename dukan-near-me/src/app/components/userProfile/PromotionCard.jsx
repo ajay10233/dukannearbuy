@@ -12,6 +12,7 @@ import Link from "next/link";
 import { BadgeIndianRupee, SquareCheckBig, UserPlus, BadgeCheck, Smile, Megaphone, Sparkles, Rocket, Flame, Store} from "lucide-react";
 import CustomDropdown from "./CustomDropdown";
 import KilometerDropdown from "./KiloMeterDropdown";
+import { useRouter } from "next/navigation";
 
 export default function PromotionCard() {
     const [days, setDays] = useState(1);
@@ -39,6 +40,13 @@ export default function PromotionCard() {
     const min = 1;
     const max = 10;
     const percentage = ((days - min) / (max - min)) * 100;
+  
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push("/payment");
+  };
+
   
   return (
     <section className="w-full flex flex-col items-center py-10 px-4 gap-y-10">
@@ -226,36 +234,37 @@ export default function PromotionCard() {
                   <option value="popular"><Store color="#05fbff" /> Popular Reach</option>
                 </select> */}
                   <CustomDropdown />
-              </div>
-
-              <button className="p-2 flex items-center justify-center gap-2 cursor-pointer bg-gradient-to-r from-teal-500 to-blue-600 text-white font-medium rounded-md hover:opacity-90 transition duration-300">
-                  <SquareCheckBig color="#fff" /> Confirm & Boost Now
-              </button>
             </div>
-
-              <div className="pt-4 text-sm text-gray-500">
+            
+            {/* <div className="pt-4 text-sm text-gray-500"> */}
                   {/* By clicking confirm, you agree to our{" "}
                   <Link href="/terms-and-conditions" className="text-teal-500 underline">
                   Terms and Conditions
                   </Link>. */}
                       
-                <input
-                  type="checkbox"
-                  id="agree"
-                  checked={agreed}
-                  onChange={(e) => setAgreed(e.target.checked)}
-                  className="w-4 h-4 accent-teal-600 border-gray-300 rounded"
-                />
-                <span className="pl-2 text-sm text-gray-700">
-                  I agree to the{" "}
-                    <Link
-                      href="/terms-and-conditions"
-                      className="underline text-teal-500"
-                    >
-                      Terms & Conditions
-                    </Link>
-              </span>   
-              </div>
+                <div className="flex items-center gap-2 pt-4 text-sm text-gray-500">
+                  <input
+                    type="checkbox"
+                    id="agree"
+                    checked={agreed}
+                    onChange={() => setAgreed(!agreed)}
+                    className="w-4 h-4 text-teal-700"
+                  />
+                  <label htmlFor="agree" className="text-sm text-gray-700">
+                    I agree to the terms and conditions.
+                  </label>
+                </div>
+
+              {/* </div> */}
+
+            <button onClick={handleClick}
+              className="p-2 flex items-center justify-center gap-2 cursor-pointer bg-gradient-to-r from-teal-500 to-blue-600 text-white font-medium rounded-md hover:opacity-90 transition duration-300">
+                  <SquareCheckBig color="#fff" /> Confirm & Boost Now
+            </button>
+            
+            </div>
+
+            
               </DialogContent>
 
         </Dialog>

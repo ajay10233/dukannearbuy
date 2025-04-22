@@ -25,7 +25,7 @@ export default function BillRecord() {
       <h1 className="text-3xl font-semibold">Bill Records</h1>
       <div className="relative w-full flex justify-center items-center">
         <Link
-          href="/userHomePage"
+          href="/UserHomePage"
           className="p-4 absolute left-0 flex items-center gap-1 text-gray-700 hover:text-teal-700 transition-colors">
             <MoveLeft size={20} strokeWidth={1.5} />
             <span className="text-sm">Back</span>

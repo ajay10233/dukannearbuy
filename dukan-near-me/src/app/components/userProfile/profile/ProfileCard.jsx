@@ -21,6 +21,7 @@ export default function ProfileCard() {
         if (!res.ok) throw new Error('Failed to fetch user data');
         const data = await res.json();
         setUser(data);
+        setImage(data?.profilePhoto)
       } catch (err) {
         toast.error(err.message);
       }
