@@ -8,13 +8,13 @@ export default function Faq() {
     return (
         <div className="flex flex-col items-center justify-center h-full w-full pt-10 pb-4 px-4 md:px-0 gap-y-8">
             <h2 className="text-xl md:text-4xl font-extrabold text-center">Frequently Asked Questions</h2>
-            <div className="w-full max-w-sm md:max-w-5xl bg-white shadow-none md:shadow-md rounded-md py-3 px-6 md:p-6">
+            <div className="w-full max-w-sm md:max-w-5xl bg-white shadow-none md:shadow-md rounded-md p-3 md:p-6">
             <Accordion type="single" collapsible className="w-full">
 
-                    <AccordionItem value="item-1">
+                <AccordionItem value="item-1">
                     <AccordionTrigger className="py-2 md:py-4 text-sm md:text-md font-semibold cursor-pointer hover:no-underline">
                         <div className="flex items-center gap-x-2">
-                        <CircleDashed size={20} strokeWidth={1.5} color="#187DE6" />
+                        <CircleDashed className="w-5 h-5 md:w-6 md:h-6" strokeWidth={1.5} color="#187DE6" />
                         <span>What is the social impact of our partnership?</span>
                         </div>
                     </AccordionTrigger>
@@ -60,7 +60,7 @@ export default function Faq() {
                     <AccordionItem value="item-2">
                     <AccordionTrigger className="py-2 md:py-4 text-sm md:text-md font-semibold cursor-pointer hover:no-underline">
                         <div className="flex items-center gap-x-2">
-                        <CircleDashed size={20} strokeWidth={1.5} color="#187DE6" />
+                        <CircleDashed className="w-5 h-5 md:w-6 md:h-6" strokeWidth={1.5} color="#187DE6" />
                         <span>How we can tackle e-commerce platforms?</span>
                         </div>
                     </AccordionTrigger>
@@ -80,7 +80,7 @@ export default function Faq() {
                     <AccordionItem value="item-3">
                     <AccordionTrigger className="py-2 md:py-4 text-sm md:text-md font-semibold cursor-pointer hover:no-underline">
                         <div className="flex items-center gap-x-2">
-                        <CircleDashed size={20} strokeWidth={1.5} color="#187DE6" />
+                        <CircleDashed className="w-5.5 h-5.5 md:w-6 md:h-6" strokeWidth={1.5} color="#187DE6" />
                         <span>Why Shop Owners and Medical institutes join us?</span>
                         </div>
                     </AccordionTrigger>
@@ -102,7 +102,7 @@ export default function Faq() {
                     <AccordionItem value="item-4">
                     <AccordionTrigger className="py-2 md:py-4 text-sm md:text-md font-semibold cursor-pointer hover:no-underline">
                         <div className="flex items-center gap-x-2">
-                        <CircleDashed size={20} strokeWidth={1.5} color="#187DE6" />
+                        <CircleDashed className="w-5 h-5 md:w-6 md:h-6" strokeWidth={1.5} color="#187DE6" />
                         <span>Is this platform trustable?</span>
                         </div>
                     </AccordionTrigger>
@@ -121,7 +121,7 @@ export default function Faq() {
                     <AccordionItem value="item-5">
                     <AccordionTrigger className="py-2 md:py-4 text-sm md:text-md font-semibold cursor-pointer hover:no-underline">
                         <div className="flex items-center gap-x-2">
-                        <CircleDashed size={20} strokeWidth={1.5} color="#187DE6" />
+                        <CircleDashed className="w-5 h-5 md:w-6 md:h-6" strokeWidth={1.5} color="#187DE6" />
                         <span>How to increase your customer reach?</span>
                         </div>
                     </AccordionTrigger>
@@ -135,17 +135,16 @@ export default function Faq() {
                         <span className="font-semibold">Customer is the king, Be true and honest with them!</span>
                     </AccordionContent>
                     </AccordionItem>
-
-        </Accordion>
-
+                </Accordion>
+                
             </div>
             <div className="flex justify-center items-center w-full px-6">
-                <div className="flex items-center relative w-16 h-16">
-                    <Image src="/nearbuydukan-Logo/Logo.svg" alt="nearbuydukan" fill sizes='65px' priority /> 
+                <div className="flex items-center relative w-14 h-14 md:w-16 md:h-16">
+                    <Image src="/nearbuydukan-Logo/Logo.svg" alt="nearbuydukan"   width={55} height={55} className="md:w-[65px] md:h-[65px]" priority /> 
                 </div>
                 <div className="text-right items-center text-gray-900">
-                    <span className="font-semibold text-sm">Your Partner,</span><br />
-                    <span className="font-bold text-md">NearBuyDukaan</span>
+                    <span className="font-semibold text-xs md:text-sm">Your Partner,</span><br />
+                    <span className="font-bold text-sm md:text-md">NearBuyDukaan</span>
                 </div>
             </div>
         </div>

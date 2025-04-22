@@ -13,7 +13,7 @@ export default function CustomDropdown() {
   return (
     <div className="relative">
       <button
-        className="w-full border rounded px-2 py-1 text-left flex justify-between items-center cursor-pointer"
+        className="w-full border rounded px-3 py-2 text-left flex justify-between items-center cursor-pointer"
         onClick={() => setIsOpen(!isOpen)} // Toggle dropdown open/close
       >
         <span>{selectedOption || "Select Promotion Type"}</span>

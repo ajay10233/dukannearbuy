@@ -69,11 +69,11 @@ export default function Navbar() {
             location.zipCode
         ].filter(Boolean).join(", ");
 
-        const words = locationString.split(" ");
-        if (words.length > 3) {
-            return words.slice(0, 3).join(" ") + " ...";
+        const maxLength = 15;
+        if (locationString.length > maxLength) {
+            return locationString.substring(0, maxLength).trim() + " ...";
         }
-
+    
         return locationString;
     };
 

@@ -32,7 +32,7 @@ export default function HomeCards() {
   }, []);
 
   return (
-    <section className="min-h-[180vh w-full flex flex-col items-center justify-center gap-10 px-4 py-20">
+    <section className="min-h-[180vh w-full flex flex-col items-center justify-center gap-10 px-6 md:px-4 py-20">
       {cardData.map((card, index) => (
         <Link href={card.href} key={index} className="w-full max-w-4xl">
           <div className="relative group w-full h-48 sm:h-56 md:h-64 cursor-pointer rounded-xl overflow-hidden backdrop-blur-xl bg-white/5 border border-white/10 shadow-xl transition-all duration-500 hover:scale-[1.02]">
@@ -41,7 +41,7 @@ export default function HomeCards() {
             
             {/* Card content */}
             <div className="relative z-10 h-full w-full flex flex-col items-center justify-center text-white text-center px-6">
-              <h2 className="text-3xl font-bold mb-2">{card.title}</h2>
+              <h2 className="text-2xl md:text-3xl font-bold mb-2">{card.title}</h2>
               <p className="text-sm opacity-90">Click to explore</p>
             </div>
           </div>

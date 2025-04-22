@@ -185,18 +185,25 @@ export default function ProfileWrapper({ children, images, setImages  }) {
 
   useEffect(() => {
     const fetchFavorites = async () => {
-      const res = await fetch("/api/favorites");
-      const data = await res.json();
-      const currentInstitutionId = pathname.split("/").pop(); 
-      const ids = data.favorites.map(fav => fav.institutionId);
-      setIsFavorite(ids.includes(currentInstitutionId));
+      if (session?.user?.role === "USER") {
+        const res = await fetch("/api/favorites");
+        const data = await res.json();
+        const currentInstitutionId = pathname.split("/").pop();
+        const ids = data.favorites.map((fav) => fav.institutionId);
+        setIsFavorite(ids.includes(currentInstitutionId));
+      }
     };
     fetchFavorites();
-  }, []);  
-
+  }, [pathname, session]);
+  
   const handleFavoriteToggle = async () => {
-    const currentInstitutionId = pathname.split("/").pop(); // Adjust to get the institution ID dynamically
-    
+    if (!session || session.user.role !== "USER") {
+      toast.error("Only users can favorite profiles.");
+      return;
+    }
+  
+    const currentInstitutionId = pathname.split("/").pop();
+  
     try {
       const res = await fetch("/api/favorites", {
         method: isFavorite ? "DELETE" : "POST",
@@ -205,17 +212,22 @@ export default function ProfileWrapper({ children, images, setImages  }) {
       });
   
       if (res.ok) {
-        // Update the state after a successful API call
         setIsFavorite(!isFavorite);
+        toast.success(
+          isFavorite
+            ? "Removed from favorites."
+            : "Added to your favorites!"
+        );
       } else {
-        // Handle errors
-        console.error("Failed to update favorite status");
+        const errorData = await res.json();
+        toast.error(errorData?.message || "Failed to update favorite status");
       }
     } catch (error) {
       console.error("Error toggling favorite:", error);
+      toast.error("Something went wrong.");
     }
   };
-
+  
     return (
         <>
         <div className={`w-full px-4 pb-2 md:px-8 pt-14 flex justify-between items-center ${
@@ -238,18 +250,21 @@ export default function ProfileWrapper({ children, images, setImages  }) {
             className="transition cursor-pointer">
             <Heart size={20} strokeWidth={1.5}  color="#ff0000" />
           </button> */}
-            <button
-              onClick={handleFavoriteToggle}
-              className="transition cursor-pointer"
-            >
-              <Heart
-                size={20}
-                strokeWidth={1.5}
-                className={`transition-all duration-300 ${
-                  isFavorite ? "fill-red-500 text-red-500" : "text-gray-600"
-                }`}
-              />
-            </button>
+           {session?.user?.role === "USER" && (
+              <button
+                onClick={handleFavoriteToggle}
+                className="transition cursor-pointer"
+                title={isFavorite ? "Unfavorite" : "Add to favorites"}
+              >
+                <Heart
+                  size={20}
+                  strokeWidth={1.5}
+                  className={`transition-all duration-300 ${
+                    isFavorite ? "fill-red-500 text-red-500" : "text-gray-600"
+                  }`}
+                />
+              </button>
+            )}
 
           {/* Share Icon */}
           <button

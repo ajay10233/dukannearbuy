@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart, Calendar } from 'lucide-react';
+import { Heart, Calendar, ArrowDownToLine } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const dummyReports = [
@@ -17,7 +17,8 @@ const dummyReports = [
 export default function Report() {
   const [reports, setReports] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [dateFilter, setDateFilter] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [favoriteFilter, setFavoriteFilter] = useState(null);
 
   const [showDateFilter, setShowDateFilter] = useState(false);
@@ -27,21 +28,21 @@ export default function Report() {
     const stored = JSON.parse(localStorage.getItem('favReports')) || {};
     const withFavStatus = dummyReports.map((r) => {
       const fav = stored[r.id];
-      const favorited = fav && (!fav.expiry || new Date(fav.expiry) > new Date());
       return {
         ...r,
-        favorited,
+        favorited: fav ? (!fav.expiry || new Date(fav.expiry) > new Date()) : false,
         expiry: fav?.expiry || null,
       };
     });
     setReports(withFavStatus);
   }, []);
+  
 
   const toggleFavorite = (id) => {
     const updated = reports.map((report) => {
       if (report.id === id) {
         const isNowFav = !report.favorited;
-        const expiry = isNowFav ? null : new Date(Date.now() + 24 * 60 * 60 * 1000);
+        const expiry = isNowFav ? new Date(Date.now() + 24 * 60 * 60 * 1000) : null;
         return {
           ...report,
           favorited: isNowFav,
@@ -50,32 +51,37 @@ export default function Report() {
       }
       return report;
     });
-
+  
     setReports(updated);
-
+  
     const saveToStorage = {};
     updated.forEach((report) => {
-      if (report.favorited || (report.expiry && new Date(report.expiry) > new Date())) {
+      if (report.expiry) {
         saveToStorage[report.id] = {
           expiry: report.expiry,
         };
       }
     });
-
+  
     localStorage.setItem('favReports', JSON.stringify(saveToStorage));
-  };
+  };  
 
   const filteredReports = reports.filter((report) => {
-    const valid =
-      (report.favorited || !report.expiry || new Date(report.expiry) > new Date()) &&
-      (!dateFilter || report.date === dateFilter) &&
-      (favoriteFilter === null || report.favorited === favoriteFilter);
-
+    const isFavoriteValid =
+      favoriteFilter === null || report.favorited === favoriteFilter;
+  
+    const isDateValid =
+      (!dateFrom || new Date(report.date) >= new Date(dateFrom)) &&
+      (!dateTo || new Date(report.date) <= new Date(dateTo));
+  
     const query = searchTerm.toLowerCase();
     const matchesSearch =
-      report.report.toLowerCase().includes(query);
-    return valid && matchesSearch;
+      report.report.toLowerCase().includes(query) ||
+      report.institution.toLowerCase().includes(query);
+  
+    return isFavoriteValid && isDateValid && matchesSearch;
   });
+  
 
   return (
     <div className="flex flex-col gap-3 w-full h-full p-4 bg-gray-50 rounded-lg shadow-sm">
@@ -86,39 +92,12 @@ export default function Report() {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg shadow-md focus:ring-2 focus:ring-teal-700 transition-all duration-300 ease-in-out outline-none hover:border-gray-400"
-        />
+      />
 
       {/* Header with Filters */}
       <div className="flex text-sm text-slate-400 font-medium pr-8 relative z-10">
         <ul className="flex w-full *:w-1/5 justify-between relative">
-          <li className="flex justify-center items-center">ID</li>
-
-          <li className="flex justify-center items-center relative">
-            Date
-            <Calendar
-              className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-teal-700"
-              onClick={() => {
-                setShowDateFilter(!showDateFilter);
-                setShowFavFilter(false);
-              }}
-            />
-            {showDateFilter && (
-              <input
-                type="date"
-                value={dateFilter}
-                onChange={(e) => {
-                  setDateFilter(e.target.value);
-                  setShowDateFilter(false);
-                }}
-                className="absolute top-6 w-36 bg-white border text-slate-700 border-gray-300 rounded-lg shadow-md p-2 text-sm"
-              />
-            )}
-            </li>
-          
-            <li className='flex justify-center items-center relative'>Institution</li>
-            <li className='flex justify-center items- relative'>Report</li>
-
-          <li className="flex justify-center items-center relative">
+        <li className="flex justify-center items-center relative">
             Favorite
             <Heart
               className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-red-500"
@@ -159,6 +138,82 @@ export default function Report() {
               </div>
             )}
           </li>
+          <li className="flex justify-center items-center">ID</li>
+
+          <li className="flex justify-center items-center relative">
+            Date
+            <Calendar
+              className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-teal-700"
+              onClick={() => {
+                setShowDateFilter(!showDateFilter);
+                setShowFavFilter(false);
+              }}
+            />
+            {showDateFilter && (
+              <div className="absolute top-6 bg-white w-60 text-slate-700 border border-gray-300 rounded-lg shadow-md p-2 flex flex-col">
+                <label className="text-sm mb-2">From:</label>
+                <input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="w-full mb-2 bg-white border text-slate-700 border-gray-300 rounded-lg shadow-md p-2 text-sm"
+                />
+                <label className="text-sm mb-2">To:</label>
+                <input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="w-full bg-white border text-slate-700 border-gray-300 rounded-lg shadow-md p-2 text-sm"
+                />
+              </div>
+            )}
+          </li>
+
+          <li className="flex justify-center items-center relative">Institution</li>
+          <li className="flex justify-center items-center relative">Report</li>
+          <li className="flex justify-center items-center relative">Download</li>
+
+          {/* <li className="flex justify-center items-center relative">
+            Favorite
+            <Heart
+              className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-red-500"
+              onClick={() => {
+                setShowFavFilter(!showFavFilter);
+                setShowDateFilter(false);
+              }}
+            />
+            {showFavFilter && (
+              <div className="absolute top-6 bg-white w-28 text-sm border border-gray-300 rounded-md shadow-md p-2 flex flex-col">
+                <label>
+                  <input
+                    type="radio"
+                    checked={favoriteFilter === null}
+                    onChange={() => setFavoriteFilter(null)}
+                    className="mr-1"
+                  />
+                  All
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    checked={favoriteFilter === true}
+                    onChange={() => setFavoriteFilter(true)}
+                    className="mr-1"
+                  />
+                  Favorites
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    checked={favoriteFilter === false}
+                    onChange={() => setFavoriteFilter(false)}
+                    className="mr-1"
+                  />
+                  Unfavorite
+                </label>
+              </div>
+            )}
+          </li> */}
         </ul>
       </div>
 
@@ -168,11 +223,7 @@ export default function Report() {
           filteredReports.map((report) => (
             <div key={report.id} className="bg-white p-4 rounded-xl shadow-sm flex items-center w-full">
               <ul className="flex items-center text-sm text-slate-600 w-full justify-between *:w-1/5 text-center">
-                <li className="font-semibold">{report.id}</li>
-                <li>{report.date}</li>
-                <li>{report.institution}</li>
-                <li>{report.report}</li>
-                <li className="flex justify-center">
+                <li>
                   <button onClick={() => toggleFavorite(report.id)}>
                     <Heart
                       size={20}
@@ -182,6 +233,16 @@ export default function Report() {
                       className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110"
                     />
                   </button>
+                </li>
+                <li className="font-semibold">{report.id}</li>
+                <li>{report.date}</li>
+                <li>{report.institution}</li>
+                <li>{report.report}</li>
+                <li className="flex justify-center items-center">
+                  <span
+                    className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all">
+                    <ArrowDownToLine size={17} strokeWidth={2.5} />
+                  </span>
                 </li>
               </ul>
             </div>
