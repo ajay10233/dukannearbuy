@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 export default function EditProfile({ user, onCancel, onSuccess }) {
   const [formData, setFormData] = useState({ ...user });
   const [otpRequired, setOtpRequired] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -31,6 +32,7 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    setIsSaving(true); 
 
     const previousEmail = user.email;
     const previousPhone = user.phone;
@@ -52,17 +54,21 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
       });
 
       const result = await res.json();
+      console.log(result);
       if (!res.ok) throw new Error(result.error || 'Something went wrong');
 
-      toast.success('Profile updated!');
+      toast.success('Profile updated successfully!');
+      setIsSaving(false); 
+      onSuccess(result.user);
 
-      if (formData.email !== previousEmail || formData.phone !== previousPhone) {
-        router.push(`/verify-otp?email=${formData.email}&phone=${formData.phone}`);
-      } else {
-        onSuccess();
-      }
+      // if (formData.email !== previousEmail || formData.phone !== previousPhone) {
+      //   router.push(`/otp-verify?email=${formData.email}&phone=${formData.phone}`);
+      // } else {
+      //   onSuccess();
+      // }
     } catch (err) {
       toast.error(err.message);
+      setIsSaving(false);
     }
   };
 
@@ -199,14 +205,15 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
       <div className="flex flex-col md:flex-row gap-4">
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500 transition"
+          disabled={isSaving} 
+          className="bg-blue-600 text-white px-4 py-2 cursor-pointer rounded-md hover:bg-blue-500 transition"
         >
-          Save Changes
+          {isSaving ? 'Saving...' : 'Save Changes'} 
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="border border-gray-600 px-4 py-2 rounded-md hover:bg-gray-100 transition"
+          className="border border-gray-600 px-4 py-2 cursor-pointer rounded-md hover:bg-gray-100 transition"
         >
           Cancel
         </button>

@@ -1,19 +1,33 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { BadgeCheck, UserRound, Star, Plus, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function ProfileCard() {
-  const { data: session } = useSession();
-
+  const [user, setUser] = useState(null);
   const [image, setImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch('/api/users/me');
+        if (!res.ok) throw new Error('Failed to fetch user data');
+        const data = await res.json();
+        setUser(data);
+      } catch (err) {
+        toast.error(err.message);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const triggerFileInput = () => {
     fileInputRef.current?.click();
@@ -58,7 +72,7 @@ export default function ProfileCard() {
     toast.success("Profile photo deleted");
   };
 
-  if (!session?.user?.email) {
+  if (!user?.email) {
     return (
       <p className="text-center py-20 text-gray-700">
         No user data found.
@@ -71,7 +85,7 @@ export default function ProfileCard() {
       <div className="relative bg-gradient-to-tl from-[#e7f0ec] via-[#aabec2] to-[#005d6e] rounded-lg p-6 w-full h-50 md:h-110 md:max-w-xs flex flex-col items-center gap-3 md:gap-4 shadow-md">
 
         {/* Delete Button */}
-        {(image || session?.user?.image) && (
+        {(image || user?.image) && (
           <button
             onClick={() => setShowDeleteModal(true)}
             type="button"
@@ -82,9 +96,9 @@ export default function ProfileCard() {
         )}
 
         <div className="w-32 h-32 rounded-full relative bg-gray-300 shadow-lg flex items-center justify-center cursor-pointer">
-          {image || session?.user?.image ? (
+          {image || user?.image ? (
             <Image
-              src={image || session?.user?.image}
+              src={image || user?.image}
               alt="Profile"
               fill
               sizes={32}
@@ -117,14 +131,14 @@ export default function ProfileCard() {
             </div>
           )}
 
-          {/* {(session?.user?.subscriptionPlan?.name === 'BUSINESS' || session?.user?.subscriptionPlan?.name === 'PREMIUM') &&
-            session?.user?.role !== 'INSTITUTION' && session?.user?.role !== 'SHOP_OWNER' && (
+          {/* {(user?.subscriptionPlan?.name === 'BUSINESS' || user?.subscriptionPlan?.name === 'PREMIUM') &&
+            user?.role !== 'INSTITUTION' && user?.role !== 'SHOP_OWNER' && (
               <div className="absolute bottom-1 right-1 rounded-full p-1 shadow-md z-10">
                 <Star
                   size={24}
                   strokeWidth={2}
-                  fill={session?.user?.subscriptionPlan?.name === 'PREMIUM' ? '#f0d000' : '#AFAFAF'}
-                  color={session?.user?.subscriptionPlan?.name === 'PREMIUM' ? '#f0d000' : '#AFAFAF'}
+                  fill={user?.subscriptionPlan?.name === 'PREMIUM' ? '#f0d000' : '#AFAFAF'}
+                  color={user?.subscriptionPlan?.name === 'PREMIUM' ? '#f0d000' : '#AFAFAF'}
                 />
               </div>
             )} */}
@@ -138,9 +152,9 @@ export default function ProfileCard() {
         </div>
 
 
-        {(session?.user?.firstName || session?.user?.lastName || session?.user?.role) && (
+        {(user?.firstName || user?.lastName || user?.role) && (
           <p className="font-semibold text-gray-600">
-            {session?.user?.firstName} {session?.user?.lastName} {session?.user?.role ? `- ${session?.user?.role}` : ""}
+            {user?.firstName} {user?.lastName} {user?.role ? `- ${user?.role}` : ""}
           </p>
         )}
       </div>

@@ -15,7 +15,7 @@ export default function Sidebar({ isOpen, onClose }) {
             <div className={`fixed top-0 right-0 p-4 w-55 md:w-65 h-full flex flex-col bg-white shadow-xl transform transition-all duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'} z-60 `}>
                 {/* offcanvas header */}
                 <div className="flex justify-between items-center p-2 border-b border-gray-200">
-                    <Link href="/userProfile" className='hover:text-blue-500 transition duration-200 cursor-pointer'>
+                    <Link href="/institutionProfile" className='hover:text-blue-500 transition duration-200 cursor-pointer'>
                         <div className='flex justify-start items-center gap-3'>
                             <UserRound size={28} strokeWidth={2} className="text-blue-700" />
                             <h2 className="text-lg md:text-xl font-bold text-blue-700 uppercase">Profile</h2>
@@ -39,7 +39,7 @@ export default function Sidebar({ isOpen, onClose }) {
                             </Link>
                         )}
 
-                        <Link href="#"
+                        <Link href="/institutionProfile"
                             className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">
                             <UserRound size={20} strokeWidth={1.5} />
                                 My Profile

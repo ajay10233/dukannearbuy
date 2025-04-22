@@ -71,29 +71,29 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
     });
   };
 
-  const handlePastAddressChange = (e) => {
-    const { value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      pastShopAddress: value,
-    }));
-  };
+  // const handlePastAddressChange = (e) => {
+  //   const { value } = e.target;
+  //   setForm((prev) => ({
+  //     ...prev,
+  //     pastShopAddress: value,
+  //   }));
+  // };
 
-  const handlePastAddressFromChange = (e) => {
-    const { value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      pastShopAddressFrom: value,
-    }));
-  };
+  // const handlePastAddressFromChange = (e) => {
+  //   const { value } = e.target;
+  //   setForm((prev) => ({
+  //     ...prev,
+  //     pastShopAddressFrom: value,
+  //   }));
+  // };
 
-  const handlePastAddressToChange = (e) => {
-    const { value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      pastShopAddressTo: value,
-    }));
-  };
+  // const handlePastAddressToChange = (e) => {
+  //   const { value } = e.target;
+  //   setForm((prev) => ({
+  //     ...prev,
+  //     pastShopAddressTo: value,
+  //   }));
+  // };
   
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-auto">
@@ -155,8 +155,8 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
           <div>
             <label className="font-medium text-gray-700"> User Id:</label>
             <input
-              type="id"
-              name="id"
+              type="username"
+              name="username"
               value={form?.username}
               onChange={handleChange}
               placeholder="Type your User Id"
@@ -165,21 +165,118 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
             />
           </div>
 
-          {/* Shop address */}
-          <div>
-          <label className="font-medium text-gray-700">Address</label>
-              <input
-                name="shopAddress"
-                value={form?.shopAddress}
-                onChange={handleChange}
-                placeholder="Address"
-                className="border p-2 rounded w-full pr-10"
-                required
-              />
-          </div>
+          {/* Detailed Address Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="font-medium text-gray-700">House Number</label>
+                <input
+                  name="houseNumber"
+                  value={form?.houseNumber || ""}
+                  onChange={handleChange}
+                  placeholder="Enter House Number"
+                  className="border p-2 rounded w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="font-medium text-gray-700">Street</label>
+                <input
+                  name="street"
+                  value={form?.street || ""}
+                  onChange={handleChange}
+                  placeholder="Enter Street"
+                  className="border p-2 rounded w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="font-medium text-gray-700">Building Name</label>
+                <input
+                  name="buildingName"
+                  value={form?.buildingName || ""}
+                  onChange={handleChange}
+                  placeholder="Enter Building Name"
+                  className="border p-2 rounded w-full"
+                />
+              </div>
+
+              <div>
+                <label className="font-medium text-gray-700">Landmark</label>
+                <input
+                  name="landmark"
+                  value={form?.landmark || ""}
+                  onChange={handleChange}
+                  placeholder="Enter Landmark"
+                  className="border p-2 rounded w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="font-medium text-gray-700">City</label>
+                <input
+                  name="city"
+                  value={form?.city || ""}
+                  onChange={handleChange}
+                  placeholder="Enter City"
+                  className="border p-2 rounded w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="font-medium text-gray-700">State</label>
+                <input
+                  name="state"
+                  value={form?.state || ""}
+                  onChange={handleChange}
+                  placeholder="Enter State"
+                  className="border p-2 rounded w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="font-medium text-gray-700">Country</label>
+                <input
+                  name="country"
+                  value={form?.country || ""}
+                  onChange={handleChange}
+                  placeholder="Enter Country"
+                  className="border p-2 rounded w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="font-medium text-gray-700">Zip Code</label>
+                <input
+                  name="zipCode"
+                  value={form?.zipCode || ""}
+                  onChange={handleChange}
+                  placeholder="Enter Zip Code"
+                  className="border p-2 rounded w-full"
+                  required
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="font-medium text-gray-700">Full Shop Address</label>
+                <input
+                  name="shopAddress"
+                  value={form?.shopAddress || ""}
+                  onChange={handleChange}
+                  placeholder="Full Address (e.g. auto-generated or manually combined)"
+                  className="border p-2 rounded w-full"
+                  required
+                />
+              </div>
+            </div>
 
           {/* previous address */}
-          <div>
+          {/* <div>
             <label className="font-medium text-gray-700">Past Address</label>
             <input
               type="text"
@@ -206,7 +303,7 @@ export default function EditProfile({ setShowModal, errors, handleChange, handle
                 className="border p-2 rounded w-1/2"
               />
             </div>
-          </div>
+          </div> */}
 
 
           {/* Description */}
