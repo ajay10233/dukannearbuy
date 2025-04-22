@@ -14,6 +14,7 @@ export async function GET() {
     where: { id: session.user.id },
     include: {
       subscriptionPlan: true,
+      pastAddresses: true,
     },
   });
 
@@ -70,6 +71,21 @@ export async function GET() {
           maxUploadSizeMB: user.subscriptionPlan.maxUploadSizeMB,
         }
       : null,
+      pastAddresses: user.pastAddresses.map((address) => ({
+        id: address.id,
+        houseNumber: address.houseNumber,
+        street: address.street,
+        buildingName: address.buildingName,
+        landmark: address.landmark,
+        city: address.city,
+        state: address.state,
+        country: address.country,
+        zipCode: address.zipCode,
+        latitude: address.latitude,
+        longitude: address.longitude,
+        movedOutAt: address.movedOutAt,
+        createdAt: address.createdAt,
+      })),
     
   });
 }
