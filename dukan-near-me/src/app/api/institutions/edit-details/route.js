@@ -59,7 +59,7 @@ export async function POST(req) {
 
         let scanner_image = body.scanner_image;
         if (scanner_image) {
-            let result = await cloudinary.uploader.upload(img, { folder: "scanner_images" });
+            let result = await cloudinary.uploader.upload(scanner_image, { folder: "scanner_images" });
             updateData.scanner_image = result.secure_url;
         }
 
