@@ -6,6 +6,8 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import ChangeAddress from "./ChangeAddress";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+
 
 export default function About({ profileUpdated }) {
     const [userData, setUserData] = useState(null);
@@ -144,7 +146,8 @@ export default function About({ profileUpdated }) {
 
                 <div className="fixed bottom-30 right-4 z-50 flex flex-col items-center gap-2">
                     <button
-                        onClick={() => setShowQRModal(true)}
+                        // onClick={() => setShowQRModal(true)}
+                        onClick={handleChat}
                         className="bg-blue-600 text-white p-2 cursor-pointer rounded-full hover:bg-blue-700 transition transform hover:scale-110 animate-bounce"
                         title="Chat with firm"
                     >
@@ -296,31 +299,30 @@ export default function About({ profileUpdated }) {
             )}
 
             {/* past addresses */}
-            <div className="flex flex-col w-full p-0 pb-6 md:px-8 md:py-2">
+            <div className="flex flex-col w-full max-w-lg p-4 md:px-8 md:py-4">
                 <div className="pl-2 md:pl-8 flex flex-col gap-y-1">
-                    <span className="font-semibold text-gray-700">Past Addresses:</span>
-                        {pastAddresses.length === 0 ? (
-                        <p className="text-gray-500">No past addresses found.</p>
-                        ) : (
-                        <div className="flex flex-col gap-4">
-                            {pastAddresses.map((addr, i) => (
-                            <div
-                                key={addr.id}
-                                className="flex flex-col text-sm">
-                                <p className="font-semibold">
+                    <span className="font-semibold text-gray-800">Past Addresses:</span>
+                    {pastAddresses.length === 0 ? (
+                    <p className="text-gray-500">No past addresses found.</p>
+                    ) : (
+                    <Accordion type="single" collapsible className="flex flex-col gap-4 rounded-t-md">
+                        {pastAddresses.map((addr, i) => (
+                        <AccordionItem key={addr.id} value={`address-${i}`} className="rounded-t-md border-0">
+                            <AccordionTrigger className="cursor-pointer hover:no-underline flex justify-between items-center p-3 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-t-md transition ease-in-out duration-300">
+                            <p className="font-semibold text-gray-700">
                                 #{i + 1} (Moved out: {new Date(addr.movedOutAt).toLocaleDateString()})
-                                </p>
-                                <span className="text-gray-800 hover:text-gray-600 transition ease-in-out">
-                                {[addr.buildingName, addr.street, addr.city, addr.state]
-                                    .filter(Boolean)
-                                    .join(", ")}{" "}
-                                - {addr.zipCode}
-                                </span>
-                                <span className="text-gray-600">{addr.country}</span>
+                            </p>
+                            </AccordionTrigger>
+                            <AccordionContent className="p-4 bg-blue-50 text-blue-800 rounded-md border-2 border-dashed border-blue-200 ">
+                            <div className="mt-2 text-gray-700">
+                                <p>{[addr.buildingName, addr.street, addr.city, addr.state].filter(Boolean).join(", ")}, {addr.zipCode}</p>
+                                <p>{addr.country}</p>
                             </div>
-                            ))}
-                        </div>
-                        )}
+                            </AccordionContent>
+                        </AccordionItem>
+                        ))}
+                    </Accordion>
+                    )}
                 </div>
             </div>
 
@@ -328,7 +330,7 @@ export default function About({ profileUpdated }) {
                 <div className="p-4 md:p-8">
                     <h2 className="text-2xl font-bold text-blue-700 mb-2">About</h2>
                     <div className="relative group transition-all duration-500">
-                        <div className="bg-gradient-to-r from-blue-100 via-white to-blue-50 border-gray-300 w-full h-40 rounded-xl p-4 shadow-md transition-all duration-300 transform">
+                        <div className="bg-gradient-to-r from-blue-100 via-white to-blue-50 border-gray-300 w-300 h-40 rounded-xl p-4 shadow-md transition-all duration-300 transform">
                             <p className="text-gray-700 text-base leading-relaxed tracking-wide">
                                 {userData.description}
                             </p>

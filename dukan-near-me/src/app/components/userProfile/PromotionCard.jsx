@@ -257,10 +257,10 @@ export default function PromotionCard() {
 
               {/* </div> */}
 
-            <button onClick={handleClick}
-              className="p-2 flex items-center justify-center gap-2 cursor-pointer bg-gradient-to-r from-teal-500 to-blue-600 text-white font-medium rounded-md hover:opacity-90 transition duration-300">
-                  <SquareCheckBig color="#fff" /> Confirm & Boost Now
-            </button>
+                <button onClick={handleClick}
+                className="p-2 flex items-center justify-center gap-2 cursor-pointer bg-gradient-to-r from-teal-500 to-blue-600 text-white font-medium rounded-md hover:opacity-90 transition duration-300">
+                    <SquareCheckBig color="#fff" /> Confirm & Boost Now
+                </button>
             
             </div>
 

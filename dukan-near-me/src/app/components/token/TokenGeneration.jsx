@@ -105,7 +105,7 @@ export default function TokenGeneration() {
     <section className="flex flex-col items-center h-[calc(100vh-50px)] justify-start px-8 pb-8 pt-16 gap-y-4 bg-white">
       {/* back button */}
       <div className="flex items-center justify-between w-full">
-        <Link href="/InstitutionHomePage" className="flex items-center gap-1">
+        <Link href="/partnerHome" className="flex items-center gap-1">
           <MoveLeft size={20} strokeWidth={1.5} />
         </Link>
         <h2 className="text-2xl font-bold text-gray-700 text-center flex-1">
@@ -113,10 +113,10 @@ export default function TokenGeneration() {
         </h2>
       </div>
 
-      <div className="w-full max-w-5xl rounded-xl flex flex-col gap-y-4 border border-gray-400 bg-gray-100 py-4 px-8 md:p-8 shadow-md">
+      <div className="w-full max-w-5xl rounded-xl flex flex-col gap-y-4 border border-gray-400 bg-gray-100 py-4 px-4 md:p-8 shadow-md">
         <div className="flex justify-between items-center flex-wrap gap-4">
           <div className="flex items-center gap-4">
-            <label className="font-bold text-md text-teal-900 md:w-24">User ID:</label>
+            <label className="font-bold text-md text-teal-800 md:w-24 whitespace-nowrap">User ID:</label>
             <input
               type="text"
               placeholder="User ID"
@@ -159,7 +159,7 @@ export default function TokenGeneration() {
           </div>
           <div>
             <button
-              className="flex items-center bg-emerald-400 hover:bg-emerald-500 cursor-pointer text-sm md:text-md text-black gap-2 font-medium px-4 md:px-6 py-2 rounded-md transition duration-300 ease-in-out"
+              className="flex items-center whitespace-nowrap bg-emerald-400 hover:bg-emerald-500 cursor-pointer text-sm md:text-md text-black gap-2 font-medium px-4 md:px-6 py-2 rounded-md transition duration-300 ease-in-out"
               onClick={() => toast("Scanner not connected")}>
               <Scan size={20} strokeWidth={1.5} color="#ffffff" />
               Scan QR
@@ -168,8 +168,8 @@ export default function TokenGeneration() {
         </div>
       </div>
 
-      <div className="w-full max-w-5xl rounded-xl bg-white px-8 py-4 border border-gray-300 shadow-md">
-        <h2 className="text-xl md:text-2xl font-semibold text-teal-900 mb-4">
+      <div className="w-full max-w-5xl rounded-xl bg-white px-6 py-4 border border-gray-300 shadow-md">
+        <h2 className="text-xl md:text-2xl font-semibold text-teal-800 mb-4">
           Previous Allotted Number
         </h2>
         <ul className="flex flex-col gap-y-4">

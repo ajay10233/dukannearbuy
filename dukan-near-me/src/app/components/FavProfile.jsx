@@ -120,11 +120,11 @@ export default function FavProfile() {
                       />
                       <Link href={`/institutionProfile/${fav.institutionId}`} className="text-blue-600 font-semibold hover:underline">
                         {session?.user?.firmName || 'Institution Name'}
-                        {session?.user?.subscriptionPlan && (
+                        {/* {session?.user?.subscriptionPlan && (
                           <span className="text-xs bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded-full font-medium ml-2">
                             {session?.user?.subscriptionPlan}
                           </span>
-                        )}
+                        )} */}
                       </Link>
                     </div>
                   </li>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { MoveLeft } from "lucide-react";
+import { MoveLeft, Loader, Clock, Check } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import io from "socket.io-client";
@@ -60,7 +60,7 @@ export default function TokenUpdate() {
     return (
         <section className="flex flex-col items-center h-[calc(100vh-50px)] justify-start px-8 pb-8 pt-16 gap-y-4 bg-white">
             <div className="flex items-center justify-between w-full">
-                <Link href="/InstitutionHomePage" className="flex items-center gap-1">
+                <Link href="/partnerHome" className="flex items-center gap-1">
                     <MoveLeft size={20} strokeWidth={1.5} />
                 </Link>
                 <h2 className="text-2xl font-bold text-gray-700 text-center flex-1">
@@ -71,7 +71,7 @@ export default function TokenUpdate() {
             {/* Display all processing tokens */}
             <div className="w-full max-w-5xl rounded-xl flex flex-col gap-y-4 border border-gray-400 bg-gray-100 p-4 md:p-8 shadow-md">
                 <div className="flex flex-col gap-4">
-                    <label className="text-lg sm:text-3xl font-bold text-teal-900">
+                    <label className="text-lg sm:text-3xl font-bold text-teal-800">
                         Live Token Numbers :
                     </label>
                     {currentTokens.length > 0 ? (
@@ -83,14 +83,30 @@ export default function TokenUpdate() {
                                 <p>
                                     <span className="font-medium">Token #</span> {token.tokenNumber}
                                 </p>
-                                <p>
+                                {/* <p>
                                     <span className="font-medium">Status:</span>{" "}
                                     {token.completed
                                         ? "✅ Completed"
                                         : token.processing
                                             ? "🟡 Processing"
                                             : "🕒 Waiting"}
-                                </p>
+                                </p> */}
+                                <p className="flex items-center gap-2">
+                    <span>Status:</span>
+                    {token.completed ? (
+                      <span className="flex items-center gap-1">
+                        <Check strokeWidth={1.5} color="#ffffff" className="bg-green-500 w-4 h-4 md:w-5 md:h-5" /> Completed
+                      </span>
+                    ) : token.processing ? (
+                      <span className="flex items-center gap-1 animate-spin-slow">
+                        <Loader strokeWidth={1.5} color="#ffffff" className="bg-yellow-500 w-4 h-4 md:w-5 md:h-5" /> Processing
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1">
+                        <Clock strokeWidth={1.5} color="#000" className="w-4 h-4 md:w-5 md:h-5" /> Waiting
+                      </span>
+                    )}
+                  </p>
                                 {/* {token?.user?.username && (
                                     <p>
                                         <span className="font-medium">Name:</span> {token.user.username}
@@ -111,7 +127,7 @@ export default function TokenUpdate() {
 
             {/* Display previous/completed tokens */}
             <div className="w-full max-w-5xl rounded-xl bg-white p-6 border border-gray-300 shadow-md">
-                <h2 className="text-xl md:text-2xl font-semibold text-teal-900 mb-4">
+                <h2 className="text-xl md:text-2xl font-semibold text-teal-800 mb-4">
                     Previous Tokens
                 </h2>
                 <div className="flex flex-col gap-3 max-h-64 overflow-y-auto pr-2 dialogScroll">
