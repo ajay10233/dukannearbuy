@@ -117,7 +117,7 @@ export default function SearchBar() {
     }
 
   return (
-    <div className="w-full px-0 md:px-5 flex flex-col gap-y-1">
+    <div className="w-full px-0 md:px-5 flex flex-col gap-y-1 relative">
       <form
         onSubmit={handleSearch}
         className="flex items-center border border-gray-500 rounded-md shadow-gray-400 gap-2 overflow-hidden"
@@ -152,7 +152,7 @@ export default function SearchBar() {
       )}
 
       {!loading && results.length > 0 && (
-        <ul className="w-full bg-black border border-gray-500 rounded-md mt-2">
+        <ul className="w-363 z-1000 bg-black border border-gray-500 rounded-md mt-2 absolute top-9 right-4">
           {results.map((profile) => (
             <li
               key={profile.id}
