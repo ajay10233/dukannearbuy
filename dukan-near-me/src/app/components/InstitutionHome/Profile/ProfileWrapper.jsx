@@ -99,8 +99,11 @@ export default function ProfileWrapper({ children, images, setImages }) {
           : form.shopOpenDays?.split(',').map(day => day.trim()).filter(Boolean),
       }),      
     });
+    console.log("response:", res);
 
     const data = await res.json();
+    console.log("data:", data);
+
     if (res.ok) {
       setMessage('✅ Profile updated successfully');
       toast.success("Profile updated successfully");

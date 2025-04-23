@@ -31,15 +31,15 @@ export default function Sidebar({ isOpen, onClose }) {
                     <h2 className='font-semibold text-md md:text-lg uppercase text-gray-800'> overview</h2>
                     <div className="flex flex-col space-y-3">
 
-                        {pathName !== "/InstitutionHomePage" && (
-                            <Link href="/InstitutionHomePage"
+                        {pathName !== "/partnerHome" && (
+                            <Link href="/partnerHome"
                                 className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">
                                 <Home size={20} strokeWidth={1.5} />
                                 Home
                             </Link>
                         )}
 
-                        <Link href="/institutionProfile"
+                        <Link href="/partnerProfile"
                             className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">
                             <UserRound size={20} strokeWidth={1.5} />
                                 My Profile
@@ -64,7 +64,7 @@ export default function Sidebar({ isOpen, onClose }) {
                             <ScanLine size={20} strokeWidth={1.5} />
                             Scan QR
                         </Link>
-                        <Link href="#"
+                        <Link href="/tokengenerate"
                             className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200"> 
                             <ScanLine size={20} strokeWidth={1.5} />
                             Token 
@@ -79,10 +79,10 @@ export default function Sidebar({ isOpen, onClose }) {
                             <ScanLine size={20} strokeWidth={1.5} />
                             Live Token Update
                         </Link> */}
-                        <Link href="#"
+                        <Link href="/billhistory"
                             className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">
                             <BookCheck size={20} strokeWidth={1.5} />
-                            Bill Record
+                            Bill History
                         </Link>
                         <Link href="#"
                             className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">

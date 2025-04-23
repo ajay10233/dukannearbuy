@@ -14,7 +14,6 @@ export default function page() {
                 <About />
             </ProfileWrapper>
             <Review />
-
         </>
     );
 }
