@@ -49,8 +49,7 @@ export default function ChatBox() {
 
   useEffect(() => {
     if (!session || socketRef.current) return;
-
-    socketRef.current = io("http://localhost:3001");
+    socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { transports: ["websocket"] });
 
     socketRef.current.on("connect", () => {
       console.log(`✅ Connected with socket ID: ${socketRef.current.id}`);
