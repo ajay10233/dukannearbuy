@@ -15,6 +15,14 @@ export async function GET(req) {
     const tokens = await prisma.token.findMany({
       where: { institutionId },
       orderBy: { createdAt: "desc" },
+      include: {
+        user: {
+          select: {
+            username: true,
+            mobileNumber: true,
+          },
+        },
+      },
     });
 
     return new Response(JSON.stringify(tokens), { status: 200 });

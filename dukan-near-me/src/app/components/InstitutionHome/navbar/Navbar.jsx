@@ -69,11 +69,11 @@ export default function Navbar() {
             location.zipCode
         ].filter(Boolean).join(", ");
 
-        const words = locationString.split(" ");
-        if (words.length > 3) {
-            return words.slice(0, 3).join(" ") + " ...";
+        const maxLength = 15;
+        if (locationString.length > maxLength) {
+            return locationString.substring(0, maxLength).trim() + " ...";
         }
-
+    
         return locationString;
     };
 
@@ -110,7 +110,7 @@ export default function Navbar() {
                 </button>    
             </div>
             <div className='w-1/3 flex justify-end lg:justify-around bg-transparent lg:bg-gray-100 rounded-bl-4xl'>
-                <p className="text-slate-800 hidden lg:flex justify-end items-center font-[var(--font-rubik)] text-md">Skip the Queue find the nearest dukan now</p>
+                <p className="text-slate-800 hidden lg:flex justify-end items-center font-[var(--font-rubik)] text-sm">Skip the Queue find the nearest dukan now</p>
                 <button className='p-2 cursor-pointer' onClick={() => setIsSidebar(true)}>
                     <UserRound size={28} strokeWidth={1.5} color="#187DE6" />
                 </button>        

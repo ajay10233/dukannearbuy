@@ -1,7 +1,6 @@
 import { Download } from "lucide-react";
 import BillHistoryTable from "../components/BillHistory/BillHistoryTable";
 
-
 export default function BillHistory() {
   return (
     <main className="flex flex-col items-center gap-y-6 px-5 bg-[#F0F0F0] h-screen">

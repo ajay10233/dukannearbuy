@@ -26,8 +26,18 @@ if (!global.io) {
       const completedTokens = await prisma.token.findMany({
         where: { institutionId, completed: true },
         orderBy: { createdAt: "desc" },
+        include:{
+          user: {
+            select: {
+              username: true,
+              mobileNumber: true,
+            },
+          },
+        },
         take: 10,
       });
+
+      console.log(`🎫 Active token for institution ${institutionId}:`, activeToken);
 
       socket.emit("tokenUpdated", activeToken);
       socket.emit("completedTokensUpdated", completedTokens);
@@ -36,23 +46,54 @@ if (!global.io) {
     // Emit new token to all users viewing the institution's page
     socket.on("newToken", async ({ institutionId, token }) => {
       console.log(`🎫 New token for institution ${institutionId}:`, token);
-      io.to(`institution:${institutionId}`).emit("tokenUpdated", token);
+      // Fetch associated user details if userId exists
+      let enrichedToken = token;
+      if (token.userId) {
+        const user = await prisma.user.findUnique({
+          where: { id: token.userId },
+          select: { username: true, mobileNumber: true },
+        });
+
+        if (user) {
+          enrichedToken = {
+            ...token,
+            username: user.username,
+            mobileNumber: user.mobileNumber,
+          };
+        }
+      }
+      io.to(`institution:${institutionId}`).emit("tokenUpdated", enrichedToken);
     });
 
     // Handle token completion & notify all users in the room
     // Socket Server
     socket.on("startProcessing", async ({ institutionId, tokenId }) => {
-      await prisma.token.updateMany({
-        where: { institutionId },
-        data: { processing: false }, // Unset all processing
-      });
+      // await prisma.token.updateMany({
+      //   where: { institutionId },
+      //   data: { processing: false }, // Unset all processing
+      // });
     
       const processingToken = await prisma.token.update({
         where: { id: tokenId },
         data: { processing: true },
+        include: {
+          user: {
+            select: {
+              username: true,
+              mobileNumber: true,
+            },
+          },
+        },
       });
     
-      io.to(`institution:${institutionId}`).emit("processingTokenUpdated", processingToken);
+      const tokenWithUser = {
+        ...processingToken,
+        username: processingToken.user?.username || null,
+        mobileNumber: processingToken.user?.mobileNumber || null,
+      };
+      
+      io.to(`institution:${institutionId}`).emit("processingTokenUpdated", tokenWithUser);
+      
     });
     
 
@@ -68,10 +109,53 @@ if (!global.io) {
       where: { institutionId, completed: true },
       orderBy: { createdAt: "desc" },
       take: 10,
+      include: {
+        user: {
+          select: {
+            username: true,
+            mobileNumber: true,
+          },
+        },
+      },
     });
-
-    io.to(`institution:${institutionId}`).emit("completedTokensUpdated", completedTokens);
+    
+    const enrichedCompletedTokens = completedTokens.map((t) => ({
+      ...t,
+      username: t.user?.username || null,
+      mobileNumber: t.user?.mobileNumber || null,
+    }));
+    
+    io.to(`institution:${institutionId}`).emit("completedTokensUpdated", enrichedCompletedTokens);
   });
+
+  socket.on("getCurrentProcessingTokens", async (institutionId, callback) => {
+    if (!institutionId) return callback([]);
+  
+    try {
+      const processingTokens = await prisma.token.findMany({
+        where: {
+          institutionId,
+          processing: true,
+          completed: false,
+        },
+        include: {
+          user: {
+            select: {
+              username: true,
+              mobileNumber: true,
+            },
+          },
+        },
+        orderBy: { createdAt: "asc" },
+      });
+  
+      callback(processingTokens);
+    } catch (error) {
+      console.error("❌ Error fetching processing tokens:", error);
+      callback([]);
+    }
+  });
+  
 
 
 

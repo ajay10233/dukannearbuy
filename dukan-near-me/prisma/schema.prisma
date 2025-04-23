@@ -319,12 +319,17 @@ model Bill {
 
   fileUrl        String?
   fileType       String?
-  
+  type          BillType?   @default(BILL)
   items         BillItem[] @relation("BillToBillItem")
   shortBill  ShortBill?
   favoritedByUsers FavoriteBills[]
 
   @@map("bills")
+}
+
+enum BillType {
+  BILL
+  REPORT
 }
 
 model BillItem {

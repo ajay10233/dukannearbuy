@@ -50,7 +50,7 @@ import io from 'socket.io-client';
 //     }
 //   };
 
-const socket = io('http://localhost:3001'); 
+const socket = io('http://localhost:3001');
 
 export default function TokenGeneration() {
   const { data: session } = useSession();
@@ -105,7 +105,7 @@ export default function TokenGeneration() {
     <section className="flex flex-col items-center h-[calc(100vh-50px)] justify-start px-8 pb-8 pt-16 gap-y-4 bg-white">
       {/* back button */}
       <div className="flex items-center justify-between w-full">
-        <Link href="/UserHomePage" className="flex items-center gap-1">
+        <Link href="/InstitutionHomePage" className="flex items-center gap-1">
           <MoveLeft size={20} strokeWidth={1.5} />
         </Link>
         <h2 className="text-2xl font-bold text-gray-700 text-center flex-1">
@@ -116,26 +116,26 @@ export default function TokenGeneration() {
       <div className="w-full max-w-5xl rounded-xl flex flex-col gap-y-4 border border-gray-400 bg-gray-100 py-4 px-8 md:p-8 shadow-md">
         <div className="flex justify-between items-center flex-wrap gap-4">
           <div className="flex items-center gap-4">
-            <label className="font-bold text-md text-teal-900 w-24">User ID:</label>
+            <label className="font-bold text-md text-teal-900 md:w-24">User ID:</label>
             <input
               type="text"
               placeholder="User ID"
-              className="border px-3 py-1 rounded"
+              className="border px-3 py-1 rounded w-42.5"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
             />
           </div>
-          <div>
+          {/* <div>
             <button
               className="flex items-center bg-emerald-400 hover:bg-emerald-500 cursor-pointer text-black gap-2 font-medium px-6 py-2 rounded-md transition duration-300 ease-in-out"
               onClick={() => toast("Scanner not connected")}>
                 <Scan size={20} strokeWidth={1.5} color="#ffffff" />
                 Scan QR
             </button>
-          </div>
+          </div> */}
         </div>
 
-        <div className="flex justify-between items-center flex-wrap gap-4">
+        <div className="flex justify-between items-center gap-4">
           {/* <div className="flex items-center gap-4">
             <label className="font-bold text-md text-sky-900 w-24">Token No:</label>
             <input
@@ -153,62 +153,80 @@ export default function TokenGeneration() {
           <div>
             <button
               onClick={handleCreateToken}
-              className="flex items-center bg-green-300 hover:bg-green-400 cursor-pointer text-black gap-2 font-medium px-6 py-2 rounded-md transition duration-300 ease-in-out">
-               Save <MoveRight size={16} strokeWidth={1.5} />
+              className="flex items-center bg-green-300 hover:bg-green-400 cursor-pointer text-sm md:text-md text-black gap-2 font-medium px-4 md:px-6 py-2 rounded-md transition duration-300 ease-in-out">
+              Save <MoveRight size={16} strokeWidth={1.5} />
+            </button>
+          </div>
+          <div>
+            <button
+              className="flex items-center bg-emerald-400 hover:bg-emerald-500 cursor-pointer text-sm md:text-md text-black gap-2 font-medium px-4 md:px-6 py-2 rounded-md transition duration-300 ease-in-out"
+              onClick={() => toast("Scanner not connected")}>
+              <Scan size={20} strokeWidth={1.5} color="#ffffff" />
+              Scan QR
             </button>
           </div>
         </div>
       </div>
 
-            <div className="w-full max-w-5xl rounded-xl bg-white px-8 py-4 border border-gray-300 shadow-md">
-                  <h2 className="text-2xl font-semibold text-teal-900 mb-4">
-                    Previous Allotted Number
-                </h2>
-                  <ul className="flex flex-col gap-y-4">
-                  {tokens.map((token) => (
-                    <li key={token.id} className="border border-gray-400 p-3 rounded">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p><strong>Token:</strong> #{token.tokenNumber}</p>
-                          <p className="flex items-center gap-2">
-                            <span>Status:</span>
-                            {token.completed ? (
-                              <span className="flex items-center gap-1">
-                                <Check size={20} strokeWidth={1.5} color="#ffffff" className="bg-green-500" /> Completed
-                              </span>
-                            ) : token.processing ? (
-                              <span className="flex items-center gap-1 animate-spin-slow">
-                                <Loader size={20} strokeWidth={1.5} color="#ffffff" className="bg-yellow-500"/> Processing
-                              </span>
-                            ) : (
-                              <span className="flex items-center gap-1">
-                                <Clock size={20} strokeWidth={1.5} color="#000" /> Waiting
-                              </span>
-                            )}
-                          </p>
+      <div className="w-full max-w-5xl rounded-xl bg-white px-8 py-4 border border-gray-300 shadow-md">
+        <h2 className="text-xl md:text-2xl font-semibold text-teal-900 mb-4">
+          Previous Allotted Number
+        </h2>
+        <ul className="flex flex-col gap-y-4">
+          {tokens.map((token) => (
+            <li key={token.id} className="border border-gray-400 p-3 rounded text-sm md:text-md">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p><strong>Token:</strong> #{token.tokenNumber}</p>
+                  {token.user && (
+                    <>
+                      <p><strong>Username:</strong> {token.user.username || 'N/A'}</p>
+                      <p><strong>Mobile:</strong> {token.user.mobileNumber || 'N/A'}</p>
+                    </>
+                  )}
+                  <p className="flex items-center gap-2">
+                    <span>Status:</span>
+                    {token.completed ? (
+                      <span className="flex items-center gap-1">
+                        <Check strokeWidth={1.5} color="#ffffff" className="bg-green-500 w-4 h-4 md:w-5 md:h-5" /> Completed
+                      </span>
+                    ) : token.processing ? (
+                      <span className="flex items-center gap-1 animate-spin-slow">
+                        <Loader strokeWidth={1.5} color="#ffffff" className="bg-yellow-500 w-4 h-4 md:w-5 md:h-5" /> Processing
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1">
+                        <Clock strokeWidth={1.5} color="#000" className="w-4 h-4 md:w-5 md:h-5" /> Waiting
+                      </span>
+                    )}
+                  </p>
+                </div>
 
-                      </div>
-                        <div className="flex gap-x-2">
-                          {!token.completed && (
-                            <>
-                              <button
-                                onClick={() => handleStartProcessing(token.id)}
-                                className="bg-yellow-500 hover:bg-yellow-400 transition duration-300 ease-in-out px-2 py-1 rounded text-white cursor-pointer">
-                                Set Processing
-                              </button>
-                              <button
-                                onClick={() => handleComplete(token.id)}
-                                className="bg-green-500 hover:bg-green-400 transition duration-300 ease-in-out px-2 py-1 rounded text-white cursor-pointer">
-                                Complete
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-            </div>
+                <div className="flex gap-x-2">
+                  {!token.completed && (
+                    <>
+                      <button
+                        onClick={() => handleStartProcessing(token.id)}
+                        className="bg-yellow-500 hover:bg-yellow-400 transition duration-300 ease-in-out p-1 md:px-2 md:py-1 rounded text-white cursor-pointer flex items-center justify-center gap-1">
+                        <Loader size={16} className="md:hidden" />
+                        <span className="hidden md:inline">Set Processing</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleComplete(token.id)}
+                        className="bg-green-500 hover:bg-green-400 transition duration-300 ease-in-out p-1 md:px-2 md:py-1 rounded text-white cursor-pointer flex items-center justify-center gap-1">
+                        <Check size={16} className="md:hidden" />
+                        <span className="hidden md:inline">Complete</span>
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </li>
+          ))}
+
+        </ul>
+      </div>
     </section>
   );
 }

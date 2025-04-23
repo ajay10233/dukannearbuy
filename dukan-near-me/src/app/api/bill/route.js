@@ -22,7 +22,7 @@ export async function POST(req) {
         subscriptionPlan: true,
       },
     });
-    
+
 
     if (!institution) {
       return NextResponse.json({ error: 'Institution not found' }, { status: 404 })
@@ -37,45 +37,57 @@ export async function POST(req) {
     const contentType = req.headers.get('content-type') || ''
 
     // Handle multipart/form-data
+    // ...previous code remains unchanged...
+
+    // Handle multipart/form-data
     if (contentType.includes('multipart/form-data')) {
-      const form = await req.formData()
-    
-      const file = form.get('file')
-      const userId = form.get('userId')
-      const tokenId = form.get('tokenId')
-      const remarks = form.get('remarks')
-      const invoiceNumber = form.get('invoiceNumber')
-    
+      const form = await req.formData();
+
+      const file = form.get('file');
+      const userId = form.get('userId');
+      const tokenId = form.get('tokenId');
+      const remarks = form.get('remarks');
+      const invoiceNumber = form.get('invoiceNumber');
+      const report = form.get('report') || false;
+
       if (!file || typeof file === 'string') {
-        return NextResponse.json({ success: false, error: 'No file uploaded' }, { status: 400 })
+        return NextResponse.json({ success: false, error: 'No file uploaded' }, { status: 400 });
       }
-    
+
       const maxSizeMB = session.user.subscriptionPlan?.maxUploadSizeMB || 1;
-      const maxSizeBytes = maxSizeMB * 1024 * 1024
-    
+      const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
       if (file.size > maxSizeBytes) {
         return NextResponse.json({
           success: false,
           error: `File exceeds the upload limit of ${maxSizeMB}MB`,
-        }, { status: 400 })
+        }, { status: 400 });
       }
-    
-      const arrayBuffer = await file.arrayBuffer()
-      const buffer = Buffer.from(arrayBuffer)
-    
+
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+      if (!allowedTypes.includes(file.type)) {
+        return NextResponse.json({
+          success: false,
+          error: 'Unsupported file type. Only PDFs and Images are allowed.',
+        }, { status: 400 });
+      }
+
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
       const uploadResult = await new Promise((resolve, reject) => {
         cloudinary.uploader.upload_stream(
           {
-            resource_type: 'auto',
+            resource_type: 'auto', // Handles both image and pdf
             folder: 'bills',
           },
           (err, result) => {
-            if (err) reject(err)
-            else resolve(result)
+            if (err) reject(err);
+            else resolve(result);
           }
-        ).end(buffer)
-      })
-    
+        ).end(buffer);
+      });
+
       const bill = await prisma.bill.create({
         data: {
           user: { connect: { id: userId } },
@@ -87,13 +99,15 @@ export async function POST(req) {
           fileUrl: uploadResult.secure_url,
           fileType: file.type || null,
           paymentStatus: 'PENDING',
-          expiresAt:expiresAt,
+          expiresAt: expiresAt,
+          type: report ? 'REPORT' : 'BILL',
         },
-      })
-    
-      return NextResponse.json({ success: true, bill })
+      });
+
+      return NextResponse.json({ success: true, bill });
     }
-    
+
+
 
     // Handle JSON request
     const body = await req.json()
@@ -139,7 +153,7 @@ export async function POST(req) {
             total: item.price * item.quantity,
           })),
         },
-        expiresAt:expiresAt
+        expiresAt: expiresAt
       },
       include: { items: true },
     })

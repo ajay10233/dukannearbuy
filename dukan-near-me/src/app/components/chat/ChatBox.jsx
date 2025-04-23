@@ -690,7 +690,7 @@ export default function ChatBox() {
                         }
                       );
                       if (res.ok) {
-                        setSelectedPartner(null); // optional: or trigger re-fetch
+                        setSelectedPartner(null); 
                       }
                     }}
                   >
