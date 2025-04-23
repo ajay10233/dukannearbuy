@@ -270,7 +270,7 @@ export default function Bill() {
                 <li>₹{bill.amount}</li>
                 <li className="flex justify-center items-center">
                   <span
-                    className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all">
+                    className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out">
                     <ArrowDownToLine size={17} strokeWidth={2.5} />
                   </span>
                 </li>

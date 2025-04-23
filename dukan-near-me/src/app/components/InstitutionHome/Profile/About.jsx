@@ -6,7 +6,7 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import ChangeAddress from "./ChangeAddress";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '"@/components/ui/accordion';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 
 export default function About({ profileUpdated }) {
@@ -299,42 +299,32 @@ export default function About({ profileUpdated }) {
             )}
 
             {/* past addresses */}
-            <div className="flex flex-col w-full p-0 pb-6 md:px-8 md:py-2">
-      <div className="pl-2 md:pl-8 flex flex-col gap-y-1">
-        <span className="font-semibold text-gray-700">Past Addresses:</span>
-        {pastAddresses.length === 0 ? (
-          <p className="text-gray-500">No past addresses found.</p>
-        ) : (
-          <Accordion type="single" collapsible className="flex flex-col gap-4">
-            {pastAddresses.map((addr, i) => (
-              <AccordionItem key={addr.id} value={`address-${i}`}>
-                <AccordionTrigger className="cursor-pointer flex justify-between items-center">
-                  <p className="font-semibold text-gray-700">
-                    #{i + 1} (Moved out: {new Date(addr.movedOutAt).toLocaleDateString()})
-                  </p>
-                  <span className="text-gray-800 hover:text-gray-600 transition ease-in-out">
-                    {[addr.buildingName, addr.street, addr.city, addr.state]
-                      .filter(Boolean)
-                      .join(", ")}{" "}
-                    - {addr.zipCode}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="p-4 border-l-2 border-gray-200 mt-2">
-                  <span className="text-gray-600">{addr.country}</span>
-                  <div className="mt-2 text-gray-700">
-                    <p>{addr.buildingName}</p>
-                    <p>{addr.street}</p>
-                    <p>{addr.city}, {addr.state} {addr.zipCode}</p>
-                    <p>{addr.country}</p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        )}
-      </div>
-    </div>
-
+            <div className="flex flex-col w-full max-w-lg p-4 md:px-8 md:py-4">
+                <div className="pl-2 md:pl-8 flex flex-col gap-y-1">
+                    <span className="font-semibold text-gray-800">Past Addresses:</span>
+                    {pastAddresses.length === 0 ? (
+                    <p className="text-gray-500">No past addresses found.</p>
+                    ) : (
+                    <Accordion type="single" collapsible className="flex flex-col gap-4 rounded-t-md">
+                        {pastAddresses.map((addr, i) => (
+                        <AccordionItem key={addr.id} value={`address-${i}`} className="rounded-t-md border-0">
+                            <AccordionTrigger className="cursor-pointer hover:no-underline flex justify-between items-center p-3 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-t-md transition ease-in-out duration-300">
+                            <p className="font-semibold text-gray-700">
+                                #{i + 1} (Moved out: {new Date(addr.movedOutAt).toLocaleDateString()})
+                            </p>
+                            </AccordionTrigger>
+                            <AccordionContent className="p-4 bg-blue-50 text-blue-800 rounded-md border-2 border-dashed border-blue-200 ">
+                            <div className="mt-2 text-gray-700">
+                                <p>{[addr.buildingName, addr.street, addr.city, addr.state].filter(Boolean).join(", ")}, {addr.zipCode}</p>
+                                <p>{addr.country}</p>
+                            </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                        ))}
+                    </Accordion>
+                    )}
+                </div>
+            </div>
 
             {userData?.description && (
                 <div className="p-4 md:p-8">
