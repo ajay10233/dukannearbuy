@@ -1,5 +1,6 @@
 
 import { prisma } from "@/utils/db";
+import { NextResponse } from "next/server";
 
 export async function GET(req) {
   try {
@@ -7,7 +8,7 @@ export async function GET(req) {
     const institutionId = searchParams.get("institutionId");
 
     if (!institutionId) {
-      return new Response(JSON.stringify({ error: "Missing institutionId" }), {
+      return NextResponse.json({ error: "Missing institutionId" }, {
         status: 400,
       });
     }
@@ -25,10 +26,10 @@ export async function GET(req) {
       },
     });
 
-    return new Response(JSON.stringify(tokens), { status: 200 });
+    return NextResponse.json(tokens, { status: 200 });
   } catch (error) {
     console.error("Error fetching tokens:", error);
-    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+    return NextResponse.json({ error: "Internal Server Error" }, {
       status: 500,
     });
   }
