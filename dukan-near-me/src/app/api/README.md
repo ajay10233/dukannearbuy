@@ -1,3 +1,108 @@
+## 📩 Notification API
+
+This API allows users to send, view, mark as read, and delete notifications. Notifications can be sent by any user or institution to another user. Only the receiver can delete or mark a notification as read.
+
+## 📘 API Endpoints
+
+All endpoints are under `/api/notification`.
+
+---
+
+### 🔹 POST `/api/notification`
+
+**Description:** Create a new notification
+
+**Request Body:**
+```json
+{
+  "senderId": "string",
+  "receiverId": "string",
+  "title": "New message",
+  "message": "You have a new appointment",
+  "type": "info"
+}
+```
+
+**Response:**
+```json
+{
+  "id": "...",
+  "title": "...",
+  "message": "...",
+  "type": "...",
+  "isRead": false,
+  "senderId": "...",
+  "receiverId": "...",
+  "createdAt": "..."
+}
+```
+
+---
+
+### 🔹 GET `/api/notification`
+
+**Description:** Fetch all notifications for the currently logged-in user
+
+**Auth Required:** ✅ Yes
+
+**Response:** `Array<Notification>`
+
+```json
+[
+  {
+    "id": "...",
+    "title": "...",
+    "message": "...",
+    "type": "...",
+    "isRead": false,
+    "createdAt": "...",
+    "senderId": "...",
+    "receiverId": "..."
+  }
+]
+```
+
+---
+
+### 🔹 GET `/api/notification/:id`
+
+**Description:** Get a single notification by ID and mark it as read
+
+**Auth Required:** ❌ No (can be added if needed)
+
+**Response:**
+```json
+{
+  "id": "...",
+  "title": "...",
+  "message": "...",
+  "type": "...",
+  "isRead": true,
+  "createdAt": "...",
+  "senderId": "...",
+  "receiverId": "..."
+}
+```
+
+---
+
+### 🔹 DELETE `/api/notification/:id`
+
+**Description:** Delete a notification — only if you're the receiver
+
+**Auth Required:** ✅ Yes
+
+**Response:**
+```json
+{
+  "message": "Deleted successfully"
+}
+```
+
+**Errors:**
+- `403 Forbidden` – If the user is not the receiver
+- `401 Unauthorized` – If not logged in
+
 # Farvorite bills routes
 ## 📍 Base URL
 
