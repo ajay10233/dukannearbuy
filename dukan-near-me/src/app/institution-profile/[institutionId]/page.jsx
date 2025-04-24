@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import io from "socket.io-client";
 import { useParams } from "next/navigation";
 
-const socket = io("http://localhost:3001");
+const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { transports: ["websocket"] });;
 
 export default function InstitutionProfile() {
   const { institutionId } = useParams();
