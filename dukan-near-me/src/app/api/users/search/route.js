@@ -52,7 +52,7 @@ export async function GET(req) {
         where: {
           role: "USER",
           id: { not: session.user.id },
-          username: query,
+          username: query.trim().toLowerCase(),
         },
         select: {
           id: true,
@@ -66,6 +66,7 @@ export async function GET(req) {
           role: true, 
         },
       })
+
 
       return NextResponse.json({ data: searchResults,users:userResults }, { status: 200 });
 
