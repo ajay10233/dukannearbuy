@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
+import Image from "next/image";
 
 export default function PaymentOffer() {
   const [coupon, setCoupon] = useState("");
@@ -116,6 +117,15 @@ export default function PaymentOffer() {
 
         <p className="text-xs text-gray-400 text-center">Secured by XYZ Payments</p>
       </div>
+      <div className="absolute bottom-1 right-4 w-17 h-17 md:w-32 md:h-32">
+              <Image
+                src="/nearbuydukan - watermark.png"
+                alt="Watermark"
+                fill
+                className="object-contain w-17 h-17 md:w-32 md:h-32"
+                priority
+              />
+            </div>
     </div>
   );
 }

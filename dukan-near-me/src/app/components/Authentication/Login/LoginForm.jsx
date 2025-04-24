@@ -88,9 +88,9 @@ export default function LoginForm() {
       const role = session.user.role;
 
       if (role === "SHOP_OWNER") {
-        router.push("/InstitutionHomePage");
+        router.push("/partnerHome");
       } else if (role === "INSTITUTION") {
-        router.push("/InstitutionHomePage");
+        router.push("/partnerHome");
       } else if (role === "USER") {
         router.push("/UserHomePage");
       } else {

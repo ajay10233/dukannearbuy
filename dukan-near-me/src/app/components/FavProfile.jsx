@@ -118,7 +118,7 @@ export default function FavProfile() {
                         alt="Profile"
                         className="w-10 h-10 rounded-full object-cover border-2 border-blue-500"
                       />
-                      <Link href={`/institutionProfile/${fav.institutionId}`} className="text-blue-600 font-semibold hover:underline">
+                      <Link href={`/partnerProfile/${fav.institutionId}/`} className="text-blue-600 font-semibold hover:underline">
                         {session?.user?.firmName || 'Institution Name'}
                         {/* {session?.user?.subscriptionPlan && (
                           <span className="text-xs bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded-full font-medium ml-2">

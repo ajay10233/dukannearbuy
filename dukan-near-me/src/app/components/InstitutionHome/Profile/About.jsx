@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MessageCircleMore, Mail, Phone, Store, Hash, Clock, Clock9, IndianRupee, MapPin, X, Copy, Check } from "lucide-react";
+import { MessageCircleMore, Mail, Phone, Store, Hash, Clock, Clock9, IndianRupee, MapPin, X, Copy, Check, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -299,31 +299,37 @@ export default function About({ profileUpdated }) {
             )}
 
             {/* past addresses */}
-            <div className="flex flex-col w-full max-w-lg p-4 md:px-8 md:py-4">
-                <div className="pl-2 md:pl-8 flex flex-col gap-y-1">
-                    <span className="font-semibold text-gray-800">Past Addresses:</span>
-                    {pastAddresses.length === 0 ? (
-                    <p className="text-gray-500">No past addresses found.</p>
-                    ) : (
-                    <Accordion type="single" collapsible className="flex flex-col gap-4 rounded-t-md">
-                        {pastAddresses.map((addr, i) => (
-                        <AccordionItem key={addr.id} value={`address-${i}`} className="rounded-t-md border-0">
-                            <AccordionTrigger className="cursor-pointer hover:no-underline flex justify-between items-center p-3 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-t-md transition ease-in-out duration-300">
-                            <p className="font-semibold text-gray-700">
+            <div className="flex flex-col w-full max-w-lg pr-4 py-4 md:px-8 md:py-4">
+                <Accordion type="single" collapsible className="w-full p-0 md:p-4">
+                    <AccordionItem value="past-addresses" className="rounded-md overflow-hidden">
+                    <AccordionTrigger className="bg-white px-4 py-3 text-sm md:text-[16px] cursor-pointer hover:no-underline text-blue-700 font-semibold hover:bg-gray-100 rounded-t-md flex justify-between items-center">
+                        <span>Past Addresses</span>
+                        {/* <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]:rotate-180" /> */}
+                    </AccordionTrigger>
+                    <AccordionContent className="bg-blue-50 px-4 py-2 rounded-b-md border-t border-blue-200">
+                        {pastAddresses.length === 0 ? (
+                        <p className="text-gray-500">No past addresses found.</p>
+                        ) : (
+                        <div className="flex flex-col gap-3">
+                            {pastAddresses.map((addr, i) => (
+                            <div
+                                key={addr.id}
+                                className="p-3 bg-white rounded-md shadow-sm border border-blue-200 transition-all hover:shadow-md"
+                            >
+                                <p className="font-semibold text-blue-700">
                                 #{i + 1} (Moved out: {new Date(addr.movedOutAt).toLocaleDateString()})
-                            </p>
-                            </AccordionTrigger>
-                            <AccordionContent className="p-4 bg-blue-50 text-blue-800 rounded-md border-2 border-dashed border-blue-200 ">
-                            <div className="mt-2 text-gray-700">
-                                <p>{[addr.buildingName, addr.street, addr.city, addr.state].filter(Boolean).join(", ")}, {addr.zipCode}</p>
-                                <p>{addr.country}</p>
+                                </p>
+                                <p className="text-gray-700 mt-1">
+                                {[addr.buildingName, addr.street, addr.city, addr.state].filter(Boolean).join(", ")}, {addr.zipCode}
+                                </p>
+                                <p className="text-gray-600">{addr.country}</p>
                             </div>
-                            </AccordionContent>
-                        </AccordionItem>
-                        ))}
-                    </Accordion>
-                    )}
-                </div>
+                            ))}
+                        </div>
+                        )}
+                    </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
             </div>
 
             {userData?.description && (
@@ -373,8 +379,8 @@ export default function About({ profileUpdated }) {
 
             {showManageOptions && (
                 <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
-                    <div className="flex flex-col gap-y-4 bg-white rounded-lg shadow-lg w-100 h-40 p-4">
-                        <div className="flex justify-between items-center border-b pb-2 mb-4">
+                    <div className="flex flex-col gap-y-4 bg-white rounded-lg shadow-lg w-82 h-32 md:w-100 md:h-40 p-4 whitespace-nowrap">
+                        <div className="flex justify-between items-center border-b pb-2 mb-0 md:mb-4">
                             <h2 className="text-lg font-semibold text-blue-700">Manage Address</h2>
                             <button onClick={() => setShowManageOptions(false)}>
                                 <X size={20} className="cursor-pointer text-gray-500 hover:text-gray-700" />
@@ -387,7 +393,7 @@ export default function About({ profileUpdated }) {
                                     setEditingAddress(true);
                                     setShowManageOptions(false);
                                 }}
-                                className="bg-blue-600 transition hover:bg-blue-700 cursor-pointer text-white px-5 py-2 rounded"
+                                className="bg-blue-600 transition-all duration-500 ease-in-out hover:bg-blue-700 cursor-pointer text-white px-5 py-2 rounded"
                             >
                                 Edit Address
                             </button>
@@ -397,7 +403,7 @@ export default function About({ profileUpdated }) {
                                     setChangingAddress(true);
                                     setShowManageOptions(false);
                                 }}
-                                className="bg-gray-100 transition hover:bg-gray-200 cursor-pointer text-gray-700 px-4 py-2 rounded"
+                                className="bg-gray-100 transition-all duration-500 ease-in-out hover:bg-gray-200 cursor-pointer text-gray-700 px-4 py-2 rounded"
                             >
                                 Change Address
                             </button>

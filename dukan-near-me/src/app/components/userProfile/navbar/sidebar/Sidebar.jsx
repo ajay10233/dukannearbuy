@@ -49,7 +49,7 @@ export default function Sidebar({ isOpen, onClose }) {
                             <MessageCircleMore size={20} strokeWidth={1.5} />
                                 Chats
                         </Link>
-                        <Link href="#"
+                        <Link href="/notification"
                             className=" flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">
                             <MessageSquareWarning size={20} strokeWidth={1.5} />
                                 Notification
@@ -64,7 +64,7 @@ export default function Sidebar({ isOpen, onClose }) {
                             <ScanLine size={20} strokeWidth={1.5} />
                             Scan QR
                         </Link>
-                        <Link href="#"
+                        <Link href="/mytoken"
                             className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200"> 
                             <ScanLine size={20} strokeWidth={1.5} />
                             My Token
@@ -74,7 +74,7 @@ export default function Sidebar({ isOpen, onClose }) {
                             <BookCheck size={20} strokeWidth={1.5} />
                             Bill Record
                         </Link>
-                        <Link href="#"
+                        <Link href="/myplan"
                             className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">
                             <FolderDown size={20} strokeWidth={1.5} />
                             My Plans
