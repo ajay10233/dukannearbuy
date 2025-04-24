@@ -127,11 +127,11 @@ export default function OTPVerification() {
         </div>
     </div>
           
-    <div className="absolute bottom-4 right-4 w-32 h-32">
+    <div className="absolute bottom-1 right-4 w-32 h-32">
         <Image
-          src="/dukannearbuy-watermark.jpeg"
+          src="/nearbuydukan - watermark.png"
           alt="Watermark"
-          fill sizes='32'
+          fill sizes='128px'
           className="object-contain"
           priority
         />

@@ -152,7 +152,7 @@ export default function SearchBar() {
       )}
 
       {!loading && results.length > 0 && (
-        <ul className="w-363 z-1000 bg-black border border-gray-500 rounded-md mt-2 absolute top-9 right-4">
+        <ul className="w-[340px] md:w-363 z-1000 bg-black border border-gray-500 rounded-md mt-2 absolute top-9 right-0 md:right-4">
           {results.map((profile) => (
             <li
               key={profile.id}

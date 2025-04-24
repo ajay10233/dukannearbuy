@@ -5,13 +5,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import Autoplay from "embla-carousel-autoplay";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function TopSeller() {
   const [location, setLocation] = useState(null);
   const [sellers, setSellers] = useState([]);
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    align: "start", 
+    slidesToScroll: 1, 
+  });
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -119,58 +124,69 @@ export default function TopSeller() {
 
   return (
     <div className="w-full flex flex-col items-center px-6 py-10">
-      <div className="w-full max-w-[1000px] flex flex-col gap-8">
+      <div className="w-full max-w-[1300px] flex flex-col gap-8">
         <h2 className="flex justify-center items-center text-center p-4 text-xl md:text-3xl font-bold text-gray-100">
           Most trusted partners near you
         </h2>
 
-        <div className="overflow-hidden" ref={emblaRef}>
-          <div className="flex">
-            {sellers.map((seller) => (
-              <div
-                key={seller.id}
-                className="min-w-0 flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] px-2"
-              >
-                <Link href="#" className="block cursor-pointer">
-                  <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col justify-center">
-                    <div className="relative w-full h-52">
-                      <Image
-                        src={seller.image}
-                        alt={seller.shopName}
-                        fill
-                        className="object-cover"
-                        priority
-                      />
-                    </div>
-                    <div className="px-4 py-2 flex flex-col gap-1">
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-semibold">
-                          {seller.sellerName}
-                        </h3>
-                        <div className="flex items-center gap-1">
-                          <Star
-                            size={20}
-                            color="#fdc700"
-                            fill="#fdc700"
-                            strokeWidth={1.5}
-                          />
-                          {seller.rating}
-                        </div>
+        <div className="relative">
+          <button
+            onClick={() => emblaApi?.scrollPrev()}
+            className="absolute -left-6 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md"
+          >
+            <ChevronLeft className="text-black" />
+          </button>
+
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex">
+              {sellers.map((seller) => (
+                <div
+                  key={seller.id}
+                  // className="min-w-0 flex-[0_0_25%] px-2"
+                  className="px-2 flex-[0_0_100%] sm:flex-[0_0_50%] md:flex-[0_0_33.3333%] xl:flex-[0_0_25%]"
+                >
+                  <Link href="#" className="block cursor-pointer">
+                    <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col justify-center">
+                      <div className="relative w-full h-52">
+                        <Image
+                          src={seller.image}
+                          alt={seller.shopName}
+                          fill
+                          className="object-cover"
+                          priority
+                        />
                       </div>
-                      <p className="text-md text-gray-500">{seller.shopName}</p>
-                      <p className="text-sm text-gray-500">{seller.location}</p>
-                      <p className="text-sm text-gray-600 flex justify-between items-center">
-                        Customers Served:{" "}
-                        <span className="flex items-center gap-1 text-gray-500">
-                          {seller.customersServed}+
-                        </span>
-                      </p>
+                      <div className="px-4 py-2 flex flex-col gap-1">
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-lg font-semibold">
+                            {seller.sellerName}
+                          </h3>
+                          <div className="flex items-center gap-1">
+                            <Star size={20} color="#fdc700" fill="#fdc700" strokeWidth={1.5} />
+                            {seller.rating}
+                          </div>
+                        </div>
+                        <p className="text-md text-gray-500">{seller.shopName}</p>
+                        <p className="text-sm text-gray-500">{seller.location}</p>
+                        <p className="text-sm text-gray-600 flex justify-between items-center">
+                          Customers Served:{" "}
+                          <span className="flex items-center gap-1 text-gray-500">
+                            {seller.customersServed}+
+                          </span>
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              </div>
-            ))}
+                  </Link>
+                </div>
+              ))}
+            </div>
           </div>
+
+          <button
+            onClick={() => emblaApi?.scrollNext()}
+            className="absolute -right-6 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md">
+            <ChevronRight className="text-black" />
+          </button>
         </div>
 
         {/* Dot Indicators */}
