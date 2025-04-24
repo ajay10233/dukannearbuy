@@ -8,7 +8,7 @@ export default function ChangeLocationPage() {
   return (
     <div className="min-h-screen flex flex-col items-center">
       <h1 className="text-xl font-semibold mt-4">Select Your Location</h1>
-      <LocationSelector onSave={() => router.push("/")} />
+      <LocationSelector onSave={() => router.push("/dashboard")} />
     </div>
   );
 }
