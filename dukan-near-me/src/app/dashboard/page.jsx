@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import LogoutButton from "@/app/components/LogoutButton";
 import ChangePastAddress from "../components/ChangePastAddress";
+import Test from "../components/Test";
 // import other components as needed
 
 export default function Dashboard() {
@@ -37,6 +38,7 @@ export default function Dashboard() {
       <EditInstitution />
       <ClientQRCodeSection /> */}
       <ChangePastAddress />
+      <Test/>
     </div>
   );
 }

@@ -7,39 +7,60 @@ import cloudinary from "@/utils/cloudinary";
 
 export async function POST(req) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions);
     if (!session || !['INSTITUTION', 'SHOP_OWNER'].includes(session.user.role)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const institutionId = session.user.id;
 
     const institution = await prisma.user.findUnique({
-      where: {
-        id: institutionId,
-      },
-      include: {
-        subscriptionPlan: true,
-      },
+      where: { id: institutionId },
+      include: { subscriptionPlan: true },
     });
 
-
     if (!institution) {
-      return NextResponse.json({ error: 'Institution not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Institution not found' }, { status: 404 });
     }
+
+    // Bill count constraint for Free plan
+    const isFreePlan = institution.subscriptionPlan?.name === 'FREE';
+    if (isFreePlan) {
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+
+      const endOfMonth = new Date(startOfMonth);
+      endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+
+      const monthlyBillCount = await prisma.bill.count({
+        where: {
+          institutionId: institutionId,
+          createdAt: {
+            gte: startOfMonth,
+            lt: endOfMonth,
+          },
+        },
+      });
+
+      if (monthlyBillCount >= 1000) {
+        return NextResponse.json({
+          success: false,
+          error: 'Free plan limit reached. Upgrade to generate more than 1000 bills per month.',
+        }, { status: 403 });
+      }
+    }
+
     const expiresAt = new Date();
     expiresAt.setMonth(expiresAt.getMonth() + 1);
-    if (institution?.subscriptionPlan?.name === "PREMIUM") {
+    if (institution.subscriptionPlan?.name === "PREMIUM") {
       expiresAt.setMonth(expiresAt.getMonth() + 6);
-    } else if (institution?.subscriptionPlan?.name === "BUSINESS") {
+    } else if (institution.subscriptionPlan?.name === "BUSINESS") {
       expiresAt.setMonth(expiresAt.getMonth() + 15);
     }
-    const contentType = req.headers.get('content-type') || ''
 
-    // Handle multipart/form-data
-    // ...previous code remains unchanged...
+    const contentType = req.headers.get('content-type') || '';
 
-    // Handle multipart/form-data
     if (contentType.includes('multipart/form-data')) {
       const form = await req.formData();
 
@@ -78,7 +99,7 @@ export async function POST(req) {
       const uploadResult = await new Promise((resolve, reject) => {
         cloudinary.uploader.upload_stream(
           {
-            resource_type: 'auto', // Handles both image and pdf
+            resource_type: 'auto',
             folder: 'bills',
           },
           (err, result) => {
@@ -107,10 +128,8 @@ export async function POST(req) {
       return NextResponse.json({ success: true, bill });
     }
 
-
-
     // Handle JSON request
-    const body = await req.json()
+    const body = await req.json();
     const {
       userId,
       tokenId,
@@ -121,17 +140,17 @@ export async function POST(req) {
       invoiceNumber,
       otherCharges,
       generateShortBill = true,
-    } = body
+    } = body;
 
-    const parsedCharges = typeof otherCharges === 'string' ? parseFloat(otherCharges) : otherCharges
+    const parsedCharges = typeof otherCharges === 'string' ? parseFloat(otherCharges) : otherCharges;
     if (isNaN(parsedCharges)) {
-      return NextResponse.json({ success: false, error: 'Invalid otherCharges' }, { status: 400 })
+      return NextResponse.json({ success: false, error: 'Invalid otherCharges' }, { status: 400 });
     }
 
     const totalAmount = items.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
-    ) + (parsedCharges || 0)
+    ) + (parsedCharges || 0);
 
     const bill = await prisma.bill.create({
       data: {
@@ -153,12 +172,12 @@ export async function POST(req) {
             total: item.price * item.quantity,
           })),
         },
-        expiresAt: expiresAt
+        expiresAt: expiresAt,
       },
       include: { items: true },
-    })
+    });
 
-    let shortBill = null
+    let shortBill = null;
     if (generateShortBill) {
       shortBill = await prisma.shortBill.create({
         data: {
@@ -166,13 +185,13 @@ export async function POST(req) {
           summary: `ShortBill for ${name || 'Unknown'} with ${items.length} item(s)`,
           expiresAt: new Date(Date.now() + 60 * 60 * 1000),
         },
-      })
+      });
     }
 
-    return NextResponse.json({ success: true, bill, shortBill })
+    return NextResponse.json({ success: true, bill, shortBill });
   } catch (error) {
-    console.error('Bill Creation Error:', error)
-    return NextResponse.json({ success: false, error: 'Failed to create bill' }, { status: 500 })
+    console.error('Bill Creation Error:', error);
+    return NextResponse.json({ success: false, error: 'Failed to create bill' }, { status: 500 });
   }
 }
 
