@@ -42,7 +42,7 @@ export default function ProfileWrapper({ children, images, setImages }) {
     shopOpenDays: '',
     hashtags: '',
     mobileNumber: '',
-    contactEmail: '',
+    // contactEmail: '' duplicate
     username: ''
   });
 
@@ -83,37 +83,45 @@ export default function ProfileWrapper({ children, images, setImages }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
-
-    const res = await fetch('/api/institutions/edit-details', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...form,
-        hashtags: typeof form.hashtags === "string"
-          ? form.hashtags.split(',').map(tag => tag.trim()).filter(Boolean)
-          : form.hashtags,
-        shopOpenDays: Array.isArray(form.shopOpenDays)
-          ? form.shopOpenDays
-          : form.shopOpenDays?.split(',').map(day => day.trim()).filter(Boolean),
-      }),      
-    });
-    console.log("response:", res);
-
-    const data = await res.json();
-    console.log("data:", data);
-
-    if (res.ok) {
-      setMessage('✅ Profile updated successfully');
-      toast.success("Profile updated successfully");
-      setShowModal(false);
-      setProfileUpdated(true);
-    } else {
-      setMessage(`❌ Error: ${data.error}`);
-      toast.error("Failed to update profile.");
+  
+    const formData = new FormData();
+    for (const key in form) {
+      if (form[key] !== undefined && form[key] !== null) {
+        if (key === 'hashtags' && typeof form[key] === 'string') {
+          formData.append(key, JSON.stringify(form[key].split(',').map(tag => tag.trim()).filter(Boolean)));
+        } else if (key === 'shopOpenDays' && typeof form[key] === 'string') {
+          formData.append(key, JSON.stringify(form[key].split(',').map(day => day.trim()).filter(Boolean)));
+        } else if (Array.isArray(form[key])) {
+          formData.append(key, JSON.stringify(form[key]));
+        } else {
+          formData.append(key, form[key]);
+        }
+      }
+    }
+    try {
+      const res = await fetch('/api/institutions/edit-details', {
+        method: 'POST',
+        body: formData,
+      });
+  
+      const data = await res.json();
+      console.log("data:", data);
+  
+      if (res.ok) {
+        setMessage('✅ Profile updated successfully');
+        toast.success("Profile updated successfully");
+        setShowModal(false);
+        setProfileUpdated(true);
+      } else {
+        setMessage(`❌ Error: ${data.error}`);
+        toast.error("Failed to update profile.");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Something went wrong.");
     }
   };
+  
 
   const handleShare = () => {
     if (navigator.share) {
