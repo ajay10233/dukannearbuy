@@ -21,6 +21,7 @@ export async function GET(req) {
               shopAddress: true,
               contactEmail: true,
               phone: true,
+              username:true,
             },
           },
           user: {
@@ -34,6 +35,7 @@ export async function GET(req) {
               city: true,
               state: true,
               country: true,
+              username:true,
             },
           },
         },

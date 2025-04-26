@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import io from 'socket.io-client';
+import toast, { Toaster } from 'react-hot-toast';
 
 const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { transports: ["websocket"] });
 
@@ -15,19 +16,31 @@ export default function CreateToken() {
 
   const fetchTokens = async () => {
     if (!institutionId) return;
-    const res = await axios.get(`/api/token/list?institutionId=${institutionId}`);
-    setTokens(res.data);
+    try {
+      const res = await axios.get(`/api/token/list?institutionId=${institutionId}`);
+      setTokens(res.data);
+    } catch (error) {
+      toast.error('Failed to fetch tokens');
+      console.error(error);
+    }
   };
 
   const handleCreateToken = async () => {
-    if (!userId) return alert('Please enter a user ID');
+    if (!userId) {
+      toast.error('Please enter a user ID');
+      return;
+    }
+
     try {
       const res = await axios.post('/api/token/create', { userId });
       setUserId('');
       fetchTokens();
+      toast.success('Token created successfully');
       socket.emit('newToken', { institutionId, token: res.data });
     } catch (err) {
       console.error('Error creating token', err);
+      const message = err?.response?.data?.error || 'Failed to create token';
+      toast.error(message);
     }
   };
 
