@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import EmojiPicker from "emoji-picker-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,} from "@/components/ui/dialog";
 import PaymentHistory from "./PaymentHistory";
+import CryptoJS from 'crypto-js';
 
 export default function ChatBox() {
   const [message, setMessage] = useState("");
@@ -26,6 +27,22 @@ export default function ChatBox() {
   const messagesEndRef = useRef(null);
   const router = useRouter();
   const { data: session, status } = useSession();
+
+  const encryptMessage = (message, secretKey) =>{
+    return CryptoJS.AES.encrypt(message, secretKey).toString();
+  }
+
+  function decryptMessage(encryptedMessage, secretKey) {
+    try {
+      const bytes = CryptoJS.AES.decrypt(encryptedMessage, secretKey);
+      return bytes.toString(CryptoJS.enc.Utf8);
+    } catch (error) {
+      console.error("Error decrypting message:", error);
+      return ''; // Return an empty string if decryption fails
+    }
+  }
+
+
 
   const SendLiveLocation = () => {
     if (typeof window !== "undefined" && "geolocation" in navigator) {
@@ -57,13 +74,25 @@ export default function ChatBox() {
     });
 
     socketRef.current.on("receiveMessage", (msg) => {
-      if (
-        msg.receiverId === session.user.id &&
-        msg.conversationId === selectedPartner?.conversationId
-      ) {
-        setMessages((prev) => [...prev, msg]);
+      if (msg.receiverId === session.user.id && msg.conversationId === selectedPartner?.conversationId) {
+        const selected_id = selectedPartner?.otherUser ? selectedPartner?.otherUser.id : selectedPartner.id;
+      console.log("sessing user id is: ",selected_id, session.user.id);
+
+        const secretKey = session.user.id + selected_id;
+        console.log("sessing user id is: ", session.user.id);
+        console.log("Selected partner currently is: ", selectedPartner);
+        console.log("Key is: ",secretKey);
+        const decryptedMessage = decryptMessage(msg.content, secretKey);
+    
+        if (decryptedMessage) {
+          console.log("Decrypted message:", decryptedMessage);
+          setMessages((prev) => [...prev, { ...msg, content: decryptedMessage }]);
+        } else {
+          console.log("Decryption failed or message is empty.");
+        }
       }
     });
+    
 
     return () => {
       socketRef.current.disconnect();
@@ -90,23 +119,45 @@ export default function ChatBox() {
 
   useEffect(() => {
     if (!selectedPartner) return;
+  
     const fetchMessages = async () => {
       if (!selectedPartner?.conversationId) return;
-
+  
       try {
         const res = await fetch(
           `/api/messages/conversation?conversationId=${selectedPartner.conversationId}`
         );
         const data = await res.json();
-        setMessages(data.data?.messages || []);
+        let messages = data.data?.messages || [];
+  
+        if (messages.length > 0) {
+          const selected_id = selectedPartner?.otherUser ? selectedPartner?.otherUser.id : selectedPartner.id;
+        
+          const decryptedMessages = messages.map((msg) => {
+            const isSentByCurrentUser = msg.senderId === session.user.id;
+            const secretKey = isSentByCurrentUser
+              ? selected_id + session.user.id
+              :session.user.id + selected_id;               ;
+        
+            return {
+              ...msg,
+              content: decryptMessage(msg.content, secretKey),
+            };
+          });
+        
+          setMessages(decryptedMessages);
+        } else {
+          setMessages([]);
+        }
+        
       } catch (error) {
         console.error("❌ Failed to fetch messages:", error);
       }
     };
-
+  
     fetchMessages();
-    // checkIfFavorite();
   }, [selectedPartner]);
+  
 
 //   const checkIfFavorite = async () => {
 //     if (!selectedPartner) return;
@@ -152,69 +203,72 @@ export default function ChatBox() {
       </p>
     );
 
-  const sendMessage = async () => {
-    if (!message.trim() || !socketRef.current || !selectedPartner) return;
+    const sendMessage = async () => {
+      if (!message.trim() || !socketRef.current || !selectedPartner) return;
+      const timestamp = new Date().toISOString();
+      const selected_id = selectedPartner?.otherUser ? selectedPartner?.otherUser.id : selectedPartner.id;
+      console.log("sessing user id is: ",selected_id, session.user.id);
+      const secretKey = selected_id+ session.user.id;
+      console.log("Selected partner currently is: ", selectedPartner);
+      console.log("Key is: ",secretKey);
+      const encryptedMessage = encryptMessage(message, secretKey);
+      let msgData;
+      console.log("Selected partner currently is: ", selectedPartner);
+      const decryptedMessage = message;
+    
+      if (selectedPartner.otherUser) {
+        msgData = {
+          senderId: session.user.id,
+          senderType: session.user.role,
+          receiverId: selectedPartner?.otherUser.id,
+          content: encryptedMessage, 
+          timestamp,
+        };
+      } else {
+        const newConversation = {
+          otherUser: {
+            id: selectedPartner?.id,
+            name: selectedPartner?.role === "INSTITUTION" || selectedPartner?.role === "SHOP_OWNER"
+              ? selectedPartner?.firmName
+              : `${selectedPartner?.firstName || ""} ${selectedPartner?.lastName || ""}`.trim(),
+            profilePhoto: selectedPartner?.profilePhoto || null,
+            firmName: selectedPartner?.firmName || null,
+            role: selectedPartner?.role,
+          },
+          lastMessage: decryptedMessage, 
+          updatedAt: new Date().toISOString(),
+        };
+    
+        setConversations((prevConversations) =>
+          Array.isArray(prevConversations)
+            ? [...prevConversations, newConversation]
+            : [newConversation]
+        );
+    
+        msgData = {
+          senderId: session.user.id,
+          senderType: session.user.role,
+          receiverId: selectedPartner.id,
+          content: encryptedMessage, 
+          timestamp,
+        };
+      }
+    
+      console.log("msg data: ", msgData);
+    
+      
+      await socketRef.current.emit("sendMessage", msgData);
+    
+      
+      setMessages((prev) => Array.isArray(prev) ? [...prev, { ...msgData, content: decryptedMessage }] : [{ ...msgData, content: decryptedMessage }]);
+    
+      setMessage(""); 
+      setShowEmojiPicker(false); 
+    };
 
-    const timestamp = new Date().toISOString();
+  
 
-    let msgData;
-    console.log("Selected partner currently is: ", selectedPartner);
-
-    if (selectedPartner.otherUser) {
-      msgData = {
-        senderId: session.user.id,
-        senderType: session.user.role,
-        receiverId: selectedPartner?.otherUser.id,
-        content: message,
-        timestamp,
-      };
-    } else {
-      // add conversation to the local conversations state as well
-      //
-      // setConversations((prevConversations) => [...prevConversations, {
-      const newConversation = {
-        otherUser: {
-          id: selectedPartner?.id,
-          name: selectedPartner?.role === "INSTITUTION" || selectedPartner?.role === "SHOP_OWNER"
-            ? selectedPartner?.firmName 
-            : `${selectedPartner?.firstName || ""} ${selectedPartner?.lastName || ""}`.trim(),
-          profilePhoto: selectedPartner?.profilePhoto || null,
-          firmName: selectedPartner?.firmName || null,
-          role: selectedPartner?.role,
-        },
-        lastMessage: message,
-        updatedAt: new Date().toISOString(),
-      };
-
-      setConversations((prevConversations) =>
-        Array.isArray(prevConversations)
-          ? [...prevConversations, newConversation]
-          : [newConversation]
-      );
-
-      msgData = {
-        senderId: session.user.id,
-        senderType: session.user.role,
-        receiverId: selectedPartner.id,
-        content: message,
-        timestamp,
-      };
-    }
-
-    console.log("msg data: ", msgData);
-
-    await socketRef.current.emit("sendMessage", msgData);
-
-    setMessages((prev) =>
-      Array.isArray(prev) ? [...prev, msgData] : [msgData]
-    );
-    setMessage("");
-    setShowEmojiPicker(false);
-  };
-
-  // const handleLike = (user)=>{
-
-  // }
+  
   const handleLike = async () => {
     if (!selectedPartner) return;
     const otherUserId = selectedPartner.conversationId;
