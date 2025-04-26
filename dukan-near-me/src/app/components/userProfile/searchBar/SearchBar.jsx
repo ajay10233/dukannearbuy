@@ -74,13 +74,16 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useRef } from "react";
 
 export default function SearchBar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
+  
   const router = useRouter();
+  const searchRef = useRef();
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -106,8 +109,34 @@ export default function SearchBar() {
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setSuggestions([]);
+        setResults([]);
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);  
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+  
+    if (value.trim() === "") {
+      setResults([]);
+      setSuggestions([]);
+    }
+  };  
+
     const handleRedirect = (profile) => {
-        console.log('Redirecting to:', profile);
+      console.log('Redirecting to:', profile);
+      setSuggestions([]);
+      setResults([]);
 
         if (profile.firmName) {
             router.push(`/partnerProfile/${profile.id}`);
@@ -117,8 +146,8 @@ export default function SearchBar() {
     }
 
   return (
-    <div className="w-full px-0 md:px-5 flex flex-col gap-y-1 relative">
-      <form
+    <div ref={searchRef} className="w-full px-0 md:px-5 flex flex-col gap-y-1 relative">
+      <form 
         onSubmit={handleSearch}
         className="flex items-center border border-gray-500 rounded-md shadow-gray-400 gap-2 overflow-hidden"
       >
@@ -126,8 +155,10 @@ export default function SearchBar() {
           type="text"
           placeholder="Search..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full py-2 px-4 text-gray-200 focus:outline-none bg-transparent text-sm cursor-pointer"
+          onChange={handleInputChange}
+          className="w-full py-2 px-3 md:px-4 text-gray-200 text-sm bg-transparent focus:outline-none cursor-pointer"
+
+          // className="w-full py-2 px-4 text-gray-200 focus:outline-none bg-transparent text-sm cursor-pointer"
           onKeyDown={(e) => e.key === "Enter" && handleSearch(e)}
         />
         <Search size={22} strokeWidth={1.5} color="#afacac" className="mr-4" />
@@ -138,7 +169,9 @@ export default function SearchBar() {
       )}
 
       {!loading && suggestions.length > 0 && (
-        <div className="flex gap-2 flex-wrap mt-2 px-1">
+        // <div className="flex gap-2 flex-wrap mt-2 px-1">
+          <div className="flex gap-2 flex-wrap justify-center sm:justify-start mt-2 px-1">
+
           {suggestions.map((s, i) => (
             <button
               key={i}
@@ -152,7 +185,8 @@ export default function SearchBar() {
       )}
 
       {!loading && results.length > 0 && (
-        <ul className="w-[340px] md:w-363 z-1000 bg-black border border-gray-500 rounded-md mt-2 absolute top-9 right-0 md:right-4">
+        // <ul className="w-[340px] md:w-363 z-1000 bg-black border border-gray-500 rounded-md mt-2 absolute top-9 right-0 md:right-4">
+        <ul className="w-full z-[1000] max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 bg-black border border-gray-500 rounded-md absolute left-1/2 top-full mt-2 transform -translate-x-1/2 ">
           {results.map((profile) => (
             <li
               key={profile.id}
@@ -162,7 +196,7 @@ export default function SearchBar() {
               <div className="flex items-center gap-4">
                 <div className="relative w-8 h-8">
                   <Image
-                    src={profile.profilePhoto || "/default-profile.png"}
+                    src={profile.profilePhoto} 
                     alt="profile-photo"
                     fill
                     sizes="32px"
@@ -171,7 +205,7 @@ export default function SearchBar() {
                   />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-200">{profile.firmName}</p>
+                  <p className="text-sm font-medium text-gray-200">{profile.firmName || profile.firstName}</p>
                   <p className="text-xs text-gray-200">
                     {profile.city}, {profile.state} - {profile.zipCode}
                   </p>

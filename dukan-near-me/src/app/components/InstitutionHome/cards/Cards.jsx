@@ -4,12 +4,12 @@ import { useEffect } from "react";
 
 export default function HomeCards() {
   const cardData = [
-    { title: "Live Chat", href: "/chat" },
-    { title: "Generate Bills", href: "#" },
-    { title: "Generate Token", href: "/tokengenerate" },
-    { title: "Update Live Token", href: "/tokenupdate" },
+    { title: "Live Chat", href: "/chat", slogan: "Connect to The World" },
+    { title: "Generate Bills", href: "#", slogan: "Digital Record" },
+    { title: "Generate Token", href: "/tokengenerate", slogan: "Smart Crowd Handling" },
+    { title: "Update Live Token", href: "/tokenupdate/${institutionId}", slogan: "Realtime Token Updates" }
   ];
-
+  
   useEffect(() => {
     const style = document.createElement('style');
     style.innerHTML = `
@@ -42,7 +42,7 @@ export default function HomeCards() {
             {/* Card content */}
             <div className="relative z-10 h-full w-full flex flex-col items-center justify-center text-white text-center px-6">
               <h2 className="text-2xl md:text-3xl font-bold mb-2">{card.title}</h2>
-              <p className="text-sm opacity-90">Click to explore</p>
+              <p className="text-sm opacity-90">{card.slogan}</p>
             </div>
           </div>
         </Link>

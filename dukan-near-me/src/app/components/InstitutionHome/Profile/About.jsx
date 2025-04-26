@@ -144,7 +144,7 @@ export default function About({ profileUpdated }) {
                     </button>
                 </div>
 
-                <div className="fixed bottom-30 right-4 z-50 flex flex-col items-center gap-2">
+                <div className="fixed bottom-30 right-4 z-10 flex flex-col items-center gap-2">
                     <button
                         // onClick={() => setShowQRModal(true)}
                         onClick={handleChat}
@@ -195,30 +195,37 @@ export default function About({ profileUpdated }) {
                         </div>
 
                          {/* past addresses */}
-                        <div className="flex flex-col w-full p-0 pb-6 md:px-8 md:py-2">
-                            <div className="pl-2 md:pl-8 flex flex-col gap-y-1">
-                                <span className="font-semibold text-gray-700">Past Addresses:</span>
+                         <div className="flex flex-col w-full  pr-4 py-4 md:px-8 md:py-4">
+                            <Accordion type="single" collapsible className="w-full p-0 md:p-4">
+                                <AccordionItem value="past-addresses" className="rounded-md overflow-hidden">
+                                <AccordionTrigger className="bg-white px-4 py-3 text-sm md:text-[16px] cursor-pointer hover:no-underline text-blue-700 font-semibold hover:bg-gray-100 rounded-t-md flex justify-between items-center">
+                                    <span>Past Addresses</span>
+                                    {/* <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]:rotate-180" /> */}
+                                </AccordionTrigger>
+                                <AccordionContent className="bg-blue-50 px-4 py-2 rounded-b-md border-t border-blue-200">
                                     {pastAddresses.length === 0 ? (
                                     <p className="text-gray-500">No past addresses found.</p>
                                     ) : (
-                                    <div className="flex flex-col gap-4">
+                                    <div className="flex flex-col gap-3">
                                         {pastAddresses.map((addr, i) => (
-                                            <div key={addr.id} className="flex flex-col text-sm gap-y-1">
-                                                <p className="font-semibold text-gray-700">
-                                                #{i + 1} (Moved out: {addr.movedOutAt ? new Date(addr.movedOutAt).toLocaleDateString() : 'Unknown'})
-                                                </p>
-                                                <span className="text-gray-800 hover:text-gray-600 transition ease-in-out">
-                                                {[addr.buildingName, addr.street, addr.city, addr.state]
-                                                    .filter(Boolean)
-                                                    .join(", ")}{" "}
-                                                - {addr.zipCode}
-                                                </span>
-                                                <span className="text-gray-600">{addr.country}</span>
-                                            </div>
-                                            ))}
+                                        <div
+                                            key={addr.id}
+                                            className="p-3 bg-white rounded-md shadow-sm border border-blue-200 transition-all hover:shadow-md"
+                                        >
+                                            <p className="font-semibold text-blue-700">
+                                            #{i + 1} (Moved out: {new Date(addr.movedOutAt).toLocaleDateString()})
+                                            </p>
+                                            <p className="text-gray-700 mt-1">
+                                            {[addr.buildingName, addr.street, addr.city, addr.state].filter(Boolean).join(", ")}, {addr.zipCode}
+                                            </p>
+                                            <p className="text-gray-600">{addr.country}</p>
+                                        </div>
+                                        ))}
                                     </div>
                                     )}
-                            </div>
+                                </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
                         </div>
 
                         <div className="flex items-start gap-x-2">
@@ -299,12 +306,11 @@ export default function About({ profileUpdated }) {
             )}
 
             {/* past addresses */}
-            <div className="flex flex-col w-full max-w-lg pr-4 py-4 md:px-8 md:py-4">
+            {/* <div className="flex flex-col w-full  pr-4 py-4 md:px-8 md:py-4">
                 <Accordion type="single" collapsible className="w-full p-0 md:p-4">
                     <AccordionItem value="past-addresses" className="rounded-md overflow-hidden">
                     <AccordionTrigger className="bg-white px-4 py-3 text-sm md:text-[16px] cursor-pointer hover:no-underline text-blue-700 font-semibold hover:bg-gray-100 rounded-t-md flex justify-between items-center">
                         <span>Past Addresses</span>
-                        {/* <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]:rotate-180" /> */}
                     </AccordionTrigger>
                     <AccordionContent className="bg-blue-50 px-4 py-2 rounded-b-md border-t border-blue-200">
                         {pastAddresses.length === 0 ? (
@@ -330,13 +336,13 @@ export default function About({ profileUpdated }) {
                     </AccordionContent>
                     </AccordionItem>
                 </Accordion>
-            </div>
+            </div> */}
 
             {userData?.description && (
                 <div className="p-4 md:p-8">
                     <h2 className="text-2xl font-bold text-blue-700 mb-2">About</h2>
                     <div className="relative group transition-all duration-500">
-                        <div className="bg-gradient-to-r from-blue-100 via-white to-blue-50 border-gray-300 w-300 h-40 rounded-xl p-4 shadow-md transition-all duration-300 transform">
+                        <div className="bg-gradient-to-r from-blue-100 via-white to-blue-50 border-gray-300 w-[300px] md:w-300 h-40 rounded-xl p-4 shadow-md transition-all duration-300 transform">
                             <p className="text-gray-700 text-base leading-relaxed tracking-wide">
                                 {userData.description}
                             </p>

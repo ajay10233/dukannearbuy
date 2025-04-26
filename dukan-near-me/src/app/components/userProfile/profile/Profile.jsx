@@ -81,7 +81,7 @@ export default function Profile() {
                   <Edit size={20} className="cursor-pointer transition hover:text-blue-600" />
                 </button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-md bg-white p-6 rounded-xl shadow-lg">
+              <DialogContent className="sm:max-w-md bg-white p-6 rounded-xl shadow-lg max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Edit Profile</DialogTitle>
                   <DialogDescription />

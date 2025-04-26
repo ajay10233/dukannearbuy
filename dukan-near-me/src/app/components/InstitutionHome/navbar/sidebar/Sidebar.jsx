@@ -48,13 +48,13 @@ export default function Sidebar({ isOpen, onClose }) {
                             className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
                             <MessageCircleMore size={20} strokeWidth={1.5} />
                                 Chats
-                        </Link>
-                        <Link href="#"
+                        </Link> */}
+                        <Link href="/notification"
                             className=" flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
                             <MessageSquareWarning size={20} strokeWidth={1.5} />
                                 Notification
-                        </Link> */}
-                        <Link href="#"
+                        </Link>
+                        <Link href="#" 
                             className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">
                             <QrCode size={20} strokeWidth={1.5} />
                                 My QR         
@@ -84,7 +84,7 @@ export default function Sidebar({ isOpen, onClose }) {
                             <BookCheck size={20} strokeWidth={1.5} />
                             Bill History
                         </Link>
-                        <Link href="#"
+                        <Link href="/myplan"
                             className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">
                             <FolderDown size={20} strokeWidth={1.5} />
                             My Plans
@@ -98,17 +98,17 @@ export default function Sidebar({ isOpen, onClose }) {
                 </div>
 
                 {/* offcanvas footer */}
-                <div className='flex flex-col p-4 border-t border-gray-200 space-y-3'>
-                    <Link href="#"
+                <div className='flex flex-col px-4 pt-4 border-t border-gray-200 space-y-3'>
+                    <Link href="/setting"
                         className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">
                         <Settings size={20} strokeWidth={1.5} />
                             Settings
                     </Link>
-                    <Link href="#"
+                    {/* <Link href="#"
                         className="flex items-center gap-2 text-sm md:text-[16px] text-red-500">
                         <LogOut size={20} strokeWidth={1.5} />
                             Logout
-                    </Link>
+                    </Link> */}
                 </div>
             </div>
         </>

@@ -99,7 +99,7 @@ export default function TokenGeneration() {
     };
   }, [institutionId]);
 
-  if (!institutionId) return <p className="p-16 text-center">Loading...</p>;
+  // if (!institutionId) return <p className="p-16 text-center">Loading...</p>;
 
   return (
     <section className="flex flex-col items-center h-[calc(100vh-50px)] justify-start px-8 pb-8 pt-16 gap-y-4 bg-white">

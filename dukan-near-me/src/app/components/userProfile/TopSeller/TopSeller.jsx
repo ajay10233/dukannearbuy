@@ -132,7 +132,7 @@ export default function TopSeller() {
         <div className="relative">
           <button
             onClick={() => emblaApi?.scrollPrev()}
-            className="absolute -left-6 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md"
+            className="absolute -left-6 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white rounded-full p-2 shadow-md"
           >
             <ChevronLeft className="text-black" />
           </button>
@@ -184,7 +184,7 @@ export default function TopSeller() {
 
           <button
             onClick={() => emblaApi?.scrollNext()}
-            className="absolute -right-6 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md">
+            className="absolute -right-6 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white rounded-full p-2 shadow-md">
             <ChevronRight className="text-black" />
           </button>
         </div>

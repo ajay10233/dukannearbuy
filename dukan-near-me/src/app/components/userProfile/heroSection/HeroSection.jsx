@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
+import { ChevronLeft, ChevronRight } from "lucide-react"; // ✅ ADD this line
 
 const images = [
     "/hero-section.png",
@@ -19,7 +20,7 @@ const DotButton = ({ onClick, isSelected }) => (
       }`}
       onClick={onClick}
     />
-  );  
+);  
 
 export default function HeroSection() {
   const [emblaRef, emblaApi] = useEmblaCarousel(
@@ -37,7 +38,7 @@ export default function HeroSection() {
 
   return (
     <div className="flex flex-col items-center w-full md:p-4 gap-y-4 py-0 px-2">
-      <div className="overflow-hidden w-full" ref={emblaRef}>
+      <div className="overflow-hidden w-full relative" ref={emblaRef}> {/* relative daala for positioning buttons */}
         <div className="flex gap-x-5 px-2">
           {images.map((src, index) => (
             <div
@@ -58,7 +59,23 @@ export default function HeroSection() {
             </div>
           ))}
         </div>
+
+        {/* Left and Right Navigation */}
+        <button 
+          onClick={() => emblaApi && emblaApi.scrollPrev()} 
+          className="absolute top-1/2 left-2 transform -translate-y-1/2  p-2 rounded-full z-10 cursor-pointer"
+        >
+          <ChevronLeft size={40} color="#fff" />
+        </button>
+        <button 
+          onClick={() => emblaApi && emblaApi.scrollNext()} 
+          className="absolute top-1/2 right-2 transform -translate-y-1/2 p-2 rounded-full z-10 cursor-pointer"
+        >
+          <ChevronRight size={40} color="#fff" />
+        </button>
+
       </div>
+
       <div className="flex gap-2 gap-y-4">
         {scrollSnaps.map((_, index) => (
           <DotButton

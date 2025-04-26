@@ -54,7 +54,7 @@ export default function ChangeAddress({ currentAddress, onSave }) {
       toast.error('Something went wrong!');
     }
 
-    setLoading(false); // ✅ End loading
+    setLoading(false); 
   };
 
   return (
