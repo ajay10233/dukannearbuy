@@ -3,7 +3,9 @@
 import React from 'react'
 import { UserRound, X, MessageCircleMore,Home, MessageSquareWarning, QrCode, ScanLine, BookCheck, FolderDown, Settings, LogOut, Heart } from "lucide-react";
 import Link from 'next/link';
+import { HandCoins } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import LogoutButton from '@/app/components/LogoutButton';
 
 export default function Sidebar({ isOpen, onClose }) {
     const pathName = usePathname();
@@ -54,7 +56,7 @@ export default function Sidebar({ isOpen, onClose }) {
                             <MessageSquareWarning size={20} strokeWidth={1.5} />
                                 Notification
                         </Link>
-                        <Link href="#"
+                        <Link href="/qr-code"
                             className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">
                             <QrCode size={20} strokeWidth={1.5} />
                                 My QR         
@@ -66,7 +68,7 @@ export default function Sidebar({ isOpen, onClose }) {
                         </Link>
                         <Link href="/mytoken"
                             className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200"> 
-                            <ScanLine size={20} strokeWidth={1.5} />
+                            <HandCoins size={20} strokeWidth={1.5} />
                             My Token
                         </Link>
                         <Link href="/billRecord"
@@ -98,7 +100,7 @@ export default function Sidebar({ isOpen, onClose }) {
                     <Link href="#"
                         className="flex items-center gap-2 text-sm md:text-[16px] text-red-500">
                         <LogOut size={20} strokeWidth={1.5} />
-                            Logout
+                            <LogoutButton/>
                     </Link>
                 </div>
             </div>

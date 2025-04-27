@@ -406,17 +406,18 @@
 
             {/* Scanner Image */}
             <div>
-              <label className="font-medium text-gray-700">Upload Scanner Image</label>
-              <input
-                name="scanner_image"
-                placeholder="Upload Scanner QR Image"
-                type="file"
-                accept="image/*"
-                onChange={handleChange}
-                className="border p-2 rounded w-full" required
-              />
-              {errors?.scanner_image && <span className="text-sm text-red-500">{errors.scanner_image}</span>}
-            </div>
+          <label className="font-medium text-gray-700">Upload Scanner Image</label>
+          <input
+            name="scanner_image"
+            placeholder="Upload Scanner QR Image"
+            type="file"
+            accept="image/*"
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+          required
+          />
+          {errors?.scanner_image && <span className="text-sm text-red-500">{errors.scanner_image}</span>}
+        </div>
 
             {/* current location */}
             <div>

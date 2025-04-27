@@ -1,21 +1,28 @@
 "use client";
+
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { Check } from "lucide-react";
-import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation"; // Import useRouter for navigation
+import { toast } from "react-hot-toast";
 
 export default function Subscription() {
   const [plans, setPlans] = useState([]);
   const [activePlan, setActivePlan] = useState("");
+  const router = useRouter(); // Initialize the router for navigation
 
-  const handleClick = (planName) => {
+  const handleClick = (planName, price) => {
+    if (price === 0) return; // Don't handle click for free plans
     setActivePlan(planName);
+    // Redirect to the /payment page with the plan and price in the query string
+    router.push(`/payment?plan=${planName}&amount=${price}`);
+    toast.success(`You have selected the ${planName} plan!`);
   };
 
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/plans"); // Replace with your actual API endpoint
+        const res = await fetch("/api/plans"); // Replace with your actual API endpoint
         const data = await res.json();
         setPlans(data);
       } catch (error) {
@@ -77,18 +84,18 @@ export default function Subscription() {
                 </div>
 
                 <button
-                  onClick={() => handleClick(plan.name)}
+                  onClick={() => handleClick(plan.name, plan.price)} // Pass plan.price here
+                  disabled={plan.price === 0} 
                   className={`px-6 py-2 tracking-wide cursor-pointer rounded-full text-sm font-semibold transition
-        ${
-          plan.name === "BASIC"
-            ? "border border-yellow-500 text-yellow-500 hover:bg-yellow-100"
-            : "border border-yellow-500 text-yellow-500 bg-yellow-100"
-        }
-        ${activePlan === plan.name ? "ring-2 ring-yellow-300" : ""}`}
+                    ${
+                      plan.name === "BASIC"
+                        ? "border border-yellow-500 text-yellow-500 hover:bg-yellow-100"
+                        : "border border-yellow-500 text-yellow-500 bg-yellow-100"
+                    }
+                    ${activePlan === plan.name ? "ring-2 ring-yellow-300" : ""} 
+                    ${plan.price === 0 ? "cursor-not-allowed opacity-50" : ""}`} // Add opacity for free plan
                 >
-                  {activePlan === "BASIC" && plan.name === "BASIC"
-                    ? "Selected"
-                    : "Select"}
+                  {plan.price === 0 ? "Selected" : (activePlan === plan.name ? "Selected" : "Select")}
                 </button>
               </div>
             </div>

@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
 export default function PaymentOffer() {
   const [coupon, setCoupon] = useState("");
@@ -11,29 +12,55 @@ export default function PaymentOffer() {
   const [invalidCoupon, setInvalidCoupon] = useState(false);
   const [shake, setShake] = useState(false);
   const [showSuccessAnim, setShowSuccessAnim] = useState(false);
+  const [discountAmount, setDiscountAmount] = useState(0);
 
-  const handleApplyCoupon = () => {
-    if (coupon.trim().toLowerCase() === "lucky50") {
-      setDiscountApplied(true);
-      setInvalidCoupon(false);
-      toast.success("Coupon applied successfully!");
-      setShowSuccessAnim(true);
-      setTimeout(() => setShowSuccessAnim(false), 1500);
-    } else {
-      setInvalidCoupon(true);
-      setDiscountApplied(false);
-      setShake(true);
-      toast.error("Invalid coupon code ❌");
-      setTimeout(() => setShake(false), 500);
+  const searchParams = useSearchParams();
+  const priceParam = searchParams.get("amount");
+  const price = priceParam ? parseInt(priceParam) : 999; // default 999
+  const finalPrice = discountApplied ? price - discountAmount : price;
+
+  const handleApplyCoupon = async () => {
+    if (!coupon.trim()) {
+      toast.error("Please enter a coupon code");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/coupon", { method: "GET" });
+      if (!response.ok) {
+        throw new Error("Failed to fetch coupons");
+      }
+
+      const coupons = await response.json();
+
+      const matchedCoupon = coupons.find(
+        (c) => c.name.toLowerCase() === coupon.trim().toLowerCase()
+      );
+
+      if (matchedCoupon) {
+        setDiscountApplied(true);
+        setInvalidCoupon(false);
+        setDiscountAmount(Math.round((price * matchedCoupon.discountPercentage) / 100));
+
+        toast.success(`Coupon "${matchedCoupon.name}" applied! 🎉`);
+        setShowSuccessAnim(true);
+        setTimeout(() => setShowSuccessAnim(false), 1500);
+      } else {
+        setInvalidCoupon(true);
+        setDiscountApplied(false);
+        setDiscountAmount(0);
+        setShake(true);
+        toast.error("Invalid coupon code ❌");
+        setTimeout(() => setShake(false), 500);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong while applying coupon.");
     }
   };
 
-  const price = 999;
-  const discount = 50;
-  const finalPrice = discountApplied ? price - discount : price;
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-teal-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-teal-100 flex items-center justify-center p-4 relative">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-10 space-y-6">
         <h2 className="text-2xl font-bold text-gray-800 text-center">Complete Your Payment</h2>
 
@@ -101,7 +128,7 @@ export default function PaymentOffer() {
             {discountApplied && (
               <div className="flex justify-between text-teal-600">
                 <p className="font-medium">Coupon Applied</p>
-                <p className="font-medium">-₹{discount}</p>
+                <p className="font-medium">-₹{discountAmount}</p>
               </div>
             )}
             <div className="flex justify-between text-indigo-600 font-semibold text-lg border-t pt-2">
@@ -117,15 +144,17 @@ export default function PaymentOffer() {
 
         <p className="text-xs text-gray-400 text-center">Secured by XYZ Payments</p>
       </div>
+
+      {/* Watermark */}
       <div className="absolute bottom-1 right-4 w-17 h-17 md:w-32 md:h-32">
-              <Image
-                src="/nearbuydukan - watermark.png"
-                alt="Watermark"
-                fill
-                className="object-contain w-17 h-17 md:w-32 md:h-32"
-                priority
-              />
-            </div>
+        <Image
+          src="/nearbuydukan - watermark.png"
+          alt="Watermark"
+          fill
+          className="object-contain w-17 h-17 md:w-32 md:h-32"
+          priority
+        />
+      </div>
     </div>
   );
 }

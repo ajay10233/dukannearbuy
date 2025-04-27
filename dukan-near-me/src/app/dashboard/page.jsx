@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import LogoutButton from "@/app/components/LogoutButton";
 import ChangePastAddress from "../components/ChangePastAddress";
+import QRCodeComponent from "../components/QRCodeComponent";
+// import other components as needed
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -34,8 +36,9 @@ export default function Dashboard() {
       {/* <ReviewComponent user={user}/>
       <QRCodeComponent params={{ id: user.id }} />
       <EditInstitution />
-      <ClientQRCodeSection /> */}
-      <ChangePastAddress />
+      <ClientQRCodeSection />
+      <ChangePastAddress /> */}
+      <QRCodeComponent params={{ id: user.id }} />
       <Test/>
     </div>
   );
