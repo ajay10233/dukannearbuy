@@ -44,8 +44,9 @@ export default function PromotionCard() {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push("/payment");
+    router.push(`/payment?amount=${discountedCost}`);
   };
+  
 
   
   return (

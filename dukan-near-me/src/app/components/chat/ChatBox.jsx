@@ -2,14 +2,31 @@
 
 import Image from "next/image";
 import React from "react";
-import { MoveLeft, Search, Heart, Plus, LockKeyhole, SmilePlus, MapPin, SendHorizontal,} from "lucide-react";
+import {
+  MoveLeft,
+  Search,
+  Heart,
+  Plus,
+  LockKeyhole,
+  SmilePlus,
+  MapPin,
+  SendHorizontal,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
+
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import EmojiPicker from "emoji-picker-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,} from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import PaymentHistory from "./PaymentHistory";
 import CryptoJS from 'crypto-js';
 
@@ -66,7 +83,9 @@ export default function ChatBox() {
 
   useEffect(() => {
     if (!session || socketRef.current) return;
-    socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { transports: ["websocket"] });
+    socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, {
+      transports: ["websocket"],
+    });
 
     socketRef.current.on("connect", () => {
       console.log(`✅ Connected with socket ID: ${socketRef.current.id}`);
@@ -159,17 +178,17 @@ export default function ChatBox() {
   }, [selectedPartner]);
   
 
-//   const checkIfFavorite = async () => {
-//     if (!selectedPartner) return;
-//     try {
-//       const res = await fetch(`/api/favorites`);
-//       const data = await res.json();
-//       console.log(data);
-//       setIsFavorite(data.favorites.some((fav) => fav.institutionId === selectedPartner.conversationId));
-//     } catch (error) {
-//       console.error("❌ Failed to check favorite status:", error);
-//     }
-//   };
+  //   const checkIfFavorite = async () => {
+  //     if (!selectedPartner) return;
+  //     try {
+  //       const res = await fetch(`/api/favorites`);
+  //       const data = await res.json();
+  //       console.log(data);
+  //       setIsFavorite(data.favorites.some((fav) => fav.institutionId === selectedPartner.conversationId));
+  //     } catch (error) {
+  //       console.error("❌ Failed to check favorite status:", error);
+  //     }
+  //   };
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -301,7 +320,7 @@ export default function ChatBox() {
         <div className="flex items-center gap-2">
           <button
             className="p-2 cursor-pointer"
-            onClick={() => router.push("/UserHomePage")} 
+            onClick={() => router.push("/UserHomePage")}
           >
             <MoveLeft size={20} strokeWidth={1.5} />
           </button>
@@ -743,7 +762,7 @@ export default function ChatBox() {
                         }
                       );
                       if (res.ok) {
-                        setSelectedPartner(null); 
+                        setSelectedPartner(null);
                       }
                     }}
                   >
@@ -795,9 +814,18 @@ export default function ChatBox() {
             )}
           </>
         ) : (
-          <p className="p-4 text-center text-gray-500">
-            Select a conversation to start chatting.
-          </p>
+          <div className="image flex flex-col justify-center items-center mt-[50px]">
+            <Image
+              src="/NBDWATERMARK1.png"
+              alt="conversation"
+              width={500} // Set the desired width
+              height={300} // Set the desired height
+              className="max-w-full h-auto"
+            />
+            <p className="p-4 text-center text-gray-500">
+              Select a conversation to start chatting.
+            </p>
+          </div>
         )}
       </main>
     </div>
