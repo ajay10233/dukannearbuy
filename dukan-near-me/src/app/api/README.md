@@ -1,3 +1,248 @@
+# 📄 API: `/api/billformat`
+
+Handles creation, reading, updating, and deletion of **bill format** settings for an institution.
+
+---
+
+## Common 🔖 Headers
+| Key | Value |
+|:---|:---|
+| Content-Type | `application/json` |
+| Authorization | (Session via `getServerSession`) |
+
+---
+
+## ➡️ `GET /api/billformat`
+### Purpose: Fetch the institution's saved bill format.
+
+### ✅ Success Response
+```json
+{
+  "institutionId": "institution-id",
+  "gstNumber": "22ABCDE1234F1Z5",
+  "taxType": "GST",
+  "taxPercentage": 18,
+  "proprietorSign": "Base64 encoded signature or URL",
+  "extraText": "Thank you for shopping!"
+}
+```
+
+### ❌ Error Responses
+- `401 Unauthorized` — User not an Institution or Shop Owner.
+- `404 Not Found` — No bill format found for the institution.
+- `500 Internal Server Error` — Unexpected error.
+
+---
+
+## ➡️ `POST /api/billformat`
+### Purpose: Create a bill format. (Only one allowed per institution)
+
+### 🧩 JSON Payload
+```json
+{
+  "gstNumber": "22ABCDE1234F1Z5",
+  "taxType": "GST",
+  "taxPercentage": 18,
+  "proprietorSign": "base64-string-or-url",
+  "extraText": "Thanks for shopping!"
+}
+```
+
+### ✅ Success Response
+```json
+{
+  "institutionId": "institution-id",
+  "gstNumber": "...",
+  "taxType": "...",
+  "taxPercentage": 18,
+  "proprietorSign": "...",
+  "extraText": "..."
+}
+```
+
+### ❌ Error Responses
+- `401 Unauthorized` — Not an institution or shop owner.
+- `400 Bad Request` — Already created once.
+- `500 Internal Server Error` — Unexpected error.
+
+---
+
+## ➡️ `PUT /api/billformat`
+### Purpose: Update the existing bill format.
+
+### 🧩 JSON Payload (Partial update allowed)
+```json
+{
+  "gstNumber": "new-GST",
+  "taxType": "VAT",
+  "taxPercentage": 5,
+  "proprietorSign": "updated-signature",
+  "extraText": "Come Again!"
+}
+```
+*(You can send only the fields you want to update.)*
+
+### ✅ Success Response
+```json
+{
+  "institutionId": "institution-id",
+  "gstNumber": "...",
+  "taxType": "...",
+  "taxPercentage": 5,
+  "proprietorSign": "...",
+  "extraText": "Come Again!"
+}
+```
+
+### ❌ Error Responses
+- `401 Unauthorized`
+- `404 Not Found` — No bill format to update.
+- `500 Internal Server Error`
+
+---
+
+## ➡️ `DELETE /api/billformat`
+### Purpose: Delete the saved bill format.
+
+### ✅ Success Response
+```json
+{
+  "message": "Bill format deleted successfully"
+}
+```
+
+### ❌ Error Responses
+- `401 Unauthorized`
+- `404 Not Found` — No bill format found.
+- `500 Internal Server Error`
+
+---
+
+# ⚙️ Important Common Requirements (for all `/api/billformat` routes)
+- Only `INSTITUTION` and `SHOP_OWNER` roles are authorized.
+- Each institution can create **only one** bill format.
+- To update, a bill format must exist.
+- Deleting removes the record permanently.
+
+
+# 📄 Bill Creation API Documentation
+
+---
+
+## 📌 Endpoint
+```
+POST /api/bill
+```
+
+---
+
+## 📌 Headers
+| Key             | Value                     | Required |
+|-----------------|----------------------------|:--------:|
+| Content-Type    | application/json <br>OR<br> multipart/form-data | ✅ |
+| Authorization   | Session Cookie (Handled by `getServerSession`) | ✅ |
+
+---
+
+## 📌 Authentication
+- Must be authenticated via **NextAuth session**.
+- Only roles **INSTITUTION** or **SHOP_OWNER** can access.
+- Otherwise returns **401 Unauthorized**.
+
+---
+
+## 📌 Request Payloads
+
+### ➡️ 1. JSON Body (For normal bill generation)
+**Content-Type**: `application/json`
+
+```json
+{
+  "userId": "string (user id)",
+  "tokenId": "string (token id)",
+  "name": "string (optional, customer name)",
+  "phoneNumber": "string (optional, customer phone number)",
+  "items": [
+    {
+      "name": "string (item name)",
+      "price": number,
+      "quantity": number
+    }
+  ],
+  "remarks": "string (optional)",
+  "invoiceNumber": "string (optional)",
+  "otherCharges": number (optional, extra charges),
+  "generateShortBill": true (optional, defaults to true)
+}
+```
+
+✅ **Important Validations**:
+- `items` array must not be empty.
+- `otherCharges` must be a valid number.
+- If `generateShortBill` is true, a short bill (summary) will also be created.
+
+---
+
+### ➡️ 2. FormData Body (For uploading bill as file)
+**Content-Type**: `multipart/form-data`
+
+| Field          | Type   | Required | Description |
+|----------------|--------|:--------:|-------------|
+| file           | File   | ✅ | PDF / Image file (JPEG, JPG, PNG) |
+| userId         | String | ✅ | Customer's user ID |
+| tokenId        | String | ✅ | Token ID associated with bill |
+| remarks        | String | ❌ | Remarks (optional) |
+| invoiceNumber  | String | ❌ | Invoice number (optional) |
+| report         | Boolean/String | ❌ | If true, bill type is set as `REPORT` instead of `BILL` |
+
+✅ **Important Validations**:
+- File size limit depends on subscription plan (defaults to 1MB if not specified).
+- Supported file types: `pdf`, `jpg`, `jpeg`, `png`.
+
+---
+
+## 📌 Response
+
+### ✅ Success (for both JSON and FormData)
+
+```json
+{
+  "success": true,
+  "bill": { ...billObject },
+  "shortBill": { ...shortBillObject } // Only for JSON and if generateShortBill = true
+}
+```
+
+- `billObject` contains full bill data.
+- `shortBillObject` contains short bill data (only if generated).
+
+---
+
+### ❌ Possible Error Responses
+
+| Status Code | Error | Reason |
+|-------------|-------|--------|
+| 401 | `{ "error": "Unauthorized" }` | User is not authorized |
+| 404 | `{ "error": "Institution not found" }` | Logged-in institution/shop not found |
+| 403 | `{ "error": "Free plan limit reached. Upgrade to generate more than 1000 bills per month." }` | Free plan limit exceeded |
+| 400 | `{ "error": "Invalid otherCharges" }` | otherCharges is not a valid number |
+| 400 | `{ "error": "Unsupported file type. Only PDFs and Images are allowed." }` | Invalid file type |
+| 400 | `{ "error": "No file uploaded" }` | No file provided |
+| 400 | `{ "error": "File exceeds the upload limit of {maxUploadSizeMB}MB" }` | File too large |
+| 500 | `{ "error": "Failed to create bill" }` | Server-side error |
+
+---
+
+## 📌 Notes
+- Free plan institutions can only create **1000 bills per month**.
+- Premium plans extend bill expiration and file upload limits.
+- ShortBills (quick summary bills) expire **after 1 hour**.
+- Uploaded files are stored in **Cloudinary**.
+
+
+
+
+
 ## 📩 Notification API
 
 This API allows users to send, view, mark as read, and delete notifications. Notifications can be sent by any user or institution to another user. Only the receiver can delete or mark a notification as read.
