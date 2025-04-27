@@ -101,7 +101,7 @@ export default function Sidebar({ isOpen, onClose }) {
                         className="flex items-center gap-2 text-sm md:text-[16px] text-red-500">
                         <LogOut size={20} strokeWidth={1.5} />
                             <LogoutButton/>
-                    </Link>
+                    </Link>*/}
                 </div>
             </div>
         </>

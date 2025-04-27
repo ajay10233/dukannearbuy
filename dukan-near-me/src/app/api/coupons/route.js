@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { prisma } from '@/utils/db';
 
 export async function GET() {
     const coupons = await prisma.coupon.findMany();
