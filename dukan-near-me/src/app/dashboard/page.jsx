@@ -39,7 +39,6 @@ export default function Dashboard() {
       <ClientQRCodeSection />
       <ChangePastAddress /> */}
       <QRCodeComponent params={{ id: user.id }} />
-      <Test/>
     </div>
   );
 }
