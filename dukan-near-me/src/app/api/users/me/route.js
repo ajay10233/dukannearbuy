@@ -22,7 +22,7 @@ export async function GET() {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  return NextResponse.json({
+  var data = {
     id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
@@ -31,8 +31,6 @@ export async function GET() {
     phone: user.phone,
     role: user.role,
     profilePhoto: user.profilePhoto,
-    age: user.age,
-    gender: user.gender,
     address: {
       houseNumber: user.houseNumber,
       street: user.street,
@@ -50,7 +48,6 @@ export async function GET() {
     paymentDetails: user.paymentDetails,
     description: user.description,
     hashtags: user.hashtags,
-    photos: user.photos,
     shopOpenTime: user.shopOpenTime,
     shopCloseTime: user.shopCloseTime,
     shopOpenDays: user.shopOpenDays,
@@ -85,7 +82,40 @@ export async function GET() {
         longitude: address.longitude,
         movedOutAt: address.movedOutAt,
         createdAt: address.createdAt,
-      })),
-    
-  });
+      }))}
+  if(user?.role === "USER") {
+    data = {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      username: user.username,
+      phone: user.phone,
+      role: user.role,
+      profilePhoto: user.profilePhoto,
+      age: user.age,
+      gender: user.gender,
+      address: {
+        houseNumber: user.houseNumber,
+        street: user.street,
+        buildingName: user.buildingName,
+        landmark: user.landmark,
+        city: user.city,
+        state: user.state,
+        country: user.country,
+        zipCode: user.zipCode,
+      },
+      mobileNumber: user.mobileNumber,
+      description: user.description,
+      latitude: user.latitude,
+      longitude: user.longitude,
+      createdAt:user.createdAt,
+      allowedRoutes: user.role === "ADMIN"
+          ? ["/", "/dashboard", "/admin"]
+          : ["/", "/dashboard"],
+    }
+  }
+
+
+  return NextResponse.json(data, { status: 200 });
 }
