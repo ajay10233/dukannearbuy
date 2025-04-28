@@ -56,6 +56,7 @@ export async function GET() {
     longitude: user.longitude,
     createdAt:user.createdAt,
     upi_id:user.upi_id,
+    scanner_image:user.scanner_image,
     allowedRoutes:
       user.role === "ADMIN"
         ? ["/", "/dashboard", "/admin"]
