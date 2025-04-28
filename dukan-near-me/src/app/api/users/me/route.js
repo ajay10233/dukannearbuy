@@ -54,6 +54,7 @@ export async function GET() {
     latitude: user.latitude,
     longitude: user.longitude,
     createdAt:user.createdAt,
+    upi_id:user.upi_id,
     allowedRoutes:
       user.role === "ADMIN"
         ? ["/", "/dashboard", "/admin"]
