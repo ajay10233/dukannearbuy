@@ -302,7 +302,7 @@ model Bill {
   id             String     @id @default(auto()) @map("_id") @db.ObjectId
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
-  expiresAt      DateTime
+  expiresAt      DateTime?
 
   userId         String?    @db.ObjectId
   institutionId  String?    @db.ObjectId

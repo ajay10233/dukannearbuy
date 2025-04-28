@@ -14,7 +14,7 @@ export const GET = async (req) => {
 
     const conversations = await prisma.conversation.findMany({
       where: {
-        accepted: true,
+        accepted: false,
         OR: [{ user1Id: userId }, { user2Id: userId }],
       },
       include: {
@@ -47,7 +47,7 @@ export const GET = async (req) => {
     });
 
     if (!conversations || conversations.length === 0) {
-      return NextResponse.json({ message: "No accepted conversations found." }, { status: 200 });
+      return NextResponse.json({ message: "No unaccepted conversations found." }, { status: 200 });
     }
 
     const formattedConversations = conversations.map((conversation) => {
@@ -72,10 +72,10 @@ export const GET = async (req) => {
       };
     }).filter(Boolean);
 
-    return NextResponse.json({ message: "Accepted conversations fetched successfully!", data: formattedConversations }, { status: 200 });
+    return NextResponse.json({ message: "Unaccepted conversations fetched successfully!", data: formattedConversations }, { status: 200 });
 
   } catch (error) {
-    console.error("Fetch Accepted Conversations Error:", error);
-    return NextResponse.json({ message: "Failed to fetch accepted conversations!", error: error.message }, { status: 500 });
+    console.error("Fetch Unaccepted Conversations Error:", error);
+    return NextResponse.json({ message: "Failed to fetch unaccepted conversations!", error: error.message }, { status: 500 });
   }
 };
