@@ -283,7 +283,7 @@ Since authentication is managed by **NextAuth.js**, there are no custom API endp
 ### 📌 **Payments API (Updated)**
 | Method  | Endpoint                        | Description                                        | Request Body Example |
 |---------|---------------------------------|----------------------------------------------------|----------------------|
-| **GET** | `/api/payments`                 | Fetch payment history between users               | _Query Params_: `receiverId=456` |
+| **GET** | `/api/payments/history`                 | Fetch payment history between users               | _Query Params_: `receiverId=456` |
 | **GET** | `/api/payments/update-payment`  | Fetch updated payment history for logged-in user  | _Query Params_: `receiverId=456` |
 | **POST** | `/api/payments`                | Create a new payment transaction                  | `{ "senderId": "123", "receiverId": "456", "amount": 100, "status": "pending" }` |
 

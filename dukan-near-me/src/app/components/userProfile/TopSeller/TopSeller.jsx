@@ -59,7 +59,7 @@ export default function TopSeller() {
       { id: 3, sellerName: "Amit Appliances", shopName: "HomeTech", location: "Noida Sector 62", customersServed: 180, rating: 4.2, image: "/hero-section.png", badge: "Festive Offer" },
       { id: 4, sellerName: "Gaurav Mobiles", shopName: "Mobile World", location: "Rajouri Garden, Delhi", customersServed: 500, rating: 4.9, image: "/hero-section.png", badge: "New Service" },
       { id: 5, sellerName: "Anita Fashion", shopName: "Stylish Wear", location: "Connaught Place, Delhi", customersServed: 400, rating: 4.6, image: "/hero-section.png", badge: "New Product" },
-      { id: 6, sellerName: "Ravi Appliances", shopName: "Home & Kitchen", location: "Vasant Kunj, Delhi", customersServed: 220, rating: 4.3, image: "/hero-section.png", badge: "Reach" }
+      { id: 6, sellerName: "Ravi Appliances", shopName: "Home & Kitchen", location: "Vasant Kunj, Delhi", customersServed: 220, rating: 4.3, image: "/hero-section.png", badge: "Exclusive Seller" }
     ];
 
     if (location?.city || location?.zipCode) {
@@ -110,7 +110,7 @@ export default function TopSeller() {
                         ${seller.badge === 'Festive Offer' ? 'bg-gradient-to-tl from-orange-500 via-yellow-500 to-red-500' : ''}
                         ${seller.badge === 'New Product' ? 'bg-gradient-to-bl from-purple-500 via-pink-500 to-red-500' : ''}
                         ${seller.badge === 'New Service' ? 'bg-gradient-to-tr from-pink-300 via-purple-500 to-blue-500' : ''}
-                        ${seller.badge === 'Reach' ? 'bg-gradient-to-tr from-red-500 via-orange-500 to-yellow-500' : ''}`}>
+                        ${seller.badge === 'Exclusive Seller' ? 'bg-gradient-to-tr from-red-500 via-orange-500 to-yellow-500' : ''}`}>
                         {seller.badge}
                       </div>
                     </div>

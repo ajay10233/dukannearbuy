@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function EditFormatModal({ closeModal }) {
   const [formData, setFormData] = useState({
@@ -26,10 +27,10 @@ export default function EditFormatModal({ closeModal }) {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-      <div className="bg-white p-8 rounded-md shadow-lg w-full max-w-3xl relative">
+      <div className="bg-white p-4 md:p-8 rounded-md shadow-lg w-80 md:w-full md:max-w-3xl relative">
         <h2 className="text-xl font-bold mb-4">Edit Format Details</h2>
 
-        <form className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto pl-4">
+        <form className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto pr-4">
           <input
             type="text"
             placeholder="Enter your Firm Name"
@@ -122,27 +123,28 @@ export default function EditFormatModal({ closeModal }) {
           />
 
           <div className="flex justify-center gap-4 mt-4">
-            <button
-              type="button"
-              onClick={closeModal}
-              className="px-6 py-2 rounded bg-gray-300 cursor-pointer transition-all duration-500 ease-in-out hover:bg-gray-500"
-            >
-              Cancel
-            </button>
-            <button
-            type="submit"
-            onClick={(e) => {
+          <button
+              type="submit"
+              onClick={(e) => {
                 e.preventDefault();
                 const form = e.target.form;
                 if (form.checkValidity()) {
-                closeModal();
+                  closeModal();
+                  toast.success("Format details saved successfully!"); 
                 } else {
-                form.reportValidity();
+                  form.reportValidity();
                 }
-            }}
-            className="px-6 py-2 rounded cursor-pointer bg-blue-600 text-white transition-all duration-500 ease-in-out hover:bg-blue-800"
+              }}
+              className="px-8 py-2 rounded cursor-pointer bg-blue-600 text-white transition-all duration-500 ease-in-out hover:bg-blue-800"
             >
-            Save
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={closeModal}
+              className="px-4 py-2 rounded border border-gray-500 cursor-pointer transition-all duration-500 ease-in-out hover:bg-gray-100"
+            >
+              Cancel
             </button>
           </div>
         </form>

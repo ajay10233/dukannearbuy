@@ -65,7 +65,7 @@ export default function MyPlans() {
     },
     {
       id: 8,
-      name: "Sale Blast",
+      name: "Sale",
       type: "promotion",
       status: "expired",
       date: "Expired on: 05 Apr, 2025",
@@ -86,7 +86,7 @@ export default function MyPlans() {
 
             {/* Sticky Header */}
             <div className="sticky top-0 z-10 py-6">
-                <h2 className="text-4xl font-bold text-gray-900 flex items-center gap-3">
+                <h2 className="text-2xl md:text-4xl font-bold text-gray-900 flex items-center gap-3">
                 <Sparkles className="h-8 w-8 text-indigo-600" />
                 My Plans
                 </h2>
@@ -101,13 +101,13 @@ export default function MyPlans() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className={`flex flex-col md:flex-row items-start md:items-center justify-between p-6 gap-4 transition-all duration-300 hover:bg-gray-50 ${
+                    className={`flex flex-col md:flex-row items-start md:items-center justify-between p-3 md:p-6 gap-4 transition-all duration-300 hover:bg-gray-50 ${
                         plan.status === "active"
                         ? "bg-green-50/40 border-l-4 border-green-500"
                         : "bg-white"
                     }`}
                     >
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-1 md:gap-2">
                         <h3 className="text-lg font-semibold text-gray-800">
                         {plan.name}
                         </h3>

@@ -44,8 +44,9 @@ export default function PromotionCard() {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push("/payment");
+    router.push(`/payment?amount=${discountedCost}`);
   };
+  
 
   
   return (
@@ -251,7 +252,7 @@ export default function PromotionCard() {
                     className="w-4 h-4 text-teal-700"
                   />
                   <label htmlFor="agree" className="text-sm text-gray-700">
-                    I agree to the terms and conditions.
+                    I agree to the <a href="/terms&condition#user-terms" className="text-teal-500">terms and conditions.</a>
                   </label>
                 </div>
 
@@ -264,7 +265,6 @@ export default function PromotionCard() {
             
             </div>
 
-            
               </DialogContent>
 
         </Dialog>

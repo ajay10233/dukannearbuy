@@ -17,7 +17,7 @@ export default function Faq() {
                                 <span>What is the inspiration behind this platform?</span>
                             </div>
                         </AccordionTrigger>
-                        <AccordionContent className="text-gray-600 text-xs md:text-sm overflow-hidden max-h-96 transition-all duration-500 ease-out">
+                        <AccordionContent className="text-gray-600 text-xs md:text-sm w-full break-words whitespace-pre-line max-h-[90vh] overflow-y-auto transition-all duration-500 ease-out">
                                 In 2020, <strong>Prime Minister Narendra Modi</strong> launched the motto <span className="font-semibold">"Vocal for Local"</span> under the <span className="font-semibold">Atmanirbhar Bharat Abhiyan</span> (Self-Reliant India Campaign). By promoting local industry, goods, and enterprises, this campaign seeks to decrease reliance on imports and elevate the domestic economy by inspiring Indian people to help and promote them.
                                 <br />
                                 <span className="font-semibold text-sm">Objective of "Vocal for Local"</span>  
@@ -92,7 +92,7 @@ export default function Faq() {
                                 <span>What is the role of the local market in GDP?</span>
                             </div> 
                         </AccordionTrigger>
-                        <AccordionContent className="text-gray-600 text-xs md:text-sm overflow-hidden max-h-96 transition-all duration-500 ease-out">
+                        <AccordionContent className="text-gray-600 text-xs md:text-sm w-full break-words whitespace-pre-line max-h-[90vh] overflow-y-auto transition-all duration-500 ease-outffffffff">
                             The local market plays a significant role in influencing a country's Gross Domestic Product (GDP) by contributing to various economic activities such as consumption, investment, and production. Here's how the local market impacts GDP:
                             <br />
                             <span className="font-semibold">1. Consumption (C)</span>
@@ -119,7 +119,7 @@ export default function Faq() {
                             <br />
                             <span className="font-semibold">Conclusion:</span>
                             <br />
-                            A strong local market stimulates economic activities across different sectors, enhancing national GDP growth. Policymakers often focus on strengthening local economies through incentives, infrastructure development, and financial support to businesses to sustain overall economic expansion.
+                            A strong local market stimulates economic activities across different sectors, enhancing national GDP growth. Policymakers often focus on <br />strengthening local economies through incentives, infrastructure development, and financial support to businesses to sustain overall economic expansion.
                         </AccordionContent>
                     </AccordionItem>
 

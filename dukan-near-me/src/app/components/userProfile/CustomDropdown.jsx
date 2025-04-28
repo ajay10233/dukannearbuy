@@ -26,55 +26,55 @@ export default function CustomDropdown() {
         </span>
       </button>
 
-      {/* Add transition classes for smooth open/close */}
-      <div
-        className={`absolute bg-white shadow-lg w-full border rounded mt-1 ${
-          isOpen ? "max-h-60 overflow-y-auto opacity-100" : "max-h-0 opacity-0"
-        } transition-all duration-300 ease-in-out`} // Transitions for smooth effect
-      >
+      {/* Conditionally render the dropdown */}
+      {isOpen && (
         <div
-          className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
-          onClick={() => handleSelectChange("On Sale")}
+          className="absolute bg-white shadow-lg w-full border rounded mt-1 max-h-60 overflow-y-auto opacity-100 transition-all duration-300 ease-in-out"
         >
-          <Flame color="#ffbb00" fill="#ffbb00" />
-          <span>On Sale</span>
+          <div
+            className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
+            onClick={() => handleSelectChange("On Sale")}
+          >
+            <Flame color="#ffbb00" fill="#ffbb00" />
+            <span>On Sale</span>
+          </div>
+          <div
+            className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
+            onClick={() => handleSelectChange("New Shop")}
+          >
+            <Store color="#0ea5e9" />
+            <span>New Shop</span>
+          </div>
+          <div
+            className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
+            onClick={() => handleSelectChange("Popular Reach")}
+          >
+            <BadgeCheck color="#14b909" />
+            <span>Reach</span>
+          </div>
+          <div
+            className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
+            onClick={() => handleSelectChange("New Product")}
+          >
+            <Package color="#6366f1" />
+            <span>New Product</span>
+          </div>
+          <div
+            className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
+            onClick={() => handleSelectChange("New Services")}
+          >
+            <HandCoins size={20} strokeWidth={1.5} color="#f97316" />
+            <span>New Services</span>
+          </div>
+          <div
+            className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
+            onClick={() => handleSelectChange("Festive Offers")}
+          >
+            <Gift color="#ec4899" />
+            <span>Festive Offers</span>
+          </div>
         </div>
-        <div
-          className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
-          onClick={() => handleSelectChange("New Shop")}
-        >
-          <Store color="#0ea5e9" />
-          <span>New Shop</span>
-        </div>
-        <div
-          className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
-          onClick={() => handleSelectChange("Popular Reach")}
-        >
-          <BadgeCheck color="#14b909" />
-          <span>Reach</span>
-        </div>
-        <div
-          className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
-          onClick={() => handleSelectChange("New Product")}
-        >
-          <Package color="#6366f1" />
-          <span>New Product</span>
-        </div>
-        <div
-          className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
-          onClick={() => handleSelectChange("New Services")}
-        >
-          <HandCoins size={20} strokeWidth={1.5} color="#f97316" />
-          <span>New Services</span>
-        </div>
-        <div
-          className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
-          onClick={() => handleSelectChange("Festive Offers")}
-        >
-          <Gift color="#ec4899" />
-          <span>Festive Offers</span>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

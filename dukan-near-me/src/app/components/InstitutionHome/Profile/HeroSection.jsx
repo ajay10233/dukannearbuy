@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import useEmblaCarousel from "embla-carousel-react";
 import { Plus, X, RefreshCcwDot, Store, Star, Crown } from "lucide-react";
 import ProfileWrapper from "./ProfileWrapper";
+import { bigint } from "zod";
 
 export default function HeroSection() {
   const [user, setUser] = useState(null);  
@@ -93,7 +94,7 @@ export default function HeroSection() {
     const base64Images = [];
     
     for (const file of filesToUpload) {
-      if (file.size > 2 * 1024 * 1024) {
+      if (file.size > bigint (2 * 1024 * 1024) ){ 
         toast.error(`File ${file.name} is too large (max 2MB).`);
         continue;
       }

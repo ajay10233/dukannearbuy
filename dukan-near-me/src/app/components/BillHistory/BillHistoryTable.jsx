@@ -57,8 +57,8 @@ export default function BillHistoryTable() {
   return (
     <div className="flex flex-col gap-y-3 cursor-default w-full overflow-hidden h-full">
       <div className="flex items-center text-sm capitalize text-slate-400 px-2">
-        <ul className="flex *:w-1/5 w-full">
-          <li className="flex justify-center">Invoice ID</li>
+        <ul className="flex *:w-1/5 w-full justify-around whitespace-nowrap">
+          <li className="justify-center md:flex hidden">Invoice ID</li>
 
           {/* Billing Date Filter */}
           <li className="flex flex-col items-center justify-center relative cursor-pointer">
@@ -66,21 +66,21 @@ export default function BillHistoryTable() {
               Billing Date <Calendar size={16} className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-teal-700" />
             </div>
             {showDateFilter && (
-              <div className="absolute top-9 bg-white border border-gray-300 p-4 rounded-lg shadow-lg z-10 text-black w-52 space-y-2">
-                <label className="block text-sm font-medium text-gray-600">From:
-                  <input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="mt-1 w-full border rounded px-2 py-1 text-sm" />
+              <div className="absolute top-9 bg-white border border-gray-300 p-4 rounded-lg shadow-lg z-10 text-black w-60 space-y-2">
+                <label className="flex flex-row items-center gap-2 text-sm font-medium text-gray-600">From: {" "}
+                  <input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="mt-1 w-40 border rounded px-2 py-1 text-sm" />
                 </label>
-                <label className="block text-sm font-medium text-gray-600">To:
-                  <input type="date" value={toDate} onChange={e => setToDate(e.target.value)} className="mt-1 w-full border rounded px-2 py-1 text-sm" />
+                <label className="flex flex-row items-center gap-4 text-sm font-medium text-gray-600">To: {" "}
+                  <input type="date" value={toDate} onChange={e => setToDate(e.target.value)} className="mt-1 w-40 border rounded px-2 py-1 text-sm" />
                 </label>
               </div>
             )}
           </li>
 
-          <li className="flex justify-center">Customer</li>
+          <li className="flex justify-center">User Id</li>
 
           {/* Amount Sort Filter */}
-          <li className="flex flex-col items-center justify-center relative cursor-pointer">
+          <li className="md:flex hidden flex-col items-center justify-center relative cursor-pointer">
             <div className="flex items-center gap-x-1" onClick={() => setShowAmountSort(!showAmountSort)}>
               Amount <ChevronDown size={16} className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-teal-700"/>
             </div>
@@ -93,7 +93,7 @@ export default function BillHistoryTable() {
           </li>
 
           {/* Status Filter */}
-          <li className="flex flex-col items-center justify-center relative cursor-pointer">
+          <li className="md:flex hidden flex-col items-center justify-center relative cursor-pointer">
             <div className="flex items-center gap-x-1" onClick={() => setShowStatusFilter(!showStatusFilter)}>
               Status <ChevronDown size={16} className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-teal-700" />
             </div>
@@ -114,12 +114,12 @@ export default function BillHistoryTable() {
         ) : (
           data.map((details, i) => (
             <div className="flex items-center bg-white p-2 py-3 rounded-lg" key={i}>
-              <ul className="flex items-center text-sm text-slate-500 *:w-1/5 w-full text-center">
-                <li>{details.invoiceId}</li>
+              <ul className="flex items-center text-sm text-slate-500 *:w-1/5 w-full text-center justify-around whitespace-nowrap">
+                <li className="md:flex flex-col items-center hidden">{details.invoiceId}</li>
                 <li>{details.billingDate}</li>
                 <li>{details.customerName}</li>
-                <li>{details.amount}</li>
-                <li className="flex justify-center items-center relative">
+                <li className="md:flex flex-col items-center hidden">{details.amount}</li>
+                <li className="md:flex flex-col items-center hidden justify-center relative">
                   <span className={`${details.status === "Pending" ? `bg-yellow-100 text-yellow-400` : `bg-green-100 text-green-400`} rounded-full block w-1/2 py-2`}>
                     {details.status}
                   </span>
