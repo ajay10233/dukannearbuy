@@ -36,7 +36,6 @@ export default function Dashboard() {
       <EditInstitution />
       <ClientQRCodeSection /> */}
       <ChangePastAddress />
-      <Test/>
     </div>
   );
 }

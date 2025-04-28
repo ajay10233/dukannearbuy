@@ -23,6 +23,8 @@ export default function Bill() {
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [showTypeFilter, setShowTypeFilter] = useState(false);
   const [showFavFilter, setShowFavFilter] = useState(false);
+  const [selectedSection, setSelectedSection] = useState(null);
+
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('favBills')) || {};
@@ -102,6 +104,7 @@ export default function Bill() {
             <Heart
               className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-red-500"
               onClick={() => {
+                
                 setShowFavFilter(!showFavFilter);
                 setShowTypeFilter(false);
                 setShowDateFilter(false);
@@ -138,9 +141,9 @@ export default function Bill() {
                 </label>
               </div>
             )}
-          </li>
+        </li>
 
-          <li className='flex justify-center items-center'>Invoice No.</li>
+          <li className='justify-center items-center hidden md:flex'>Invoice No.</li>
 
           <li className='flex justify-center items-center relative'>
             Date
@@ -198,52 +201,8 @@ export default function Bill() {
             )}
           </li>
 
-          <li className='flex justify-center items-center'>₹Amount</li>
+          <li className='hidden md:flex justify-center items-center'>₹Amount</li>
           <li className='flex justify-center items-center'>Download</li>
-
-
-          {/* <li className='flex justify-center items-center relative'>
-            Favorite
-            <Heart
-              className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-red-500"
-              onClick={() => {
-                setShowFavFilter(!showFavFilter);
-                setShowTypeFilter(false);
-                setShowDateFilter(false);
-              }}
-            />
-            {showFavFilter && (
-              <div className="absolute top-6 bg-white w-28 text-sm border border-gray-300 rounded-md shadow-md p-2 flex flex-col">
-                <label>
-                  <input
-                    type="radio"
-                    checked={favoriteFilter === null}
-                    onChange={() => setFavoriteFilter(null)}
-                    className="mr-1"
-                  />
-                  All
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    checked={favoriteFilter === true}
-                    onChange={() => setFavoriteFilter(true)}
-                    className="mr-1"
-                  />
-                  Favorites
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    checked={favoriteFilter === false}
-                    onChange={() => setFavoriteFilter(false)}
-                    className="mr-1"
-                  />
-                  UnFavorite
-                </label>
-              </div>
-            )}
-          </li> */}
         </ul>
       </div>
 
@@ -264,10 +223,10 @@ export default function Bill() {
                       className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110"
                     />
                   </button></li>
-                <li className="font-semibold">{bill.invoice}</li>
+                <li className="font-semibold hidden md:block">{bill.invoice}</li>
                 <li>{bill.date}</li>
                 <li>{bill.institution}</li>
-                <li>₹{bill.amount}</li>
+                <li className='hidden md:block'>₹{bill.amount}</li>
                 <li className="flex justify-center items-center">
                   <span
                     className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out">

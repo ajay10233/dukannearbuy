@@ -5,6 +5,7 @@ import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react"; // ✅ ADD this line
+import axios from "axios";
 
 const images = [
     "/hero-section.png",

@@ -302,6 +302,7 @@ export default function About({ profileUpdated }) {
                             Pay Now
                         </button>
                     )}
+                    
                 </div>
             )}
 
@@ -338,7 +339,7 @@ export default function About({ profileUpdated }) {
                 </Accordion>
             </div> */}
 
-            {userData?.description && (
+            {/* {userData?.description && (
                 <div className="p-4 md:p-8">
                     <h2 className="text-2xl font-bold text-blue-700 mb-2">About</h2>
                     <div className="relative group transition-all duration-500">
@@ -349,7 +350,7 @@ export default function About({ profileUpdated }) {
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
 
 
             {showQRModal && (
