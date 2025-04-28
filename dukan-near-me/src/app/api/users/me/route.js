@@ -31,6 +31,7 @@ export async function GET() {
     phone: user.phone,
     role: user.role,
     profilePhoto: user.profilePhoto,
+    photos: user.photos,
     address: {
       houseNumber: user.houseNumber,
       street: user.street,
