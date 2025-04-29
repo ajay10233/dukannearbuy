@@ -19,6 +19,13 @@ export default function Dashboard() {
       } catch (error) {
         console.error("❌ Failed to fetch user details:", error);
       }
+      try {
+        const res = await axios.get("/api/reviews/");
+        console.log("🔐 Full reviews Data:", res.data);
+        setUser(res.data);
+      } catch (error) {
+        console.error("❌ Failed to fetch user details:", error);
+      }
     };
 
     fetchUserDetails();
