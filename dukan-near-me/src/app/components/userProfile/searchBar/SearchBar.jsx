@@ -74,7 +74,7 @@ export default function SearchBar() {
             router.push(`/userProfile/${profile.id}`);
           }
     }
-
+    
   return (
     <div ref={searchRef} className="w-full px-0 md:px-5 flex flex-col gap-y-1 relative">
       <form 
@@ -137,10 +137,10 @@ export default function SearchBar() {
                       {profile.firmName || profile.firstName}
                       {/* Display the badge based on subscription plan */}
                       {profile.subscriptionPlan?.name === "PREMIUM" && (
-                        <Crown size={16} fill="#f0d000" className="text-yellow-500" />
+                        <Crown size={24} fill="#f0d000" className="text-yellow-500" />
                       )}
                       {profile.subscriptionPlan?.name === "BUSINESS" && (
-                        <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
+                        <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
                       )}
                     </p>
                     <p className="text-xs text-gray-200">

@@ -25,8 +25,8 @@ export default function MyToken() {
         <div className="shadow-xl rounded-xl border border-slate-300 bg-white backdrop-blur-sm">
           <table className="w-[310px] md:min-w-full text-sm text-left text-gray-700">
             <thead className="text-xs uppercase bg-gradient-to-r from-blue-700 to-teal-500 text-white">
-              <tr className="whitespace-nowrap text-center">
-                <th className="px-2 py-3 md:px-6 md:py-4">Token Number</th>
+              <tr className="text-center">
+                <th className="px-2 py-3 md:px-6 md:py-4">Token No.</th>
                 <th className="px-2 py-3 md:px-6 md:py-4 hidden md:table-cell">Firm Name</th>
                 <th className="px-2 py-3 md:px-6 md:py-4">Assigned By</th>
                 <th className="px-2 py-3 md:px-6 md:py-4">Date & Time</th>

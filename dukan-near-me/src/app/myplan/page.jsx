@@ -1,12 +1,14 @@
+'use client'
 import React from 'react'
 import MyPlan from '../components/MyPlan'
-import Navbar from '../components/userProfile/navbar/Navbar'
+import Navbar from '../components/institutionHome/navbar/Navbar'
 
-export default function page() {
+export default function Page() {
+
   return (
-        <>
-            <Navbar />
-            <MyPlan />
-        </>
+    <>
+      <Navbar />
+      <MyPlan />
+    </>
   )
 }
