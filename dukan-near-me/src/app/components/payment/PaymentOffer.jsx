@@ -26,7 +26,7 @@ export default function PaymentOffer() {
     }
 
     try {
-      const response = await fetch("/api/coupon", { method: "GET" });
+      const response = await fetch("/api/coupons", { method: "GET" });
       if (!response.ok) {
         throw new Error("Failed to fetch coupons");
       }
@@ -142,7 +142,7 @@ export default function PaymentOffer() {
           </button>
         </div>
 
-        <p className="text-xs text-gray-400 text-center">Secured by XYZ Payments</p>
+        <p className="text-xs text-gray-400 text-center">Secured by Stripe Payments</p>
       </div>
 
       {/* Watermark */}

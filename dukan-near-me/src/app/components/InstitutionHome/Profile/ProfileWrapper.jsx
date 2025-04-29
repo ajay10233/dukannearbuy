@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { FaEdit } from "react-icons/fa";
 import { Share2, X, Heart } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function ProfileWrapper({ children, images, setImages }) {
   const [showModal, setShowModal] = useState(false);
@@ -16,6 +17,7 @@ export default function ProfileWrapper({ children, images, setImages }) {
   const [message, setMessage] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const [user, setUser] = useState(null);
+  const router = useRouter();
 
   const [form, setForm] = useState({
     firstName: '',
@@ -45,31 +47,32 @@ export default function ProfileWrapper({ children, images, setImages }) {
     // contactEmail: '' duplicate
     username: ''
   });
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const res = await fetch("/api/users/me");
-        const data = await res.json();
-        if (res.ok) {
-          setUser(data);
-        } else {
-          toast.error("Failed to fetch user data.");
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+  const fetchUserData = async () => {
+    try {
+      const res = await fetch("/api/users/me");
+      const data = await res.json();
+      if (res.ok) {
+        setUser(data);
+      } else {
         toast.error("Failed to fetch user data.");
       }
-    };
-
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      toast.error("Failed to fetch user data.");
+    }
+  };
+  
+  useEffect(() => {
     fetchUserData();
-
     const fullUrl = `${window.location.origin}${pathname}`;
     setShareUrl(fullUrl);
   }, [pathname]);
 
   const handleEditClick = () => {
-    setShowModal(true);
+    
+      router.push("/institution-edit-profile");
+
+    // setShowModal(true);
   };
 
   const handleChange = (e) => {
