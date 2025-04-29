@@ -251,7 +251,7 @@ export default function TermsAndConditions() {
         {/* Terms Sections */}
         <div className="flex flex-col gap-10">
             {termsSections.map((section) => (
-            <div key={section.id} id={section.id} className="flex flex-col gap-4 pt-4 md:pt-8">
+            <div key={section.id} id={section.id} className="flex flex-col gap-4 pt-4 md:pt-14">
                 <h2 className="text-xl md:text-2xl font-semibold text-blue-700 border-b pb-1 flex items-center gap-2">
                 {section.icon}
                 {section.title}

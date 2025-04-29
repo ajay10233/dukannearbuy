@@ -55,7 +55,7 @@ export async function POST(req) {
     expiresAt.setMonth(expiresAt.getMonth() + 1);
     if (institution.subscriptionPlan?.name === "PREMIUM") {
       expiresAt.setMonth(expiresAt.getMonth() + 6);
-    } else if (institution.subscriptionPlan?.name === "BUSINESS") {
+    } else if (institution.subscriptionPlan?.name === "BUSINESS") {                                               
       expiresAt.setMonth(expiresAt.getMonth() + 15);
     }
 
@@ -232,7 +232,7 @@ export async function PUT(req) {
     const updatedBill = await prisma.bill.update({
       where: {
         id: billId,
-        institutionId: session.user.id, // ensure ownership
+        institutionId: session.user.id,
       },
       data: updateFields,
       include: { items: true },

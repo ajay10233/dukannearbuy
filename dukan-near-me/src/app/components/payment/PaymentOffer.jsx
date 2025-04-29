@@ -16,7 +16,7 @@ export default function PaymentOffer() {
 
   const searchParams = useSearchParams();
   const priceParam = searchParams.get("amount");
-  const price = priceParam ? parseInt(priceParam) : 999; // default 999
+  const price = priceParam ? parseInt(priceParam) : 999; 
   const finalPrice = discountApplied ? price - discountAmount : price;
 
   const handleApplyCoupon = async () => {
@@ -150,7 +150,7 @@ export default function PaymentOffer() {
         <Image
           src="/nearbuydukan - watermark.png"
           alt="Watermark"
-          fill
+          fill sizes="120"
           className="object-contain w-17 h-17 md:w-32 md:h-32"
           priority
         />

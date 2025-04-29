@@ -22,8 +22,9 @@ export default function Subscription() {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const res = await fetch("/api/plans"); // Replace with your actual API endpoint
+        const res = await fetch("/api/plans"); 
         const data = await res.json();
+        console.log(data); 
         setPlans(data);
       } catch (error) {
         console.error("Error fetching plans:", error);

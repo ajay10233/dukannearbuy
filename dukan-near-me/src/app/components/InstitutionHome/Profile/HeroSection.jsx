@@ -9,7 +9,7 @@ import ProfileWrapper from "./ProfileWrapper";
 import { bigint } from "zod";
 
 export default function HeroSection() {
-  const [user, setUser] = useState(null);  // Store user data
+  const [user, setUser] = useState(null);  
   const [images, setImages] = useState([]);
   const [imageCount, setImageCount] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
@@ -50,35 +50,93 @@ export default function HeroSection() {
     fetchUserData();
   }, []);
 
+  // const handleImageChange = async (e) => {
+  //   const files = Array.from(e.target.files);
+  //   if (!files.length) return;
+
+  //   const remainingSlots = 10 - imageCount;
+  //   const filesToUpload = files.slice(0, remainingSlots);
+
+  //   setIsUploading(true);
+
+  //   for (const file of filesToUpload) {
+  //     if (file.size > 2 * 1024 * 1024) {
+  //       toast.error(`File ${file.name} is too large (max 2MB).`);
+  //       continue;
+  //     }
+
+  //     const base64String = await new Promise((resolve, reject) => {
+  //       const reader = new FileReader();
+  //       reader.onloadend = () => resolve(reader.result);
+  //       reader.onerror = () => reject("Failed to read file.");
+  //       reader.readAsDataURL(file);
+  //     });
+
+  //     console.log("Uploaded File:", file);  
+
+  //     setImages((prev) => [...prev, base64String]);
+  //     setImageCount((prev) => prev + 1);
+  //     toast.success(`Uploaded ${file.name}`);
+  //   }
+
+  //   setIsUploading(false);
+  // };
+  
   const handleImageChange = async (e) => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
-
+  
     const remainingSlots = 10 - imageCount;
     const filesToUpload = files.slice(0, remainingSlots);
-
+  
     setIsUploading(true);
-
+  
+    const base64Images = [];
+    
     for (const file of filesToUpload) {
-      if (file.size > bigint (2 * 1024 * 1024) ){ // 2MB limit
+      if (file.size > bigint (2 * 1024 * 1024) ){ 
         toast.error(`File ${file.name} is too large (max 2MB).`);
         continue;
       }
-
+  
       const base64String = await new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result);
         reader.onerror = () => reject("Failed to read file.");
         reader.readAsDataURL(file);
       });
-
-      setImages((prev) => [...prev, base64String]);
-      setImageCount((prev) => prev + 1);
-      toast.success(`Uploaded ${file.name}`);
+  
+      base64Images.push(base64String);
     }
+  
+    // Send the images to the backend
+    try {
+      const res = await fetch("/api/institutions/upload-photo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ images: base64Images }),
+      });
+  
+      const data = await res.json();
+  
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to upload images.");
+      }
+  
+      // Update the images in state with the URLs returned from the backend
+      setImages((prev) => [...prev, ...data.urls]);
+      setImageCount((prev) => prev + data.urls.length);
 
-    setIsUploading(false);
+      toast.success("Images uploaded successfully!");
+    } catch (error) {
+      toast.error(error.message || "Error uploading images");
+    } finally {
+      setIsUploading(false);
+    }
   };
+  
 
   const handleSetPrimary = (index) => {
     const rotated = [...images.slice(index), ...images.slice(0, index)];

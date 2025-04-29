@@ -1,22 +1,17 @@
-"use client";
-import { useEffect, useState, useCallback } from "react";
-import useEmblaCarousel from "embla-carousel-react";
-import Image from "next/image";
-import Link from "next/link";
-import { Star } from "lucide-react";
-import Autoplay from "embla-carousel-autoplay";
+"use client"; 
+import { useEffect, useState, useCallback } from "react"; 
+import useEmblaCarousel from "embla-carousel-react"; 
+import Image from "next/image"; 
+import Link from "next/link"; 
+import { Star } from "lucide-react"; 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function TopSeller() {
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState(null); 
   const [sellers, setSellers] = useState([]);
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: true,
-    align: "start", 
-    slidesToScroll: 1, 
-  });
+  const [selectedIndex, setSelectedIndex] = useState(0); 
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start", slidesToScroll: 1 });
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -38,10 +33,7 @@ export default function TopSeller() {
             );
             const data = await res.json();
             const address = data.address || {};
-            const loc = {
-              city: address.city || address.town || address.village || "",
-              zipCode: address.postcode || "",
-            };
+            const loc = { city: address.city || address.town || address.village || "", zipCode: address.postcode || "" };
             setLocation(loc);
           } catch (error) {
             console.error("Error fetching address details:", error);
@@ -62,61 +54,14 @@ export default function TopSeller() {
 
   useEffect(() => {
     const sellers = [
-      {
-        id: 1,
-        sellerName: "Rohit Electronics",
-        shopName: "Smart Gadget Hub",
-        location: "Sector 14, Gurugram",
-        customersServed: 250,
-        rating: 4.5,
-        image: "/hero-section.png",
-      },
-      {
-        id: 2,
-        sellerName: "Sneha Fashion",
-        shopName: "Trendy Threads",
-        location: "Karol Bagh, Delhi",
-        customersServed: 310,
-        rating: 4.8,
-        image: "/hero-section.png",
-      },
-      {
-        id: 3,
-        sellerName: "Amit Appliances",
-        shopName: "HomeTech",
-        location: "Noida Sector 62",
-        customersServed: 180,
-        rating: 4.2,
-        image: "/hero-section.png",
-        },
-        {
-            id: 4,
-            sellerName: "Rohit Electronics",
-            shopName: "Smart Gadget Hub",
-            location: "Sector 14, Gurugram",
-            customersServed: 250,
-            rating: 4.5,
-            image: "/hero-section.png",
-          },
-          {
-            id: 5,
-            sellerName: "Sneha Fashion",
-            shopName: "Trendy Threads",
-            location: "Karol Bagh, Delhi",
-            customersServed: 310,
-            rating: 4.8,
-            image: "/hero-section.png",
-          },
-          {
-            id: 6,
-            sellerName: "Amit Appliances",
-            shopName: "HomeTech",
-            location: "Noida Sector 62",
-            customersServed: 180,
-            rating: 4.2,
-            image: "/hero-section.png",
-          },
+      { id: 1, sellerName: "Rohit Electronics", shopName: "Smart Gadget Hub", location: "Sector 14, Gurugram", customersServed: 250, rating: 4.5, image: "/hero-section.png", badge: "On Sale" },
+      { id: 2, sellerName: "Sneha Fashion", shopName: "Trendy Threads", location: "Karol Bagh, Delhi", customersServed: 310, rating: 4.8, image: "/hero-section.png", badge: "New Shop" },
+      { id: 3, sellerName: "Amit Appliances", shopName: "HomeTech", location: "Noida Sector 62", customersServed: 180, rating: 4.2, image: "/hero-section.png", badge: "Festive Offer" },
+      { id: 4, sellerName: "Gaurav Mobiles", shopName: "Mobile World", location: "Rajouri Garden, Delhi", customersServed: 500, rating: 4.9, image: "/hero-section.png", badge: "New Service" },
+      { id: 5, sellerName: "Anita Fashion", shopName: "Stylish Wear", location: "Connaught Place, Delhi", customersServed: 400, rating: 4.6, image: "/hero-section.png", badge: "New Product" },
+      { id: 6, sellerName: "Ravi Appliances", shopName: "Home & Kitchen", location: "Vasant Kunj, Delhi", customersServed: 220, rating: 4.3, image: "/hero-section.png", badge: "Exclusive Seller" }
     ];
+
     if (location?.city || location?.zipCode) {
       setSellers(sellers);
     }
@@ -130,37 +75,22 @@ export default function TopSeller() {
         </h2>
 
         <div className="relative">
-          <button
-            onClick={() => emblaApi?.scrollPrev()}
-            className="absolute -left-6 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white rounded-full p-2 shadow-md"
-          >
+          <button onClick={() => emblaApi?.scrollPrev()} className="absolute -left-6 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white rounded-full p-2 shadow-md">
             <ChevronLeft className="text-black" />
           </button>
 
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex">
               {sellers.map((seller) => (
-                <div
-                  key={seller.id}
-                  // className="min-w-0 flex-[0_0_25%] px-2"
-                  className="px-2 flex-[0_0_100%] sm:flex-[0_0_50%] md:flex-[0_0_33.3333%] xl:flex-[0_0_25%]"
-                >
+                <div key={seller.id} className="px-2 flex-[0_0_100%] sm:flex-[0_0_50%] md:flex-[0_0_33.3333%] xl:flex-[0_0_25%]">
                   <Link href="#" className="block cursor-pointer">
-                    <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col justify-center">
+                    <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col justify-center relative">
                       <div className="relative w-full h-52">
-                        <Image
-                          src={seller.image}
-                          alt={seller.shopName}
-                          fill
-                          className="object-cover"
-                          priority
-                        />
+                        <Image src={seller.image} alt={seller.shopName} fill className="object-cover" priority />
                       </div>
                       <div className="px-4 py-2 flex flex-col gap-1">
                         <div className="flex justify-between items-center">
-                          <h3 className="text-lg font-semibold">
-                            {seller.sellerName}
-                          </h3>
+                          <h3 className="text-lg font-semibold">{seller.sellerName}</h3>
                           <div className="flex items-center gap-1">
                             <Star size={20} color="#fdc700" fill="#fdc700" strokeWidth={1.5} />
                             {seller.rating}
@@ -169,11 +99,19 @@ export default function TopSeller() {
                         <p className="text-md text-gray-500">{seller.shopName}</p>
                         <p className="text-sm text-gray-500">{seller.location}</p>
                         <p className="text-sm text-gray-600 flex justify-between items-center">
-                          Customers Served:{" "}
-                          <span className="flex items-center gap-1 text-gray-500">
-                            {seller.customersServed}+
-                          </span>
+                          Customers Served: <span className="flex items-center gap-1 text-gray-500">{seller.customersServed}+</span>
                         </p>
+                      </div>
+
+                      {/* Badge with Bounce Effect and Different Gradient Patterns */}
+                      <div className={`absolute top-2 right-2 py-1 px-4 text-white text-sm rounded-lg animate-bounce rounded-tl-2xl rounded-bl-sm rounded-br-2xl rounded-tr-sm 
+                        ${seller.badge === 'On Sale' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
+                        ${seller.badge === 'New Shop' ? 'bg-gradient-to-br from-blue-500 via-green-500 to-teal-500' : ''}
+                        ${seller.badge === 'Festive Offer' ? 'bg-gradient-to-tl from-orange-500 via-yellow-500 to-red-500' : ''}
+                        ${seller.badge === 'New Product' ? 'bg-gradient-to-bl from-purple-500 via-pink-500 to-red-500' : ''}
+                        ${seller.badge === 'New Service' ? 'bg-gradient-to-tr from-pink-300 via-purple-500 to-blue-500' : ''}
+                        ${seller.badge === 'Exclusive Seller' ? 'bg-gradient-to-tr from-red-500 via-orange-500 to-yellow-500' : ''}`}>
+                        {seller.badge}
                       </div>
                     </div>
                   </Link>
@@ -182,9 +120,7 @@ export default function TopSeller() {
             </div>
           </div>
 
-          <button
-            onClick={() => emblaApi?.scrollNext()}
-            className="absolute -right-6 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white rounded-full p-2 shadow-md">
+          <button onClick={() => emblaApi?.scrollNext()} className="absolute -right-6 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white rounded-full p-2 shadow-md">
             <ChevronRight className="text-black" />
           </button>
         </div>
@@ -192,13 +128,7 @@ export default function TopSeller() {
         {/* Dot Indicators */}
         <div className="flex justify-center gap-2 mt-4">
           {sellers.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => emblaApi?.scrollTo(index)}
-              className={`h-3 w-3 rounded-full ${
-                selectedIndex === index ? "bg-yellow-400" : "bg-gray-300"
-              }`}
-            ></button>
+            <button key={index} onClick={() => emblaApi?.scrollTo(index)} className={`h-3 w-3 cursor-pointer rounded-full ${selectedIndex === index ? "bg-yellow-400" : "bg-gray-300"}`}></button>
           ))}
         </div>
       </div>

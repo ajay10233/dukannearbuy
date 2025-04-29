@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart, Calendar, ArrowDownToLine } from 'lucide-react';
+import { Heart, Calendar, ArrowDownToLine, MoreVertical } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const dummyReports = [
@@ -23,6 +23,8 @@ export default function Report() {
 
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [showFavFilter, setShowFavFilter] = useState(false);
+  const [selectedAction, setSelectedAction] = useState(''); 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('favReports')) || {};
@@ -82,9 +84,13 @@ export default function Report() {
     return isFavoriteValid && isDateValid && matchesSearch;
   });
   
+  const handleDropdownChange = (action) => {
+    setSelectedAction(action);
+    setIsDropdownOpen(false); 
+  };
 
   return (
-    <div className="flex flex-col gap-3 w-full h-full p-4 bg-gray-50 rounded-lg shadow-sm">
+    <div className="flex flex-col gap-3 w-full h-full p-2 md:p-4 bg-gray-50 rounded-lg shadow-sm">
       {/* Search Bar */}
       <input
         type="text"
@@ -97,7 +103,7 @@ export default function Report() {
       {/* Header with Filters */}
       <div className="flex text-sm text-slate-400 font-medium pr-8 relative z-10">
         <ul className="flex w-full *:w-1/5 justify-between relative">
-        <li className="flex justify-center items-center relative">
+        <li className="hidden md:flex justify-center items-center relative">
             Favorite
             <Heart
               className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-red-500"
@@ -138,7 +144,7 @@ export default function Report() {
               </div>
             )}
           </li>
-          <li className="flex justify-center items-center">ID</li>
+          <li className="hidden md:flex justify-center items-center">ID</li>
 
           <li className="flex justify-center items-center relative">
             Date
@@ -171,59 +177,42 @@ export default function Report() {
 
           <li className="flex justify-center items-center relative">Institution</li>
           <li className="flex justify-center items-center relative">Report</li>
-          <li className="flex justify-center items-center relative">Download</li>
-
-          {/* <li className="flex justify-center items-center relative">
-            Favorite
-            <Heart
-              className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-red-500"
-              onClick={() => {
-                setShowFavFilter(!showFavFilter);
-                setShowDateFilter(false);
-              }}
+          <li className="flex justify-center items-center">
+            {/* MoreVertical icon shown on small screen */}
+            <MoreVertical
+              size={20}
+              className="cursor-pointer md:hidden"
+              // onClick={() => handleDropdownChange(selectedAction === 'favorite' ? 'download' : 'favorite')}
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             />
-            {showFavFilter && (
-              <div className="absolute top-6 bg-white w-28 text-sm border border-gray-300 rounded-md shadow-md p-2 flex flex-col">
-                <label>
-                  <input
-                    type="radio"
-                    checked={favoriteFilter === null}
-                    onChange={() => setFavoriteFilter(null)}
-                    className="mr-1"
-                  />
-                  All
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    checked={favoriteFilter === true}
-                    onChange={() => setFavoriteFilter(true)}
-                    className="mr-1"
-                  />
-                  Favorites
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    checked={favoriteFilter === false}
-                    onChange={() => setFavoriteFilter(false)}
-                    className="mr-1"
-                  />
-                  Unfavorite
-                </label>
-              </div>
-            )}
-          </li> */}
+            
+            {/* Download icon shown on large screen */}
+            <span className='hidden md:block justify-center items-center'>Download</span>
+            
+            {/* Dropdown for selecting action */}
+            <div className={`absolute top-6 right-0 bg-white w-32 text-sm border ${isDropdownOpen ? 'block' : 'hidden'} md:hidden border-gray-300 rounded-md shadow-md p-2`}>
+              <button
+                onClick={() => handleDropdownChange('favorite')}
+                className="w-full text-left p-2 hover:bg-gray-100">
+                Favorite
+              </button>
+              <button
+                onClick={() => handleDropdownChange('download')}
+                className="w-full text-left p-2 hover:bg-gray-100">
+                Download
+              </button>
+            </div>
+          </li>
         </ul>
       </div>
 
       {/* Report List */}
-      <div className="flex flex-col gap-3 h-[60vh] overflow-y-scroll dialogScroll pr-2">
+      <div className="flex flex-col gap-3 h-[60vh] overflow-y-scroll dialogScroll pr-0 md:pr-2">
         {filteredReports.length > 0 ? (
           filteredReports.map((report) => (
-            <div key={report.id} className="bg-white p-4 rounded-xl shadow-sm flex items-center w-full">
+            <div key={report.id} className="bg-white p-2 md:p-4 rounded-xl shadow-sm flex items-center w-full">
               <ul className="flex items-center text-sm text-slate-600 w-full justify-between *:w-1/5 text-center">
-                <li>
+                <li className='hidden md:block'>
                   <button onClick={() => toggleFavorite(report.id)}>
                     <Heart
                       size={20}
@@ -234,14 +223,23 @@ export default function Report() {
                     />
                   </button>
                 </li>
-                <li className="font-semibold">{report.id}</li>
+                <li className="font-semibold hidden md:block">{report.id}</li>
                 <li>{report.date}</li>
                 <li>{report.institution}</li>
                 <li>{report.report}</li>
                 <li className="flex justify-center items-center">
-                  <span
-                    className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out">
-                    <ArrowDownToLine size={17} strokeWidth={2.5} />
+                  <span className='hidden md:flex text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out'>
+                        <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>
+                  </span>
+                  {/* Show icon based on selected dropdown option */}
+                  <span className='md:hidden flex justify-center items-center'>
+                  {selectedAction === 'favorite' ? (
+                    <Heart size={20} strokeWidth={1.5} stroke="red" fill={report.favorited ? 'red' : 'transparent'} className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110" onClick={() => toggleFavorite(report.id)} />
+                  ) : selectedAction === 'download' ? (
+                        <span className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
+                        <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>
+                    </span>
+                  ) : null}
                   </span>
                 </li>
               </ul>

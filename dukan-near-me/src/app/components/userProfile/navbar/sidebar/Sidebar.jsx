@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import { UserRound, X, MessageCircleMore,Home, MessageSquareWarning, QrCode, ScanLine, BookCheck, FolderDown, Settings, LogOut, Heart } from "lucide-react";
+import { UserRound, X, MessageCircleMore,Home, MessageSquareWarning, QrCode, ScanLine, BookCheck, CircleHelp, Handshake, LogOut, Heart } from "lucide-react";
 import Link from 'next/link';
 import { HandCoins } from 'lucide-react';
 import { usePathname } from 'next/navigation';
@@ -9,6 +9,25 @@ import LogoutButton from '@/app/components/LogoutButton';
 
 export default function Sidebar({ isOpen, onClose }) {
     const pathName = usePathname();
+
+    const handleInviteFriend = () => {
+        const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+        const shareUrl = `${baseUrl}/getstarted`;
+
+        if (navigator.share) {
+            navigator.share({
+                title: "Get Started with Us!",
+                url: shareUrl,
+            })
+            .then(() => console.log("Link shared successfully!"))
+            .catch((err) => console.error("Error sharing:", err));
+        } else {
+            navigator.clipboard.writeText(shareUrl)
+            .then(() => toast.success("Link copied to clipboard! 📋"))
+            .catch((err) => toast.error("Failed to copy link."));
+        }
+    };
+
     return (
         <>
             <div className={`fixed inset-0 bg-black transition-opacity duration-300 ease-in-out ${isOpen ? 'opacity-40' : 'opacity-0 pointer-events-none'} z-50 `}
@@ -90,18 +109,31 @@ export default function Sidebar({ isOpen, onClose }) {
                     </div>
                 </div>
 
+                <div className='flex flex-col p-4 border-t border-gray-200 space-y-3'>
+                    <Link href="#" 
+                        className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">
+                        <CircleHelp size={20} strokeWidth={1.5} />
+                            Help
+                    </Link>
+                    <Link href="#" onClick={handleInviteFriend}
+                        className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">
+                        <Handshake size={20} strokeWidth={1.5} />
+                            Invite a Friend
+                    </Link>
+                </div>
+
                 {/* offcanvas footer */}
                 <div className='flex flex-col px-4 pt-4 border-t border-gray-200 space-y-3'>
-                    <Link href="/setting"
+                    {/* <Link href="#"
                         className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">
                         <Settings size={20} strokeWidth={1.5} />
                             Settings
-                    </Link>
-                    {/* <Link href="#"
+                    </Link> */}
+                    <Link href="/dashboard"
                         className="flex items-center gap-2 text-sm md:text-[16px] text-red-500">
                         <LogOut size={20} strokeWidth={1.5} />
                             <LogoutButton/>
-                    </Link>*/}
+                    </Link>
                 </div>
             </div>
         </>
