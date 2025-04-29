@@ -2,10 +2,10 @@
 
   import React, { useState } from "react";
   import { X, MapPin } from "lucide-react";
+  import { useEffect } from "react";
   import toast from "react-hot-toast";
 
   export default function EditProfile({ setShowModal, errors, handleChange, handleSubmit, form, setForm, setProfileUpdated, message, setMessage }) {
-    const [isSaving, setIsSaving] = useState(false);
     
     const handleLocationFetch = () => {
       if (!navigator.geolocation) {
@@ -72,30 +72,27 @@
         };
       });
     };
+    useEffect(() => {
+      const fetchProfileData = async () => {
+        try {
+          const response = await fetch("/api/users/me"); // replace with your real API endpoint
+          const data = await response.json();
+          
+          if (response.ok) {
+            setForm(data); // assuming your API sends back the correct shape matching your form
+            toast.success("Profile data loaded!");
+          } else {
+            toast.error(data?.message || "Failed to load profile data");
+          }
+        } catch (error) {
+          toast.error("An error occurred while fetching profile data");
+        }
+      };
+    
+      fetchProfileData();
+    }, []);
+    
 
-    // const handlePastAddressChange = (e) => {
-    //   const { value } = e.target;
-    //   setForm((prev) => ({
-    //     ...prev,
-    //     pastShopAddress: value,
-    //   }));
-    // };
-
-    // const handlePastAddressFromChange = (e) => {
-    //   const { value } = e.target;
-    //   setForm((prev) => ({
-    //     ...prev,
-    //     pastShopAddressFrom: value,
-    //   }));
-    // };
-
-    // const handlePastAddressToChange = (e) => {
-    //   const { value } = e.target;
-    //   setForm((prev) => ({
-    //     ...prev,
-    //     pastShopAddressTo: value,
-    //   }));
-    // };
     
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-auto">
@@ -113,14 +110,14 @@
             <div>
               <label className="font-medium text-gray-700">Firm Name</label>
               <input
-                type="text"
-                name="firmName"
-                value={form?.firmName}
-                onChange={handleChange}
-                placeholder="Enter Firm Name"
-                className="border p-2 rounded w-full"
-                required
-              />
+  type="text"
+  name="firmName"
+  value={form?.firmName || ''} 
+  onChange={handleChange}
+  placeholder="Enter Firm Name"
+  className="border p-2 rounded w-full"
+  required
+/>
               {errors?.firmName && <span className="text-sm text-red-500">{errors.firmName}</span>}
             </div>
 
@@ -173,7 +170,7 @@
                   <label className="font-medium text-gray-700">House Number</label>
                   <input
                     name="houseNumber"
-                    value={form?.houseNumber || ""}
+                    value={form?.address?.houseNumber || ""}
                     onChange={handleChange}
                     placeholder="Enter House Number"
                     className="border p-2 rounded w-full"
@@ -185,7 +182,7 @@
                   <label className="font-medium text-gray-700">Street</label>
                   <input
                     name="street"
-                    value={form?.street || ""}
+                    value={form?.address?.street || ""}
                     onChange={handleChange}
                     placeholder="Enter Street"
                     className="border p-2 rounded w-full"
@@ -197,7 +194,7 @@
                   <label className="font-medium text-gray-700">Building Name</label>
                   <input
                     name="buildingName"
-                    value={form?.buildingName || ""}
+                    value={form?.address?.buildingName || ""}
                     onChange={handleChange}
                     placeholder="Enter Building Name"
                     className="border p-2 rounded w-full"
@@ -208,7 +205,7 @@
                   <label className="font-medium text-gray-700">Landmark</label>
                   <input
                     name="landmark"
-                    value={form?.landmark || ""}
+                    value={form?.address?.landmark || ""}
                     onChange={handleChange}
                     placeholder="Enter Landmark"
                     className="border p-2 rounded w-full"
@@ -220,7 +217,7 @@
                   <label className="font-medium text-gray-700">City</label>
                   <input
                     name="city"
-                    value={form?.city || ""}
+                    value={form?.address?.city || ""}
                     onChange={handleChange}
                     placeholder="Enter City"
                     className="border p-2 rounded w-full"
@@ -232,7 +229,7 @@
                   <label className="font-medium text-gray-700">State</label>
                   <input
                     name="state"
-                    value={form?.state || ""}
+                    value={form?.address?.state || ""}
                     onChange={handleChange}
                     placeholder="Enter State"
                     className="border p-2 rounded w-full"
@@ -244,7 +241,7 @@
                   <label className="font-medium text-gray-700">Country</label>
                   <input
                     name="country"
-                    value={form?.country || ""}
+                    value={form?.address?.country || ""}
                     onChange={handleChange}
                     placeholder="Enter Country"
                     className="border p-2 rounded w-full"
@@ -256,7 +253,7 @@
                   <label className="font-medium text-gray-700">Zip Code</label>
                   <input
                     name="zipCode"
-                    value={form?.zipCode || ""}
+                    value={form?.address?.zipCode || ""}
                     onChange={handleChange}
                     placeholder="Enter Zip Code"
                     className="border p-2 rounded w-full"
@@ -277,38 +274,6 @@
                 </div>
               </div>
 
-            {/* previous address */}
-            {/* <div>
-              <label className="font-medium text-gray-700">Past Address</label>
-              <input
-                type="text"
-                name="pastShopAddress"
-                value={form?.pastShopAddress || ""}
-                onChange={handlePastAddressChange}
-                placeholder="Enter Past Address"
-                className="border p-2 rounded w-full"
-                
-              />
-              <div className="flex gap-2 mt-2">
-                <input
-                  type="month"
-                  name="pastShopAddressFrom"
-                  value={form?.pastShopAddressFrom || ""}
-                  onChange={handlePastAddressFromChange}
-                  className="border p-2 rounded w-1/2"
-                />
-                <input
-                  type="month"
-                  name="pastShopAddressTo"
-                  value={form?.pastShopAddressTo || ""}
-                  onChange={handlePastAddressToChange}
-                  className="border p-2 rounded w-1/2"
-                />
-              </div>
-            </div> */}
-
-
-            {/* Description */}
             <div>
               <label className="font-medium text-gray-700">Description</label>
               <textarea
@@ -321,9 +286,6 @@
                 required
               />
               <div className="text-sm mt-1 text-right">
-                {/* <span className={form?.description?.length === 1000 ? "text-red-500 font-semibold" : "text-gray-500"}>
-                  {form?.description?.length || 0}/1000
-                </span> */}
                 {form?.description?.length === 1000 && (
                   <p className="text-red-500 text-xs font-medium mt-1">You have reached the maximum character limit.</p>
                 )}

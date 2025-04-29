@@ -314,9 +314,13 @@ export default function ChatBox() {
   };
 
   return (
-    <div className="flex flex-row h-screen bg-white font-[var(--font-plus-jakarta)]">
-      {/* sidebar chat  */}
-      <aside className="w-1/4 bg-[#F5FAFC] p-4 flex flex-col gap-4">
+    <div className="flex h-screen bg-white font-[var(--font-plus-jakarta)]">
+      {/* Left Sidebar */}
+      <div
+        className={`${
+          selectedPartner ? "hidden md:flex" : "flex"
+        } flex-col gap-4 w-full md:w-[30%] bg-[#F5FAFC] p-4`}
+      >
         <div className="flex items-center gap-2">
           <button
             className="p-2 cursor-pointer"
@@ -325,7 +329,7 @@ export default function ChatBox() {
             <MoveLeft size={20} strokeWidth={1.5} />
           </button>
 
-          {/* search bar  */}
+          {/* Search bar */}
           <div className="flex-1 flex items-center gap-2 bg-white px-4 py-3 rounded-3xl border border-[var(--withdarktext)]">
             <Search size={20} strokeWidth={1.5} color="#9393C1" />
             <input
@@ -338,7 +342,7 @@ export default function ChatBox() {
           </div>
         </div>
 
-        {/* toggle tab */}
+        {/* Toggle Tab */}
         <div className="flex items-center justify-center w-full">
           <button
             className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tl-xl rounded-bl-xl transition-all duration-500 cursor-pointer ${
@@ -358,7 +362,7 @@ export default function ChatBox() {
             }`}
             onClick={() => setIsFavorite(true)}
           >
-            Favourite
+            Message requests
           </button>
         </div>
 
@@ -472,11 +476,6 @@ export default function ChatBox() {
                         ).toLocaleTimeString()
                       : " "}
                   </span>
-                  <div className="flex items-center gap-2">
-                    {/* <div className="w-5 h-5 flex items-center justify-center bg-[var(--chat-color)] text-white text-xs rounded-full"> */}
-                    {/* no. of unread messages */}
-                    {/* </div> */}
-                  </div>
                 </div>
               </div>
             ))
@@ -484,29 +483,31 @@ export default function ChatBox() {
             <p className="text-center text-gray-500">No conversations found</p>
           )}
         </div>
-      </aside>
+      </div>
 
-      {/* chat box */}
-      <main className="w-3/4 flex flex-col h-full bg-[#FAFAFA]">
+      {/* Right Chat Box */}
+      <div
+        className={`${
+          selectedPartner ? "flex" : "hidden md:flex"
+        } flex-col w-full md:w-[70%] h-full bg-[#FAFAFA]`}
+      >
         {selectedPartner ? (
           <>
-            {/* chat header */}
-            <header className="flex items-center justify-between p-4 gap-2.5 bg-[#F7F7FC]">
+            {/* Chat Header */}
+            <header className="flex items-center justify-between p-4 bg-[#F7F7FC]">
               <div className="flex items-center gap-3">
                 <div className="relative w-10 h-10">
                   <Image
-                    src="chatUserSvg/userImage.svg"
+                    src="/chatUserSvg/userImage.svg"
                     alt="seller image"
                     fill
                     className="rounded-lg"
                     priority
                   />
                 </div>
-                <div className="gap-1">
+                <div>
                   <p className="text-[var(--chatText-color)] text-lg flex items-center gap-2">
-                    {selectedPartner.firmName ||
-                      selectedPartner.firstName ||
-                      "Unknown"}
+                    {selectedPartner.firmName || selectedPartner.firstName || "Unknown"}
                     <Heart
                       size={20}
                       color="#DA3036"
@@ -516,7 +517,6 @@ export default function ChatBox() {
                       onClick={() => handleLike(selectedPartner)}
                     />
                   </p>
-                  {/* <p className="text-sm text-green-500">Online</p> */}
                 </div>
               </div>
               {/* view payment history */}
@@ -548,53 +548,12 @@ export default function ChatBox() {
               </div>
             </header>
 
-            {/* Message container */}
-            <div className="flex-1 pt-1.5 pb-4 px-4 overflow-y-auto flex flex-col gap-3">
-              {/* {selectedPartner && selectedPartner.accepted === false && (
-              <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg mb-4 flex justify-between items-center">
-                <div>
-                  <p className="font-medium">
-                    You haven’t accepted this chat request yet.
-                  </p>
-                  <p className="text-sm">Do you want to start chatting with this person?</p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    className="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded"
-                    onClick={async () => {
-                      const res = await fetch(`/api/conversations/${selectedPartner.conversationId}/accept`, {
-                        method: "PATCH",
-                      });
-                      if (res.ok) {
-                        setSelectedPartner((prev) => ({ ...prev, accepted: true }));
-                      }
-                    }}
-                  >
-                    Accept
-                  </button>
-                  <button
-                    className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
-                    onClick={async () => {
-                      const res = await fetch(`/api/conversations/${selectedPartner.conversationId}/reject`, {
-                        method: "PATCH",
-                      });
-                      if (res.ok) {
-                        setSelectedPartner(null); // or trigger re-fetch
-                      }
-                    }}
-                  >
-                    Reject
-                  </button>
-                </div>
-              </div>
-            )} */}
-              {/* Encryption message */}
-
-              <div className="flex justify-center">
-                <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] text-sm py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
+            {/* Message Area */}
+            <div className="flex-1 pt-2 pb-4 px-4 overflow-y-auto flex flex-col gap-3">
+            <div className="flex justify-center">
+                <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
                   <LockKeyhole size={20} strokeWidth={1.5} />
                   Chats will be automatically deleted after 48 hours of last
-                  chat
                 </span>
               </div>
 
@@ -814,20 +773,11 @@ export default function ChatBox() {
             )}
           </>
         ) : (
-          <div className="image flex flex-col justify-center items-center mt-[50px]">
-            <Image
-              src="/NBDWATERMARK1.png"
-              alt="conversation"
-              width={500} // Set the desired width
-              height={300} // Set the desired height
-              className="max-w-full h-auto"
-            />
-            <p className="p-4 text-center text-gray-500">
-              Select a conversation to start chatting.
-            </p>
+          <div className="flex flex-col justify-center items-center flex-1">
+            <p className="text-gray-500">Select a conversation to start chatting</p>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

@@ -22,33 +22,45 @@ export default function About({ profileUpdated }) {
     
 
     const router = useRouter();
+    // Add profileUpdated to useEffect dependencies
+useEffect(() => {
+    fetchUserData();
+}, [profileUpdated]); // Add this dependency
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const response = await fetch("/api/users/me");
-                if (response.ok) {
-                    const data = await response.json();
-                    setUserData(data);
-                    setCurrentAddress({
-                        houseNo: data?.houseNo || "",
-                        street: data?.street || "",
-                        city: data?.city || "",
-                        zipcode: data?.zipcode || "",
-                        state: data?.state || "",
-                        country: data?.country || ""
-                    });
-                    setPastAddresses(data?.pastAddresses || []);
-                } else {
-                    toast.error("Failed to fetch user data.");
-                }
-            } catch (error) {
-                toast.error("Error fetching user data.");
-            }
-        };
+// Update your fetchUserData to properly merge address data
+const fetchUserData = async () => {
+    try {
+        const response = await fetch("/api/users/me");
+        if (response.ok) {
+            const data = await response.json();
+            
+            // Merge address data properly
+            setUserData({
+                ...data,
+                // Spread address fields to top level for easy access
+                ...(data.address || {}),
+                // Ensure address object exists
+                address: data.address || {}
+            });
 
-        fetchUserData();
-    }, []);
+            setCurrentAddress({
+                houseNo: data?.address?.houseNumber || "",
+                street: data?.address?.street || "",
+                city: data?.address?.city || "",
+                zipcode: data?.address?.zipCode || "",
+                state: data?.address?.state || "",
+                country: data?.address?.country || ""
+            });
+
+            setPastAddresses(data?.pastAddresses || []);
+        }
+    } catch (error) {
+        toast.error("Error fetching user data.");
+    }
+};
+
+
+
 
     const handleChat = () => {
         const institutionId = userData?.id;
@@ -127,6 +139,9 @@ export default function About({ profileUpdated }) {
                         )}
                     </div>
 
+
+
+            
                     {userData?.id && (
                         <Link
                             href={`/tokenupdate/${userData.id}`}
@@ -306,9 +321,60 @@ export default function About({ profileUpdated }) {
                 </div>
             )}
 
-            {/* past addresses */}
-            {/* <div className="flex flex-col w-full  pr-4 py-4 md:px-8 md:py-4">
-                <Accordion type="single" collapsible className="w-full p-0 md:p-4">
+<div className="p-4 md:p-8 bg-white min-h-screen w-full">
+  <div className="space-y-2 items-center justify-center w-full ml-[32px]">
+
+    {/* PROFILE INFO */}
+    <div>
+      <h2 className="text-xl font-bold text-blue-700 mb-4">Profile Information</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+        {userData?.firstName && (
+          <div>
+            <p className="font-semibold text-gray-600">First Name</p>
+            <p>{userData.firstName}</p>
+          </div>
+        )}
+        {userData?.lastName && (
+          <div>
+            <p className="font-semibold text-gray-600">Last Name</p>
+            <p>{userData.lastName}</p>
+          </div>
+        )}
+        {userData?.username && (
+          <div>
+            <p className="font-semibold text-gray-600">Username</p>
+            <p>{userData.username}</p>
+          </div>
+        )}
+        {userData?.mobileNumber && (
+          <div>
+            <p className="font-semibold text-gray-600">Mobile Number</p>
+            <p>{userData.mobileNumber}</p>
+          </div>
+        )}
+        {userData?.email && (
+          <div>
+            <p className="font-semibold text-gray-600">Email</p>
+            <p>{userData.email}</p>
+          </div>
+        )}
+      </div>
+    </div>
+
+    {/* ABOUT */}
+    {userData?.description && (
+      <div>
+        <h2 className="text-xl font-bold text-blue-700 mb-4">About</h2>
+        <p className="text-sm text-gray-700">{userData.description}</p>
+      </div>
+    )}
+
+    {/* ADDRESS */}
+    <div className="w-full">
+        <div className="adderss flex">
+      <h2 className="text-xl font-bold text-blue-700 mb-4">Address</h2>
+      <div className="flex flex-col w-full ">
+                <Accordion type="single" collapsible className="w-[219px] p-0 md:p-4">
                     <AccordionItem value="past-addresses" className="rounded-md overflow-hidden">
                     <AccordionTrigger className="bg-white px-4 py-3 text-sm md:text-[16px] cursor-pointer hover:no-underline text-blue-700 font-semibold hover:bg-gray-100 rounded-t-md flex justify-between items-center">
                         <span>Past Addresses</span>
@@ -337,20 +403,168 @@ export default function About({ profileUpdated }) {
                     </AccordionContent>
                     </AccordionItem>
                 </Accordion>
-            </div> */}
+            </div>
+        </div>
 
-            {/* {userData?.description && (
-                <div className="p-4 md:p-8">
-                    <h2 className="text-2xl font-bold text-blue-700 mb-2">About</h2>
-                    <div className="relative group transition-all duration-500">
-                        <div className="bg-gradient-to-r from-blue-100 via-white to-blue-50 border-gray-300 w-[300px] md:w-300 h-40 rounded-xl p-4 shadow-md transition-all duration-300 transform">
-                            <p className="text-gray-700 text-base leading-relaxed tracking-wide">
-                                {userData.description}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )} */}
+      {userData?.address ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+          {userData.address.houseNumber && (
+            <div>
+              <p className="font-semibold text-gray-600">House Number</p>
+              <p>{userData.address.houseNumber}</p>
+            </div>
+          )}
+          {userData.address.street && (
+            <div>
+              <p className="font-semibold text-gray-600">Street</p>
+              <p>{userData.address.street}</p>
+            </div>
+          )}
+          {userData.address.buildingName && (
+            <div>
+              <p className="font-semibold text-gray-600">Building Name</p>
+              <p>{userData.address.buildingName}</p>
+            </div>
+          )}
+          {userData.address.landmark && (
+            <div>
+              <p className="font-semibold text-gray-600">Landmark</p>
+              <p>{userData.address.landmark}</p>
+            </div>
+          )}
+          {userData.address.city && (
+            <div>
+              <p className="font-semibold text-gray-600">City</p>
+              <p>{userData.address.city}</p>
+            </div>
+          )}
+          {userData.address.state && (
+            <div>
+              <p className="font-semibold text-gray-600">State</p>
+              <p>{userData.address.state}</p>
+            </div>
+          )}
+          {userData.address.country && (
+            <div>
+              <p className="font-semibold text-gray-600">Country</p>
+              <p>{userData.address.country}</p>
+            </div>
+          )}
+          {userData.address.zipCode && (
+            <div>
+              <p className="font-semibold text-gray-600">Zip Code</p>
+              <p>{userData.address.zipCode}</p>
+            </div>
+          )}
+          {/* past addresses */}
+          
+        </div>
+      ) : (
+        <p className="text-gray-400 italic text-sm">Address not provided</p>
+      )}
+    </div>
+
+    {/* SHOP INFORMATION */}
+    {(userData?.firmName || userData?.shopAddress) && (
+      <div>
+        <h2 className="text-xl font-bold text-blue-700 mb-4">Shop Information</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+          {userData.shopAddress && (
+            <div>
+              <p className="font-semibold text-gray-600">Shop Address</p>
+              <p>{userData.shopAddress}</p>
+            </div>
+          )}
+          {userData.contactEmail && (
+            <div>
+              <p className="font-semibold text-gray-600">Contact Email</p>
+              <p>{userData.contactEmail}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    )}
+
+    {/* SHOP TIMINGS */}
+    {(userData?.shopOpenTime || userData?.shopCloseTime || userData?.shopOpenDays?.length > 0) && (
+      <div>
+        <h2 className="text-xl font-bold text-blue-700 mb-4">Shop Timings</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+          {userData.shopOpenTime && (
+            <div>
+              <p className="font-semibold text-gray-600">Open Time</p>
+              <p>{userData.shopOpenTime}</p>
+            </div>
+          )}
+          {userData.shopCloseTime && (
+            <div>
+              <p className="font-semibold text-gray-600">Close Time</p>
+              <p>{userData.shopCloseTime}</p>
+            </div>
+          )}
+          {userData.shopOpenDays?.length > 0 && (
+            <div>
+              <p className="font-semibold text-gray-600">Open Days</p>
+              <p>{userData.shopOpenDays.join(', ')}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    )}
+
+    {/* PAYMENT DETAILS */}
+    {userData?.upi_id && (
+      <div>
+        <h2 className="text-xl font-bold text-blue-700 mb-4">Payment Details</h2>
+        <div className="flex flex-col text-sm text-gray-700">
+          <p className="font-semibold text-gray-600 flex items-center gap-1">
+            <IndianRupee size={18} strokeWidth={1.5} /> UPI ID
+          </p>
+          <p>{userData.upi_id}</p>
+          <button
+            onClick={() => setShowQRModal(true)}
+            className="mt-2 inline-flex items-center bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm w-max"
+          >
+            <IndianRupee size={18} />
+            Pay Now
+          </button>
+        </div>
+      </div>
+    )}
+
+    {/* SUBSCRIPTION STATUS */}
+    <div>
+      <h2 className="text-xl font-bold text-blue-700 mb-4">Subscription Status</h2>
+      <p className={`text-sm font-semibold ${userData?.subscriptionStatus === 'Active' ? 'text-green-600' : 'text-red-500'}`}>
+        {userData?.subscriptionPlan || 'No Subscription Plan'}
+      </p>
+    </div>
+
+    {/* HASHTAGS */}
+    {userData?.hashtags?.length > 0 && (
+      <div>
+        <h2 className="text-xl font-bold text-blue-700 mb-4">Hashtags</h2>
+        <div className="flex flex-wrap gap-2">
+          {userData.hashtags.map((tag, index) => (
+            <span key={index} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
+              #{tag}
+            </span>
+          ))}
+        </div>
+      </div>
+    )}
+
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
 
 
             {showQRModal && (

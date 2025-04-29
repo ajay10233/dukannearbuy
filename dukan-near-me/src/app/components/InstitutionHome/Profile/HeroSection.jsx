@@ -4,9 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import useEmblaCarousel from "embla-carousel-react";
-import { Plus, X, RefreshCcwDot, Store, Star, Crown } from "lucide-react";
+import { Plus, RefreshCcwDot, Store, Crown } from "lucide-react";
 import ProfileWrapper from "./ProfileWrapper";
-import { bigint } from "zod";
 
 export default function HeroSection() {
   const [user, setUser] = useState(null);  
@@ -41,12 +40,17 @@ export default function HeroSection() {
         }
         const data = await res.json();
         setUser(data);
+
+        // Set the fetched photos to the images state
+        if (data.photos && data.photos.length) {
+          setImages(data.photos); // Use photos from the API
+        }
       } catch (error) {
         console.error(error);
         toast.error(error.message || "Error fetching user data");
       }
     };
-    
+
     fetchUserData();
   }, []);
 
@@ -94,7 +98,7 @@ export default function HeroSection() {
     const base64Images = [];
     
     for (const file of filesToUpload) {
-      if (file.size > bigint (2 * 1024 * 1024) ){ 
+      if (file.size > 20 * 1024 * 1024) { // 2MB limit
         toast.error(`File ${file.name} is too large (max 2MB).`);
         continue;
       }
@@ -105,36 +109,32 @@ export default function HeroSection() {
         reader.onerror = () => reject("Failed to read file.");
         reader.readAsDataURL(file);
       });
-  
-      base64Images.push(base64String);
-    }
-  
-    // Send the images to the backend
-    try {
-      const res = await fetch("/api/institutions/upload-photo", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ images: base64Images }),
-      });
-  
-      const data = await res.json();
-  
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to upload images.");
-      }
-  
-      // Update the images in state with the URLs returned from the backend
-      setImages((prev) => [...prev, ...data.urls]);
-      setImageCount((prev) => prev + data.urls.length);
 
-      toast.success("Images uploaded successfully!");
-    } catch (error) {
-      toast.error(error.message || "Error uploading images");
-    } finally {
-      setIsUploading(false);
+      // Upload image to the backend
+      try {
+        const res = await fetch("/api/institutions/upload-photo/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`, // Ensure the token is in the header
+          },
+          body: JSON.stringify({ images: [base64String] }),
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to upload image.");
+        }
+
+        const data = await res.json();
+        setImages((prev) => [...prev, ...data.urls]); // Add the image URL to the images state
+        setImageCount((prev) => prev + 1);
+        toast.success(`Uploaded ${file.name}`);
+      } catch (error) {
+        toast.error("Error uploading image: " + error.message);
+      }
     }
+
+    setIsUploading(false);
   };
   
 
@@ -155,10 +155,10 @@ export default function HeroSection() {
   return (
     <div className={`w-full ${user.role === "INSTITUTION" ? "bg-gradient-to-tr from-white to-sky-100" : user.role === "SHOP_OWNER" ? "bg-gradient-to-tl from-lime-100 to-white" : ""}`}>
       <div className="w-full h-60 md:h-81 relative overflow-hidden shadow-inner">
-        {(images.length > 0 || user.image) ? (
+        {(images.length > 0 || user.profilePhoto) ? (
           <div className="h-full" ref={emblaRef}>
             <div className="flex h-full cursor-pointer">
-              {(images.length > 0 ? images : [user.image]).map((img, index) => (
+              {(images.length > 0 ? images : [user.profilePhoto]).map((img, index) => (
                 <div className="flex-[0_0_100%] relative h-full group" key={index} onClick={() => { setActiveImage(img); setIsModalOpen(true); }}>
                   <Image
                     src={img}
