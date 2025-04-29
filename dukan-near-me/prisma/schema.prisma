@@ -361,7 +361,6 @@ model ShortBill {
   @@map("short_bills")
 }
 
-
 model Review {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
   rating         Int
