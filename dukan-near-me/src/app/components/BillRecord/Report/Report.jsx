@@ -3,16 +3,16 @@
 import { Heart, Calendar, ArrowDownToLine, MoreVertical } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-const dummyReports = [
-  { id: 'RPT001', date: '2025-04-19', institution: 'ABC Medical Center', report: 'Annual Blood Report', type: 'Medical' },
-  { id: 'RPT002', date: '2025-04-17', institution: 'XYZ Hospital', report: 'X-ray Result', type: 'Medical' },
-  { id: 'RPT003', date: '2025-04-15', institution: 'Global Health Clinic', report: 'Diabetes Checkup', type: 'Medical' },
-  { id: 'RPT004', date: '2025-04-12', institution: 'BrightCare Diagnostics', report: 'MRI Scan', type: 'Diagnostic' },
-  { id: 'RPT005', date: '2025-04-10', institution: 'SkillMed Institute', report: 'Allergy Test', type: 'Medical' },
-  { id: 'RPT006', date: '2025-04-07', institution: 'Delta Hospital', report: 'ECG Report', type: 'Cardiology' },
-  { id: 'RPT007', date: '2025-04-05', institution: 'LearnFast Lab', report: 'Thyroid Panel', type: 'Lab' },
-  { id: 'RPT008', date: '2025-04-03', institution: 'Sunrise Healthcare', report: 'Liver Function Test', type: 'Diagnostic' },
-];
+// const dummyReports = [
+//   { id: 'RPT001', date: '2025-04-19', institution: 'ABC Medical Center', report: 'Annual Blood Report', type: 'Medical' },
+//   { id: 'RPT002', date: '2025-04-17', institution: 'XYZ Hospital', report: 'X-ray Result', type: 'Medical' },
+//   { id: 'RPT003', date: '2025-04-15', institution: 'Global Health Clinic', report: 'Diabetes Checkup', type: 'Medical' },
+//   { id: 'RPT004', date: '2025-04-12', institution: 'BrightCare Diagnostics', report: 'MRI Scan', type: 'Diagnostic' },
+//   { id: 'RPT005', date: '2025-04-10', institution: 'SkillMed Institute', report: 'Allergy Test', type: 'Medical' },
+//   { id: 'RPT006', date: '2025-04-07', institution: 'Delta Hospital', report: 'ECG Report', type: 'Cardiology' },
+//   { id: 'RPT007', date: '2025-04-05', institution: 'LearnFast Lab', report: 'Thyroid Panel', type: 'Lab' },
+//   { id: 'RPT008', date: '2025-04-03', institution: 'Sunrise Healthcare', report: 'Liver Function Test', type: 'Diagnostic' },
+// ];
 
 export default function Report() {
   const [reports, setReports] = useState([]);
@@ -27,18 +27,38 @@ export default function Report() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('favReports')) || {};
-    const withFavStatus = dummyReports.map((r) => {
-      const fav = stored[r.id];
-      return {
-        ...r,
-        favorited: fav ? (!fav.expiry || new Date(fav.expiry) > new Date()) : false,
-        expiry: fav?.expiry || null,
-      };
-    });
-    setReports(withFavStatus);
-  }, []);
+    const fetchReports = async () => {
+      try {
+        const response = await fetch('/api/users/reports/');
+        if (!response.ok) throw new Error('Failed to fetch reports');
+        const data = await response.json();
+        
+        const reportsArray = Array.isArray(data) ? data : [data];
+        
+        const stored = JSON.parse(localStorage.getItem('favReports')) || {};
+        const withFavStatus = reportsArray.map((r) => {
+          const fav = stored[r.id];
+          
+          return {
+            ...r,  
+            favorited: fav ? (!fav.expiry || new Date(fav.expiry) > new Date()) : false,
+            expiry: fav?.expiry || null, 
+            date: r.createdAt,            
+            report: r.remarks || 'No Title',  
+            institution: r.name || 'Unknown', 
+            type: r.fileType || 'Unknown',  
+          };
+        });
+        
+        setReports(withFavStatus);
   
+      } catch (error) {
+        console.error('Error fetching reports:', error.message);
+      }
+    };
+  
+    fetchReports();
+  }, []);  
 
   const toggleFavorite = (id) => {
     const updated = reports.map((report) => {
@@ -209,8 +229,8 @@ export default function Report() {
       {/* Report List */}
       <div className="flex flex-col gap-3 h-[60vh] overflow-y-scroll dialogScroll pr-0 md:pr-2">
         {filteredReports.length > 0 ? (
-          filteredReports.map((report) => (
-            <div key={report.id} className="bg-white p-2 md:p-4 rounded-xl shadow-sm flex items-center w-full">
+          filteredReports.map((report, idx) => (
+            <div key={report.id} className="bg-white md-2 p-2 md:p-4 rounded-xl shadow-sm flex items-center w-full">
               <ul className="flex items-center text-sm text-slate-600 w-full justify-between *:w-1/5 text-center">
                 <li className='hidden md:block'>
                   <button onClick={() => toggleFavorite(report.id)}>
@@ -223,10 +243,10 @@ export default function Report() {
                     />
                   </button>
                 </li>
-                <li className="font-semibold hidden md:block">{report.id}</li>
-                <li>{report.date}</li>
-                <li>{report.institution}</li>
-                <li>{report.report}</li>
+                <li className="font-semibold hidden md:block">{report.invoiceNumber}</li>
+                <li>{new Date(report.createdAt).toLocaleDateString()}</li>
+                <li>{report.institution}</li>  {/* //institution name? , report name*/}
+                <li>{report.report}</li>   
                 <li className="flex justify-center items-center">
                   <span className='hidden md:flex text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out'>
                         <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>

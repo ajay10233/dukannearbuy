@@ -35,7 +35,7 @@ export default function Faq() {
                                 <br />
                             By choosing locally made products, Indian consumers contribute to national growth, making India a <span className="font-semibold">self-reliant global economic powerhouse.</span>
                             <br />
-                            <span className="font-semibold text-lg text-orange-600">Together we can compete against online platforms!</span>
+                            {/* <span className="font-semibold text-lg text-orange-600">Together we can compete against online platforms!</span> */}
                         </AccordionContent>
                     </AccordionItem>
 

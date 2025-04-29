@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import { UserRound, X, TableOfContents, MessageCircleMore, Home, MessageSquareWarning, QrCode, ScanLine, BookCheck, FolderDown, Settings, LogOut, CircleHelp, Handshake } from "lucide-react";
+import { UserRound, X, TableOfContents, MessageCircleMore, Home, MessageSquareWarning, QrCode, ScanLine, BookCheck, FolderDown, Settings, LogOut, CircleHelp, Handshake, HandCoins } from "lucide-react";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LogoutButton from '@/app/components/LogoutButton';
@@ -86,7 +86,7 @@ export default function Sidebar({ isOpen, onClose }) {
                         </Link>
                         <Link href="/tokengenerate"
                             className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200"> 
-                            <ScanLine size={20} strokeWidth={1.5} />
+                            <HandCoins size={20} strokeWidth={1.5} />
                             Token 
                         </Link>
                         {/* <Link href="#"

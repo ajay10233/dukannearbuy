@@ -47,8 +47,6 @@ export default function PromotionCard() {
     router.push(`/payment?amount=${discountedCost}`);
   };
   
-
-  
   return (
     <section className="w-full flex flex-col items-center py-10 px-4 gap-y-10">
       <h1 className="text-3xl font-bold mb-6 text-white flex items-center gap-2 text-shadow-md text-shadow-sky-300">Paid Promotion</h1>
