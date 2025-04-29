@@ -3,6 +3,16 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/utils/db";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
+
+export async function GET(req, { params }) {
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const notification = await prisma.notification.findUnique({
+    where: { id: params.id },
+  });
+  return NextResponse.json(notification, { status: 200 });
+}
+
 export async function PUT(req, { params }) {
     const session = await getServerSession(authOptions);
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
