@@ -173,43 +173,43 @@ export default function ProfileWrapper({ children, images, setImages }) {
 
   return (
     <>
-      <div className="w-full px-4 pb-2 md:px-8 pt-14 flex justify-between items-center">
-        <button
+      <div className="w-full px-4 pb-2 md:px-8 pt-14 flex justify-between flex-end">
+        {/* <button
           onClick={handleEditClick}
           className="flex items-center cursor-pointer text-blue-600 hover:text-blue-700 transition"
         >
           <FaEdit size={20} strokeWidth={1.5} />
-        </button>
+        </button> */}
 
-        <div className="flex items-center gap-x-8">
-          <button
+        <div className="flex items-end gap-x-8">
+          {/* <button
             onClick={handleFavoriteToggle}
             className="transition cursor-pointer"
             title={isFavorite ? "Unfavorite" : "Add to favorites"}
-          >
-            <Heart
+          > */}
+            {/* <Heart
               size={20}
               strokeWidth={1.5}
               className={`transition-all duration-300 ${
                 isFavorite ? "fill-red-500 text-red-500" : "text-gray-600"
               }`}
             />
-          </button>
+          </button> */}
 
-          <button
+          {/* <button
             onClick={handleShare}
             className="cursor-pointer text-gray-800 hover:text-gray-500 transition"
           >
             <Share2 size={20} strokeWidth={1.5} />
-          </button>
+          </button> */}
 
-          <X
+          {/* <X
             size={20}
             strokeWidth={1.5}
             className="cursor-pointer text-gray-800 hover:text-gray-500 transition"
             title="Delete Image"
             onClick={() => handleDeleteImageWrapper(0)}
-          />
+          /> */}
         </div>
       </div>
 

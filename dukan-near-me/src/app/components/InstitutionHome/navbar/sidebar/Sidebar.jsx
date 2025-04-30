@@ -40,7 +40,7 @@ export default function Sidebar({ isOpen, onClose }) {
                             </Link>
                         )}
 
-                        <Link href="/partnerProfile"
+                        <Link href="/search-result"
                             className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">
                             <UserRound size={20} strokeWidth={1.5} />
                                 My Profile

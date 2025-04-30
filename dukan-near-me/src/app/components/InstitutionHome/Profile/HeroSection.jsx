@@ -7,7 +7,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { Plus, RefreshCcwDot, Store, Crown } from "lucide-react";
 import ProfileWrapper from "./ProfileWrapper";
 
-export default function HeroSection() {
+export default function HeroSection({id}) {
   const [user, setUser] = useState(null);  // Store user data
   const [images, setImages] = useState([]);
   const [imageCount, setImageCount] = useState(0);
@@ -34,7 +34,7 @@ export default function HeroSection() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await fetch("/api/users/me");
+        const res = await fetch(`/api/users/${id}`);
         if (!res.ok) {
           throw new Error("Failed to fetch user data.");
         }
@@ -164,9 +164,9 @@ export default function HeroSection() {
         {(user.role === "INSTITUTION" || user.role === "SHOP_OWNER") && imageCount < 10 && (
           <div className="absolute bottom-2 right-2 z-10">
             <label htmlFor="upload-more" title="Upload up to 10 images">
-              <div className="bg-white/80 hover:bg-white p-0.5 md:p-2 rounded-full cursor-pointer shadow-md">
+              {/* <div className="bg-white/80 hover:bg-white p-0.5 md:p-2 rounded-full cursor-pointer shadow-md">
                 <Plus className="w-6 h-6 text-gray-700" />
-              </div>
+              </div> */}
             </label>
             <input
               id="upload-more"

@@ -11,7 +11,7 @@ export default function page() {
             <Navbar />
             <ProfileWrapper >
                 <HeroSection />
-                <About />
+                <About/>
             </ProfileWrapper>
             <Review />
         </>
