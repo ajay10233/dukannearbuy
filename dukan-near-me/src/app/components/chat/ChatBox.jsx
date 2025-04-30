@@ -17,7 +17,7 @@ import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import EmojiPicker from "emoji-picker-react";
 import {
   Dialog,
@@ -29,8 +29,11 @@ import {
 } from "@/components/ui/dialog";
 import PaymentHistory from "./PaymentHistory";
 import CryptoJS from 'crypto-js';
+import axios from "axios";
 
 export default function ChatBox() {
+  const searchParams = useSearchParams();
+
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [conversations, setConversations] = useState([]); // left side coversation
@@ -58,8 +61,6 @@ export default function ChatBox() {
       return ''; // Return an empty string if decryption fails
     }
   }
-
-
 
   const SendLiveLocation = () => {
     if (typeof window !== "undefined" && "geolocation" in navigator) {
@@ -126,6 +127,7 @@ export default function ChatBox() {
       try {
         const res = await fetch(`/api/conversations/all`);
         const data = await res.json();
+        console.log(data);
         setConversations(data.data);
         setFilteredConversations(data.data);
       } catch (error) {
@@ -134,6 +136,7 @@ export default function ChatBox() {
     };
 
     fetchConversations();
+    checkForParams();
   }, [session]);
 
   useEffect(() => {
@@ -177,7 +180,36 @@ export default function ChatBox() {
     fetchMessages();
   }, [selectedPartner]);
   
-
+  const checkForParams = async () => {
+    const toParam = searchParams.get("to");
+    if(toParam === session.user.id) return;
+    if (toParam) {
+      const conversation = conversations.find(
+        (conv) => conv.otherUser.id === toParam
+      );
+      if (conversation) {
+        setSelectedPartner(conversation);
+      }else{
+        const result = await axios.get(`/api/users/${toParam}/`);
+        const newUser = result.data;
+        const newConversation = {
+          conversationId:null,
+          otherUser:newUser,
+          lastMessage:{},
+          updatedAt:new Date(),
+          accepted:true,
+        };
+        setSelectedPartner(newConversation);
+        const res = conversations.find(
+          (conv) => conv?.otherUser?.id == newConversation.otherUser.id
+        );
+        if (res==undefined) {
+          setConversations(prev => [...prev, newConversation]);
+          setFilteredConversations(prev => [...prev, newConversation]);
+        }
+      }
+    }
+  }
   //   const checkIfFavorite = async () => {
   //     if (!selectedPartner) return;
   //     try {
@@ -242,6 +274,7 @@ export default function ChatBox() {
           receiverId: selectedPartner?.otherUser.id,
           content: encryptedMessage, 
           timestamp,
+          accepted:selectedPartner?.accepted,
         };
       } else {
         const newConversation = {
@@ -256,6 +289,7 @@ export default function ChatBox() {
           },
           lastMessage: decryptedMessage, 
           updatedAt: new Date().toISOString(),
+          accepted:selectedPartner?.accepted,
         };
     
         setConversations((prevConversations) =>
@@ -270,6 +304,7 @@ export default function ChatBox() {
           receiverId: selectedPartner.id,
           content: encryptedMessage, 
           timestamp,
+          accepted:selectedPartner?.accepted,
         };
       }
     
