@@ -3,6 +3,8 @@
 import React from "react";
 import { Mail, ShieldCheck, CreditCard } from "lucide-react";
 import Image from "next/image";
+import PrivacyPolicy from "./PrivacyPolicy";
+import RefundPolicy from "./RefundPolicy";
 
 const termsSections = [
   {
@@ -227,6 +229,7 @@ const termsSections = [
       },
     ],
   },
+  
 ];
 
 export default function TermsAndConditions() {
@@ -273,6 +276,9 @@ export default function TermsAndConditions() {
             </div>
             ))}
         </div>
+            
+        <PrivacyPolicy />
+        <RefundPolicy />
           
         <div className="absolute bottom-1 right-4 w-17 h-17 md:w-32 md:h-32">
             <Image src="/nearbuydukan - watermark.png"

@@ -3,111 +3,131 @@
 import { Heart, Calendar, ArrowDownToLine, MoreVertical } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-// const dummyReports = [
-//   { id: 'RPT001', date: '2025-04-19', institution: 'ABC Medical Center', report: 'Annual Blood Report', type: 'Medical' },
-//   { id: 'RPT002', date: '2025-04-17', institution: 'XYZ Hospital', report: 'X-ray Result', type: 'Medical' },
-//   { id: 'RPT003', date: '2025-04-15', institution: 'Global Health Clinic', report: 'Diabetes Checkup', type: 'Medical' },
-//   { id: 'RPT004', date: '2025-04-12', institution: 'BrightCare Diagnostics', report: 'MRI Scan', type: 'Diagnostic' },
-//   { id: 'RPT005', date: '2025-04-10', institution: 'SkillMed Institute', report: 'Allergy Test', type: 'Medical' },
-//   { id: 'RPT006', date: '2025-04-07', institution: 'Delta Hospital', report: 'ECG Report', type: 'Cardiology' },
-//   { id: 'RPT007', date: '2025-04-05', institution: 'LearnFast Lab', report: 'Thyroid Panel', type: 'Lab' },
-//   { id: 'RPT008', date: '2025-04-03', institution: 'Sunrise Healthcare', report: 'Liver Function Test', type: 'Diagnostic' },
-// ];
-
 export default function Report() {
   const [reports, setReports] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [favoriteFilter, setFavoriteFilter] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [showFavFilter, setShowFavFilter] = useState(false);
   const [selectedAction, setSelectedAction] = useState(''); 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const response = await fetch('/api/users/reports/');
-        if (!response.ok) throw new Error('Failed to fetch reports');
-        const data = await response.json();
-        
-        const reportsArray = Array.isArray(data) ? data : [data];
-        
-        const stored = JSON.parse(localStorage.getItem('favReports')) || {};
-        const withFavStatus = reportsArray.map((r) => {
-          const fav = stored[r.id];
-          
-          return {
-            ...r,  
-            favorited: fav ? (!fav.expiry || new Date(fav.expiry) > new Date()) : false,
-            expiry: fav?.expiry || null, 
-            date: r.createdAt,            
-            report: r.remarks || 'No Title',  
-            institution: r.name || 'Unknown', 
-            type: r.fileType || 'Unknown',  
-          };
-        });
-        
-        setReports(withFavStatus);
-  
-      } catch (error) {
-        console.error('Error fetching reports:', error.message);
+        const response = await fetch('/api/users/reports');
+        const json = await response.json(); 
+        const data = json.reports; 
+        console.log("Fetched Reports:", data);
+ 
+        setReports(data);  
+      } catch (err) {
+        console.error(err);
+        setError('Failed to fetch reports.');
+      } finally {
+        setLoading(false);
       }
     };
   
     fetchReports();
   }, []);  
 
-  const toggleFavorite = (id) => {
-    const updated = reports.map((report) => {
-      if (report.id === id) {
-        const isNowFav = !report.favorited;
-        const expiry = isNowFav ? new Date(Date.now() + 24 * 60 * 60 * 1000) : null;
-        return {
-          ...report,
-          favorited: isNowFav,
-          expiry: expiry?.toISOString() || null,
-        };
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const res = await fetch('/api/favorites');
+        const data = await res.json();
+        
+        if (res.ok) {
+          setFavorites(data);
+        } else {
+          setError('Failed to fetch favorites');
+        }
+      } catch (err) {
+        setError('An error occurred while fetching favorites');
       }
-      return report;
-    });
-  
-    setReports(updated);
-  
-    const saveToStorage = {};
-    updated.forEach((report) => {
-      if (report.expiry) {
-        saveToStorage[report.id] = {
-          expiry: report.expiry,
-        };
-      }
-    });
-  
-    localStorage.setItem('favReports', JSON.stringify(saveToStorage));
-  };  
+    };
 
-  const filteredReports = reports.filter((report) => {
-    const isFavoriteValid =
-      favoriteFilter === null || report.favorited === favoriteFilter;
+    fetchFavorites();
+  }, []);
+
+  const removeFromFavorites = async (billId) => {
+    try {
+      const res = await fetch('/api/favorites', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ billId }),
+      });
+    
+      if (res.ok) {
+        setFavorites((prev) => Array.isArray(prev) ? prev.filter(item => item.billId !== billId) : []);
+        console.log("Favorite removed:", billId);
+      }
+    } catch (error) {
+        console.error("Error removing favorite:", error);
+      }
+  }
+
+  // const toggleFavorite = (id) => {
+  //   const updated = reports.map((report) => {
+  //     if (report.id === id) {
+  //       const isNowFav = !report.favorited;
+  //       const expiry = isNowFav ? new Date(Date.now() + 24 * 60 * 60 * 1000) : null;
+  //       return {
+  //         ...report,
+  //         favorited: isNowFav,
+  //         expiry: expiry?.toISOString() || null,
+  //       };
+  //     }
+  //     return report;
+  //   });
   
-    const isDateValid =
-      (!dateFrom || new Date(report.date) >= new Date(dateFrom)) &&
-      (!dateTo || new Date(report.date) <= new Date(dateTo));
+  //   setReports(updated);
   
-    const query = searchTerm.toLowerCase();
-    const matchesSearch =
-      report.report.toLowerCase().includes(query) ||
-      report.institution.toLowerCase().includes(query);
+  //   const saveToStorage = {};
+  //   updated.forEach((report) => {
+  //     if (report.expiry) {
+  //       saveToStorage[report.id] = {
+  //         expiry: report.expiry,
+  //       };
+  //     }
+  //   });
   
-    return isFavoriteValid && isDateValid && matchesSearch;
-  });
+  //   localStorage.setItem('favReports', JSON.stringify(saveToStorage));
+  // };  
+
+  // const filteredReports = reports.filter((report) => {
+  //   const isFavoriteValid =
+  //     favoriteFilter === null || report.favorited === favoriteFilter;
+  
+  //   const isDateValid =
+  //     (!dateFrom || new Date(report.date) >= new Date(dateFrom)) &&
+  //     (!dateTo || new Date(report.date) <= new Date(dateTo));
+  
+  //   const query = searchTerm.toLowerCase();
+  //   const matchesSearch =
+  //     report.report.toLowerCase().includes(query) ||
+  //     report.institution.toLowerCase().includes(query);
+  
+  //   return isFavoriteValid && isDateValid && matchesSearch;
+  // });
   
   const handleDropdownChange = (action) => {
     setSelectedAction(action);
     setIsDropdownOpen(false); 
   };
+
+  if (loading) return <div className="p-4 text-center text-slate-600">Loading reports...</div>;
+  if (error) return <div className="p-4 text-center text-red-500">{error}</div>;
+
 
   return (
     <div className="flex flex-col gap-3 w-full h-full p-2 md:p-4 bg-gray-50 rounded-lg shadow-sm">
@@ -228,12 +248,12 @@ export default function Report() {
 
       {/* Report List */}
       <div className="flex flex-col gap-3 h-[60vh] overflow-y-scroll dialogScroll pr-0 md:pr-2">
-        {filteredReports.length > 0 ? (
-          filteredReports.map((report, idx) => (
+        {reports.length > 0 ? (
+          reports.map((report, idx) => (
             <div key={report.id} className="bg-white md-2 p-2 md:p-4 rounded-xl shadow-sm flex items-center w-full">
               <ul className="flex items-center text-sm text-slate-600 w-full justify-between *:w-1/5 text-center">
                 <li className='hidden md:block'>
-                  <button onClick={() => toggleFavorite(report.id)}>
+                  <button onClick={() => removeFromFavorites(report.id)}>
                     <Heart
                       size={20}
                       strokeWidth={1.5}
@@ -254,7 +274,7 @@ export default function Report() {
                   {/* Show icon based on selected dropdown option */}
                   <span className='md:hidden flex justify-center items-center'>
                   {selectedAction === 'favorite' ? (
-                    <Heart size={20} strokeWidth={1.5} stroke="red" fill={report.favorited ? 'red' : 'transparent'} className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110" onClick={() => toggleFavorite(report.id)} />
+                    <Heart size={20} strokeWidth={1.5} stroke="red" fill={report.favorited ? 'red' : 'transparent'} className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110" onClick={() => removeFromFavorites(report.id)} />
                   ) : selectedAction === 'download' ? (
                         <span className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
                         <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>

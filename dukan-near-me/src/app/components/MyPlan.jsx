@@ -30,7 +30,6 @@ export default function MyPlans() {
             description: `Plan: ${data.subscriptionPlan.name}, Price: ₹${data.subscriptionPlan.price}`,
           });
         }
-
         setPlans(userPlans);
       } catch (error) {
         console.error(error);

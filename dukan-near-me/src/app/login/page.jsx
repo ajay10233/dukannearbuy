@@ -28,13 +28,13 @@ export default function page() {
         <div className='bg-gradient-to-br from-[#e7f0ec] via-[#aabec2] to-[#005d6e]'>
         <header>
             <div className="w-full p-4 flex items-center gap-x-2">
-                <div className="relative w-10 h-10">
+                <div className="relative w-12.5 h-12.5">
                     <Image src="/nearbuydukan-Logo/Logo.svg" alt="nearbuydukan" fill sizes='50px' priority/>
                 </div>
                 <span className="font-semibold text-sm uppercase">nearbuydukan</span>
             </div>
         </header>
-        <main className="flex h-[calc(100vh-72px)] w-full overflow-hidden">
+        <main className="flex h-[calc(100vh-82px)] w-full overflow-hidden relative">
             <div className="flex flex-col items-center justify-center w-full md:w-1/2 gap-y-10">
                 <h1 className="text-3xl md:text-4xl font-bold">Welcome Back!</h1>
                 <LoginForm />
@@ -48,6 +48,15 @@ export default function page() {
                     </div>
                 {/* </div> */}
             </div>
+            <div className="absolute bottom-1 right-4 w-17 h-17 md:w-32 md:h-32">
+                        <Image
+                            src="/nearbuydukan - watermark.png"
+                            alt="Watermark"
+                            fill size="120"
+                            className="object-contain w-17 h-17 md:w-32 md:h-32"
+                            priority
+                        />
+            </div>        
         </main>
         </div>
     )
