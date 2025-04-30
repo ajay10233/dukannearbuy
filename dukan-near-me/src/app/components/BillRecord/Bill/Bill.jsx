@@ -241,7 +241,7 @@ export default function Bill() {
                 <li className='whitespace-nowrap'>
                   {new Date(bill.createdAt).toLocaleDateString()}
                 </li>
-                <li>{bill.institution}</li>
+                <li>{bill.institution?.firmName}</li>
                 <li className='hidden md:block'>₹{bill.totalAmount}</li>
                 <li className="flex justify-center items-center">
                   <span className='hidden md:flex text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out'>

@@ -216,7 +216,7 @@ export default function Report() {
           </li>
 
           <li className="flex justify-center items-center relative">Institution</li>
-          <li className="flex justify-center items-center relative">Report</li>
+          {/* <li className="flex justify-center items-center relative">Report</li> */}
           <li className="flex justify-center items-center">
             {/* MoreVertical icon shown on small screen */}
             <MoreVertical
@@ -265,8 +265,8 @@ export default function Report() {
                 </li>
                 <li className="font-semibold hidden md:block">{report.invoiceNumber}</li>
                 <li>{new Date(report.createdAt).toLocaleDateString()}</li>
-                <li>{report.institution}</li>  {/* //institution name? , report name*/}
-                <li>{report.report}</li>   
+                <li>{report.institution?.firmName}</li>  {/* //institution name? , report name*/}
+                {/* <li>{report.report}</li>    */}
                 <li className="flex justify-center items-center">
                   <span className='hidden md:flex text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out'>
                         <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>
