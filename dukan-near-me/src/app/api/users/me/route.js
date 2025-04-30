@@ -31,6 +31,7 @@ export async function GET() {
     phone: user.phone,
     role: user.role,
     profilePhoto: user.profilePhoto,
+    photos: user.photos,
     address: {
       houseNumber: user.houseNumber,
       street: user.street,
@@ -54,6 +55,8 @@ export async function GET() {
     latitude: user.latitude,
     longitude: user.longitude,
     createdAt:user.createdAt,
+    upi_id:user.upi_id,
+    scanner_image:user.scanner_image,
     allowedRoutes:
       user.role === "ADMIN"
         ? ["/", "/dashboard", "/admin"]

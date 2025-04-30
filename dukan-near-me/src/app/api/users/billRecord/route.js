@@ -17,6 +17,7 @@ export async function GET(req) {
       },
       include: {
         items: true,
+        institution: true, // Include institution data
       },
       orderBy: {
         createdAt: 'desc',
@@ -43,10 +44,29 @@ export async function GET(req) {
         quantity: item.quantity,
         total: item.total,
       })),
+      institution: bill.institution
+        ? {
+            id: bill.institution.id,
+            firmName: bill.institution.firmName,
+            contactEmail: bill.institution.contactEmail,
+            phone: bill.institution.phone,
+            shopAddress: bill.institution.shopAddress,
+            description: bill.institution.description,
+            hashtags: bill.institution.hashtags,
+            photos: bill.institution.photos,
+            shopOpenTime: bill.institution.shopOpenTime,
+            shopCloseTime: bill.institution.shopCloseTime,
+            shopOpenDays: bill.institution.shopOpenDays,
+            latitude: bill.institution.latitude,
+            longitude: bill.institution.longitude,
+            scanner_image: bill.institution.scanner_image,
+            profilePhoto: bill.institution.profilePhoto,
+          }
+        : null,
     }));
 
     return NextResponse.json({ success: true, bills: formattedBills });
-    
+
   } catch (error) {
     console.error('Get Bills Error:', error);
     return NextResponse.json({ success: false, error: 'Failed to get bills' }, { status: 500 });

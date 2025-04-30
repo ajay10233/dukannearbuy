@@ -58,18 +58,9 @@ export default function FavProfile() {
       try {
         const res = await fetch('/api/favorites');
         const data = await res.json();
+        console.log(data.favorites);
         if (res.ok) {
-          const detailedFavorites = await Promise.all(
-            data.favorites.map(async (fav) => {
-              const institutionRes = await fetch(`/api/institutions/${fav.institutionId}`);
-              const institutionData = await institutionRes.json();
-              return {
-                ...fav,
-                institution: institutionData.data,
-              };
-            })
-          );
-          setFavorites(detailedFavorites);
+          setFavorites(data.favorites);
         }
       } catch (error) {
         console.error("Error fetching favorites:", error);

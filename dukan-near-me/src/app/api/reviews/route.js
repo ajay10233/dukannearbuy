@@ -5,27 +5,57 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 
 export async function GET(req) {
-    const { searchParams } = new URL(req.url);
-    const institutionId = searchParams.get("institutionId");
+  const { searchParams } = new URL(req.url);
+  const institutionId = searchParams.get("institutionId");
 
-    if (!institutionId) {
-        return NextResponse.json({ error: "Missing institutionId" }, { status: 400 });
-    }
-
+  if (!institutionId) {
     const reviews = await prisma.review.findMany({
-        where: { institutionId },
-        include: {
-            user: {
-                select: { firstName: true, lastName: true, profilePhoto: true },
-            },
+      include: {
+        user: {
+          select: { firstName: true, lastName: true, profilePhoto: true },
         },
-        orderBy: { createdAt: "desc" },
+        institution: {
+          select: {
+            firmName: true,
+            shopAddress: true,
+            city: true,
+            state: true,
+            country: true,
+            profilePhoto: true,
+          },
+        },
+      },
+      orderBy: {
+        rating: "desc",
+      },
     });
+    return NextResponse.json(reviews, { status: 200 });
+  }
 
-    return NextResponse.json(reviews);
+  const reviews = await prisma.review.findMany({
+    where: { institutionId },
+    include: {
+      user: {
+        select: { firstName: true, lastName: true, profilePhoto: true },
+      },
+      institution: {
+        select: {
+          firmName: true,
+          shopAddress: true,
+          city: true,
+          state: true,
+          country: true,
+          profilePhoto: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return NextResponse.json(reviews);
 }
-
-
 export async function POST(req) {
     const session = await getServerSession(authOptions);
 

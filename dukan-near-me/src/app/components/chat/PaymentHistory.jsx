@@ -2,13 +2,14 @@
 
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // For client-side navigation
 
 export default function PaymentHistory() {
   const [receiverId, setReceiverId] = useState(null);
   const [payments, setPayments] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
-    // Fetch conversation to get otherUser.id
     const fetchReceiverId = async () => {
       try {
         const res = await fetch("http://localhost:3000/api/conversations/all");
@@ -26,7 +27,6 @@ export default function PaymentHistory() {
   }, []);
 
   useEffect(() => {
-    // Once receiverId is set, fetch payments
     const fetchPayments = async () => {
       if (!receiverId) return;
       try {
@@ -41,8 +41,26 @@ export default function PaymentHistory() {
     fetchPayments();
   }, [receiverId]);
 
+  const handleCreatePayment = () => {
+    if (receiverId) {
+      router.push(`/payments/create?receiverId=${receiverId}`);
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-y-3 mt-5 cursor-default">
+    <div className="flex flex-col gap-y-4 mt-5 cursor-default">
+      {/* Create Payment Button */}
+      {receiverId && (
+        <div className="self-end">
+          <button
+            onClick={handleCreatePayment}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+          >
+            Create Payment
+          </button>
+        </div>
+      )}
+
       {/* Header Row */}
       <div className="flex items-center *:w-1/3 text-sm capitalize text-slate-400">
         <div className="flex justify-center items-center gap-x-1">

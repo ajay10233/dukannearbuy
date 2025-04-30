@@ -4,20 +4,48 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(req) {
-    const session = await getServerSession(authOptions);
-    if (!session) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
-  
-    try {
-      const favorites = await prisma.favoriteInstitution.findMany({
-        where: { userId: session.user.id },
-        select: { institutionId: true },
-      });
-      return NextResponse.json({ favorites });
-    } catch (error) {
-        console.log(error);
-      return NextResponse.json({ error: "Failed to fetch favorites" }, { status: 500 });
-    }
+  const session = await getServerSession(authOptions);
+  if (!session)
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  try {
+    var favorites = await prisma.favoriteInstitution.findMany({
+      where: { userId: session.user.id },
+      include: {
+        institution: {
+          select: {
+            id: true,
+            firmName: true,
+            shopAddress: true,
+            contactEmail: true,
+            description: true,
+            hashtags: true,
+            photos: true,
+            shopOpenTime: true,
+            shopCloseTime: true,
+            shopOpenDays: true,
+            city: true,
+            state: true,
+            country: true,
+            latitude: true,
+            longitude: true,
+            scanner_image: true,
+            profilePhoto: true,
+            mobileNumber: true,
+          },
+        },
+      },
+    });
+
+    // Optionally clean the response
+    favorites = favorites.filter(fav => fav!=null);
+
+    return NextResponse.json({ favorites });
+  } catch (error) {
+    console.error("Failed to fetch favorite institutions", error);
+    return NextResponse.json({ error: "Failed to fetch favorites" }, { status: 500 });
   }
+}
+
   
 
 export async function POST(req) {
