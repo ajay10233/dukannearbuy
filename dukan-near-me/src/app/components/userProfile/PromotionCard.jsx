@@ -163,8 +163,12 @@ export default function PromotionCard() {
                 <div className="text-sm md:text-[16px]">
                     <span className="text-gray-800 font-semibold">Limited-Time Offer:</span>
                     <div className="text-sm md:text-[16px] py-1 md:p-0">
-                      <span className="text-emerald-700 font-semibold">Get 20% OFF</span>{" "}
+                      <span className="text-emerald-700 font-semibold">Get 50% OFF</span>{" "}
                       <span>on your first paid promotion!</span>
+                    </div>
+                    <div className="text-sm md:text-[16px] py-1 md:p-0">
+                      {/* <span className="text-emerald-700 font-semibold">Get 50% OFF</span>{" "} */}
+                      <span>Use coupon - NBDFIRST50</span>
                     </div>
                 </div>
             </div>
