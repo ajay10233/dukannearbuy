@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function MyToken() {
   const [tokens, setTokens] = useState([]);
@@ -39,12 +40,20 @@ export default function MyToken() {
                   No token has been assigned yet...
                 </td>
               </tr>
-            ) : (
+            ) : ( 
               tokens.map((token) => (
                 <tr key={token.id} className="hover:bg-slate-100 transition duration-200">
                   <td className="p-3 md:px-6 md:py-4 font-semibold text-blue-700">{token.tokenNumber}</td>
-                  <td className="p-3 md:px-6 md:py-4 hidden md:table-cell">{token.institution?.firmName || "N/A"}</td>
-                  <td className="p-3 md:px-6 md:py-4">{token.institution?.username || "N/A"}</td>
+                  <td className="p-3 md:px-6 md:py-4 hidden md:table-cell">
+                    <Link href={`/partnerProfile/${token.institutionId}`}>
+                      {token.institution?.firmName || "N/A"}
+                    </Link>
+                  </td>
+                  <td className="p-3 md:px-6 md:py-4">
+                    <Link href={`/partnerProfile/${token.institutionId}`} className="text-blue-600 hover:underline">
+                      {token.institution?.username || "N/A"}
+                    </Link>
+                  </td>
                   <td className="p-3 md:px-6 md:py-4">{new Date(token.createdAt).toLocaleString()}</td>
                 </tr>
               ))

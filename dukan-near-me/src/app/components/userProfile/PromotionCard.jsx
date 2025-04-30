@@ -19,8 +19,7 @@ export default function PromotionCard() {
     const [isPremium, setIsPremium] = useState(false);
     const [selectedKm, setSelectedKm] = useState(5); 
     const [agreed, setAgreed] = useState(false);
-
-
+  
     const kmCosts = {
       5: 99,
       20: 199,
@@ -250,7 +249,7 @@ export default function PromotionCard() {
                     className="w-4 h-4 text-teal-700"
                   />
                   <label htmlFor="agree" className="text-sm text-gray-700">
-                    I agree to the <a href="/terms&condition#user-terms" className="text-teal-500">terms and conditions.</a>
+                    I agree to the <a href="/terms&condition#payment-terms" className="text-teal-500">terms and conditions.</a>
                   </label>
                 </div>
 
@@ -260,11 +259,8 @@ export default function PromotionCard() {
                 className="p-2 flex items-center justify-center gap-2 cursor-pointer bg-gradient-to-r from-teal-500 to-blue-600 text-white font-medium rounded-md hover:opacity-90 transition duration-300">
                     <SquareCheckBig color="#fff" /> Confirm & Boost Now
                 </button>
-            
             </div>
-
               </DialogContent>
-
         </Dialog>
     </section>
   );
