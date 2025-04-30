@@ -21,17 +21,6 @@ export default function Footer() {
                 </div>
             </div> */}
             <div className='gap-y-2 text-md md:text-center'>
-                <h3 className="font-semibold text-lg md:text-xl pb-2.5">Support</h3>
-                {/* <p className="font-normal text-xs md:text-sm p-1">Delhi Shahdara near Hanuman Mandir.</p> */}
-                <a href="mailto:contact@nearbuydukaan.com" className="text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">contact@nearbuydukaan.com</a><br/>
-                <a href="https://www.instagram.com/nearbuydukaan?igsh=Zzl0N3AzN2w1cmRu&utm_source=qr"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs md:text-sm p-1 transition-all ease-in-out duration-500 hover:text-teal-400 cursor-pointer">
-                    Follow us on Instagram
-                </a>
-            </div>
-            <div className='gap-y-2 text-md md:text-center'>
                 <h3 className="font-semibold text-lg md:text-xl pb-2.5">Account</h3>
                 <Link href="#" className="block text-xs md:text-sm p-1">My Account</Link>
                 <Link href="/getstarted" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Login / SignUp</Link>
@@ -43,6 +32,16 @@ export default function Footer() {
                 <Link href="/terms&condition#privacy-policy" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Privacy Policy</Link>
                 <Link href="/terms&condition" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Terms Of Use</Link>
                 <Link href="mailto:contact@nearbuydukaan.com" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Contact</Link>
+              </div>
+            <div className='hidden md:block  grid-cols-1 sm:grid-cols-2 md:grid-cols-3 w-full max-w-5xl mx-auto text-center'>
+                <h3 className="font-semibold text-lg md:text-xl pb-2.5">Support</h3>
+                <a href="mailto:contact@nearbuydukaan.com" className="text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">contact@nearbuydukaan.com</a><br />
+                <a href="https://www.instagram.com/nearbuydukaan?igsh=Zzl0N3AzN2w1cmRu&utm_source=qr"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs md:text-sm p-1 transition-all ease-in-out duration-500 hover:text-teal-400 cursor-pointer">
+                    Follow us on Instagram
+                </a>
             </div>
             {/*download app */}
             {/* <div className='space-y-2 text-center'>
@@ -62,6 +61,17 @@ export default function Footer() {
                 </div>
             </div>   */}          
         </div>
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 w-full max-w-5xl mx-auto text-center md:hidden'>
+                <h3 className="font-semibold text-lg md:text-xl pb-2.5">Support</h3>
+                {/* <p className="font-normal text-xs md:text-sm p-1">Delhi Shahdara near Hanuman Mandir.</p> */}
+                <a href="mailto:contact@nearbuydukaan.com" className="text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">contact@nearbuydukaan.com</a>
+                <a href="https://www.instagram.com/nearbuydukaan?igsh=Zzl0N3AzN2w1cmRu&utm_source=qr"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs md:text-sm p-1 transition-all ease-in-out duration-500 hover:text-teal-400 cursor-pointer">
+                    Follow us on Instagram
+                </a>
+        </div>  
         <div className="w-full flex flex-col items-center gap-2 md:gap-4">
             {/* Social Links */}
             <div className="flex gap-x-4">
@@ -71,9 +81,14 @@ export default function Footer() {
                 <Link href="#" className="text-xl cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">
                     <Twitter size={20} strokeWidth={1.5} />
                 </Link> */}
-                <Link href="#" className="text-xl cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">
+                <Link
+                href="https://www.linkedin.com/in/ajay-sharma-8b7922183/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xl cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">
                     <Linkedin size={20} strokeWidth={1.5} />
                 </Link>
+
                 <Link href="https://www.instagram.com/nearbuydukaan?igsh=Zzl0N3AzN2w1cmRu&utm_source=qr"
                     target="_blank"
                     rel="noopener noreferrer"

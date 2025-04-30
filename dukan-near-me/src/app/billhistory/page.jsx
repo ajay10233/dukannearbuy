@@ -13,9 +13,9 @@ export default function BillHistory() {
             </div>
             <div className="flex flex-row gap-x-2 justify-between items-center">
                 <div className="flex flex-col gap-y-2 md:gap-y-4">
-                    <div className="flex flex-col">
+                    {/* <div className="flex flex-col">
                         <Link href="/shortbill"  className="flex justify-center items-center gap-x-2 md:gap-x-3 bg-teal-600 transition-all duration-500 ease-in-out hover:bg-teal-700 text-white py-3 w-30 md:w-40 rounded-xl text-sm font-semibold cursor-pointer">Short Bill <FaFileInvoice size={19} strokeWidth={2.5}/></Link>
-                    </div>
+                    </div> */}
                     <p className="text-xs text-slate-600 uppercase">Download  your all time payment history</p>
                 </div>
                 <div className="flex flex-col">

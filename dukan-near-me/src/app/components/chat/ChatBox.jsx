@@ -36,9 +36,9 @@ export default function ChatBox() {
 
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const [conversations, setConversations] = useState([]); // left side coversation
+  const [conversations, setConversations] = useState([]); 
   const [filteredConversations, setFilteredConversations] = useState([]);
-  const [selectedPartner, setSelectedPartner] = useState(null); //selected partner
+  const [selectedPartner, setSelectedPartner] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
