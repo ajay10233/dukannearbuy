@@ -200,11 +200,11 @@ export default function ChatBox() {
           accepted:true,
         };
         setSelectedPartner(newConversation);
-        const res = conversations.find(
+        const res = filteredConversations.find(
           (conv) => conv?.otherUser?.id == newConversation.otherUser.id
         );
-        if (res==undefined) {
-          setConversations(prev => [...prev, newConversation]);
+        console.log("res isL ",res);
+        if (!res) {
           setFilteredConversations(prev => [...prev, newConversation]);
         }
       }
