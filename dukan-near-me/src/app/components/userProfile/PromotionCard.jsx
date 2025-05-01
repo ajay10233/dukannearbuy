@@ -13,6 +13,7 @@ import { BadgeIndianRupee, SquareCheckBig, UserPlus, BadgeCheck, Smile, Megaphon
 import CustomDropdown from "./CustomDropdown";
 import KilometerDropdown from "./KiloMeterDropdown";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function PromotionCard() {
     const [days, setDays] = useState(1);
@@ -43,6 +44,10 @@ export default function PromotionCard() {
   const router = useRouter();
 
   const handleClick = () => {
+    if (!agreed) {
+      toast.error("Please agree to the Terms & Conditions before proceeding.");
+      return;
+    }  
     router.push(`/payment?amount=${discountedCost}`);
   };
   
@@ -250,7 +255,7 @@ export default function PromotionCard() {
                     id="agree"
                     checked={agreed}
                     onChange={() => setAgreed(!agreed)}
-                    className="w-4 h-4 text-teal-700"
+                    className="w-4 h-4 cursor-pointer text-teal-700"
                   />
                   <label htmlFor="agree" className="text-sm text-gray-700">
                     I agree to the <a href="/terms&condition#payment-terms" className="text-teal-500">terms and conditions.</a>

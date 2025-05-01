@@ -98,13 +98,13 @@ export default function SearchBar() {
 
       {!loading && suggestions.length > 0 && (
         // <div className="flex gap-2 flex-wrap mt-2 px-1">
-          <div className="flex gap-2 flex-wrap justify-center sm:justify-start mt-2 px-1">
+          <div className="flex gap-2 flex-wrap justify-center sm:justify-start mt-2">
 
           {suggestions.map((s, i) => (
             <button
               key={i}
               onClick={() => setSearchQuery(s)}
-              className="px-3 py-1 border border-gray-500 text-xs text-gray-300 rounded hover:bg-gray-800 transition-colors duration-200"
+              className="w-full py-1 px-3 md:py-2 md:px-5 border border-gray-500 text-xs text-gray-300 rounded hover:bg-gray-800 transition-colors duration-200"
             >
               {s}
             </button>
@@ -134,12 +134,12 @@ export default function SearchBar() {
                 </div>
                 <div>
                     <p className="text-sm font-medium text-gray-200 flex items-center gap-2">
-                      {profile.firmName || profile.firstName}
+                      {profile?.firmName || profile?.firstName}
                       {/* Display the badge based on subscription plan */}
-                      {profile.subscriptionPlan?.name === "PREMIUM" && (
+                      {profile?.subscriptionPlan?.name === "PREMIUM" && (
                         <Crown size={24} fill="#f0d000" className="text-yellow-500" />
                       )}
-                      {profile.subscriptionPlan?.name === "BUSINESS" && (
+                      {profile?.subscriptionPlan?.name === "BUSINESS" && (
                         <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
                       )}
                     </p>
