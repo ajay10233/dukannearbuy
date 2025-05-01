@@ -22,7 +22,7 @@ export default function page() {
             </section>
             <section className='bg-gradient-to-t from-[#A7BEC2] via-[#005d6e] to-[#0f0f0f]'>
                 <TopSeller />
-                <Subscription />
+                {/* <Subscription /> */}
                 {/* <PromotionCard/> */}
                 {/* <Review />  */}
                 <Faq />  

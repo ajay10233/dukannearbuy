@@ -129,7 +129,7 @@ export default function Sidebar({ isOpen, onClose }) {
                         <Settings size={20} strokeWidth={1.5} />
                             Settings
                     </Link> */}
-                    <Link href="/dashboard"
+                    <Link href="#"
                         className="flex items-center gap-2 text-sm md:text-[16px] text-red-500">
                         <LogOut size={20} strokeWidth={1.5} />
                             <LogoutButton/>

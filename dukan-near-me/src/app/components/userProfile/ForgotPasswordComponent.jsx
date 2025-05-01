@@ -88,7 +88,7 @@ export default function ForgotPasswordComponent() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full border rounded-full outline-none px-5 py-3 pl-6 md:pl-12 text-sm md:text-base peer text-gray-600"
+                  className="w-full border rounded-full outline-none px-6 py-3 pl-6 md:pl-12 text-sm md:text-base peer text-gray-600"
                   placeholder="Enter your email"
                 />
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" size={20} />

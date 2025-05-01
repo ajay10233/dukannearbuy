@@ -320,9 +320,6 @@ export default function ChatBox() {
       setMessage(""); 
       setShowEmojiPicker(false); 
     };
-
-  
-
   
   const handleLike = async () => {
     if (!selectedPartner) return;
@@ -440,12 +437,12 @@ export default function ChatBox() {
                     />
                   </div>
                   <div className="flex flex-col justify-center gap-1 flex-grow">
-                    <Link
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setSelectedPartner({ ...partner });
-                      }}
+                    <div
+                      // href="#"
+                      // onClick={(e) => {
+                      //   e.preventDefault();
+                      //   setSelectedPartner({ ...partner });
+                      // }}
                       className={`font-medium text-[var(--secondary-foreground)] 
                                                 ${
                                                   selectedPartner?.id ===
@@ -453,7 +450,7 @@ export default function ChatBox() {
                                                 }`}
                     >
                       {partner.firmName || partner.firstName || "Unknown"}
-                    </Link>
+                    </div>
                     <span className="text-gray-500 font-normal text-[12px]">
                       {/* Last message here... */}
                       {partner.lastMessageContent
@@ -482,8 +479,11 @@ export default function ChatBox() {
           ) : filteredConversations?.length > 0 ? (
             filteredConversations.map((partner, index) => (
               <div
+                onClick={() => {
+                        setSelectedPartner({ ...partner });
+                      }}
                 key={partner.id || `partner-${index}`}
-                className="flex justify-between gap-2.5 py-2 border-b border-gray-200"
+                className="flex cursor-pointer justify-between gap-2.5 py-2 border-b border-gray-200"
               >
                 <div className="flex items-center gap-2.5">
                   <div className="relative w-14 h-14">
@@ -496,12 +496,12 @@ export default function ChatBox() {
                     />
                   </div>
                   <div className="flex flex-col justify-center gap-1 flex-grow">
-                    <Link
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setSelectedPartner({ ...partner });
-                      }}
+                    <div
+                      // href="#"
+                      // onClick={(e) => {
+                      //   e.preventDefault();
+                      //   setSelectedPartner({ ...partner });
+                      // }}
                       className={`font-medium text-[var(--secondary-foreground)] 
                                                 ${
                                                   selectedPartner?.id ===
@@ -513,7 +513,7 @@ export default function ChatBox() {
                         partner?.firstName ||
                         partner?.otherUser?.lastName ||
                         "Unknown"}
-                    </Link>
+                    </div>
                     <span className="text-gray-500 font-normal text-[12px]">
                       {/* Last message here... */}
                       {partner.lastMessageContent

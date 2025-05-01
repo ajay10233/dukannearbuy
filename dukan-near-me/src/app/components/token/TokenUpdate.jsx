@@ -1,11 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { MoveLeft, Loader, Clock, Check } from "lucide-react";
+import { MoveLeft, Loader, Clock, Check, X } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import io from "socket.io-client";
 import { useParams } from "next/navigation";
+
 
 const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { transports: ["websocket"] });;
 
@@ -13,6 +14,7 @@ export default function TokenUpdate() {
     const { institutionId } = useParams();
     const [currentTokens, setCurrentTokens] = useState([]); // Now an array
     const [completedTokens, setCompletedTokens] = useState([]);
+    const [selectedToken, setSelectedToken] = useState(null);
 
     useEffect(() => {
         if (!institutionId) return;
@@ -137,8 +139,9 @@ export default function TokenUpdate() {
                         <ul className="flex flex-col gap-y-2">
                             {completedTokens.map((token) => (
                                 <li
+                                    onClick={() => setSelectedToken(token)}
                                     key={token.id}
-                                    className="border border-gray-400 px-3 py-2 rounded"
+                                    className="border border-gray-400 px-3 py-2 rounded transition-all duration-500 ease-in-out hover:bg-gray-100 cursor-pointer"
                                 >
                                     <p>
                                         <span className="font-medium">Token #</span> {token.tokenNumber}
@@ -160,6 +163,27 @@ export default function TokenUpdate() {
                     )}
                 </div>
             </div>
+            {selectedToken && (
+                <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-[90%] max-w-md relative">
+                    <button
+                        onClick={() => setSelectedToken(null)}
+                        className="absolute top-2 right-2 text-gray-500 transition-all duration-500 ease-in-out hover:text-red-600 cursor-pointer"
+                    >
+                        <X size={20} />
+                    </button>
+                    <h3 className="text-lg font-bold mb-2">Token Details</h3>
+                    <p><span className="font-medium">Token #</span> {selectedToken.tokenNumber}</p>
+                    {selectedToken?.user?.username && (
+                        <p><span className="font-medium">Username:</span> {selectedToken.user?.username}</p>
+                    )}
+                    {selectedToken?.user?.mobileNumber && (
+                        <p><span className="font-medium">Phone:</span> {selectedToken.user?.mobileNumber}</p>
+                    )}
+                    </div>
+                </div>
+            )}
+
         </section>
     );
 }

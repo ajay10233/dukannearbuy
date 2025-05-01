@@ -25,13 +25,13 @@ export default function Footer() {
                 <Link href="#" className="block text-xs md:text-sm p-1">My Account</Link>
                 <Link href="/getstarted" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Login / SignUp</Link>
                 <Link href="/favprofile" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">My Sellers</Link>
-                <Link href="/aboutus" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">About Us</Link>
             </div>
             <div className='gap-y-2 text-md md:text-center'>
                 <h3 className="font-semibold text-lg md:text-xl pb-2.5">Quick Link</h3>
-                <Link href="/terms&condition#privacy-policy" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Privacy Policy</Link>
-                <Link href="/terms&condition" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Terms Of Use</Link>
-                <Link href="mailto:contact@nearbuydukaan.com" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Contact</Link>
+                    <Link href="/aboutus" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">About Us</Link>
+                    <Link href="/terms&condition#privacy-policy" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Privacy Policy</Link>
+                    <Link href="/terms&condition" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Terms Of Use</Link>
+                    <Link href="mailto:contact@nearbuydukaan.com" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Contact</Link>
               </div>
             <div className='hidden md:block  grid-cols-1 sm:grid-cols-2 md:grid-cols-3 w-full max-w-5xl mx-auto text-center'>
                 <h3 className="font-semibold text-lg md:text-xl pb-2.5">Support</h3>
