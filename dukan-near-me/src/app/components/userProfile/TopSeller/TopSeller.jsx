@@ -142,6 +142,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Autoplay from "embla-carousel-autoplay";
 
 export default function TopSeller() {
   const [location, setLocation] = useState(null);
