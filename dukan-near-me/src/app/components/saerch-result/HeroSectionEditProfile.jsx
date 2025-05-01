@@ -5,9 +5,9 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import useEmblaCarousel from "embla-carousel-react";
 import { Plus, RefreshCcwDot, Store, Crown } from "lucide-react";
-import ProfileWrapper from "./ProfileWrapper";
 
-export default function HeroSection({id}) {
+
+export default function HeroSectionEditProfile() {
   const [user, setUser] = useState(null);  // Store user data
   const [images, setImages] = useState([]);
   const [imageCount, setImageCount] = useState(0);
@@ -34,7 +34,7 @@ export default function HeroSection({id}) {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await fetch(`/api/users/${id}`);
+        const res = await fetch(`/api/users/me`);
         if (!res.ok) {
           throw new Error("Failed to fetch user data.");
         }

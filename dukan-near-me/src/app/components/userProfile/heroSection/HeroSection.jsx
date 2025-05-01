@@ -5,6 +5,7 @@ import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react"; // ✅ ADD this line
+import axios from "axios";
 
 const images = [
     "/hero-section.png",
@@ -35,7 +36,7 @@ export default function HeroSection() {
   // ✅ Fetch images from your API
   const fetchImages = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/admin-images");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin-images`);
       setImages(res.data); // assuming res.data is an array of { link, details }
     } catch (err) {
       console.error("Failed to fetch images:", err);

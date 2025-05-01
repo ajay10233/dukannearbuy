@@ -32,8 +32,7 @@ export const GET = async (req, { params }) => {
             phone: user.phone,
             role: user.role,
             profilePhoto: user.profilePhoto,
-            age: user.age,
-            gender: user.gender,
+            photos: user.photos,
             address: {
                 houseNumber: user.houseNumber,
                 street: user.street,
@@ -51,13 +50,15 @@ export const GET = async (req, { params }) => {
             paymentDetails: user.paymentDetails,
             description: user.description,
             hashtags: user.hashtags,
-            photos: user.photos,
             shopOpenTime: user.shopOpenTime,
             shopCloseTime: user.shopCloseTime,
             shopOpenDays: user.shopOpenDays,
             latitude: user.latitude,
             longitude: user.longitude,
             createdAt: user.createdAt,
+            upi_id: user.upi_id,
+            scanner_image: user.scanner_image,
+            allowedRoutes: user.allowedRoutes,
             subscriptionPlan: user.subscriptionPlan
                 ? {
                     id: user.subscriptionPlan.id,

@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import PaymentHistory from "./PaymentHistory";
 import CryptoJS from 'crypto-js';
+import { ChevronLeft } from "lucide-react";
 
 export default function ChatBox() {
   const [message, setMessage] = useState("");
@@ -313,6 +314,25 @@ export default function ChatBox() {
     }
   };
 
+
+    // Function to fetch the session data
+    const fetchSessionAndRedirect = async () => {
+      try {
+        const res = await fetch("/api/users/me");
+        const data = await res.json();
+  
+        if (data?.role === "USER") {
+          router.push("/UserHomePage");
+        } else if (data?.role === "INSTITUTION" || data?.role === "SELLER") {
+          router.push("/partnerHome");
+        } else {
+          console.error("Unknown role or not logged in.");
+        }
+      } catch (err) {
+        console.error("Error fetching session", err);
+      }
+    };
+
   return (
     <div className="flex h-screen bg-white font-[var(--font-plus-jakarta)]">
       {/* Left Sidebar */}
@@ -324,7 +344,7 @@ export default function ChatBox() {
         <div className="flex items-center gap-2">
           <button
             className="p-2 cursor-pointer"
-            onClick={() => router.push("/UserHomePage")}
+            onClick={fetchSessionAndRedirect}
           >
             <MoveLeft size={20} strokeWidth={1.5} />
           </button>
@@ -496,6 +516,12 @@ export default function ChatBox() {
             {/* Chat Header */}
             <header className="flex items-center justify-between p-4 bg-[#F7F7FC]">
               <div className="flex items-center gap-3">
+                <button
+                onClick={() => setSelectedPartner(null)}
+                className="md:hidden flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-200 transition"
+              >
+              <ChevronLeft size={24} strokeWidth={2} />
+              </button>
                 <div className="relative w-10 h-10">
                   <Image
                     src="/chatUserSvg/userImage.svg"
@@ -508,14 +534,14 @@ export default function ChatBox() {
                 <div>
                   <p className="text-[var(--chatText-color)] text-lg flex items-center gap-2">
                     {selectedPartner.firmName || selectedPartner.firstName || "Unknown"}
-                    <Heart
+                    {/* <Heart
                       size={20}
                       color="#DA3036"
                       fill={isFavorite ? "#DA3036" : "none"}
                       strokeWidth={1.5}
                       className="cursor-pointer"
                       onClick={() => handleLike(selectedPartner)}
-                    />
+                    /> */}
                   </p>
                 </div>
               </div>

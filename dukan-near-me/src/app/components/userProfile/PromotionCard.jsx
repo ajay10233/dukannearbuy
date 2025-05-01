@@ -21,6 +21,7 @@ export default function PromotionCard() {
     const [agreed, setAgreed] = useState(false);
 
 
+
     const kmCosts = {
       5: 99,
       20: 199,
@@ -44,8 +45,19 @@ export default function PromotionCard() {
   const router = useRouter();
 
   const handleClick = () => {
+    if (!agreed) {
+      alert("Please agree to the Terms and Conditions to continue.");
+      return;
+    }
+  
+    if (!selectedKm) {
+      alert("Please select a distance before continuing.");
+      return;
+    }
+  
     router.push(`/payment?amount=${discountedCost}`);
   };
+  
   
 
   
@@ -258,13 +270,18 @@ export default function PromotionCard() {
 
               {/* </div> */}
 
-                <button onClick={handleClick}
-                className="p-2 flex items-center justify-center gap-2 cursor-pointer bg-gradient-to-r from-teal-500 to-blue-600 text-white font-medium rounded-md hover:opacity-90 transition duration-300">
-                    <SquareCheckBig color="#fff" /> Confirm & Boost Now
-                </button>
             
+              <button
+        onClick={handleClick}
+        className={`p-2 flex items-center justify-center gap-2 cursor-pointer bg-gradient-to-r from-teal-500 to-blue-600 text-white font-medium rounded-md hover:opacity-90 transition duration-300 ${
+          agreed && selectedKm
+            ? "bg-emerald-500 text-white hover:bg-emerald-600"
+            : ""
+        }`}
+      >
+        <SquareCheckBig color="#fff" /> Confirm and Boost Now
+      </button>
             </div>
-
             
               </DialogContent>
 

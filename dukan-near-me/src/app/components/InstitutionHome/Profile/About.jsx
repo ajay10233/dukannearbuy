@@ -44,8 +44,26 @@ export default function About({ profileUpdated }) {
   // Add profileUpdated to useEffect dependencies
   useEffect(() => {
     fetchUserData();
+    fetchPastAddresses();
     console.log("Profile Updated:", profileUpdated);
+    console.log("Past Addresses is here :", pastAddresses);
   }, [profileUpdated]); // Add this dependency
+
+
+  const fetchPastAddresses = async () => {
+    try {
+      const response = await fetch(`/api/institutions/past-address`);
+      if (response.ok) {
+        const data = await response.json();
+        setPastAddresses(data);
+        
+      } else {
+        toast.error("Error fetching past addresses.");
+      }
+    } catch (error) {
+      toast.error("Error fetching past addresses.");
+    }
+  }
 
   // Update your fetchUserData to properly merge address data
   const fetchUserData = async () => {
@@ -74,7 +92,6 @@ export default function About({ profileUpdated }) {
           country: data?.address?.country || "",
         });
 
-        setPastAddresses(data?.pastAddresses || []);
       }
     } catch (error) {
       toast.error("Error fetching user data.");
@@ -176,14 +193,14 @@ export default function About({ profileUpdated }) {
           )}
         </div>
 
-        <div className="flex flex-col items-center gap-2">
+        {/* <div className="flex flex-col items-center gap-2">
           <button
             onClick={() => setShowManageOptions(true)}
             className="text-blue-600 hover:text-blue-800 cursor-pointer text-sm font-medium transition"
           >
             Manage Address
           </button>
-        </div>
+        </div> */}
 
         <div className="fixed bottom-30 right-4 z-10 flex flex-col items-center gap-2">
           <button
@@ -239,11 +256,11 @@ export default function About({ profileUpdated }) {
                     {/* <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]:rotate-180" /> */}
                   </AccordionTrigger>
                   <AccordionContent className="bg-blue-50 px-4 py-2 rounded-b-md border-t border-blue-200">
-                    {pastAddresses.length === 0 ? (
+                    {pastAddresses?.length === 0 ? (
                       <p className="text-gray-500">No past addresses found.</p>
                     ) : (
                       <div className="flex flex-col gap-3">
-                        {pastAddresses.map((addr, i) => (
+                        {pastAddresses?.map((addr, i) => (
                           <div
                             key={addr.id}
                             className="p-3 bg-white rounded-md shadow-sm border border-blue-200 transition-all hover:shadow-md"
@@ -334,17 +351,6 @@ export default function About({ profileUpdated }) {
               )}
             </div>
           </div>
-
-          {userData?.upi_id && (
-            <button
-              title="Scan Qr code"
-              onClick={() => setShowQRModal(true)}
-              className="pt-4 px-4 py-2 bg-green-600 flex cursor-pointer items-center gap-x-2 text-white rounded hover:bg-green-700 transition"
-            >
-              <IndianRupee size={20} strokeWidth={1.5} />
-              Pay Now
-            </button>
-          )}
         </div>
       )}
 
@@ -684,7 +690,7 @@ export default function About({ profileUpdated }) {
 
       {changingAddress && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-          <div className="flex flex-col bg-white rounded-lg shadow-lg w-[90%] max-w-3xl p-6 overflow-y-auto max-h-[90vh] dialogScroll">
+          <div className="flex flex-col bg-white rounded-lg shadow-lg w-full max-w-3xl p-6 overflow-y-auto max-h-[90vh] dialogScroll">
             <div className="flex justify-between items-center border-b pb-2 mb-4">
               <h2 className="text-2xl font-bold text-blue-700">
                 Change Address

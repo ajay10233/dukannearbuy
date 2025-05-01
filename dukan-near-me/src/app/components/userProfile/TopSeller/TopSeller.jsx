@@ -16,7 +16,9 @@ export default function TopSeller() {
     loop: true,
     align: "start", 
     slidesToScroll: 1, 
-  });
+  }
+  , [Autoplay({ delay: 2500, stopOnInteraction: false })]
+);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -117,8 +119,11 @@ export default function TopSeller() {
             image: "/hero-section.png",
           },
     ];
-    if (location?.city || location?.zipCode) {
+    if (sellers.length > 0) {
       setSellers(sellers);
+    }
+    else {
+      throw new Error("No user found");
     }
   }, [location]);
 
