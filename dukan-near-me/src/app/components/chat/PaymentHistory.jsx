@@ -12,7 +12,7 @@ export default function PaymentHistory() {
   useEffect(() => {
     const fetchReceiverId = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/conversations/all");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/conversations/all`);
         const json = await res.json();
         const id = json?.data?.[0]?.otherUser?.id;
         if (id) {
@@ -30,7 +30,7 @@ export default function PaymentHistory() {
     const fetchPayments = async () => {
       if (!receiverId) return;
       try {
-        const res = await fetch(`http://localhost:3000/api/payments/history?receiverId=${receiverId}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/payments/history?receiverId=${receiverId}`);
         const json = await res.json();
         setPayments(json.payments || []);
       } catch (error) {

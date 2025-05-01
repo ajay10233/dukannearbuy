@@ -5,7 +5,7 @@ import { useEffect } from "react";
 export default function HomeCards() {
   const cardData = [
     { title: "Live Chat", href: "/chat", slogan: "Connect to The World" },
-    { title: "Generate Bills", href: "#", slogan: "Digital Record" },
+    { title: "Generate Bills", href: "/bill-generation-page", slogan: "Digital Record" },
     { title: "Generate Token", href: "/tokengenerate", slogan: "Smart Crowd Handling" },
     { title: "Update Live Token", href: "/tokenupdate/${institutionId}", slogan: "Realtime Token Updates" }
   ];

@@ -147,7 +147,9 @@ export default function TopSeller() {
   const [location, setLocation] = useState(null);
   const [sellers, setSellers] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start", slidesToScroll: 1 });
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start", slidesToScroll: 1 }
+  , [Autoplay({ delay: 2500, stopOnInteraction: false })]
+);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -191,6 +193,68 @@ export default function TopSeller() {
   useEffect(() => {
     fetchCurrentLocation();
   }, []);
+
+  useEffect(() => {
+    const sellers = [
+      {
+        id: 1,
+        sellerName: "Rohit Electronics",
+        shopName: "Smart Gadget Hub",
+        location: "Sector 14, Gurugram",
+        customersServed: 250,
+        rating: 4.5,
+        image: "/hero-section.png",
+      },
+      {
+        id: 2,
+        sellerName: "Sneha Fashion",
+        shopName: "Trendy Threads",
+        location: "Karol Bagh, Delhi",
+        customersServed: 310,
+        rating: 4.8,
+        image: "/hero-section.png",
+      },
+      {
+        id: 3,
+        sellerName: "Amit Appliances",
+        shopName: "HomeTech",
+        location: "Noida Sector 62",
+        customersServed: 180,
+        rating: 4.2,
+        image: "/hero-section.png",
+        },
+        {
+            id: 4,
+            sellerName: "Rohit Electronics",
+            shopName: "Smart Gadget Hub",
+            location: "Sector 14, Gurugram",
+            customersServed: 250,
+            rating: 4.5,
+            image: "/hero-section.png",
+          },
+          {
+            id: 5,
+            sellerName: "Sneha Fashion",
+            shopName: "Trendy Threads",
+            location: "Karol Bagh, Delhi",
+            customersServed: 310,
+            rating: 4.8,
+            image: "/hero-section.png",
+          },
+          {
+            id: 6,
+            sellerName: "Amit Appliances",
+            shopName: "HomeTech",
+            location: "Noida Sector 62",
+            customersServed: 180,
+            rating: 4.2,
+            image: "/hero-section.png",
+          },
+    ];
+    if (location?.city || location?.zipCode) {
+      setSellers(sellers);
+    }
+  }, [location]);
 
   return (
     <div className="w-full flex flex-col items-center px-6 py-10">

@@ -4,14 +4,14 @@ import HeroSection from '@/app/components/InstitutionHome/Profile/HeroSection';
 import Review from '@/app/components/InstitutionHome/Profile/Review';
 import ProfileWrapper from '@/app/components/InstitutionHome/Profile/ProfileWrapper';
 
-export default async function page({ params }) {
-    await params.institutionId;
-    const {institutionId} = await params;
+export default async function Page({ params }) {
+    const { institutionId } = await params;
     console.log(institutionId);
+
     return (
         <>
             <Navbar />
-            <ProfileWrapper >
+            <ProfileWrapper>
                 <HeroSection id={institutionId} />
                 <About profileUpdated={institutionId} />
             </ProfileWrapper>
