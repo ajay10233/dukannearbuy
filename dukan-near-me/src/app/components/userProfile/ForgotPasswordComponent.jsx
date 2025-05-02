@@ -47,16 +47,27 @@ export default function ForgotPasswordComponent() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
-    const res = await fetch("/api/auth/forgot-password", {
-      method: "POST",
-      body: JSON.stringify({ email }),
-      headers: { "Content-Type": "application/json" },
-    });
-    const data = await res.json();
-    setMessage(data.message);
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      const data = await res.json();
+      
+      if (res.ok) {
+        toast.success(data.message || "Reset link sent!");
+      } else {
+        toast.error(data.message || "Something went wrong.");
+      }
+    } catch (error) {
+      toast.error("Failed to send reset link. Try again.");
+    } finally {
       setLoading(false);
-
+    }
   };
+  
 
   return (
       <div className='bg-gradient-to-bl from-[#e7f0ec] via-[#aabec2] to-[#0a94ad]'>
@@ -88,7 +99,7 @@ export default function ForgotPasswordComponent() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full border rounded-full outline-none px-6 py-3 pl-6 md:pl-12 text-sm md:text-base peer text-gray-600"
+                  className="w-full border rounded-full outline-none py-3 pl-12 text-sm md:text-base peer text-gray-600"
                   placeholder="Enter your email"
                 />
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
@@ -103,11 +114,11 @@ export default function ForgotPasswordComponent() {
               </button>
             </form>
 
-            {message && (
+            {/* {message && (
               <p className="text-center text-sm text-green-600 font-medium">
                 {message}
               </p>
-            )}
+            )} */}
 
             <div className="text-center text-sm text-gray-600">
               Back to{" "}

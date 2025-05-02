@@ -68,7 +68,7 @@ export default function SearchBar() {
       setSuggestions([]);
       setResults([]);
 
-        if (profile.firmName) {
+        if (profile.firmName || profile.firmName) {
             router.push(`/partnerProfile/${profile.id}`);
         } else {
             router.push(`/userProfile/${profile.id}`);

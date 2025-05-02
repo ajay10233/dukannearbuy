@@ -240,7 +240,10 @@ export default function ChatBox() {
       const res = await fetch(`/api/users/search?query=${query}`);
       const data = await res.json();
       console.log(data);
-      setFilteredConversations(data.data);
+
+      const combinedResults = [...(data.data || []), ...(data.users || [])];
+
+      setFilteredConversations(combinedResults);
     } catch (error) {
       console.error("❌ Search failed:", error);
     }
@@ -449,7 +452,8 @@ export default function ChatBox() {
                                                     partner.id && "font-medium"
                                                 }`}
                     >
-                      {partner.firmName || partner.firstName || "Unknown"}
+                        {partner.otherUser?.firmName || partner.otherUser?.name || "Unknown"}
+
                     </div>
                     <span className="text-gray-500 font-normal text-[12px]">
                       {/* Last message here... */}
@@ -508,11 +512,8 @@ export default function ChatBox() {
                                                     partner.id && "font-medium"
                                                 }`}
                     >
-                      {partner?.otherUser?.firmName ||
-                        partner?.firmName ||
-                        partner?.firstName ||
-                        partner?.otherUser?.lastName ||
-                        "Unknown"}
+                        {partner.otherUser?.firmName || partner.otherUser?.name || "Unknown"}
+
                     </div>
                     <span className="text-gray-500 font-normal text-[12px]">
                       {/* Last message here... */}
@@ -568,7 +569,8 @@ export default function ChatBox() {
                 </div>
                 <div>
                   <p className="text-[var(--chatText-color)] text-lg flex items-center gap-2">
-                    {selectedPartner.firmName || selectedPartner.firstName || "Unknown"}
+                  {selectedPartner?.otherUser?.firmName || selectedPartner?.otherUser?.name || "Unknown"}
+
                     {/* <Heart
                       size={20}
                       color="#DA3036"
@@ -682,7 +684,7 @@ export default function ChatBox() {
                                 : "rounded-tl-2xl rounded-tr-2xl rounded-br-2xl"
                             } flex items-center justify-between gap-1.5`}
                         >
-                          <p className="text-[#010101] opacity-85 font-normal text-sm flex items-center gap-2">
+                          <div className="text-[#010101] opacity-85 font-normal text-sm flex items-center gap-2">
                             {msg.content.startsWith(
                               "https://www.google.com/maps"
                             ) ? (
@@ -710,7 +712,7 @@ export default function ChatBox() {
                             ) : (
                               msg.content
                             )}
-                          </p>
+                          </div>
 
                           {msg.timestamp && (
                             <span className="text-xs text-[#0B3048] opacity-70 block text-right">

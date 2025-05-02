@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import { motion } from "framer-motion";
 import { ShieldCheck, Store, Stethoscope, Smartphone, SquareCheckBig, MoveRight, Phone, Mail, Instagram } from "lucide-react";
 import Image from "next/image";
@@ -27,6 +27,19 @@ const features = [
 ];
 
 export default function AboutUs() {
+  const startX = useRef(null);
+
+  const handleStart = (x) => {
+    startX.current = x;
+  };
+
+  const handleEnd = (x) => {
+    if (startX.current !== null && startX.current - x > 50) {
+      window.location.href = "https://www.instagram.com/nearbuydukaan?igsh=Zzl0N3AzN2w1cmRu&utm_source=qr";
+    }
+    startX.current = null; 
+  };
+
   return (
       <main className=" relative bg-gradient-to-br from-teal-50 via-slate-100 to-white">
             <section className="flex justify-center relative text-gray-800 px-6 md:px-20 py-16">
@@ -106,13 +119,51 @@ export default function AboutUs() {
             </p>
           </div>
 
+          {/* Founder Section */}
+          <div className="flex flex-col md:flex-row items-center justify-center gap-10 w-full">
+            {/* Image */}
+            <div className="w-full md:w-1/2 flex justify-center relative">
+              <Image 
+                src="/founder.png"  
+                alt="Founder"
+                width={200}
+                height={200}
+                className="rounded-xl shadow-lg object-cover" priority
+              />
+            </div>
+
+            {/* Details */}
+            <div className="w-full md:w-1/2 text-left space-y-4">
+              <h2 className="text-2xl font-semibold text-blue-700">Meet Our Founder</h2>
+              <p className="text-gray-700 text-sm md:text-base">
+                <strong>Ajay Sharma</strong> Lorem ipsum dolor sit amet consectetur, adipisicing elit. Exercitationem, quo. Mollitia expedita eaque odio at veniam et minima quaerat rerum, incidunt excepturi quo consequuntur sit aspernatur numquam iure, temporibus accusantium!.
+              </p>
+              <div className="flex gap-4 mt-2 text-gray-600">
+                <a href="mailto:founder@example.com" className="hover:text-blue-600">
+                  <Mail />
+                </a>
+                <a href="tel:+911234567890" className="hover:text-blue-600">
+                  <Phone />
+                </a>
+                <a href="https://instagram.com/yourhandle" target="_blank" className="hover:text-pink-500">
+                  <Instagram />
+                </a>
+              </div>
+            </div>
+          </div>
+  
+
           <div className="bg-indigo-50 p-3 md:p-6 rounded-xl text-center mt-4">
             <h3 className="text-xl md:text-2xl font-bold text-blue-800 mb-2">Join Us on Our Journey</h3>
             <p className="text-gray-700 mb-4 text-sm md:text-[16px]">
                 Whether you're a small shop owner, clinic manager, or tech-savvy customer—<br />
                 NearbuyDukaan is built to simplify your life and scale your business.
             </p>
-            <div className="flex justify-center">
+              <div className="flex justify-center"
+                onTouchStart={(e) => handleStart(e.touches[0].clientX)}
+                onTouchEnd={(e) => handleEnd(e.changedTouches[0].clientX)}
+                onMouseDown={(e) => handleStart(e.clientX)}
+                onMouseUp={(e) => handleEnd(e.clientX)} >
                 <button className="flex items-center gap-2 whitespace-nowrap px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition duration-300 shadow-md cursor-pointer">
                 <MoveRight size={20} strokeWidth={1.5} /> Be a part of the digital revolution
                 </button>

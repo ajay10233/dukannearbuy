@@ -177,6 +177,7 @@ export default function TopSeller() {
 
             const response = await fetch(`/api/top-profiles?latitude=${latitude}&longitude=${longitude}&radius=5`);
             const nearbySellers = await response.json();
+            console.log(nearbySellers);
             setSellers(nearbySellers);
           } catch (error) {
             console.error("Error fetching address details:", error);
@@ -195,67 +196,67 @@ export default function TopSeller() {
     fetchCurrentLocation();
   }, []);
 
-  useEffect(() => {
-    const sellers = [
-      {
-        id: 1,
-        sellerName: "Rohit Electronics",
-        shopName: "Smart Gadget Hub",
-        location: "Sector 14, Gurugram",
-        customersServed: 250,
-        rating: 4.5,
-        image: "/hero-section.png",
-      },
-      {
-        id: 2,
-        sellerName: "Sneha Fashion",
-        shopName: "Trendy Threads",
-        location: "Karol Bagh, Delhi",
-        customersServed: 310,
-        rating: 4.8,
-        image: "/hero-section.png",
-      },
-      {
-        id: 3,
-        sellerName: "Amit Appliances",
-        shopName: "HomeTech",
-        location: "Noida Sector 62",
-        customersServed: 180,
-        rating: 4.2,
-        image: "/hero-section.png",
-        },
-        {
-            id: 4,
-            sellerName: "Rohit Electronics",
-            shopName: "Smart Gadget Hub",
-            location: "Sector 14, Gurugram",
-            customersServed: 250,
-            rating: 4.5,
-            image: "/hero-section.png",
-          },
-          {
-            id: 5,
-            sellerName: "Sneha Fashion",
-            shopName: "Trendy Threads",
-            location: "Karol Bagh, Delhi",
-            customersServed: 310,
-            rating: 4.8,
-            image: "/hero-section.png",
-          },
-          {
-            id: 6,
-            sellerName: "Amit Appliances",
-            shopName: "HomeTech",
-            location: "Noida Sector 62",
-            customersServed: 180,
-            rating: 4.2,
-            image: "/hero-section.png",
-          },
-    ];
-    if (location?.city || location?.zipCode) {
-      setSellers(sellers);
-    }
-  }, [location]);
+  // useEffect(() => {
+  //   const sellers = [
+  //     {
+  //       id: 1,
+  //       sellerName: "Rohit Electronics",
+  //       shopName: "Smart Gadget Hub",
+  //       location: "Sector 14, Gurugram",
+  //       customersServed: 250,
+  //       rating: 4.5,
+  //       image: "/hero-section.png",
+  //     },
+  //     {
+  //       id: 2,
+  //       sellerName: "Sneha Fashion",
+  //       shopName: "Trendy Threads",
+  //       location: "Karol Bagh, Delhi",
+  //       customersServed: 310,
+  //       rating: 4.8,
+  //       image: "/hero-section.png",
+  //     },
+  //     {
+  //       id: 3,
+  //       sellerName: "Amit Appliances",
+  //       shopName: "HomeTech",
+  //       location: "Noida Sector 62",
+  //       customersServed: 180,
+  //       rating: 4.2,
+  //       image: "/hero-section.png",
+  //       },
+  //       {
+  //           id: 4,
+  //           sellerName: "Rohit Electronics",
+  //           shopName: "Smart Gadget Hub",
+  //           location: "Sector 14, Gurugram",
+  //           customersServed: 250,
+  //           rating: 4.5,
+  //           image: "/hero-section.png",
+  //         },
+  //         {
+  //           id: 5,
+  //           sellerName: "Sneha Fashion",
+  //           shopName: "Trendy Threads",
+  //           location: "Karol Bagh, Delhi",
+  //           customersServed: 310,
+  //           rating: 4.8,
+  //           image: "/hero-section.png",
+  //         },
+  //         {
+  //           id: 6,
+  //           sellerName: "Amit Appliances",
+  //           shopName: "HomeTech",
+  //           location: "Noida Sector 62",
+  //           customersServed: 180,
+  //           rating: 4.2,
+  //           image: "/hero-section.png",
+  //         },
+  //   ];
+  //   if (location?.city || location?.zipCode) {
+  //     setSellers(sellers);
+  //   }
+  // }, [location]);
 
   return (
     <div className="w-full flex flex-col items-center px-6 py-10">
@@ -265,29 +266,41 @@ export default function TopSeller() {
         </h2>
 
         <div className="relative">
-          <button onClick={() => emblaApi?.scrollPrev()} className="absolute -left-6 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white rounded-full p-2 shadow-md">
+        {sellers.length > 0 && (
+          <button onClick={() => emblaApi?.scrollPrev()} className="absolute -left-4 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white rounded-full p-2 shadow-md">
             <ChevronLeft className="text-black" />
           </button>
+        )}
 
           <div className="overflow-hidden" ref={emblaRef}>
-            <div className="flex">
-              {sellers.map((seller) => (
+            <div className="flex flex-col">
+              
+            {sellers.length > 0 ? (
+              sellers.map((seller) => (
                 <div key={seller.id} className="px-2 flex-[0_0_100%] sm:flex-[0_0_50%] md:flex-[0_0_33.3333%] xl:flex-[0_0_25%]">
-                  <Link href="#" className="block cursor-pointer">
+                  <Link href={`/partnerProfile/${seller?.user?.id}`}  className="block cursor-pointer">
                     <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col justify-center relative">
                       <div className="relative w-full h-52">
-                        <Image src={seller.user.photos[0]} alt={seller.firmName} fill className="object-cover" priority />
+                        <Image src={seller?.user?.photos[0]} alt={seller?.user?.firmName} fill className="object-cover" priority />
                       </div>
                       <div className="px-4 py-2 flex flex-col gap-1">
                         <div className="flex justify-between items-center">
-                          <h3 className="text-lg font-semibold">{seller.user.firmName}</h3>
+                          <h3 className="text-lg font-semibold">{seller?.user?.firmName}</h3>
                           <div className="flex items-center gap-1">
                             <Star size={20} color="#fdc700" fill="#fdc700" strokeWidth={1.5} />
-                            {/* {seller.rating} */}
+                            {seller.rating && seller.rating > 0 && (
+                              <span className="text-sm font-medium text-yellow-600">
+                                {seller.rating} Rating
+                              </span>
+                            )}
                           </div>
                         </div>
-                        <p className="text-md text-gray-500">{seller.user.shopAddress}</p>
-                        <p className="text-sm text-gray-500">{seller.distance}</p>
+                        <p className="text-md text-gray-500">
+                          {seller?.user?.houseNumber}, {seller?.user?.buildingName}, {seller?.user?.street}, {seller?.user?.city}, {seller.user.zipCode}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {seller?.distance?.toFixed(2)} km away
+                        </p>
                         <p className="text-sm text-gray-600 flex justify-between items-center">
                           {/* Customers Served: <span className="flex items-center gap-1 text-gray-500">{seller.customersServed}+</span> */}
                         </p>
@@ -306,13 +319,18 @@ export default function TopSeller() {
                     </div>
                   </Link>
                 </div>
-              ))}
+              ))
+            ) : (
+              <p className="text-center text-gray-500">No sellers found near you</p>
+            )}
             </div>
           </div>
 
-          <button onClick={() => emblaApi?.scrollNext()} className="absolute -right-6 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white rounded-full p-2 shadow-md">
-            <ChevronRight className="text-black" />
-          </button>
+          {sellers.length > 0 && (
+            <button onClick={() => emblaApi?.scrollNext()} className="absolute -right-4 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white rounded-full p-2 shadow-md">
+              <ChevronRight className="text-black" />
+            </button>
+          )}
         </div>
 
         {/* Dot Indicators */}

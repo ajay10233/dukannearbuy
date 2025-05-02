@@ -19,7 +19,24 @@ export default function Navbar() {
     });
     const [isSidebar, setIsSidebar] = useState(false);
     const router = useRouter();
+    const [hasFetchedSavedLocation, setHasFetchedSavedLocation] = useState(false);
     
+    const fetchSavedLocation = async () => {
+        try {
+            const res = await fetch("/api/users/location");
+            const data = await res.json();
+            
+            if (data.error) {
+                console.error("Error fetching location:", data.error);
+                return;
+            }
+            
+            setLocation(data); 
+        } catch (error) {
+            console.error("Error fetching saved location:", error);
+        }
+    };
+
     const fetchCurrentLocation = async () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -54,8 +71,21 @@ export default function Navbar() {
     };
 
     useEffect(() => {
-        fetchCurrentLocation();
+        const fetchLocation = async () => {
+            await fetchSavedLocation();
+            setHasFetchedSavedLocation(true);
+        };
+        fetchLocation();
     }, []);
+        
+    useEffect(() => {
+            if (
+                hasFetchedSavedLocation &&
+                Object.values(location).every(value => !value)
+            ) {
+                fetchCurrentLocation();
+            }
+    }, [hasFetchedSavedLocation]);
 
     const getTruncatedLocation = () => {
         const locationString = [

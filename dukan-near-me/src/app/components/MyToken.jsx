@@ -24,7 +24,7 @@ export default function MyToken() {
         </h1>
 
         <div className="shadow-xl rounded-xl border border-slate-300 bg-white backdrop-blur-sm">
-          <table className="w-[310px] md:min-w-full text-sm text-left text-gray-700">
+          <table className="w-[310px] h-100 md:min-w-full text-sm text-left text-gray-700">
             <thead className="text-xs uppercase bg-gradient-to-r from-blue-700 to-teal-500 text-white">
               <tr className="text-center">
                 <th className="px-2 py-3 md:px-6 md:py-4">Token No.</th>

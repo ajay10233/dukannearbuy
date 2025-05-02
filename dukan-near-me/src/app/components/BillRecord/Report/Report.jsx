@@ -38,43 +38,33 @@ export default function Report() {
     fetchReports();
   }, []);  
 
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      try {
-        const res = await fetch('/api/favorites');
-        const data = await res.json();
-        
-        if (res.ok) {
-          setFavorites(data);
-        } else {
-          setError('Failed to fetch favorites');
-        }
-      } catch (err) {
-        setError('An error occurred while fetching favorites');
-      }
-    };
-
-    fetchFavorites();
-  }, []);
-
-  const removeFromFavorites = async (billId) => {
+  const toggleFavorite = async (billId, isCurrentlyFav) => {
     try {
-      const res = await fetch('/api/favorites', {
-        method: 'DELETE',
+      const method = isCurrentlyFav ? 'DELETE' : 'POST';
+  
+      const res = await fetch('/api/favorite-bills', {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ billId }),
       });
-    
+  
       if (res.ok) {
-        setFavorites((prev) => Array.isArray(prev) ? prev.filter(item => item.billId !== billId) : []);
-        console.log("Favorite removed:", billId);
+        setFavorites((prev) => {
+          if (method === 'POST') {
+            return [...prev, { billId }];
+          } else {
+            return prev.filter(item => item.billId !== billId);
+          }
+        });
+      } else {
+        console.error("Toggle failed");
       }
     } catch (error) {
-        console.error("Error removing favorite:", error);
-      }
-  }
+      console.error("Toggle error:", error);
+    }
+  };
 
   // const toggleFavorite = (id) => {
   //   const updated = reports.map((report) => {
@@ -253,12 +243,12 @@ export default function Report() {
             <div key={report.id} className="bg-white md-2 p-2 md:p-4 rounded-xl shadow-sm flex items-center w-full">
               <ul className="flex items-center text-sm text-slate-600 w-full justify-between *:w-1/5 text-center">
                 <li className='hidden md:block'>
-                  <button onClick={() => removeFromFavorites(report.id)}>
+                  <button onClick={() => toggleFavorite(report.id, favorites.some(fav => fav.billId === bill.id))}>
                     <Heart
                       size={20}
                       strokeWidth={1.5}
                       stroke="red"
-                      fill={report.favorited ? 'red' : 'transparent'}
+                      fill={favorites.some(fav => fav.billId === report.id) ? 'red' : 'transparent'}
                       className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110"
                     />
                   </button>
@@ -274,7 +264,7 @@ export default function Report() {
                   {/* Show icon based on selected dropdown option */}
                   <span className='md:hidden flex justify-center items-center'>
                   {selectedAction === 'favorite' ? (
-                    <Heart size={20} strokeWidth={1.5} stroke="red" fill={report.favorited ? 'red' : 'transparent'} className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110" onClick={() => removeFromFavorites(report.id)} />
+                    <Heart size={20} strokeWidth={1.5} stroke="red"  fill={favorites.some(fav => fav.billId === report.id) ? 'red' : 'transparent'} className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110" onClick={() => toggleFavorite(report.id, favorites.some(fav => fav.billId === bill.id))} />
                   ) : selectedAction === 'download' ? (
                         <span className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
                         <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>
