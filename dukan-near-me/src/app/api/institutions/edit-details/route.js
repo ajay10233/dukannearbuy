@@ -64,11 +64,20 @@ export async function POST(req) {
             updateData.scanner_image = result.secure_url;
         }
 
+        if (updateData.shopOpenDays && Array.isArray(updateData.shopOpenDays)) {
+            const daysOfWeek = [
+                "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+            ];
+
+            updateData.shopOpenDays = updateData.shopOpenDays.sort((a, b) => {
+                return daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b);
+            });
+        }
+
         if (Object.keys(updateData).length === 0) {
             return new Response(JSON.stringify({ error: "No valid fields provided to update" }), { status: 400 });
         }
 
-        // ✅ Check if phone already exists for another user
         if (updateData.phone) {
             const existingUser = await prisma.user.findFirst({
                 where: {
@@ -83,7 +92,6 @@ export async function POST(req) {
             }
         }
 
-        // ✅ (Optional: you can also do same for username/email if needed)
 
         const updatedUser = await prisma.user.update({
             where: { id: session.user.id },

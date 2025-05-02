@@ -12,7 +12,7 @@ export default function Dashboard() {
   const HandleDeleteAccount = async (event) => {
     event.preventDefault();
     try {
-      const res = await axios.delete("/api/users/delete-account");
+      const res = await axios.delete("/api/auth/delete-account");
       console.log("🔐 Full User Data:", res.data) ;
     } catch (error) { 
       console.error("❌ Failed to fetch user details:", error);

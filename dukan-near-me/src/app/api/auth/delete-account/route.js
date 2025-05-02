@@ -2,13 +2,13 @@
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/authOptions';
-import prisma from '@/lib/prisma';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { prisma } from '@/utils/db';
 
 export async function DELETE(req) {
   const session = await getServerSession(authOptions);
 
-  if(!session || !session?.user?.email) {
+  if (!session || !session?.user?.email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -22,6 +22,7 @@ export async function DELETE(req) {
     }
 
     const userId = user.id;
+
     await prisma.$transaction([
       prisma.message.deleteMany({
         where: {
@@ -65,10 +66,10 @@ export async function DELETE(req) {
         },
       }),
       prisma.paidProfile.deleteMany({
-        where: { payerId: userId },
+        where: { userId: userId }, // Fixed: changed from payerId to userId
       }),
       prisma.abusiveComment.deleteMany({
-        where: { reportedByUserId: userId },
+        where: { reporter: { id: userId } }, // Updated field name to 'reporter' instead of 'reporterId'
       }),
       prisma.favoriteBills.deleteMany({
         where: { userId: userId },
@@ -93,8 +94,10 @@ export async function DELETE(req) {
       }),
     ]);
 
-    return NextResponse.json({ message: 'Account and related data deleted successfully.' }, { status: 200 });
-
+    return NextResponse.json(
+      { message: 'Account and related data deleted successfully.' },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('Delete account error:', error);
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
