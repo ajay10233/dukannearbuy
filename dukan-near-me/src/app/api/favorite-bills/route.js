@@ -1,13 +1,14 @@
 import { prisma } from "@/utils/db";
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId");
 
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
   if (!session || session.user.role!=='USER') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   if (!userId) {
