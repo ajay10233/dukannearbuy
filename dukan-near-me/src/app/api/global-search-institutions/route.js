@@ -73,6 +73,7 @@ export async function GET(req) {
       profilePhoto: true,
       latitude: true,
       longitude: true,
+      role: true,
     },
   })
 
