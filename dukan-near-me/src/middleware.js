@@ -5,13 +5,12 @@ export async function middleware(req) {
   const { nextUrl } = req;
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-  // console.log("Requested Path:", nextUrl.pathname);
+  // If no token, redirect to login
   if (!token) {
-    // console.log("No token found, redirecting to login...");
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // console.log("User Token:", token);
+  // If sessionToken exists, validate it (optional extra validation)
   const response = await fetch(`${req.nextUrl.origin}/api/validate-session`, {
     method: "POST",
     body: JSON.stringify({ sessionToken: token.sessionToken }),
@@ -20,7 +19,6 @@ export async function middleware(req) {
 
   const { isValid } = await response.json();
   if (!isValid) {
-    // console.log("Invalid session, redirecting to login...");
     const logoutResponse = NextResponse.redirect(new URL("/login", req.url));
     logoutResponse.cookies.set("next-auth.session-token", "", { path: "/", httpOnly: true, maxAge: 0 });
     logoutResponse.cookies.set("next-auth.csrf-token", "", { path: "/", httpOnly: true, maxAge: 0 });
@@ -28,21 +26,30 @@ export async function middleware(req) {
     return logoutResponse;
   }
 
+  // If path is exactly `/`, redirect based on user role
+  if (nextUrl.pathname === "/") {
+    if (token.role === "USER") {
+      return NextResponse.redirect(new URL("/UserHomePage", req.url));
+    } else if (token.role === "INSTITUTION") {
+      return NextResponse.redirect(new URL("/partnerHome", req.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
+    "/", 
     "/billGenerator/:path*",
     "/change-location/:path*",
     "/chat/:path*",
     "/chats/:path*",
-    "/dashboard/:path*", 
-    // "/getStarted/:path*", 
-    "/payments/:path*", 
+    "/dashboard/:path*",
+    "/payments/:path*",
     "/profile/:path*",
     "/session-manager/:path*",
     "/userProfile/:path*",
-    "/admin/:path*", 
+    "/admin/:path*",
   ],
 };

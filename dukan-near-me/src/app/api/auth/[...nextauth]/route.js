@@ -29,8 +29,11 @@ export const authOptions = {
           },
         });
       
-        // console.log("User is:", user);
         if (!user) throw new Error("User not found");
+      
+        if (!user.verified) {
+          throw new Error("User is not verified. Please verify your account.");
+        }
       
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) throw new Error("Invalid credentials");
@@ -51,7 +54,7 @@ export const authOptions = {
         });
       
         if (activeSessions.length >= maxDevices) {
-          const sessionsToRemove = activeSessions.length - maxDevices + 1; 
+          const sessionsToRemove = activeSessions.length - maxDevices + 1;
           const sessionsToDelete = activeSessions.slice(0, sessionsToRemove);
           for (const session of sessionsToDelete) {
             await prisma.session.delete({
@@ -82,16 +85,7 @@ export const authOptions = {
           profilePhoto: user.profilePhoto,
           age: user.age,
           gender: user.gender,
-          address: {
-            houseNumber: user.houseNumber,
-            street: user.street,
-            buildingName: user.buildingName,
-            landmark: user.landmark,
-            city: user.city,
-            state: user.state,
-            country: user.country,
-            zipCode: user.zipCode,
-          },
+          address: user.address,
           mobileNumber: user.mobileNumber,
           firmName: user.firmName,
           shopAddress: user.shopAddress,
@@ -117,6 +111,7 @@ export const authOptions = {
           } : null,
         };
       }
+      
       
     }),
   ],
