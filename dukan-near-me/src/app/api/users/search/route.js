@@ -23,7 +23,7 @@ export async function GET(req) {
     if (session.user.role === "USER") {
       searchResults = await prisma.user.findMany({
         where: {
-          role: {in: ["INSTITUTION", "SHOP_OWNER"] },
+          role: { in: ["INSTITUTION", "SHOP_OWNER"] },
           id: { not: session.user.id },
           OR: [
             { firmName: { contains: query, mode: "insensitive" } },
@@ -63,17 +63,22 @@ export async function GET(req) {
           description: true,
           profilePhoto: true,
           hashtags: true,
-          role: true, 
+          role: true,
         },
-      })
+      });
 
+      const mappedSearchResults = searchResults.map(item => ({ ...item, accepted: true }));
+      const mappedUserResults = userResults.map(item => ({ ...item, accepted: true }));
 
-      return NextResponse.json({ data: searchResults,users:userResults }, { status: 200 });
+      return NextResponse.json(
+        { data: mappedSearchResults, users: mappedUserResults },
+        { status: 200 }
+      );
 
     } else if (session.user.role === "INSTITUTION" || session.user.role === "SHOP_OWNER") {
       searchResults = await prisma.user.findMany({
         where: {
-          role: {in: ["INSTITUTION", "SHOP_OWNER"] },
+          role: { in: ["INSTITUTION", "SHOP_OWNER"] },
           id: { not: session.user.id },
           OR: [
             { firmName: { contains: query, mode: "insensitive" } },
@@ -98,11 +103,15 @@ export async function GET(req) {
           role: true,
         },
       });
-      return NextResponse.json({ data: searchResults }, { status: 200 });
+
+      const mappedSearchResults = searchResults.map(item => ({ ...item, accepted: true }));
+
+      return NextResponse.json(
+        { data: mappedSearchResults },
+        { status: 200 }
+      );
     }
 
-
-    
   } catch (error) {
     console.error("❌ Error searching users:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
