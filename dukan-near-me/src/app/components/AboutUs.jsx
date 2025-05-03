@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, Store, Stethoscope, Smartphone, SquareCheckBig, MoveRight, Phone, Mail, Instagram } from "lucide-react";
+import { ShieldCheck, Store, Stethoscope, Smartphone, SquareCheckBig, MoveRight, Phone, Mail, Instagram, Linkedin } from "lucide-react";
 import Image from "next/image";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import Link from "next/link";
@@ -27,9 +27,22 @@ const features = [
 ];
 
 export default function AboutUs() {
+  const startX = useRef(null);
+
+  const handleStart = (x) => {
+    startX.current = x;
+  };
+
+  const handleEnd = (x) => {
+    if (startX.current !== null && startX.current - x > 50) {
+      window.location.href = "https://www.instagram.com/nearbuydukaan?igsh=Zzl0N3AzN2w1cmRu&utm_source=qr";
+    }
+    startX.current = null; 
+  };
+
   return (
       <main className=" relative bg-gradient-to-br from-teal-50 via-slate-100 to-white">
-            <section className="flex justify-center relative text-gray-800 px-6 md:px-20 py-16">
+            <section className="flex justify-center relative text-gray-800 px-6 md:px-20 py-14">
         <div className="w-80 sm:w-full sm:max-w-5xl flex flex-col justify-center items-center text-center gap-4">
         <motion.h1
           className="text-3xl md:text-6xl font-bold text-blue-800"
@@ -106,13 +119,50 @@ export default function AboutUs() {
             </p>
           </div>
 
+          {/* Founder Section */}
+          <div className="flex flex-col md:flex-row items-center justify-center gap-5 md:gap-10 w-full">
+            {/* Image */}
+            <div className="w-full md:w-1/2 flex justify-center relative">
+              <Image 
+                src="/founder.png"  
+                alt="Founder"
+                width={200}
+                height={200}
+                className="rounded-xl shadow-lg object-cover" priority
+              />
+            </div>
+
+            {/* Details */}
+            <div className="w-full md:w-1/2 text-left flex flex-col gap-y-2 md:gap-y-4">
+              <h2 className="text-2xl font-semibold text-blue-700">Meet Our Founder</h2>
+              <h3 className="text-xl font-medium text-gray-800">Ajay Sharma</h3>
+              <p className="text-gray-700 text-sm md:text-base">
+              Ajay Sharma, who started NearbuyDukaan, envisions transforming the local market into a digital space. He aims to provide customers with comfort and a variety of options, allowing them to make quicker, smarter, and more informed decisions. Join our community and participate in the revolution today!.
+              </p>
+              <div className="flex gap-4 mt-2 text-gray-600">
+                <Link
+                  href="https://www.linkedin.com/in/ajay-sharma-8b7922183/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xl cursor-pointer transition-all ease-in-out duration-500 hover:text-blue-600 flex items-center gap-2">
+                    <Linkedin size={20} strokeWidth={1.5} />
+                    <span className="text-sm">Connect with us on LinkedIn</span>
+                  </Link>
+              </div>
+            </div>
+          </div>
+  
           <div className="bg-indigo-50 p-3 md:p-6 rounded-xl text-center mt-4">
             <h3 className="text-xl md:text-2xl font-bold text-blue-800 mb-2">Join Us on Our Journey</h3>
             <p className="text-gray-700 mb-4 text-sm md:text-[16px]">
                 Whether you're a small shop owner, clinic manager, or tech-savvy customer—<br />
-                NearbuyDukaan is built to simplify your life and scale your business.
+                NearbuyDukaan is built to simplify your experience and drive growth.
             </p>
-            <div className="flex justify-center">
+              <div className="flex justify-center"
+                onTouchStart={(e) => handleStart(e.touches[0].clientX)}
+                onTouchEnd={(e) => handleEnd(e.changedTouches[0].clientX)}
+                onMouseDown={(e) => handleStart(e.clientX)}
+                onMouseUp={(e) => handleEnd(e.clientX)} >
                 <button className="flex items-center gap-2 whitespace-nowrap px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition duration-300 shadow-md cursor-pointer">
                 <MoveRight size={20} strokeWidth={1.5} /> Be a part of the digital revolution
                 </button>

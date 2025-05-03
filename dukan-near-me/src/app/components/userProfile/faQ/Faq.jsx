@@ -6,7 +6,7 @@ import Image from "next/image";
 
 export default function Faq() {
     return (
-        <div className="flex flex-col items-center justify-center h-full w-full pt-10 pb-4 px-4 md:px-0 gap-y-8">
+        <div className="flex flex-col items-center justify-center h-full w-full pt-10 pb-4 px-4 gap-y-8">
             <h2 className="text-xl md:text-4xl font-extrabold text-center">Frequently Asked Questions</h2>
             <div className="w-full max-w-sm md:max-w-5xl bg-white shadow-none md:shadow-md rounded-md p-3 md:p-6">
                 <Accordion type="single" collapsible className="w-full">

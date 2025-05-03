@@ -1,9 +1,38 @@
-import React from 'react'
+"use client"
+
+import React, { useEffect, useState } from 'react'
 import { SendHorizontal, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from "next/navigation";
 
 export default function Footer() {
+    const router = useRouter();
+    const [role, setRole] = useState("");
+
+    useEffect(() => {
+        const fetchUserRole = async () => {
+        try {
+            const res = await fetch("/api/users/me");
+            const data = await res.json();
+            setRole(data.role);
+        } catch (error) {
+            console.error("Error fetching user role:", error);
+        }
+        };
+        fetchUserRole();
+    }, []);
+
+    const handleAccountRedirect = () => {
+        if (role === "USER") {
+        router.push("/userProfile");
+        } else if (role === "SHOP_OWNER" || role === "INSTITUTION") {
+        router.push("/partnerProfile");
+        } else {
+        router.push("/login");
+        }
+    };
+
   return (
       <footer className='flex flex-col justify-around items-center bg-black p-6 md:px-8 md:pt-12 md:pb-6 gap-6 md:gap-8 text-white font-[var(--font-poppins)]'>
         <div className='grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-6 w-full'>
@@ -22,7 +51,7 @@ export default function Footer() {
             </div> */}
             <div className='gap-y-2 text-md md:text-center'>
                 <h3 className="font-semibold text-lg md:text-xl pb-2.5">Account</h3>
-                <Link href="#" className="block text-xs md:text-sm p-1">My Account</Link>
+                <span onClick={handleAccountRedirect} className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">My Account</span>
                 <Link href="/getstarted" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Login / SignUp</Link>
                 <Link href="/favprofile" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">My Sellers</Link>
             </div>

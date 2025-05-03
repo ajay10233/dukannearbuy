@@ -46,12 +46,12 @@ export default function PromotionCard() {
 
   const handleClick = () => {
     if (!agreed) {
-      alert("Please agree to the Terms and Conditions to continue.");
+      toast.error("Please agree to the Terms and Conditions to continue.");
       return;
     }
   
     if (!selectedKm) {
-      alert("Please select a distance before continuing.");
+      toast.error("Please select a distance before continuing.");
       return;
     }
   
@@ -181,7 +181,6 @@ export default function PromotionCard() {
                       <span>on your first paid promotion!</span>
                     </div>
                     <div className="text-sm md:text-[16px] py-1 md:p-0">
-                      {/* <span className="text-emerald-700 font-semibold">Get 50% OFF</span>{" "} */}
                       <span>Use coupon - NBDFIRST50</span>
                     </div>
                 </div>
@@ -264,7 +263,7 @@ export default function PromotionCard() {
                     id="agree"
                     checked={agreed}
                     onChange={() => setAgreed(!agreed)}
-                    className="w-4 h-4 cursor-pointer text-teal-700"
+                    className="w-4 h-4 cursor-pointer"
                   />
                   <label htmlFor="agree" className="text-sm text-gray-700">
                     I agree to the <a href="/terms&condition#payment-terms" className="text-teal-500">terms and conditions.</a>
@@ -285,8 +284,6 @@ export default function PromotionCard() {
         <SquareCheckBig color="#fff" /> Confirm and Boost Now
       </button>
             </div>
-
-            
               </DialogContent>
         </Dialog>
     </section>

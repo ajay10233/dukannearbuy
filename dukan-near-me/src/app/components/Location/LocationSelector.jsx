@@ -120,7 +120,7 @@ export default function LocationSelector({ onSave }) {
         <input {...register("zipCode")} placeholder="Zip Code" className="border p-2 rounded-md" />
         
         <div className="col-span-1 md:col-span-2 flex justify-center">
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
+          <button type="submit" className="bg-blue-500 text-white px-4 py-2 cursor-pointer rounded-md transition-all duration-300 ease-in-out hover:bg-blue-600 ">
             Save Location
           </button>
         </div>

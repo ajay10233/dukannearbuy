@@ -44,6 +44,7 @@ import Link from "next/link";
 import { Lock } from "lucide-react";
 import Image from "next/image";
 import { Eye, EyeClosed } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function ResetPasswordComponent() {
     const searchParams = useSearchParams();
@@ -121,7 +122,7 @@ export default function ResetPasswordComponent() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            className="w-full border rounded-full outline-none px-6 py-3 pl-6 md:pl-12 text-sm md:text-base peer text-gray-600"
+                            className="w-full border rounded-full outline-none p-3 md:pl-12 text-sm md:text-base peer text-gray-600"
                             placeholder="Enter your New password"
                         />
                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 cursor-pointer"
@@ -140,11 +141,11 @@ export default function ResetPasswordComponent() {
                         </button>
                     </form>
 
-                    {message && (
+                    {/* {message && (
                         <p className="text-center text-sm text-green-600 font-medium">
                         {message}
                         </p>
-                    )}
+                    )} */}
 
                     <div className="text-center text-sm text-gray-600">
                         Back to{" "}
