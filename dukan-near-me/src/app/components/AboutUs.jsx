@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, Store, Stethoscope, Smartphone, SquareCheckBig, MoveRight, Phone, Mail, Instagram } from "lucide-react";
+import { ShieldCheck, Store, Stethoscope, Smartphone, SquareCheckBig, MoveRight, Phone, Mail, Instagram, Linkedin } from "lucide-react";
 import Image from "next/image";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import Link from "next/link";
@@ -42,7 +42,7 @@ export default function AboutUs() {
 
   return (
       <main className=" relative bg-gradient-to-br from-teal-50 via-slate-100 to-white">
-            <section className="flex justify-center relative text-gray-800 px-6 md:px-20 py-16">
+            <section className="flex justify-center relative text-gray-800 px-6 md:px-20 py-14">
         <div className="w-80 sm:w-full sm:max-w-5xl flex flex-col justify-center items-center text-center gap-4">
         <motion.h1
           className="text-3xl md:text-6xl font-bold text-blue-800"
@@ -120,7 +120,7 @@ export default function AboutUs() {
           </div>
 
           {/* Founder Section */}
-          <div className="flex flex-col md:flex-row items-center justify-center gap-10 w-full">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-5 md:gap-10 w-full">
             {/* Image */}
             <div className="w-full md:w-1/2 flex justify-center relative">
               <Image 
@@ -133,31 +133,30 @@ export default function AboutUs() {
             </div>
 
             {/* Details */}
-            <div className="w-full md:w-1/2 text-left space-y-4">
+            <div className="w-full md:w-1/2 text-left flex flex-col gap-y-2 md:gap-y-4">
               <h2 className="text-2xl font-semibold text-blue-700">Meet Our Founder</h2>
+              <h3 className="text-xl font-medium text-gray-800">Ajay Sharma</h3>
               <p className="text-gray-700 text-sm md:text-base">
-                <strong>Ajay Sharma</strong> Lorem ipsum dolor sit amet consectetur, adipisicing elit. Exercitationem, quo. Mollitia expedita eaque odio at veniam et minima quaerat rerum, incidunt excepturi quo consequuntur sit aspernatur numquam iure, temporibus accusantium!.
+              Ajay Sharma, who started NearbuyDukaan, envisions transforming the local market into a digital space. He aims to provide customers with comfort and a variety of options, allowing them to make quicker, smarter, and more informed decisions. Join our community and participate in the revolution today!.
               </p>
               <div className="flex gap-4 mt-2 text-gray-600">
-                <a href="mailto:founder@example.com" className="hover:text-blue-600">
-                  <Mail />
-                </a>
-                <a href="tel:+911234567890" className="hover:text-blue-600">
-                  <Phone />
-                </a>
-                <a href="https://instagram.com/yourhandle" target="_blank" className="hover:text-pink-500">
-                  <Instagram />
-                </a>
+                <Link
+                  href="https://www.linkedin.com/in/ajay-sharma-8b7922183/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xl cursor-pointer transition-all ease-in-out duration-500 hover:text-blue-600 flex items-center gap-2">
+                    <Linkedin size={20} strokeWidth={1.5} />
+                    <span className="text-sm">Connect with us on LinkedIn</span>
+                  </Link>
               </div>
             </div>
           </div>
   
-
           <div className="bg-indigo-50 p-3 md:p-6 rounded-xl text-center mt-4">
             <h3 className="text-xl md:text-2xl font-bold text-blue-800 mb-2">Join Us on Our Journey</h3>
             <p className="text-gray-700 mb-4 text-sm md:text-[16px]">
                 Whether you're a small shop owner, clinic manager, or tech-savvy customer—<br />
-                NearbuyDukaan is built to simplify your life and scale your business.
+                NearbuyDukaan is built to simplify your experience and drive growth.
             </p>
               <div className="flex justify-center"
                 onTouchStart={(e) => handleStart(e.touches[0].clientX)}
