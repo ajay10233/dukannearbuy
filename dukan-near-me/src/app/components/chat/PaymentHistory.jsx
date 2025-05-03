@@ -1,13 +1,21 @@
 "use client";
 
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Pencil, Check, X, Plus, ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // For client-side navigation
+import { useSession } from "next-auth/react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function PaymentHistory() {
   const [receiverId, setReceiverId] = useState(null);
   const [payments, setPayments] = useState([]);
-  const router = useRouter();
+  const [editingId, setEditingId] = useState(null);
+  const [editedPayment, setEditedPayment] = useState({});
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [amount, setAmount] = useState("");
+  const [status, setStatus] = useState("PENDING");
+  const [loading, setLoading] = useState(false);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchReceiverId = async () => {
@@ -15,89 +23,233 @@ export default function PaymentHistory() {
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/conversations/all`);
         const json = await res.json();
         const id = json?.data?.[0]?.otherUser?.id;
-        if (id) {
-          setReceiverId(id);
-        }
+        if (id) setReceiverId(id);
       } catch (error) {
         console.error("Error fetching conversations", error);
       }
     };
-
     fetchReceiverId();
   }, []);
 
-  useEffect(() => {
-    const fetchPayments = async () => {
-      if (!receiverId) return;
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/payments/history?receiverId=${receiverId}`);
-        const json = await res.json();
-        setPayments(json.payments || []);
-      } catch (error) {
-        console.error("Error fetching payments", error);
-      }
-    };
+  const fetchPayments = async () => {
+    if (!receiverId) return;
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/payments/history?receiverId=${receiverId}`);
+      const json = await res.json();
+      setPayments(json.payments || []);
+    } catch (error) {
+      console.error("Error fetching payments", error);
+    }
+  };
 
+  useEffect(() => {
     fetchPayments();
   }, [receiverId]);
 
-  const handleCreatePayment = () => {
-    if (receiverId) {
-      router.push(`/payments/create?receiverId=${receiverId}`);
+  const handleEditClick = (payment) => {
+    setEditingId(payment.id);
+    setEditedPayment({ ...payment });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditedPayment({});
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      const res = await fetch(`/api/payments/update-payment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paymentId: editedPayment.id,
+          amount: editedPayment.amount,
+          status: editedPayment.status,
+        }),
+      });
+
+      const json = await res.json();
+      if (res.ok) {
+        await fetchPayments();
+        setEditingId(null);
+        setEditedPayment({});
+      } else {
+        alert(json.error || "Failed to update payment");
+      }
+    } catch (error) {
+      console.error("Save failed", error);
+      alert("An error occurred while saving the payment.");
+    }
+  };
+
+  const updateEditedField = (field, value) => {
+    setEditedPayment((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleCreatePayment = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await fetch("/api/payments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          senderId: session?.user?.id,
+          receiverId,
+          amount: parseFloat(amount),
+          status,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("✅ Payment created successfully!");
+        setAmount("");
+        setStatus("PENDING");
+        setShowCreateForm(false);
+        await fetchPayments();
+      } else {
+        throw new Error("❌ Failed to create payment");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex flex-col gap-y-4 mt-5 cursor-default">
-      {/* Create Payment Button */}
+      <ToastContainer position="top-right" autoClose={2000} />
+
+      {/* Toggle Create Form Button */}
       {receiverId && (
         <div className="self-end">
           <button
-            onClick={handleCreatePayment}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+            onClick={() => setShowCreateForm((prev) => !prev)}
+            className="flex items-center gap-x-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
           >
-            Create Payment
+            {showCreateForm ? <ArrowLeft size={16} /> : <Plus size={16} />}
+            {showCreateForm ? "Back to Payments" : "Create Payment"}
           </button>
         </div>
       )}
 
-      {/* Header Row */}
-      <div className="flex items-center *:w-1/3 text-sm capitalize text-slate-400">
-        <div className="flex justify-center items-center gap-x-1">
-          <h3>Billing Date</h3>
+      {/* Create Payment Form */}
+      {showCreateForm && (
+        <div className="max-w-xl w-full bg-white p-6 rounded-md shadow">
+          <h2 className="text-lg font-semibold mb-4 text-black">Create Payment</h2>
+          <form onSubmit={handleCreatePayment}>
+            <div className="mb-4">
+              <label className="block text-gray-700">Amount (₹)</label>
+              <input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                required
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Status</label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="PENDING">Pending</option>
+                <option value="SUCCESS">Success</option>
+                <option value="CONFLICT">Conflict</option>
+              </select>
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full text-white py-2 rounded-md transition ${loading ? "bg-gray-400" : "bg-green-500 hover:bg-green-600"}`}
+            >
+              {loading ? "Processing..." : "Create Payment"}
+            </button>
+          </form>
         </div>
-        <div className="flex justify-center items-center gap-x-1">
-          <h3>Amount</h3>
-        </div>
-        <div className="flex justify-center items-center gap-x-1">
-          <h3>Status</h3>
-        </div>
-      </div>
+      )}
 
-      {/* Payment Cards */}
-      <div className="flex flex-col gap-y-4">
-        {payments.map((details, i) => (
-          <div className="flex items-center bg-white p-2 py-3 rounded-lg" key={i}>
-            <ul className="flex items-center text-sm text-slate-500 *:w-1/3 w-full text-center">
-              <li>{new Date(details.createdAt).toLocaleDateString()}</li>
-              <li>₹{details.amount}</li>
-              <li className="flex justify-center">
-                <span
-                  className={`${
-                    details.status === "PENDING"
-                      ? `bg-yellow-100 text-yellow-400`
-                      : details.status === "CONFLICT"
-                      ? `bg-red-100 text-red-400`
-                      : `bg-green-100 text-green-400`
-                  } rounded-full block w-3/4 p-0.5`}
-                >
-                  {details.status}
-                </span>
-              </li>
-            </ul>
+      {/* Payment Table Header */}
+      {!showCreateForm && (
+        <>
+          <div className="flex items-center *:w-1/3 text-sm capitalize text-slate-400">
+            <h3 className="text-center w-1/3">Billing Date</h3>
+            <h3 className="text-center w-1/3">Amount</h3>
+            <h3 className="text-center w-1/3">Status</h3>
           </div>
-        ))}
-      </div>
+
+          {/* Payment List */}
+          <div className="flex flex-col gap-y-4">
+            {payments.map((payment) => {
+              const isEditing = editingId === payment.id;
+              return (
+                <div key={payment.id} className="flex items-center bg-white p-2 py-3 rounded-lg">
+                  <ul className="flex items-center text-sm text-slate-500 *:w-1/3 w-full text-center">
+                    <li>{new Date(payment.createdAt).toLocaleDateString()}</li>
+                    <li>
+                      {isEditing ? (
+                        <input
+                          type="number"
+                          value={editedPayment.amount}
+                          onChange={(e) => updateEditedField("amount", parseFloat(e.target.value))}
+                          className="border rounded px-1 py-0.5 w-2/3"
+                        />
+                      ) : (
+                        <>₹{payment.amount}</>
+                      )}
+                    </li>
+                    <li className="flex justify-center items-center gap-x-2">
+                      {isEditing ? (
+                        <select
+                          value={editedPayment.status}
+                          onChange={(e) => updateEditedField("status", e.target.value)}
+                          className="border rounded px-1 py-0.5"
+                        >
+                          <option value="PENDING">PENDING</option>
+                          <option value="COMPLETED">COMPLETED</option>
+                          <option value="CONFLICT">CONFLICT</option>
+                        </select>
+                      ) : (
+                        <span
+                          className={`${
+                            payment.status === "PENDING"
+                              ? `bg-yellow-100 text-yellow-400`
+                              : payment.status === "CONFLICT"
+                              ? `bg-red-100 text-red-400`
+                              : `bg-green-100 text-green-400`
+                          } rounded-full block w-3/4 p-0.5`}
+                        >
+                          {payment.status}
+                        </span>
+                      )}
+                    </li>
+                  </ul>
+                  <div className="flex items-center gap-x-2 ml-4">
+                    {isEditing ? (
+                      <>
+                        <button onClick={handleSaveEdit}>
+                          <Check className="text-green-500 w-4 h-4" />
+                        </button>
+                        <button onClick={handleCancelEdit}>
+                          <X className="text-red-500 w-4 h-4" />
+                        </button>
+                      </>
+                    ) : (
+                      <button onClick={() => handleEditClick(payment)}>
+                        <Pencil className="text-slate-500 w-4 h-4 hover:text-blue-500" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }
