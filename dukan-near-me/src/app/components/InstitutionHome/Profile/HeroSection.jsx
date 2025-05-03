@@ -138,11 +138,11 @@ export default function HeroSection({id}) {
   };
   
 
-  const handleSetPrimary = (index) => {
-    const rotated = [...images.slice(index), ...images.slice(0, index)];
-    setImages(rotated);
-    toast.success("Primary image updated!");
-  };
+  // const handleSetPrimary = (index) => {
+  //   const rotated = [...images.slice(index), ...images.slice(0, index)];
+  //   setImages(rotated);
+  //   toast.success("Primary image updated!");
+  // };
 
   if (!user) {
     return (
@@ -168,7 +168,7 @@ export default function HeroSection({id}) {
                     priority
                   />
 
-                  {index === 0 && (
+                  {/* {index === 0 && (
                     <span className="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full shadow">
                       Primary
                     </span>
@@ -185,7 +185,7 @@ export default function HeroSection({id}) {
                     >
                       <RefreshCcwDot size={20} color="#000000" strokeWidth={1.5} />
                     </button>
-                  )}
+                  )} */}
                 </div>
               ))}
             </div>

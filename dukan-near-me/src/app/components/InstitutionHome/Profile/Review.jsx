@@ -1,99 +1,12 @@
 "use client";
 
-// import { useState } from "react";
-// import { Star } from "lucide-react";
-
-// export default function CommentSection({ comments = [], onSubmit }) {
-//   const [comment, setComment] = useState("");
-//   const [rating, setRating] = useState(0);
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     if (comment.trim() && rating > 0) {
-//       onSubmit({ comment, rating });
-//       setComment("");
-//       setRating(0);
-//     }
-//   };
-
-//   return (
-//     <div className="flex justify-center py-6">
-//       <div className="w-3/4 px-8 py-4 border border-gray-400">
-//         <h2 className="text-xl font-semibold pb-4">Write a Review</h2>
-
-//         <form onSubmit={handleSubmit} className="flex flex-col gap-y-4">
-//           {/* Star Rating */}
-//           <div className="flex items-center gap-x-2">
-//             {[1, 2, 3, 4, 5].map((star) => (
-//               <button
-//                 type="button"
-//                 key={star}
-//                 onClick={() => setRating(star)}
-//               >
-//                 <Star
-//                   className={`w-6 h-6 cursor-pointer ${
-//                     star <= rating
-//                       ? "text-yellow-400 fill-yellow-400"
-//                       : "text-gray-300"
-//                   }`}
-//                 />
-//               </button>
-//             ))}
-//           </div>
-
-//           {/* Comment Input */}
-//           <textarea
-//             className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-//             rows="4"
-//             placeholder="Write your feedback..."
-//             value={comment}
-//             onChange={(e) => setComment(e.target.value)}
-//           ></textarea>
-
-//           <button
-//             type="submit"
-//             className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded hover:bg-blue-700"
-//           >
-//             Post Review
-//           </button>
-//         </form>
-
-//         {/* Display Comments */}
-//         <div className="pt-6">
-//           <h3 className="text-lg font-medium mb-2">Reviews</h3>
-//           <ul className="flex flex-col gap-y-3">
-//             {comments.map((c, index) => (
-//               <li
-//                 key={index}
-//                 className="p-3 bg-gray-100 rounded-md shadow-sm"
-//               >
-//                 <div className="flex items-center mb-1 text-yellow-400 text-sm">
-//                   {[...Array(c.rating)].map((_, i) => (
-//                     <Star
-//                       key={i}
-//                       className="w-4 h-4 fill-yellow-400 text-yellow-400"
-//                     />
-//                   ))}
-//                   <span className="pl-2 text-gray-700 text-xs">
-//                     ({c.rating}/5)
-//                   </span>
-//                 </div>
-//                 <p className="text-gray-800">{c.comment}</p>
-//               </li>
-//             ))}
-//           </ul>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
 import { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { Star } from "lucide-react";
+import { EllipsisVertical, Star } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 export default function Review({ user }) {
     const { institutionId } = useParams();
@@ -102,8 +15,11 @@ export default function Review({ user }) {
     const [rating, setRating] = useState(0);
     const [reviews, setReviews] = useState([]);
     const [editingId, setEditingId] = useState(null);
-    const [avgRating, setAvgRating] = useState(0);
+    const [showOptions, setShowOptions] = useState(null);
+    const [showReportModal, setShowReportModal] = useState(false);
+    const [selectedReviewId, setSelectedReviewId] = useState(null);
 
+    // const [avgRating, setAvgRating] = useState(0);
 
   useEffect(() => {
     if (institutionId) {
@@ -124,7 +40,12 @@ export default function Review({ user }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!comment.trim() || rating === 0) return;
+    if (!comment.trim()) return;
+
+    if (rating === 0) {
+      toast.error("Please give a star rating before submitting.");
+      return;
+    }
 
     try {
       if (editingId) {
@@ -150,123 +71,192 @@ export default function Review({ user }) {
       setEditingId(null);
 
       const updated = await axios.get(`/api/reviews?institutionId=${institutionId}`);
+
       setReviews(updated.data);
     } catch (err) {
       toast.error("Error submitting review");
     }
   };
-
+  
   const handleEdit = (review) => {
     setRating(review.rating);
     setComment(review.comment);
     setEditingId(review.id);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setShowOptions(null);
   };
 
+  const confirmReport = (reviewId) => {
+    setSelectedReviewId(reviewId);
+    setShowReportModal(true);
+  };  
+
+  const handleReport = async (reviewId) => {
+    try {
+      await axios.post("/api/reviews/report", {
+        reviewId: selectedReviewId,
+        reason: "Inappropriate or abusive content",
+        reportedBy: session?.user?.id,
+      });
+  
+      toast.success("Report submitted!");
+    } catch (error) {
+      console.error("Error reporting review:", error);
+      toast.error("Failed to report review");
+    } finally {
+      setShowReportModal(false);
+      setSelectedReviewId(null);
+      setShowOptions(null);
+    }
+  };
+
+  const handleShowOptions = (reviewId) => {
+      setShowOptions((prev) => (prev === reviewId ? null : reviewId));
+  };
+  
   return (
-<div className="flex justify-center py-4 md:py-6">
-  <div className="w-75 md:w-3/4 px-4 py-3 md:px-8 md:py-6 flex flex-col gap-y-4 border border-gray-300 rounded-lg shadow-md bg-white transition-all duration-300 hover:shadow-lg">
-    
+  <div className="flex justify-center py-4 md:py-6">
+    <div className="w-75 sm:w-3/4 px-4 py-3 md:px-8 md:py-6 flex flex-col gap-y-4 border border-gray-300 rounded-lg shadow-md bg-white transition-all duration-300 hover:shadow-lg">
+
     {session?.user?.role === "USER" && (
-        <>
-            <h2 className="text-2xl font-semibold pb-0 md:pb-2 text-gray-800">
-            {editingId ? "Edit Review" : "Write a Review"}
-            </h2>
+      <>
+        <h2 className="text-2xl font-semibold pb-0 md:pb-2 text-gray-800">
+          {editingId ? "Edit Review" : "Write a Review"}
+        </h2>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-y-4">
-                {/* Star Rating */}
-                <div className="flex items-center gap-x-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                        type="button"
-                        key={star}
-                        onClick={() => setRating(star)}
-                        className="transform transition-transform hover:scale-110"
-                    >
-                        <Star
-                        className={`w-6 h-6 cursor-pointer transition-colors duration-200 ${
-                            star <= rating
-                            ? "text-yellow-400 fill-yellow-400"
-                            : "text-gray-300"
-                        }`}
-                        />
-                    </button>
-                    ))}
-                </div>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-y-2 md:gap-y-4">
+          {/* Star Rating */}
+          <div className="flex items-center gap-x-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button
+                type="button"
+                key={star}
+                onClick={() => setRating(star)}
+                className="transform transition-transform hover:scale-110"
+              >
+                <Star
+                  className={`w-6 h-6 cursor-pointer transition-colors duration-200 ${star <= rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
+                />
+              </button>
+            ))}
+          </div>
 
-                {/* Comment Input */}
-                <textarea
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200"
-                    rows="4"
-                    placeholder="Write your feedback..."
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}>
-                </textarea>
+          {/* Comment Input */}
+          <textarea
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200"
+            rows="4"
+            placeholder="Write your feedback..."
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          ></textarea>
 
-                <div>
-                    <button
-                        type="submit"
-                        className="px-2.5 md:px-5 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200">
-                        {editingId ? "Update Review" : "Post Review"}
-                    </button>
-                    {editingId && (
-                        <button
-                            type="button"
-                            onClick={() => {
-                            setComment("");
-                            setRating(0);
-                            setEditingId(null);
-                            }}
-                            className="ml-4 text-gray-500 hover:text-gray-700 underline transition-colors duration-200">
-                            Cancel Edit
-                        </button>
-                    )}
-                </div>
-            </form>              
-        </>
+          <div>
+            <button
+              type="submit"
+              className="px-2 md:px-5 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-400"
+            >
+              {editingId ? "Update Review" : "Post Review"}
+            </button>
+            {editingId && (
+              <button
+                type="button"
+                onClick={() => {
+                  setComment("");
+                  setRating(0);
+                  setEditingId(null);
+                }}
+                className="ml-4 px-2 md:px-5 py-2 cursor-pointer border rounded-lg border-gray-400 bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors duration-400 ease-in-out"
+              >
+                Cancel Edit
+              </button>
+            )}
+          </div>
+        </form>
+      </>
     )}
 
     {/* Display Reviews */}
     {reviews.length > 0 ? (
-      <div className="flex flex-col gap-y-3">
+      <div className="flex flex-col gap-y-2 md:gap-y-4">
         <h3 className="text-2xl font-semibold mb-2 text-gray-800">Reviews</h3>
-        <ul className="flex flex-col gap-y-3">
+        <ul className="flex flex-col gap-y-1.5 md:gap-y-3">
           {reviews.map((review, i) => (
-            <li
-              key={i}
-              className="p-2.5 md:p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
-            >
-              <div className="flex items-center mb-2 text-yellow-400 text-sm">
-                {/* <span className="px-2 text-gray-700 text-xs">
-                  ({review.rating})
-                </span> */}
-                {[...Array(review.rating)].map((_, idx) => (
-                  <Star
-                    key={idx}
-                    className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                  />
-                ))}
-                {/* <span className="pl-2 text-gray-700 text-xs">
-                  ({review.rating}/5)
-                </span> */}
+            <li key={i} className="p-2.5 md:p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+              <div className="flex items-center justify-between">
+                {/* Left side: Profile photo, Name */}
+                <div className="flex items-center gap-y-1.5 md:gap-y-3">
+                  <div className="w-8 md:w-12 h-8 md:h-12 relative">
+                    <Image src={review?.user?.profilePhoto} alt="User Profile" fill className="w-12 h-12 rounded-full" priority />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm md:text-[16px]">{review?.user?.firstName} {review?.user?.lastName}</p>
+                    <p className="text-sm text-gray-500">{new Date(review?.createdAt).toLocaleDateString()}</p>
+                  </div>
+                </div>
+
+                {/* Right side: Rating */}
+                <div className="flex items-center gap-y-1 md:gap-x-2">
+                  <div className="flex">
+                    {[...Array(Math.floor(review?.rating))].map((_, idx) => (
+                      <Star key={idx} className="w-3 h-3 md:w-5 md:h-5 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  {session?.user?.id === review?.userId && (
+                    <div className="relative">
+                      <button onClick={() => handleShowOptions(review.id)} className="cursor-pointer">
+                        <EllipsisVertical className="w-5 h-5 text-gray-500" />
+                      </button>
+                      {showOptions === review.id && (
+                        <div className="absolute right-0 mt-2 w-28 bg-white border border-gray-200 rounded shadow-md z-10">
+                          <button
+                            className="block w-full text-left px-4 cursor-pointer py-2 text-sm transition-all ease-in-out duration-400 hover:bg-gray-100"
+                            onClick={() => handleEdit(review)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="block w-full text-left px-4 py-2 text-sm cursor-pointer transition-all ease-in-out duration-400 hover:bg-gray-100"
+                            onClick={() => confirmReport(review.id)}
+                          >
+                            Report
+                          </button>
+                        </div>
+                      )}
+                      {showReportModal && (
+                        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                          <div className="bg-white p-6 rounded-xl shadow-lg w-75 md:max-w-md md:w-full text-center">
+                            <h2 className="text-xl font-semibold mb-4">Report Review</h2>
+                            <p className="mb-6">Are you sure you want to report this review?</p>
+                            <div className="flex justify-center gap-4">
+                              <button
+                                onClick={handleReport}
+                                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 cursor-pointer transition-all ease-in-out duration-400"
+                              >
+                                Yes, Report
+                              </button>
+                              <button
+                                onClick={() => setShowReportModal(false)}
+                                className="border px-4 py-2 rounded hover:bg-gray-100 cursor-pointer transition-all ease-in-out duration-400"
+                              >
+                                No
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
-              <p className="text-gray-800">{review.comment}</p>
-              {review.userId === user?.id && (
-                <button
-                  className="text-blue-600 text-sm pt-2 hover:underline"
-                  onClick={() => handleEdit(review)}>
-                  Edit
-                </button>
-              )}
+
+              <p className="mt-2 text-gray-700 text-sm md:text-[15px]">{review.comment}</p>
             </li>
           ))}
         </ul>
       </div>
     ) : (
-      <div className="text-gray-500 text-center py-4">No reviews yet</div>
+      <p className="text-gray-500 text-center mt-4">No reviews yet.</p>
     )}
   </div>
 </div>
-
   );
 }

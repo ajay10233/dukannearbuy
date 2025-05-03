@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useRef } from "react";
-import { motion } from "framer-motion";
+import React, { useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { ShieldCheck, Store, Stethoscope, Smartphone, SquareCheckBig, MoveRight, Phone, Mail, Instagram, Linkedin } from "lucide-react";
 import Image from "next/image";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 
 const features = [
@@ -27,7 +28,33 @@ const features = [
 ];
 
 export default function AboutUs() {
+  const [showModal, setShowModal] = useState(false);
   const startX = useRef(null);
+
+  const handleDelete = async () => {
+    try {
+      const res = await fetch('/api/auth/delete-account', {
+        method: 'DELETE',
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        toast.success(data.message || "Account deleted successfully");
+        // redirect to login
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
+      } else {
+        toast.error(data.error || "Failed to delete account");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong");
+    } finally {
+      setShowModal(false);
+    }
+  };
 
   const handleStart = (x) => {
     startX.current = x;
@@ -180,10 +207,44 @@ export default function AboutUs() {
             <span className="font-semibold">Need assistance or have questions? </span> <br/> <span className="text-sm md:text-[16px]">Our team is here to help you get started and stay on track.</span>
         </p>
             <ul className="pl-6 text-gray-700 space-y-2 text-sm md:text-[16px]">
-                <li className="transition-all ease-in-out duration-500 cursor-pointer hover:text-blue-700 flex items-center gap-2">
+                <li className="transition-all ease-in-out duration-500 cursor-pointer hover:text-blue-700 flex items-center gap-2" onClick={() => setShowModal(true)}>
                     <RiDeleteBin6Line size={20} strokeWidth={1.5} />
                     Delete my Account
-                </li>
+            </li>
+            <AnimatePresence>
+              {showModal && (
+                <motion.div
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center"
+                >
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.8, opacity: 0 }}
+                    className="bg-white p-4 md:p-6 rounded-xl shadow-xl w-75 md:w-full md:max-w-sm text-center"
+                  >
+                    <h2 className="text-lg font-semibold text-gray-800 mb-3">Are you sure?</h2>
+                    <p className="text-sm text-gray-600 mb-4">
+                      This action will permanently delete your account and all data.
+                    </p>
+                    <div className="flex justify-center gap-4">
+                      <button
+                        onClick={() => setShowModal(false)}
+                        className="px-4 py-2 bg-gray-100 rounded cursor-pointer transition-all ease-in-out duration-500 hover:bg-gray-200"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleDelete}
+                        className="px-4 py-2 bg-red-500 cursor-pointer transition-all ease-in-out duration-500 text-white rounded hover:bg-red-600"
+                      >
+                        Yes, Delete
+                      </button>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
                 {/* <li className="flex items-center gap-2 cursor-pointer">
                     <Phone size={20} strokeWidth={1.5} />
@@ -215,12 +276,6 @@ export default function AboutUs() {
                     Connect with us on Instagram
                     </a>
                 </li>
-
-                {/* <li className="flex items-center gap-2 cursor-pointer">
-                    <Link href="/terms&condition" className="hover:text-blue-700">
-                    Terms & Conditions
-                    </Link>
-                </li> */}
             </ul>
 
         </div>
