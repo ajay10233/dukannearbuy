@@ -1,14 +1,12 @@
 import sendEmail from "@/utils/sendEmail";
 
-export async function sendVerificationEmail(email, token) {
-  console.log("token", process.env.NEXTAUTH_URL);
-  const verifyLink = `${process.env.NEXTAUTH_URL}/verify-email?token=${token}`;
-  const subject = "Verify your email - Nearby Dukan";
+export async function sendVerificationEmail(email, otp) {
+  const subject = "Your OTP for Nearby Dukan Email Verification";
   const html = `
-    <h2>Email Verification</h2>
-    <p>Click the link below to verify your email:</p>
-    <a href="${verifyLink}">${verifyLink}</a>
-    <p>This link will expire in 1 hour.</p>
+    <h2>Email Verification OTP</h2>
+    <p>Your One-Time Password (OTP) for verifying your email is:</p>
+    <h3>${otp}</h3>
+    <p>This OTP will expire in 10 minutes. Please do not share it with anyone.</p>
   `;
 
   await sendEmail(email, subject, html);

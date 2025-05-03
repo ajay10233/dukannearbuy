@@ -1,34 +1,58 @@
 import { prisma } from "@/utils/db";
 import crypto from "crypto";
 import { sendVerificationEmail } from "@/utils/sendVerificationEmail";
+import { sendOtpToWhatsApp } from "@/utils/sendOtpToWhatsApp";
 import { NextResponse } from "next/server";
 
-export async function POST (req){
-  const { email } = await req.json();
-  const user = await prisma.user.findUnique({
-    where: { email },
-  });
+export async function POST(req) {
+  const { email, phone } = await req.json();
 
-
-  if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
-
-  if (user.verified) {
-    return NextResponse.json({ error: "User already verified" }, { status: 400 });
-  }
-
-  const verificationToken = crypto.randomBytes(32).toString("hex");
-
-  await prisma.verificationToken.create({
-    data: {
-      token: verificationToken,
-      userId: user.id,
-      expiresAt: new Date(Date.now() + 1000 * 60 * 60),
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: email ?? undefined },
+        { phone: phone ?? undefined },
+      ],
     },
   });
 
-  await sendVerificationEmail(user.email, verificationToken);
+  if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-  return NextResponse.json({ message: "Verification email sent" }, { status: 200 });
-};
+  const tasks = [];
+
+  if (email) {
+    const emailOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    tasks.push(
+      prisma.verificationToken.create({
+        data: {
+          otp: emailOtp,
+          contact: email,
+          method: "email",
+          userId: user.id,
+          expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+        },
+      }),
+      sendVerificationEmail(email, emailOtp)
+    );
+  }
+
+  if (phone) {
+    const phoneOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    tasks.push(
+      prisma.verificationToken.create({
+        data: {
+          otp: phoneOtp,
+          contact: phone,
+          method: "phone",
+          userId: user.id,
+          expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+        },
+      }),
+      sendOtpToWhatsApp(phone, phoneOtp)
+    );
+  }
+
+  await Promise.all(tasks);
+
+  return NextResponse.json({ message: "OTP(s) sent successfully" });
+}
