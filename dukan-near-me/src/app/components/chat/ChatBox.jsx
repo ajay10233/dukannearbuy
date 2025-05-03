@@ -358,7 +358,7 @@ export default function ChatBox() {
   
         if (data?.role === "USER") {
           router.push("/UserHomePage");
-        } else if (data?.role === "INSTITUTION" || data?.role === "SELLER") {
+        } else if (data?.role === "INSTITUTION" || data?.role === "SHOP_OWNER") {
           router.push("/partnerHome");
         } else {
           console.error("Unknown role or not logged in.");
