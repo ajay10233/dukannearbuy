@@ -114,7 +114,7 @@ export default function Notification() {
           <Image
             src="/nearbuydukan - watermark.png"
             alt="Watermark"
-            fill
+            fill sizes="128px"
             className="object-contain"
             priority
           />

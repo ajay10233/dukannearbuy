@@ -101,6 +101,7 @@ export default function AboutUs() {
                 To transform the way local shops and healthcare centers operate by providing an accessible, reliable, and hyperlocal digital ecosystem.
             </p>
           </motion.div>
+            
         </motion.div>
 
         <motion.div 
@@ -207,44 +208,13 @@ export default function AboutUs() {
             <span className="font-semibold">Need assistance or have questions? </span> <br/> <span className="text-sm md:text-[16px]">Our team is here to help you get started and stay on track.</span>
         </p>
             <ul className="pl-6 text-gray-700 space-y-2 text-sm md:text-[16px]">
-                <li className="transition-all ease-in-out duration-500 cursor-pointer hover:text-blue-700 flex items-center gap-2" onClick={() => setShowModal(true)}>
-                    <RiDeleteBin6Line size={20} strokeWidth={1.5} />
-                    Delete my Account
-            </li>
-            <AnimatePresence>
-              {showModal && (
-                <motion.div
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center"
-                >
-                  <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.8, opacity: 0 }}
-                    className="bg-white p-4 md:p-6 rounded-xl shadow-xl w-75 md:w-full md:max-w-sm text-center"
-                  >
-                    <h2 className="text-lg font-semibold text-gray-800 mb-3">Are you sure?</h2>
-                    <p className="text-sm text-gray-600 mb-4">
-                      This action will permanently delete your account and all data.
-                    </p>
-                    <div className="flex justify-center gap-4">
-                      <button
-                        onClick={() => setShowModal(false)}
-                        className="px-4 py-2 bg-gray-100 rounded cursor-pointer transition-all ease-in-out duration-500 hover:bg-gray-200"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleDelete}
-                        className="px-4 py-2 bg-red-500 cursor-pointer transition-all ease-in-out duration-500 text-white rounded hover:bg-red-600"
-                      >
-                        Yes, Delete
-                      </button>
-                    </div>
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                
+                <li className="flex items-center gap-2 cursor-pointer">
+                        <ShieldCheck size={20} strokeWidth={1.5} />
+                        <Link href="/terms&condition" className="hover:text-blue-700">
+                        Terms & Conditions
+                        </Link>
+                </li>
 
                 {/* <li className="flex items-center gap-2 cursor-pointer">
                     <Phone size={20} strokeWidth={1.5} />
@@ -254,15 +224,8 @@ export default function AboutUs() {
                 <li className="flex items-center gap-2 cursor-pointer">
                     <Mail size={20} strokeWidth={1.5} />
                     <a href="mailto:contact@nearbuydukaan.com" className="hover:text-blue-700">
-                    Email: contact@nearbuydukaan.com
+                      contact@nearbuydukaan.com
                     </a>
-                </li>
-
-                <li className="flex items-center gap-2 cursor-pointer">
-                    <ShieldCheck size={20} strokeWidth={1.5} />
-                    <Link href="/terms&condition" className="hover:text-blue-700">
-                    Terms & Conditions
-                    </Link>
                 </li>
                       
                 <li className="flex items-center gap-2 cursor-pointer">
@@ -276,6 +239,45 @@ export default function AboutUs() {
                     Connect with us on Instagram
                     </a>
                 </li>
+            
+                <li className="transition-all ease-in-out duration-500 cursor-pointer hover:text-blue-700 flex items-center gap-2" onClick={() => setShowModal(true)}>
+                    <RiDeleteBin6Line size={20} strokeWidth={1.5} />
+                    Delete my Account
+              </li>
+              <AnimatePresence>
+                {showModal && (
+                  <motion.div
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center"
+                  >
+                    <motion.div
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.8, opacity: 0 }}
+                      className="bg-white p-4 md:p-6 rounded-xl shadow-xl w-75 md:w-full md:max-w-sm text-center"
+                    >
+                      <h2 className="text-lg font-semibold text-gray-800 mb-3">Are you sure?</h2>
+                      <p className="text-sm text-gray-600 mb-4">
+                        This action will permanently delete your account and all data.
+                      </p>
+                      <div className="flex justify-center gap-4">
+                        <button
+                          onClick={() => setShowModal(false)}
+                          className="px-4 py-2 bg-gray-100 rounded cursor-pointer transition-all ease-in-out duration-500 hover:bg-gray-200"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleDelete}
+                          className="px-4 py-2 bg-red-500 cursor-pointer transition-all ease-in-out duration-500 text-white rounded hover:bg-red-600"
+                        >
+                          Yes, Delete
+                        </button>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </ul>
 
         </div>

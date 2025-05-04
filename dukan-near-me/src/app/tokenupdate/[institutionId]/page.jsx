@@ -7,7 +7,8 @@ export default function page() {
   return (
       <>
             <Navbar/>
-            <TokenUpdate />
+          <TokenUpdate />
+          
         </>
     )
 }

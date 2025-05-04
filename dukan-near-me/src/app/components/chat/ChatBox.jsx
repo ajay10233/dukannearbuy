@@ -508,8 +508,8 @@ export default function ChatBox() {
                       className={`font-medium text-[var(--secondary-foreground)] 
                                                 ${
                                                   selectedPartner?.id ===
-                                                    partner.id && "font-medium"
-                                                }`}
+                      partner.id && "font-medium"}`
+                      }
                     >
                         {partner.otherUser?.firmName || partner.otherUser?.name || "Unknown"}
 

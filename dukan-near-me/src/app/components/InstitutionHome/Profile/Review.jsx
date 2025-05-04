@@ -222,7 +222,7 @@ export default function Review({ user }) {
                         </div>
                       )}
                       {showReportModal && (
-                        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                        <div className="fixed inset-0 z-50 bg-black/10 flex items-center justify-center">
                           <div className="bg-white p-6 rounded-xl shadow-lg w-75 md:max-w-md md:w-full text-center">
                             <h2 className="text-xl font-semibold mb-4">Report Review</h2>
                             <p className="mb-6">Are you sure you want to report this review?</p>
