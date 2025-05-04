@@ -18,7 +18,7 @@ export default function Signup() {
             <div className="w-1/2 hidden md:flex items-center justify-center relative overflow-hidden">
                 {/* <div className='bg-[var(--secondary-color)] w-[350px] h-screen rounded-tl-[394px] rounded-tr-[394px] translate-y-20'> */}
                     <div className="relative translate-x-2 w-[480px] h-[510px]">
-                        <Image src="/auth-illustration/signup-illustration.svg" alt="signup illustration" fill sizes="510px" priority />
+                        <Image src="/signup-illustration.svg" alt="signup illustration" fill sizes="510px" priority />
                     </div>
                 {/* </div> */}
             </div>
