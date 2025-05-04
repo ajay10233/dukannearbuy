@@ -101,13 +101,14 @@ export default function PaymentOffer() {
               className="flex items-center gap-2"
             >
               <input
-                id="coupon"
-                type="text"
-                value={coupon}
-                onChange={(e) => setCoupon(e.target.value)}
-                placeholder="Enter coupon code"
-                className="flex-1 border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400"
+              id="coupon"
+              type="text"
+              value={coupon}
+              onChange={(e) => setCoupon(e.target.value.toUpperCase())}
+              placeholder="Enter coupon code"
+              className="flex-1 border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 uppercase"
               />
+
               <button
                 onClick={handleApplyCoupon}
                 className="px-4 py-2 bg-teal-500 text-white rounded-xl cursor-pointer hover:bg-teal-600 transition-all"
