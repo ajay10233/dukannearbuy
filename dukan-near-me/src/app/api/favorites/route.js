@@ -31,12 +31,12 @@ export async function GET(req) {
             scanner_image: true,
             profilePhoto: true,
             mobileNumber: true,
+            username:true,
           },
         },
       },
     });
 
-    // Optionally clean the response
     favorites = favorites.filter(fav => fav!=null);
 
     return NextResponse.json({ favorites });

@@ -1,7 +1,6 @@
 import { prisma } from '@/utils/db'
 import { NextResponse } from 'next/server'
 
-// take distance from frontend like taking shops within 5km range or 10km range
 function getClosestMatch(word, options) {
   const levenshtein = (a, b) => {
     const dp = Array.from({ length: a.length + 1 }, () =>
@@ -42,7 +41,6 @@ export async function GET(req) {
 
   const keywords = search.split(/\s+/).filter(Boolean)
 
-  // Prisma search with all address fields
   const conditions = keywords.flatMap((word) => [
     { city: { contains: word, mode: 'insensitive' } },
     { state: { contains: word, mode: 'insensitive' } },
@@ -74,10 +72,21 @@ export async function GET(req) {
       latitude: true,
       longitude: true,
       role: true,
+      subscriptionPlan: {
+        select: {
+          id: true,
+          name: true,
+          price: true,
+          durationInDays: true,
+          features: true,
+          image: true,
+        },
+      },
+      planActivatedAt: true,
+      planExpiresAt: true,
     },
   })
 
-  // "Did you mean" if no results
   let suggestions = []
   if (results.length === 0) {
     const sampleValues = await prisma.user.findMany({

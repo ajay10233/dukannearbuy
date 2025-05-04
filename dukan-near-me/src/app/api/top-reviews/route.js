@@ -50,53 +50,58 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const lat = parseFloat(searchParams.get('lat'));
   const lng = parseFloat(searchParams.get('lng'));
-
-  if (!lat || !lng) {
-    return NextResponse.json({ error: 'Missing lat or lng query parameters' }, { status: 400 });
-  }
-
-  const today = new Date();
-  let reviews = await fetchReviewsInDateRange(today, lat, lng);
-
-  if (reviews.length === 0) {
-    const yesterday = subDays(today, 1);
-    reviews = await fetchReviewsInDateRange(yesterday, lat, lng);
-  }
-
-  if (reviews.length === 0) {
-    // Try without date filter but within 5km
-    const geoFilter = getGeoFilter(lat, lng);
-    reviews = await prisma.review.findMany({
-      where: {
-        institution: {
-          latitude: geoFilter.latitude,
-          longitude: geoFilter.longitude,
+  try {
+    if (!lat || !lng) {
+      return NextResponse.json({ error: 'Missing lat or lng query parameters' }, { status: 400 });
+    }
+  
+    const today = new Date();
+    let reviews = await fetchReviewsInDateRange(today, lat, lng);
+  
+    if (reviews.length === 0) {
+      const yesterday = subDays(today, 1);
+      reviews = await fetchReviewsInDateRange(yesterday, lat, lng);
+    }
+  
+    if (reviews.length === 0) {
+      // Try without date filter but within 5km
+      const geoFilter = getGeoFilter(lat, lng);
+      reviews = await prisma.review.findMany({
+        where: {
+          institution: {
+            latitude: geoFilter.latitude,
+            longitude: geoFilter.longitude,
+          },
         },
-      },
-      include: {
-        institution: true,
-        user: true,
-      },
-      orderBy: {
-        rating: 'desc',
-      },
-      take: 10,
-    });
+        include: {
+          institution: true,
+          user: true,
+        },
+        orderBy: {
+          rating: 'desc',
+        },
+        take: 10,
+      });
+    }
+  
+    if (reviews.length === 0) {
+      // Last fallback: just top 10 reviews anywhere
+      reviews = await prisma.review.findMany({
+        include: {
+          institution: true,
+          user: true,
+        },
+        orderBy: {
+          rating: 'desc',
+        },
+        take: 10,
+      });
+    }
+  
+    return NextResponse.json(reviews);
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  if (reviews.length === 0) {
-    // Last fallback: just top 10 reviews anywhere
-    reviews = await prisma.review.findMany({
-      include: {
-        institution: true,
-        user: true,
-      },
-      orderBy: {
-        rating: 'desc',
-      },
-      take: 10,
-    });
-  }
-
-  return NextResponse.json(reviews);
+  
 }
