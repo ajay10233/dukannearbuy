@@ -6,7 +6,7 @@ import ProfileWrapper from '@/app/components/InstitutionHome/Profile/ProfileWrap
 
 export default async function Page({ params }) {
     const { institutionId } = await params;
-    console.log(institutionId);
+    console.log(institutionId);                        
 
     return (
         <>

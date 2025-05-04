@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { MapPin, UserRound, ChevronDown } from "lucide-react";
-import Sidebar from "./sidebar/Sidebar";
+import Sidebar from "@/app/components/institutionHome/navbar/sidebar/Sidebar";
+import UserSidebar from "@/app/components/userProfile/navbar/sidebar/UserSidebar";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
 
@@ -20,7 +21,25 @@ export default function Navbar() {
     const [isSidebar, setIsSidebar] = useState(false);
     const router = useRouter();
     const [hasFetchedSavedLocation, setHasFetchedSavedLocation] = useState(false);
+    const [role, setRole] = useState(null);
 
+    const handleSidebar = async () => {
+        try {
+            const res = await fetch("/api/users/me");
+            const data = await res.json();
+            if (data?.role) {
+                setRole(data.role);
+            }
+        } catch (err) {
+            console.error("Failed to fetch user role:", err);
+        }
+    };
+    
+    useEffect(() => {
+        handleSidebar();
+    }, []);
+    
+    
     const fetchSavedLocation = async () => {
         try {
             const res = await fetch("/api/users/location");
@@ -108,7 +127,6 @@ export default function Navbar() {
         return locationString;
     };
 
-    
     return (
         <header className='flex w-full justify-between fixed z-50 bg-white font-[var(--font-roboto)]'>      
             <div className='flex items-center p-0 md:pl-4 md:pr-2 text-[var(--secondary-foreground)] text-sm font-medium gap-1 md:gap-2'>
@@ -133,7 +151,7 @@ export default function Navbar() {
                                     {getTruncatedLocation()}
                                 </span>       
                             </> 
-                        )}
+                        )} 
                     </span>
                 </button>
                 <button className="p-1 cursor-pointer">
@@ -148,7 +166,13 @@ export default function Navbar() {
             </div>    
 
             {/* Sidebar Component */}
-            <Sidebar isOpen={isSidebar} onClose={() => setIsSidebar(false)} />
+            {/* <Sidebar isOpen={isSidebar} onClose={() => setIsSidebar(false)} /> */}
+            {role === "USER" ? (
+                <UserSidebar isOpen={isSidebar} onClose={() => setIsSidebar(false)} onClick={handleSidebar} />
+                ) : (
+                <Sidebar isOpen={isSidebar} onClose={() => setIsSidebar(false)} onClick={handleSidebar}/>
+                )}
+
         </header>
     );
 }

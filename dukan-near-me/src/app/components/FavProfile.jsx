@@ -1,46 +1,3 @@
-// "use client"
-
-// import React, { useEffect, useState } from 'react';
-// import { Heart } from 'lucide-react';
-// import Link from 'next/link';
-
-// export default function FavProfile() {
-//   const [favorites, setFavorites] = useState([]);
-
-//   useEffect(() => {
-//     const fetchFavorites = async () => {
-//       try {
-//         const res = await fetch('/api/favorites');
-//         const data = await res.json();
-//         if (res.ok) {
-//           setFavorites(data.favorites);
-//         }
-//       } catch (error) {
-//         console.error("Error fetching favorites:", error);
-//       }
-//     };
-
-//     fetchFavorites();
-//   }, []);
-
-//   return (
-//     <div>
-//       <h2 className="font-semibold text-lg uppercase text-gray-800">Favorites</h2>
-//       <ul className="space-y-3">
-//         {favorites.map((favorite) => (
-//           <li key={favorite.institutionId}>
-//             <Link href={`/institutionProfile/${favorite.institutionId}`} className="flex items-center gap-2 text-md text-gray-700 hover:text-blue-700 transition duration-200">
-//               <Heart size={20} strokeWidth={1.5} className="text-red-500" />
-//               Institution {favorite.institutionId}
-//             </Link>
-//           </li>
-//         ))}
-//       </ul>
-//     </div>
-//   );
-// };
-
-
 "use client";
 
 import React, { useEffect, useState } from 'react';
@@ -114,7 +71,7 @@ export default function FavProfile() {
         ) : (
           favorites.map((fav, index) => {
             const institution = fav.institution || {};
-            const fullAddress = `${institution.buildingName || ''}, ${institution.street || ''}, ${institution.city || ''}`;
+            const fullAddress = `${institution?.city || ''}, ${institution?.state || ''}, ${institution?.country || ''}`;
 
             return (
               <div key={fav.institutionId} className="bg-white p-2 md:p-4 rounded-xl shadow-sm flex items-center w-full">
@@ -125,14 +82,14 @@ export default function FavProfile() {
                   <div className="flex items-center gap-1 md:gap-3">
                     <div className="relative w-8 h-8 md:w-10 md:h-10">
                       <Image
-                        src={institution.profilePhoto || "/default-avatar.png"}
+                        src={institution?.photos?.[0]  || "/default-img.jpg"}
                         alt="Profile"
                         fill
-                        className="rounded-full w-8 h-8 md:w-10 md:h-10 object-cover border-2 border-blue-500" priority
+                        className="rounded-full w-8 h-8 md:w-12 md:h-12 object-cover border border-blue-500" priority
                       />
                     </div>
-                    <Link href={`/partnerProfile/${fav.institutionId}`} className="text-blue-600 text-xs md:text-sm font-semibold">
-                      {institution.firmName || 'Institution Name'}
+                    <Link href={`/partnerProfile/${fav.institutionId}`} className="text-blue-600 cursor-pointer text-xs md:text-sm font-semibold">
+                      {institution?.firmName || 'Institution Name'}
                     </Link>
                   </div>
                 </li>

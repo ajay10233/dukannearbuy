@@ -67,10 +67,32 @@ export default function ProfileCard() {
     reader.readAsDataURL(file);
   };
 
-  const confirmDelete = () => {
-    setImage(null);
+  const handleDeletePhoto = async () => {
+    if (!user?.image) return;
+  
+    try {
+      const res = await fetch('/api/users/delete-photo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: user.image }),
+      });
+  
+      const data = await res.json();
+  
+      if (res.ok) {
+        toast.success(data.message || 'Profile photo deleted successfully');
+        setImage(null);
+      } else {
+        toast.error(data.error || 'Failed to delete photo');
+      }
+    } catch (err) {
+      toast.error('Something went wrong');
+    }
+  };
+  
+  const confirmDelete = async () => {
     setShowDeleteModal(false);
-    toast.success("Profile photo deleted");
+    await handleDeletePhoto();
   };
 
   if (!user?.email) {

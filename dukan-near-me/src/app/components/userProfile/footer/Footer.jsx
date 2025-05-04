@@ -57,7 +57,7 @@ export default function Footer() {
             </div>
             <div className='gap-y-2 text-md md:text-center'>
                 <h3 className="font-semibold text-lg md:text-xl pb-2.5">Quick Link</h3>
-                    <Link href="/aboutus" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">About Us</Link>
+                    <Link href="/aboutus#help" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Help</Link>
                     <Link href="/terms&condition#privacy-policy" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Privacy Policy</Link>
                     <Link href="/terms&condition" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Terms Of Use</Link>
                     <Link href="mailto:contact@nearbuydukaan.com" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Contact</Link>
@@ -127,10 +127,17 @@ export default function Footer() {
             </div>
 
             {/* Copyright */}
-            <div className="text-sm gap-y-2 text-center">
-                © {new Date().getFullYear()} NearBuyDukan. All rights reserved.
+            <div className="relative w-full mt-4">
+                <div className="text-sm text-center w-full">
+                    © {new Date().getFullYear()} NearBuyDukan. All rights reserved.
+                </div>
+                <p className="text-xs md:text-sm text-gray-400 font-semibold italic md:absolute md:right-4 md:top-0 mt-2 md:mt-0 text-center md:text-right animate-pulse hover:scale-105 transition-transform duration-500">
+                    Local Market, Hyper Services
+                </p>
             </div>
-        </div>       
+
+        </div>      
+          
 
     </footer>
   )
