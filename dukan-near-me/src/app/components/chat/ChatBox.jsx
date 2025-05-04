@@ -453,7 +453,6 @@ export default function ChatBox() {
                                                 }`}
                     >
                         {partner.otherUser?.firmName || partner.otherUser?.name || "Unknown"}
-
                     </div>
                     <span className="text-gray-500 font-normal text-[12px]">
                       {/* Last message here... */}
@@ -509,8 +508,8 @@ export default function ChatBox() {
                       className={`font-medium text-[var(--secondary-foreground)] 
                                                 ${
                                                   selectedPartner?.id ===
-                                                    partner.id && "font-medium"
-                                                }`}
+                      partner.id && "font-medium"}`
+                      }
                     >
                         {partner.otherUser?.firmName || partner.otherUser?.name || "Unknown"}
 

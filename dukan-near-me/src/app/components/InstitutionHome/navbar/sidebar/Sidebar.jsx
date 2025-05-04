@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import { UserRound, X, TableOfContents, MessageCircleMore, Home, MessageSquareWarning, QrCode, ScanLine, BookCheck, FolderDown, Settings, LogOut, CircleHelp, Handshake, HandCoins } from "lucide-react";
+import { UserRound, X, Home, MessageSquareWarning, QrCode, ScanLine, BookCheck, FolderDown, Settings, LogOut, CircleHelp, Handshake, HandCoins, Info } from "lucide-react";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LogoutButton from '@/app/components/LogoutButton';
@@ -118,10 +118,10 @@ export default function Sidebar({ isOpen, onClose }) {
                 </div>
 
                 <div className='flex flex-col p-4 border-t border-gray-200 space-y-3'>
-                    <Link href="/aboutus#help"
+                    <Link href="/aboutus"
                         className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">
-                        <CircleHelp size={20} strokeWidth={1.5} />
-                            Help
+                        <Info size={20} strokeWidth={1.5} />
+                            About us
                     </Link>
                     <span onClick={handleInviteFriend}
                         className="flex items-center gap-2 cursor-pointer text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">

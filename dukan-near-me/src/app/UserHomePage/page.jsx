@@ -24,11 +24,10 @@ export default function page() {
                 <TopSeller />
                 {/* <Subscription /> */}
                 {/* <PromotionCard/> */}
-                {/* <Review />  */}
+                <Review /> 
                 <Faq />  
 
             </section>
-            {/* <Faq />   */}
         </main>  
         <Footer />
     </>

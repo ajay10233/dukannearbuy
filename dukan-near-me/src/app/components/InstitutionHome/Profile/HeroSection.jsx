@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import useEmblaCarousel from "embla-carousel-react";
-import { Plus, RefreshCcwDot, Store, Crown } from "lucide-react";
+import { Plus, RefreshCcwDot, Store, Crown, X } from "lucide-react";
 import ProfileWrapper from "./ProfileWrapper";
 
 export default function HeroSection({id}) {
@@ -138,11 +138,11 @@ export default function HeroSection({id}) {
   };
   
 
-  const handleSetPrimary = (index) => {
-    const rotated = [...images.slice(index), ...images.slice(0, index)];
-    setImages(rotated);
-    toast.success("Primary image updated!");
-  };
+  // const handleSetPrimary = (index) => {
+  //   const rotated = [...images.slice(index), ...images.slice(0, index)];
+  //   setImages(rotated);
+  //   toast.success("Primary image updated!");
+  // };
 
   if (!user) {
     return (
@@ -168,7 +168,7 @@ export default function HeroSection({id}) {
                     priority
                   />
 
-                  {index === 0 && (
+                  {/* {index === 0 && (
                     <span className="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full shadow">
                       Primary
                     </span>
@@ -185,7 +185,7 @@ export default function HeroSection({id}) {
                     >
                       <RefreshCcwDot size={20} color="#000000" strokeWidth={1.5} />
                     </button>
-                  )}
+                  )} */}
                 </div>
               ))}
             </div>
@@ -255,8 +255,13 @@ export default function HeroSection({id}) {
 
       {/* Modal for image preview */}
       {isModalOpen && activeImage && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center" onClick={() => setIsModalOpen(false)}>
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center" onClick={() => setIsModalOpen(false)}>
           <div className="relative max-w-4xl w-full px-4" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => setIsModalOpen(false)}
+            className="absolute top-2 right-4 text-white cursor-pointer transition z-50">
+            <X size={24} />
+          </button>
             <div className="relative w-full h-[80vh]">
               <Image
                 src={activeImage}

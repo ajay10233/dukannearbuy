@@ -73,6 +73,7 @@ export default function LocationSelector({ onSave }) {
   };
 
   const onSubmit = async (data) => {
+    console.log("Submitting location data:", data);
     await fetch("/api/users/location", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -105,7 +106,7 @@ export default function LocationSelector({ onSave }) {
         }}
         className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
       >
-        Use Current Location
+        Use Current Location     
       </button> */}
 
       {/* Address Form */}

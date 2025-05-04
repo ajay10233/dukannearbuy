@@ -173,7 +173,7 @@ export default function ProfileWrapper({ children, images, setImages }) {
 
   return (
     <>
-      <div className="w-full px-4 pb-2 md:px-8 pt-14 flex justify-between flex-end">
+      <div className="w-full px-4 pb-2 md:px-8 pt-14 flex justify-end flex-end">
         {/* <button
           onClick={handleEditClick}
           className="flex items-center cursor-pointer text-blue-600 hover:text-blue-700 transition"
@@ -182,26 +182,26 @@ export default function ProfileWrapper({ children, images, setImages }) {
         </button> */}
 
         <div className="flex items-end gap-x-8">
-          {/* <button
+          <button
             onClick={handleFavoriteToggle}
             className="transition cursor-pointer"
             title={isFavorite ? "Unfavorite" : "Add to favorites"}
-          > */}
-            {/* <Heart
+          >
+            <Heart
               size={20}
               strokeWidth={1.5}
               className={`transition-all duration-300 ${
-                isFavorite ? "fill-red-500 text-red-500" : "text-gray-600"
+                isFavorite ? "fill-red-500 text-red-500" : "stroke-red-500"
               }`}
             />
-          </button> */}
+          </button>
 
-          {/* <button
+          <button
             onClick={handleShare}
             className="cursor-pointer text-gray-800 hover:text-gray-500 transition"
           >
             <Share2 size={20} strokeWidth={1.5} />
-          </button> */}
+          </button>
 
           {/* <X
             size={20}

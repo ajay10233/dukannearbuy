@@ -101,14 +101,14 @@ export default function About({ profileUpdated }) {
     }
   };
 
-  const handleChat = () => {
-    const institutionId = userData?.id;
-    if (institutionId) {
-      router.push(`/chat?role=institution&to=${institutionId}`);
-    } else {
-      toast.error("Institution ID not found");
-    }
-  };
+  // const handleChat = () => {
+  //   const institutionId = userData?.id;
+  //   if (institutionId) {
+  //     router.push(`/chat?role=institution&to=${institutionId}`);
+  //   } else {
+  //     toast.error("Institution ID not found");
+  //   }
+  // };
 
   const handleCopyUpi = () => {
     const upi = userData?.upi_id;
@@ -221,16 +221,15 @@ export default function About({ profileUpdated }) {
           </button>
         </div>
 
-        <div className="fixed bottom-30 right-4 z-10 flex flex-col items-center gap-2">
+        {/* <div className="fixed bottom-30 right-4 z-10 flex flex-col items-center gap-2">
           <button
-            // onClick={() => setShowQRModal(true)}
             onClick={handleChat}
             className="bg-blue-600 text-white p-2 cursor-pointer rounded-full hover:bg-blue-700 transition transform hover:scale-110 animate-bounce"
             title="Chat with firm"
           >
             <MessageCircleMore size={28} strokeWidth={1.5} />
           </button>
-        </div>
+        </div> */}
       </div>
 
       {profileUpdated && (

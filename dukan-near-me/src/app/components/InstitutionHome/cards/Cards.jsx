@@ -1,13 +1,32 @@
 "use client";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function HomeCards() {
+  const [institutionId, setInstitutionId] = useState(null);
+
+  useEffect(() => {
+    async function fetchUserData() {
+      try {
+        const res = await fetch("/api/users/me");
+        const data = await res.json();
+        if (data?.id) {
+          setInstitutionId(data.id);
+          console.log("dataId:", data.id);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data", error);
+      }
+    }
+
+    fetchUserData();
+  }, []);
+
   const cardData = [
     { title: "Live Chat", href: "/chat", slogan: "Connect to The World" },
     { title: "Generate Bills", href: "/bill-generation-page", slogan: "Digital Record" },
     { title: "Generate Token", href: "/tokengenerate", slogan: "Smart Crowd Handling" },
-    { title: "Update Live Token", href: "/tokenupdate/${institutionId}", slogan: "Realtime Token Updates" }
+    { title: "Update Live Token",       href: institutionId ? `/tokenupdate/${institutionId}` : "#", slogan: "Realtime Token Updates" }
   ];
   
   useEffect(() => {

@@ -12,7 +12,7 @@ export default function ChangeLocationPage() {
       try {
         const res = await fetch("/api/users/me");
         const data = await res.json();
-        setRole(data.role); // e.g., USER, SHOP_OWNER, INSTITUTION
+        setRole(data.role); 
       } catch (error) {
         console.error("Error fetching user role:", error);
       }
