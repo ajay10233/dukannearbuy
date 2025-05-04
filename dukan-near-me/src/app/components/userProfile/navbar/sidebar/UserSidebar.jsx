@@ -7,7 +7,7 @@ import { HandCoins } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import LogoutButton from '@/app/components/LogoutButton';
 
-export default function Sidebar({ isOpen, onClose }) {
+export default function UserSidebar({ isOpen, onClose }) {
     const pathName = usePathname();
 
     const handleInviteFriend = () => {

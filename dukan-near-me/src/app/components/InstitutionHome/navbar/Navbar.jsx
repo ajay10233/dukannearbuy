@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { MapPin, UserRound, ChevronDown } from "lucide-react";
-// import Sidebar from "@/app/components/institutionHome/navbar/sidebar/Sidebar";
+import Sidebar from "@/app/components/institutionHome/navbar/sidebar/Sidebar";
 import UserSidebar from "@/app/components/userProfile/navbar/sidebar/UserSidebar";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
@@ -169,8 +169,7 @@ export default function Navbar() {
             {role === "USER" ? (
                 <UserSidebar isOpen={isSidebar} onClose={() => setIsSidebar(false)} onClick={handleSidebar} />
                     ) : (
-                // <Sidebar isOpen={isSidebar} onClose={() => setIsSidebar(false)} onClick={handleSidebar}/>
-                <UserSidebar isOpen={isSidebar} onClose={() => setIsSidebar(false)} />
+                <Sidebar isOpen={isSidebar} onClose={() => setIsSidebar(false)} onClick={handleSidebar}/>
                 )}
         </header>
     );
