@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LogoutButton from '@/app/components/LogoutButton';
 
-export default function Sidebar({ isOpen, onClose }) {
+export default function InstitutionSidebar({ isOpen, onClose }) {
     const pathName = usePathname();
 
     const handleInviteFriend = () => {
