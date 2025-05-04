@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { Crown } from "lucide-react"; // Assuming you're using this from lucide
 
 export default function SearchBar() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [results, setResults] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -15,20 +16,32 @@ export default function SearchBar() {
   const router = useRouter();
   const searchRef = useRef();
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) {
+  // Debounce input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 400); // Delay in ms
+
+    return () => clearTimeout(timer); // Cleanup
+  }, [searchQuery]);
+
+  // Fetch data when debouncedQuery updates
+  useEffect(() => {
+    if (debouncedQuery.trim() !== "") {
+      handleSearch(debouncedQuery);
+    } else {
       setResults([]);
       setSuggestions([]);
-      return;
     }
+  }, [debouncedQuery]);
 
+  const handleSearch = async (query) => {
     setLoading(true);
     setResults([]);
     setSuggestions([]);
 
     try {
-      const response = await fetch(`/api/global-search-institutions/?search=${encodeURIComponent(searchQuery)}`);
+      const response = await fetch(`/api/global-search-institutions/?search=${encodeURIComponent(query)}`);
       const data = await response.json();
       setResults(data.results || []);
       setSuggestions(data.suggestions || []);
@@ -39,6 +52,21 @@ export default function SearchBar() {
     }
   };
 
+  const handleInputChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleRedirect = (profile) => {
+    setSuggestions([]);
+    setResults([]);
+    if (profile.role === "INSTITUTION" || profile.role === "SHOP_OWNER") {
+      router.push(`/partnerProfile/${profile.id}`);
+    } else {
+      router.push(`/userProfile/${profile.id}`);
+    }
+  };
+
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -46,39 +74,17 @@ export default function SearchBar() {
         setResults([]);
       }
     };
-  
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);  
+  }, []);
 
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-  
-    if (value.trim() === "") {
-      setResults([]);
-      setSuggestions([]);
-    }
-  };  
-
-    const handleRedirect = (profile) => {
-      console.log('Redirecting to:', profile);
-      setSuggestions([]);
-      setResults([]);
-
-        if (profile.firmName || profile.firmName) {
-            router.push(`/partnerProfile/${profile.id}`);
-        } else {
-            router.push(`/userProfile/${profile.id}`);
-          }
-    }
-    
   return (
     <div ref={searchRef} className="w-full px-0 md:px-5 flex flex-col gap-y-1 relative">
       <form 
-        onSubmit={handleSearch}
+        onSubmit={(e) => e.preventDefault()}
         className="flex items-center border border-gray-500 rounded-md shadow-gray-400 gap-2 overflow-hidden"
       >
         <input
@@ -87,19 +93,14 @@ export default function SearchBar() {
           value={searchQuery}
           onChange={handleInputChange}
           className="w-full py-2 px-3 md:px-4 text-gray-200 text-sm bg-transparent focus:outline-none cursor-pointer"
-          onKeyDown={(e) => e.key === "Enter" && handleSearch(e)}
         />
         <Search size={22} strokeWidth={1.5} color="#afacac" className="mr-4" />
       </form>
 
-      {loading && (
-        <p className="text-sm text-gray-500 text-center p-2">Searching...</p>
-      )}
+      {loading && <p className="text-sm text-gray-500 text-center p-2">Searching...</p>}
 
       {!loading && suggestions.length > 0 && (
-        // <div className="flex gap-2 flex-wrap mt-2 px-1">
-          <div className="flex gap-2 flex-wrap justify-center sm:justify-start mt-2">
-
+        <div className="flex gap-2 flex-wrap justify-center sm:justify-start mt-2">
           {suggestions.map((s, i) => (
             <button
               key={i}
@@ -113,7 +114,6 @@ export default function SearchBar() {
       )}
 
       {!loading && results.length > 0 && (
-        // <ul className="w-[340px] md:w-363 z-1000 bg-black border border-gray-500 rounded-md mt-2 absolute top-9 right-0 md:right-4">
         <ul className="w-full z-[1000] max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 bg-black border border-gray-500 rounded-md absolute left-1/2 top-full mt-2 transform -translate-x-1/2 ">
           {results.map((profile) => (
             <li
@@ -133,19 +133,18 @@ export default function SearchBar() {
                   />
                 </div>
                 <div>
-                    <p className="text-sm font-medium text-gray-200 flex items-center gap-2">
-                      {profile?.firmName || profile?.firstName}
-                      {/* Display the badge based on subscription plan */}
-                      {profile?.subscriptionPlan?.name === "PREMIUM" && (
-                        <Crown size={24} fill="#f0d000" className="text-yellow-500" />
-                      )}
-                      {profile?.subscriptionPlan?.name === "BUSINESS" && (
-                        <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
-                      )}
-                    </p>
-                    <p className="text-xs text-gray-200">
-                      {profile.city}, {profile.state} - {profile.zipCode}
-                    </p>
+                  <p className="text-sm font-medium text-gray-200 flex items-center gap-2">
+                    {profile?.firmName || profile?.firstName}
+                    {profile?.subscriptionPlan?.name === "PREMIUM" && (
+                      <Crown size={24} fill="#f0d000" className="text-yellow-500" />
+                    )}
+                    {profile?.subscriptionPlan?.name === "BUSINESS" && (
+                      <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-200">
+                    {profile.city}, {profile.state} - {profile.zipCode}
+                  </p>
                 </div>
               </div>
             </li>

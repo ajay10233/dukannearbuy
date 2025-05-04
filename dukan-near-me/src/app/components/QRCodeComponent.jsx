@@ -3,8 +3,8 @@
 import { QRCodeCanvas } from 'qrcode.react';
 
 export default function QRCodeComponent({ params }) {
-  const profileUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/profile/${params.id}`;
-
+  const profileUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/partnerProfile/${params.id}`;
+console.log("Profile URL:", profileUrl);
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <h1 className="text-2xl font-bold mb-4">Scan QR to View Profile</h1>
