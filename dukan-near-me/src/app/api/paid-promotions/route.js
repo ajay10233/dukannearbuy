@@ -4,22 +4,58 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/utils/db';
 import cloudinary from "@/utils/cloudinary";
 
-export async function GET(req) {
+export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const admin_banner = await prisma.paidProfile.findMany({where: {userId: null}, orderBy: {createdAt: 'desc'}, take: 2});
-    const PaidProfiles = await prisma.paidProfile.findMany({ orderBy: { createdAt: 'desc' }, take: 8 });
-    const combined = [...admin_banner, ...PaidProfiles];
-    return NextResponse.json({ success: true, combined });
+    const PaidProfiles = await prisma.paidProfile.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      include: {
+        user: {
+          select: {
+            id: true,
+            firmName: true,
+            email: true,
+            phone: true,
+            profilePhoto: true,
+            city: true,
+            state: true,
+            country: true,
+            shopAddress: true,
+            description: true,
+            hashtags: true,
+            photos: true,
+            shopOpenTime: true,
+            shopCloseTime: true,
+            shopOpenDays: true,
+            latitude: true,
+            longitude: true,
+            subscriptionPlan: {
+              select: {
+                id: true,
+                name: true,
+                features: true,
+                price: true,
+              },
+            },
+            planActivatedAt: true,
+            planExpiresAt: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json({ success: true, data: PaidProfiles });
   } catch (error) {
     console.error('Error fetching paid promotions:', error);
     return NextResponse.json({ success: false, error: 'Failed to fetch paid promotions' }, { status: 500 });
   }
 }
+
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
