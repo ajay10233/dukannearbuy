@@ -37,7 +37,7 @@ export default function ChatBox() {
 
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const [conversations, setConversations] = useState([]); 
+  const [conversations, setConversations] = useState([]);
   const [filteredConversations, setFilteredConversations] = useState([]);
   const [selectedPartner, setSelectedPartner] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -50,7 +50,7 @@ export default function ChatBox() {
   const router = useRouter();
   const { data: session, status } = useSession();
 
-  const encryptMessage = (message, secretKey) =>{
+  const encryptMessage = (message, secretKey) => {
     return CryptoJS.AES.encrypt(message, secretKey).toString();
   }
 
@@ -113,14 +113,14 @@ export default function ChatBox() {
     socketRef.current.on("receiveMessage", (msg) => {
       if (msg.receiverId === session.user.id && msg.conversationId === selectedPartner?.conversationId) {
         const selected_id = selectedPartner?.otherUser ? selectedPartner?.otherUser.id : selectedPartner.id;
-      console.log("sessing user id is: ",selected_id, session.user.id);
+        console.log("sessing user id is: ", selected_id, session.user.id);
 
         const secretKey = session.user.id + selected_id;
         console.log("sessing user id is: ", session.user.id);
         console.log("Selected partner currently is: ", selectedPartner);
-        console.log("Key is: ",secretKey);
+        console.log("Key is: ", secretKey);
         const decryptedMessage = decryptMessage(msg.content, secretKey);
-    
+
         if (decryptedMessage) {
           console.log("Decrypted message:", decryptedMessage);
           setMessages((prev) => [...prev, { ...msg, content: decryptedMessage }]);
@@ -129,7 +129,7 @@ export default function ChatBox() {
         }
       }
     });
-    
+
 
     return () => {
       socketRef.current.disconnect();
@@ -158,69 +158,69 @@ export default function ChatBox() {
 
   useEffect(() => {
     if (!selectedPartner) return;
-  
+
     const fetchMessages = async () => {
       if (!selectedPartner?.conversationId) return;
-  
+
       try {
         const res = await fetch(
           `/api/messages/conversation?conversationId=${selectedPartner.conversationId}`
         );
         const data = await res.json();
         let messages = data.data?.messages || [];
-  
+
         if (messages.length > 0) {
           const selected_id = selectedPartner?.otherUser ? selectedPartner?.otherUser.id : selectedPartner.id;
-        
+
           const decryptedMessages = messages.map((msg) => {
             const isSentByCurrentUser = msg.senderId === session.user.id;
             const secretKey = isSentByCurrentUser
               ? selected_id + session.user.id
-              :session.user.id + selected_id;               ;
-        
+              : session.user.id + selected_id;;
+
             return {
               ...msg,
               content: decryptMessage(msg.content, secretKey),
             };
           });
-        
+
           setMessages(decryptedMessages);
         } else {
           setMessages([]);
         }
-        
+
       } catch (error) {
         console.error("❌ Failed to fetch messages:", error);
       }
     };
-  
+
     fetchMessages();
   }, [selectedPartner]);
-  
+
   const checkForParams = async () => {
     const toParam = searchParams.get("to");
-    if(toParam === session.user.id) return;
+    if (toParam === session.user.id) return;
     if (toParam) {
       const conversation = conversations.find(
         (conv) => conv.otherUser.id === toParam
       );
       if (conversation) {
         setSelectedPartner(conversation);
-      }else{
+      } else {
         const result = await axios.get(`/api/users/${toParam}/`);
         const newUser = result.data;
         const newConversation = {
-          conversationId:null,
-          otherUser:newUser,
-          lastMessage:{},
-          updatedAt:new Date(),
-          accepted:true,
+          conversationId: null,
+          otherUser: newUser,
+          lastMessage: {},
+          updatedAt: new Date(),
+          accepted: true,
         };
         setSelectedPartner(newConversation);
         const res = filteredConversations.find(
           (conv) => conv?.otherUser?.id == newConversation.otherUser.id
         );
-        console.log("res isL ",res);
+        console.log("res isL ", res);
         if (!res) {
           setFilteredConversations(prev => [...prev, newConversation]);
         }
@@ -274,72 +274,72 @@ export default function ChatBox() {
       </p>
     );
 
-    const sendMessage = async () => {
-      if (!message.trim() || !socketRef.current || !selectedPartner) return;
-      const timestamp = new Date().toISOString();
-      const selected_id = selectedPartner?.otherUser ? selectedPartner?.otherUser.id : selectedPartner.id;
-      console.log("sessing user id is: ",selected_id, session.user.id);
-      const secretKey = selected_id+ session.user.id;
-      console.log("Selected partner currently is: ", selectedPartner);
-      console.log("Key is: ",secretKey);
-      const encryptedMessage = encryptMessage(message, secretKey);
-      let msgData;
-      console.log("Selected partner currently is: ", selectedPartner);
-      const decryptedMessage = message;
-    
-      if (selectedPartner.otherUser) {
-        msgData = {
-          senderId: session.user.id,
-          senderType: session.user.role,
-          receiverId: selectedPartner?.otherUser.id,
-          content: encryptedMessage, 
-          timestamp,
-          accepted:selectedPartner?.accepted,
-        };
-      } else {
-        const newConversation = {
-          otherUser: {
-            id: selectedPartner?.id,
-            name: selectedPartner?.role === "INSTITUTION" || selectedPartner?.role === "SHOP_OWNER"
-              ? selectedPartner?.firmName
-              : `${selectedPartner?.firstName || ""} ${selectedPartner?.lastName || ""}`.trim(),
-            profilePhoto: selectedPartner?.profilePhoto || null,
-            firmName: selectedPartner?.firmName || null,
-            role: selectedPartner?.role,
-          },
-          lastMessage: decryptedMessage, 
-          updatedAt: new Date().toISOString(),
-          accepted:selectedPartner?.accepted,
-        };
-    
-        setConversations((prevConversations) =>
-          Array.isArray(prevConversations)
-            ? [...prevConversations, newConversation]
-            : [newConversation]
-        );
-    
-        msgData = {
-          senderId: session.user.id,
-          senderType: session.user.role,
-          receiverId: selectedPartner.id,
-          content: encryptedMessage, 
-          timestamp,
-          accepted:selectedPartner?.accepted,
-        };
-      }
-    
-      console.log("msg data: ", msgData);
-    
-      
-      await socketRef.current.emit("sendMessage", msgData);
-    
-      
-      setMessages((prev) => Array.isArray(prev) ? [...prev, { ...msgData, content: decryptedMessage }] : [{ ...msgData, content: decryptedMessage }]);
-    
-      setMessage(""); 
-      setShowEmojiPicker(false); 
-    };
-  
+  const sendMessage = async () => {
+    if (!message.trim() || !socketRef.current || !selectedPartner) return;
+    const timestamp = new Date().toISOString();
+    const selected_id = selectedPartner?.otherUser ? selectedPartner?.otherUser.id : selectedPartner.id;
+    console.log("sessing user id is: ", selected_id, session.user.id);
+    const secretKey = selected_id + session.user.id;
+    console.log("Selected partner currently is: ", selectedPartner);
+    console.log("Key is: ", secretKey);
+    const encryptedMessage = encryptMessage(message, secretKey);
+    let msgData;
+    console.log("Selected partner currently is: ", selectedPartner);
+    const decryptedMessage = message;
+
+    if (selectedPartner.otherUser) {
+      msgData = {
+        senderId: session.user.id,
+        senderType: session.user.role,
+        receiverId: selectedPartner?.otherUser.id,
+        content: encryptedMessage,
+        timestamp,
+        accepted: selectedPartner?.accepted,
+      };
+    } else {
+      const newConversation = {
+        otherUser: {
+          id: selectedPartner?.id,
+          name: selectedPartner?.role === "INSTITUTION" || selectedPartner?.role === "SHOP_OWNER"
+            ? selectedPartner?.firmName
+            : `${selectedPartner?.firstName || ""} ${selectedPartner?.lastName || ""}`.trim(),
+          profilePhoto: selectedPartner?.profilePhoto || null,
+          firmName: selectedPartner?.firmName || null,
+          role: selectedPartner?.role,
+        },
+        lastMessage: decryptedMessage,
+        updatedAt: new Date().toISOString(),
+        accepted: selectedPartner?.accepted,
+      };
+
+      setConversations((prevConversations) =>
+        Array.isArray(prevConversations)
+          ? [...prevConversations, newConversation]
+          : [newConversation]
+      );
+
+      msgData = {
+        senderId: session.user.id,
+        senderType: session.user.role,
+        receiverId: selectedPartner.id,
+        content: encryptedMessage,
+        timestamp,
+        accepted: selectedPartner?.accepted,
+      };
+    }
+
+    console.log("msg data: ", msgData);
+
+
+    await socketRef.current.emit("sendMessage", msgData);
+
+
+    setMessages((prev) => Array.isArray(prev) ? [...prev, { ...msgData, content: decryptedMessage }] : [{ ...msgData, content: decryptedMessage }]);
+
+    setMessage("");
+    setShowEmojiPicker(false);
+  };
+
   const handleLike = async () => {
     if (!selectedPartner) return;
     const otherUserId = selectedPartner.conversationId;
@@ -366,31 +366,30 @@ export default function ChatBox() {
   };
 
 
-    // Function to fetch the session data
-    const fetchSessionAndRedirect = async () => {
-      try {
-        const res = await fetch("/api/users/me");
-        const data = await res.json();
-  
-        if (data?.role === "USER") {
-          router.push("/UserHomePage");
-        } else if (data?.role === "INSTITUTION" || data?.role === "SHOP_OWNER") {
-          router.push("/partnerHome");
-        } else {
-          console.error("Unknown role or not logged in.");
-        }
-      } catch (err) {
-        console.error("Error fetching session", err);
+  // Function to fetch the session data
+  const fetchSessionAndRedirect = async () => {
+    try {
+      const res = await fetch("/api/users/me");
+      const data = await res.json();
+
+      if (data?.role === "USER") {
+        router.push("/UserHomePage");
+      } else if (data?.role === "INSTITUTION" || data?.role === "SHOP_OWNER") {
+        router.push("/partnerHome");
+      } else {
+        console.error("Unknown role or not logged in.");
       }
-    };
+    } catch (err) {
+      console.error("Error fetching session", err);
+    }
+  };
 
   return (
     <div className="flex h-screen bg-white font-[var(--font-plus-jakarta)]">
       {/* Left Sidebar */}
       <div
-        className={`${
-          selectedPartner ? "hidden md:flex" : "flex"
-        } flex-col gap-4 w-full md:w-[30%] bg-[#F5FAFC] p-4`}
+        className={`${selectedPartner ? "hidden md:flex" : "flex"
+          } flex-col gap-4 w-full md:w-[30%] bg-[#F5FAFC] p-4`}
       >
         <div className="flex items-center gap-2">
           <button
@@ -416,21 +415,19 @@ export default function ChatBox() {
         {/* Toggle Tab */}
         <div className="flex items-center justify-center w-full">
           <button
-            className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tl-xl rounded-bl-xl transition-all duration-500 cursor-pointer ${
-              !isFavorite
+            className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tl-xl rounded-bl-xl transition-all duration-500 cursor-pointer ${!isFavorite
                 ? "bg-[var(--chart-2)] text-white font-semibold"
                 : "bg-white text-[var(--withdarktext)] font-normal"
-            }`}
+              }`}
             onClick={() => setIsFavorite(false)}
           >
             Select a seller
           </button>
           <button
-            className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tr-xl rounded-br-xl transition-all duration-500 cursor-pointer ${
-              isFavorite
+            className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tr-xl rounded-br-xl transition-all duration-500 cursor-pointer ${isFavorite
                 ? "bg-[var(--chart-2)] text-white font-semibold"
                 : "bg-white text-[var(--withdarktext)] font-normal"
-            }`}
+              }`}
             onClick={() => setIsFavorite(true)}
           >
             Message requests
@@ -463,12 +460,11 @@ export default function ChatBox() {
                       //   setSelectedPartner({ ...partner });
                       // }}
                       className={`font-medium text-[var(--secondary-foreground)] 
-                                                ${
-                                                  selectedPartner?.id ===
-                                                    partner.id && "font-medium"
-                                                }`}
+                                                ${selectedPartner?.id ===
+                        partner.id && "font-medium"
+                        }`}
                     >
-                        {partner.otherUser?.firmName || partner.otherUser?.name || "Unknown"}
+                      {partner.otherUser?.firmName || partner.otherUser?.name || "Unknown"}
                     </div>
                     <span className="text-gray-500 font-normal text-[12px]">
                       {/* Last message here... */}
@@ -483,8 +479,8 @@ export default function ChatBox() {
                     {/* Display the time */}
                     {partner.lastMessageTimestamp
                       ? new Date(
-                          partner.lastMessageTimestamp
-                        ).toLocaleTimeString()
+                        partner.lastMessageTimestamp
+                      ).toLocaleTimeString()
                       : " "}
                   </span>
                   <div className="flex items-center gap-2">
@@ -499,8 +495,8 @@ export default function ChatBox() {
             filteredConversations.map((partner, index) => (
               <div
                 onClick={() => {
-                        setSelectedPartner({ ...partner });
-                      }}
+                  setSelectedPartner({ ...partner });
+                }}
                 key={partner.id || `partner-${index}`}
                 className="flex cursor-pointer justify-between gap-2.5 py-2 border-b border-gray-200"
               >
@@ -522,12 +518,17 @@ export default function ChatBox() {
                       //   setSelectedPartner({ ...partner });
                       // }}
                       className={`font-medium text-[var(--secondary-foreground)] 
-                                                ${
-                                                  selectedPartner?.id ===
-                      partner.id && "font-medium"}`
+                                                ${selectedPartner?.id ===
+                        partner.id && "font-medium"}`
                       }
                     >
-                        {partner.otherUser?.firmName || partner.otherUser?.name || "Unknown"}
+                      {console.log(partner)}
+                      {partner?.role === "INSTITUTION" || partner?.role === "SHOP_OWNER"
+                        ? partner?.firmName || "Unknown"
+                        : (partner?.firstName || partner?.lastName)
+                          ? `${partner.firstName || ""} ${partner.lastName || ""}`.trim()
+                          : "Unknown"}
+
 
                     </div>
                     <span className="text-gray-500 font-normal text-[12px]">
@@ -543,8 +544,8 @@ export default function ChatBox() {
                     {/* Display the time */}
                     {partner.lastMessageTimestamp
                       ? new Date(
-                          partner.lastMessageTimestamp
-                        ).toLocaleTimeString()
+                        partner.lastMessageTimestamp
+                      ).toLocaleTimeString()
                       : " "}
                   </span>
                 </div>
@@ -558,9 +559,8 @@ export default function ChatBox() {
 
       {/* Right Chat Box */}
       <div
-        className={`${
-          selectedPartner ? "flex" : "hidden md:flex"
-        } flex-col w-full md:w-[70%] h-full bg-[#FAFAFA]`}
+        className={`${selectedPartner ? "flex" : "hidden md:flex"
+          } flex-col w-full md:w-[70%] h-full bg-[#FAFAFA]`}
       >
         {selectedPartner ? (
           <>
@@ -568,11 +568,11 @@ export default function ChatBox() {
             <header className="flex items-center justify-between p-4 bg-[#F7F7FC]">
               <div className="flex items-center gap-3">
                 <button
-                onClick={() => setSelectedPartner(null)}
-                className="md:hidden flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-200 transition"
-              >
-              <ChevronLeft size={24} strokeWidth={2} />
-              </button>
+                  onClick={() => setSelectedPartner(null)}
+                  className="md:hidden flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-200 transition"
+                >
+                  <ChevronLeft size={24} strokeWidth={2} />
+                </button>
                 <div className="relative w-10 h-10">
                   <Image
                     src="/chatUserSvg/userImage.svg"
@@ -584,7 +584,7 @@ export default function ChatBox() {
                 </div>
                 <div>
                   <p className="text-[var(--chatText-color)] text-lg flex items-center gap-2">
-                  {selectedPartner?.otherUser?.firmName || selectedPartner?.otherUser?.name || "Unknown"}
+                    {selectedPartner?.otherUser?.firmName || selectedPartner?.otherUser?.name || "Unknown"}
 
                     {/* <Heart
                       size={20}
@@ -668,7 +668,7 @@ export default function ChatBox() {
                     new Date(
                       messages[index - 1].timestamp
                     ).toLocaleDateString() !==
-                      new Date(msg.timestamp).toLocaleDateString();
+                    new Date(msg.timestamp).toLocaleDateString();
 
                   return (
                     <div
@@ -688,22 +688,19 @@ export default function ChatBox() {
 
                       {/* Message Bubble */}
                       <div
-                        className={`flex ${
-                          msg.senderId === session.user.id
+                        className={`flex ${msg.senderId === session.user.id
                             ? "justify-end"
                             : "justify-start"
-                        }`}
+                          }`}
                       >
                         <div
-                          className={`p-2.5 ${
-                            msg.senderId === session.user.id
+                          className={`p-2.5 ${msg.senderId === session.user.id
                               ? "bg-[#D7F8F4]"
                               : "bg-white"
-                          }
-                            ${
-                              msg.senderId === session.user.id
-                                ? "rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl"
-                                : "rounded-tl-2xl rounded-tr-2xl rounded-br-2xl"
+                            }
+                            ${msg.senderId === session.user.id
+                              ? "rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl"
+                              : "rounded-tl-2xl rounded-tr-2xl rounded-br-2xl"
                             } flex items-center justify-between gap-1.5`}
                         >
                           <div className="text-[#010101] opacity-85 font-normal text-sm flex items-center gap-2">
