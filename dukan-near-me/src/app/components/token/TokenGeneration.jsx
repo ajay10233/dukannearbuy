@@ -8,48 +8,6 @@ import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import io from 'socket.io-client';
 
-// export default function TokenGeneration () {
-//   const [userInput, setUserInput] = useState("");
-//   const [tokenNumber, setTokenNumber] = useState("");
-//   const [latestToken, setLatestToken] = useState(null);
-
-//   const handleTokenGeneration = async () => {
-//     setLoading(true);
-//     try {
-//       const payload = { userId: userInput.trim() };
-
-//       const res = await fetch("/api/token/create", {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify(payload),
-//       });
-
-//       const data = await res.json();
-
-//       if (!res.ok) {
-//         throw new Error(data?.error || "Token creation failed");
-//       }
-
-//       const { tokenNumber, userId: newUserId } = data;
-
-//       setTokenNumber(tokenNumber);
-//       if (!userInput && newUserId) setUserInput(newUserId);
-//       setLatestToken(tokenNumber);
-
-//       setUserInput("");
-//       setTokenNumber("");
-
-//       toast.success(`Token ${tokenNumber} created successfully`);
-//     } catch (err) {
-//       console.error("Token creation failed:", err);
-//       toast.error(err.message || "Token creation failed");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
 const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { transports: ["websocket"] });
 
 export default function TokenGeneration() {
@@ -65,7 +23,7 @@ export default function TokenGeneration() {
   };
 
   const handleCreateToken = async () => {
-    if (!userId) return alert('Please enter a user ID');
+    if (!userId) return toast.error('Please enter a user ID');
     try {
       const res = await axios.post('/api/token/create', { userId });
       setUserId('');

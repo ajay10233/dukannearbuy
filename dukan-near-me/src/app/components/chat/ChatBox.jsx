@@ -747,7 +747,7 @@ export default function ChatBox() {
               <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg m-4 flex justify-between items-center">
                 <div>
                   <p className="font-medium">
-                    You haven’t accepted this chat request yet.
+                    You haven't accepted this chat request yet.
                   </p>
                   <p className="text-sm">
                     Do you want to start chatting with this person?

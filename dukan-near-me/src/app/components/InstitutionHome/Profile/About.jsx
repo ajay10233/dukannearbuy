@@ -1,31 +1,13 @@
 "use client";
 
 import { useState, useEffect, use } from "react";
-import {
-  MessageCircleMore,
-  Mail,
-  Phone,
-  Store,
-  Hash,
-  Clock,
-  Clock9,
-  IndianRupee,
-  MapPin,
-  X,
-  Copy,
-  Check,
-  ChevronDown,
-} from "lucide-react";
+import {MessageCircleMore, Mail, Phone, Store, Hash, Clock, Clock9, IndianRupee, MapPin, X, Copy, Check, ChevronDown} from "lucide-react";
+import { PiAddressBookBold } from "react-icons/pi";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import ChangeAddress from "./ChangeAddress";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent,} from "@/components/ui/accordion";
 import { useSearchParams } from "next/navigation";
 
 export default function About({ profileUpdated }) {
@@ -152,7 +134,7 @@ export default function About({ profileUpdated }) {
                   {userData?.mobileNumber ? (
                     <a
                       href={`tel:${userData.mobileNumber}`}
-                      className="hover:text-gray-600 transition ease-in-out hover:not-first:underline"
+                      className="hover:text-gray-600 transition ease-in-out"
                     >
                       {userData.mobileNumber}
                     </a>
@@ -204,7 +186,6 @@ export default function About({ profileUpdated }) {
 
         <div className="fixed bottom-30 right-4 z-10 flex flex-col items-center gap-2">
           <button
-            // onClick={() => setShowQRModal(true)}
             onClick={handleChat}
             className="bg-blue-600 text-white p-2 cursor-pointer rounded-full hover:bg-blue-700 transition transform hover:scale-110 animate-bounce"
             title="Chat with firm"
@@ -215,14 +196,15 @@ export default function About({ profileUpdated }) {
       </div>
 
       {profileUpdated && (
-        <div className="w-full px-0 md:px-8 flex flex-col gap-y-8">
+        <div className="w-full px-0 md:px-8 flex flex-col">
           <div className="flex flex-col gap-y-2 md:gap-y-3 text-sm md:text-md text-gray-700 border-t pl-2 md:pl-8 pt-4">
-            <div className="flex items-start gap-x-2">
-              <span className="font-semibold flex items-center gap-x-1">
-                <Store size={20} strokeWidth={1.5} color="#1751c4" />
+            <div className="flex flex-col md:flex-row items-start gap-x-2">
+              <span className="font-semibold text-sm text-[16px] flex items-center gap-x-1 ml-1 md:ml-0">
+                <PiAddressBookBold size={24} strokeWidth={1.5} color="#1751c4" />
                 Address:
+
               </span>
-              <div className="text-base text-gray-800 pb-1 hover:text-gray-600 transition ease-in-out">
+              <div className="text-sm text-[16px] text-gray-800 pb-1 hover:text-gray-600 transition ease-in-out ml-4">
                 {userData?.houseNo && <span>{userData.houseNo}, </span>}
                 {userData?.street && <span>{userData.street}, </span>}
                 {userData?.city && <span>{userData.city}, </span>}
@@ -241,19 +223,18 @@ export default function About({ profileUpdated }) {
             </div>
 
             {/* past addresses */}
-            <div className="flex flex-col w-full  pr-4 py-4 md:px-8 md:py-4">
+            <div className="flex flex-col w-full">
               <Accordion
                 type="single"
                 collapsible
-                className="w-full p-0 md:p-4"
+                className="w-full"
               >
                 <AccordionItem
                   value="past-addresses"
                   className="rounded-md overflow-hidden"
                 >
-                  <AccordionTrigger className="bg-white px-4 py-3 text-sm md:text-[16px] cursor-pointer hover:no-underline text-blue-700 font-semibold hover:bg-gray-100 rounded-t-md flex justify-between items-center">
-                    <span>Past Addresses</span>
-                    {/* <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]:rotate-180" /> */}
+                  <AccordionTrigger className="bg-white pr-4 py-3 pl-0 cursor-pointer hover:no-underline text-blue-700 font-semibold transition-all duration-400 ease-in-out hover:bg-gray-100 rounded-t-md flex justify-between items-center">
+                    <span className="flex items-center gap-x-1 pl-0 text-md"> <PiAddressBookBold size={24} strokeWidth={1.5} color="#1751c4" className="ml-1" />Past Addresses</span>
                   </AccordionTrigger>
                   <AccordionContent className="bg-blue-50 px-4 py-2 rounded-b-md border-t border-blue-200">
                     {pastAddresses?.length === 0 ? (
@@ -263,7 +244,7 @@ export default function About({ profileUpdated }) {
                         {pastAddresses?.map((addr, i) => (
                           <div
                             key={addr.id}
-                            className="p-3 bg-white rounded-md shadow-sm border border-blue-200 transition-all hover:shadow-md"
+                            className="p-3 bg-white text-sm text-[16px]  rounded-md shadow-sm border border-blue-200 transition-all hover:shadow-md"
                           >
                             <p className="font-semibold text-blue-700">
                               #{i + 1} (Moved out:{" "}
@@ -290,50 +271,39 @@ export default function About({ profileUpdated }) {
               </Accordion>
             </div>
 
-            <div className="flex items-start gap-x-2">
-              <span className="font-semibold flex items-center gap-x-1">
-                <Hash size={20} strokeWidth={1.5} color="#1751c4" />
-                Hashtags:
-              </span>
-              {userData?.hashtags?.length > 0 ? (
-                userData.hashtags.map((tag, i) => (
-                  <span
-                    key={i}
-                    className="inline-block px-1.5 md:px-3 py-1 text-sm bg-gradient-to-tl from-blue-300 via-blue-500 to-blue-600 text-white rounded-2xl"
-                  >
-                    #{tag.trim()}
-                  </span>
-                ))
-              ) : (
-                <span className="inline-block px-3 py-1 text-sm bg-gradient-to-tl from-blue-300 via-blue-500 to-blue-600 text-white rounded-2xl">
-                  None
-                </span>
-              )}
+            {/* SHOP TIMINGS */}
+          {(userData?.shopOpenTime ||
+            userData?.shopCloseTime ||
+            userData?.shopOpenDays?.length > 0) && (
+            <div>
+              <h2 className="text-[16px] md:text-xl font-bold text-blue-700 mb-4">
+                Shop Timings
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 ml-4">
+                {userData.shopOpenTime && (
+                  <div>
+                    <p className="font-semibold text-gray-600">Open Time</p>
+                    <p>{userData.shopOpenTime}</p>
+                  </div>
+                )}
+                {userData.shopCloseTime && (
+                  <div>
+                    <p className="font-semibold text-gray-600">Close Time</p>
+                    <p>{userData.shopCloseTime}</p>
+                  </div>
+                )}
+                {userData.shopOpenDays?.length > 0 && (
+                  <div>
+                    <p className="font-semibold text-gray-600">Open Days</p>
+                    <p>{userData.shopOpenDays.join(", ")}</p>
+                  </div>
+                )}
+              </div>
             </div>
+          )}
 
             <div className="flex items-start gap-x-2">
-              <span className="font-semibold flex items-center gap-x-1">
-                <Clock size={20} strokeWidth={1.5} color="#1751c4" />
-                Open Time:
-              </span>
-              <span className="hover:text-gray-600 transition ease-in-out">
-                {userData?.shopOpenTime || "Not Set"}
-              </span>
-            </div>
-
-            <div className="flex items-start gap-x-2">
-              <span className="font-semibold flex items-center gap-x-1">
-                <Clock9 size={20} strokeWidth={1.5} color="#1751c4" />
-                Close Time:
-              </span>
-              <span className="hover:text-gray-600 transition ease-in-out">
-                {userData?.shopCloseTime || "Not Set"}
-              </span>
-            </div>
-
-
-            <div className="flex items-start gap-x-2">
-              <span className="font-semibold flex items-center gap-x-1">
+              <span className="font-semibold text-sm text-[16px] flex items-center gap-x-1">
                 <MapPin size={20} strokeWidth={1.5} color="#1751c4" />
                 Direction:
               </span>
@@ -354,8 +324,8 @@ export default function About({ profileUpdated }) {
         </div>
       )}
 
-      <div className="p-4 md:p-8 bg-white w-full">
-        <div className="space-y-2 items-center justify-center w-full ml-[32px]">
+      <div className="p-3 md:p-8 bg-white w-full">
+        <div className="space-y-3 items-center justify-center w-full ml-0 md:ml-[32px]">
           {/* PROFILE INFO */}
           {/* <div>
             <h2 className="text-xl font-bold text-blue-700 mb-4">
@@ -541,64 +511,34 @@ export default function About({ profileUpdated }) {
             </div>
           )} */}
 
-          {/* SHOP TIMINGS */}
-          {/* {(userData?.shopOpenTime ||
-            userData?.shopCloseTime ||
-            userData?.shopOpenDays?.length > 0) && (
-            <div>
-              <h2 className="text-xl font-bold text-blue-700 mb-4">
-                Shop Timings
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
-                {userData.shopOpenTime && (
-                  <div>
-                    <p className="font-semibold text-gray-600">Open Time</p>
-                    <p>{userData.shopOpenTime}</p>
-                  </div>
-                )}
-                {userData.shopCloseTime && (
-                  <div>
-                    <p className="font-semibold text-gray-600">Close Time</p>
-                    <p>{userData.shopCloseTime}</p>
-                  </div>
-                )}
-                {userData.shopOpenDays?.length > 0 && (
-                  <div>
-                    <p className="font-semibold text-gray-600">Open Days</p>
-                    <p>{userData.shopOpenDays.join(", ")}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )} */}
-
           {/* PAYMENT DETAILS */}
           {userData?.upi_id && (
             <div>
-              <h2 className="text-xl font-bold text-blue-700 mb-4">
+              <h2 className="text-[16px] md:text-xl font-bold text-blue-700 mb-4">
                 Payment Details
               </h2>
-              <div className="flex flex-col text-sm text-gray-700">
-                <p className="font-semibold text-gray-600 flex items-center gap-1">
-                  <IndianRupee size={18} strokeWidth={1.5} /> UPI ID
-                </p>
-                <p>{userData.upi_id}</p>
+              <div className="flex items-center gap-12 text-sm text-gray-700 ml-1">
+                <div>
+                  <p className="font-semibold text-gray-600 flex items-center gap-1">
+                    <IndianRupee size={16} strokeWidth={1.5} /> UPI ID
+                  </p>
+                  <p>{userData.upi_id}</p>
+                </div>
                 <button
                   onClick={() => setShowQRModal(true)}
-                  className="mt-2 inline-flex items-center bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm w-max"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r cursor-pointer from-green-400 via-emerald-500 to-teal-600 text-white font-semibold px-5 py-2.5 rounded-md shadow-md transition-all duration-300 ease-in-out"
                 >
-                  <IndianRupee size={18} />
-                  Pay Now
+                  <IndianRupee size={18} className="transition-transform group-hover:translate-x-1" />
+                  <span className="font-medium">Pay Now</span>
                 </button>
               </div>
             </div>
           )}
 
-          {/* HASHTAGS */}
-          {/* {userData?.hashtags?.length > 0 && (
+          {userData?.hashtags?.length > 0 && (
             <div>
-              <h2 className="text-xl font-bold text-blue-700 mb-4">Hashtags</h2>
-              <div className="flex flex-wrap gap-2">
+              <h2 className="text-[16px] md:text-xl font-bold text-blue-700 mb-4">Hashtags</h2>
+              <div className="flex flex-wrap gap-2 ml-1">
                 {userData.hashtags.map((tag, index) => (
                   <span
                     key={index}
@@ -609,15 +549,22 @@ export default function About({ profileUpdated }) {
                 ))}
               </div>
             </div>
-          )} */}
+          )}
+
+          {userData?.description && (
+            <div>
+              <h2 className="text-[16px] md:text-xl font-bold text-blue-700 mb-4">About</h2>
+              <p className="ml-1 text-sm text-gray-700 w-full max-w-2xl bg-gradient-to-br from-blue-50 via-white to-blue-100  h-45 bg-white border border-gray-200 shadow-sm rounded-xl p-4 overflow-auto leading-relaxed whitespace-pre-line">{userData.description}</p>
+            </div>
+          )}
         </div>
       </div>
 
       {showQRModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-auto max-w-sm relative">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-65 md:w-full md:max-w-md relative">
             <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-600 cursor-pointer transition-all duration-300 ease-in-out"
               onClick={() => setShowQRModal(false)}
             >
               <X size={20} strokeWidth={1.5} />
@@ -636,7 +583,7 @@ export default function About({ profileUpdated }) {
               <span className="text-gray-800 text-sm font-medium">
                 UPI ID: <span className="font-normal">{userData?.upi_id}</span>
               </span>
-              <button onClick={handleCopyUpi} title="Copy UPI ID">
+              <button onClick={handleCopyUpi} title="Copy UPI ID" className="cursor-pointer transition-all duration-300 ease-in-out">
                 {copiedUPI ? (
                   <Check className="text-green-600" size={18} />
                 ) : (

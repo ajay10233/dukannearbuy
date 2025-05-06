@@ -40,8 +40,8 @@ export default function Profile() {
   }, []);
 
   const handleSuccess = (updatedUser) => {
-    setUser(updatedUser);  // Update the user state with the new data
-    setIsEditing(false);    // Close the edit form
+    setUser(updatedUser);  
+    setIsEditing(false);    
     toast.success('Profile updated successfully');
   };
 

@@ -136,10 +136,10 @@ export default function SearchBar() {
                   <p className="text-sm font-medium text-gray-200 flex items-center gap-2">
                     {profile?.firmName || profile?.firstName}
                     {profile?.subscriptionPlan?.name === "PREMIUM" && (
-                      <Crown size={24} fill="#f0d000" className="text-yellow-500" />
+                      <Crown size={20} fill="#f0d000" className="text-yellow-500" />
                     )}
                     {profile?.subscriptionPlan?.name === "BUSINESS" && (
-                      <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
+                      <Crown size={20} fill="#AFAFAF" className="text-gray-400" />
                     )}
                   </p>
                   <p className="text-xs text-gray-200">

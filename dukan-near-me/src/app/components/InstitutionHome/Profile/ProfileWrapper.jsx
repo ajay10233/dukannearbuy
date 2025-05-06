@@ -7,6 +7,7 @@ import { FaEdit } from "react-icons/fa";
 import { Share2, X, Heart } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function ProfileWrapper({ children, images, setImages }) {
   const [showModal, setShowModal] = useState(false);
@@ -18,6 +19,7 @@ export default function ProfileWrapper({ children, images, setImages }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [user, setUser] = useState(null);
   const router = useRouter();
+  const { data: session } = useSession();
 
   const [form, setForm] = useState({
     firstName: '',
@@ -68,6 +70,7 @@ export default function ProfileWrapper({ children, images, setImages }) {
     setShareUrl(fullUrl);
   }, [pathname]);
 
+  
   const handleEditClick = () => {
     
       router.push("/institution-edit-profile");
@@ -143,8 +146,31 @@ export default function ProfileWrapper({ children, images, setImages }) {
     }
   };
 
+  const institutionId = pathname.split("/").pop();
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const res = await fetch("/api/favorites");
+        const data = await res.json();
+        if (res.ok) {
+          const alreadyFav = data.favorites.some(
+            (fav) => fav.institutionId === institutionId
+          );
+          setIsFavorite(alreadyFav);
+        }
+      } catch (error) {
+        console.error("Error checking favorite status:", error);
+      }
+    };
+  
+    if (session?.user) {
+      fetchFavorites();
+    }
+  }, [session, institutionId]);
+
   const handleFavoriteToggle = async () => {
-    if (!user || user.role !== "USER") {
+    if (!session?.user || session.user.role !== "USER") {
       toast.error("Only users can favorite profiles.");
       return;
     }

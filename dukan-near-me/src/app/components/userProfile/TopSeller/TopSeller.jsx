@@ -159,7 +159,7 @@ export default function TopSeller() {
 
   useEffect(() => {
     if (emblaApi) emblaApi.on("select", onSelect);
-  }, [emblaApi, onSelect]);
+  }, [emblaApi, onSelect]); 
 
   const fetchCurrentLocation = async () => {
     if (navigator.geolocation) {
@@ -196,68 +196,6 @@ export default function TopSeller() {
     fetchCurrentLocation();
   }, []);
 
-  // useEffect(() => {
-  //   const sellers = [
-  //     {
-  //       id: 1,
-  //       sellerName: "Rohit Electronics",
-  //       shopName: "Smart Gadget Hub",
-  //       location: "Sector 14, Gurugram",
-  //       customersServed: 250,
-  //       rating: 4.5,
-  //       image: "/hero-section.png",
-  //     },
-  //     {
-  //       id: 2,
-  //       sellerName: "Sneha Fashion",
-  //       shopName: "Trendy Threads",
-  //       location: "Karol Bagh, Delhi",
-  //       customersServed: 310,
-  //       rating: 4.8,
-  //       image: "/hero-section.png",
-  //     },
-  //     {
-  //       id: 3,
-  //       sellerName: "Amit Appliances",
-  //       shopName: "HomeTech",
-  //       location: "Noida Sector 62",
-  //       customersServed: 180,
-  //       rating: 4.2,
-  //       image: "/hero-section.png",
-  //       },
-  //       {
-  //           id: 4,
-  //           sellerName: "Rohit Electronics",
-  //           shopName: "Smart Gadget Hub",
-  //           location: "Sector 14, Gurugram",
-  //           customersServed: 250,
-  //           rating: 4.5,
-  //           image: "/hero-section.png",
-  //         },
-  //         {
-  //           id: 5,
-  //           sellerName: "Sneha Fashion",
-  //           shopName: "Trendy Threads",
-  //           location: "Karol Bagh, Delhi",
-  //           customersServed: 310,
-  //           rating: 4.8,
-  //           image: "/hero-section.png",
-  //         },
-  //         {
-  //           id: 6,
-  //           sellerName: "Amit Appliances",
-  //           shopName: "HomeTech",
-  //           location: "Noida Sector 62",
-  //           customersServed: 180,
-  //           rating: 4.2,
-  //           image: "/hero-section.png",
-  //         },
-  //   ];
-  //   if (location?.city || location?.zipCode) {
-  //     setSellers(sellers);
-  //   }
-  // }, [location]);
-
   return (
     <div className="w-full flex flex-col items-center px-6 py-10">
       <div className="w-full max-w-[1300px] flex flex-col gap-8">
@@ -285,12 +223,20 @@ export default function TopSeller() {
                       </div>
                       <div className="px-4 py-2 flex flex-col gap-1">
                         <div className="flex justify-between items-center">
-                          <h3 className="text-lg font-semibold">{seller?.user?.firmName}</h3>
+                        <h3 className="text-lg font-semibold flex items-center gap-1">
+                          {seller?.user?.firmName}
+                          {seller?.subscriptionPlan?.name === "PREMIUM" && (
+                            <Crown size={18} fill="#f0d000" className="text-yellow-500" />
+                          )}
+                          {seller?.subscriptionPlan?.name === "BUSINESS" && (
+                            <Crown size={18} fill="#AFAFAF" className="text-gray-400" />
+                          )}
+                        </h3>
                           <div className="flex items-center gap-1">
                             <Star size={20} color="#fdc700" fill="#fdc700" strokeWidth={1.5} />
                             {seller.rating && seller.rating > 0 && (
                               <span className="text-sm font-medium text-yellow-600">
-                                {seller.rating} Rating
+                                {seller?.rating} Rating
                               </span>
                             )}
                           </div>

@@ -53,38 +53,6 @@ export default function HeroSection({id}) {
 
     fetchUserData();
   }, []);
-
-  // const handleImageChange = async (e) => {
-  //   const files = Array.from(e.target.files);
-  //   if (!files.length) return;
-
-  //   const remainingSlots = 10 - imageCount;
-  //   const filesToUpload = files.slice(0, remainingSlots);
-
-  //   setIsUploading(true);
-
-  //   for (const file of filesToUpload) {
-  //     if (file.size > 2 * 1024 * 1024) {
-  //       toast.error(`File ${file.name} is too large (max 2MB).`);
-  //       continue;
-  //     }
-
-  //     const base64String = await new Promise((resolve, reject) => {
-  //       const reader = new FileReader();
-  //       reader.onloadend = () => resolve(reader.result);
-  //       reader.onerror = () => reject("Failed to read file.");
-  //       reader.readAsDataURL(file);
-  //     });
-
-  //     console.log("Uploaded File:", file);  
-
-  //     setImages((prev) => [...prev, base64String]);
-  //     setImageCount((prev) => prev + 1);
-  //     toast.success(`Uploaded ${file.name}`);
-  //   }
-
-  //   setIsUploading(false);
-  // };
   
   const handleImageChange = async (e) => {
     const files = Array.from(e.target.files);
@@ -99,7 +67,7 @@ export default function HeroSection({id}) {
     
     for (const file of filesToUpload) {
       if (file.size > 20 * 1024 * 1024) { // 20MB limit
-        toast.error(`File ${file.name} is too large (max 2MB).`);
+        toast.error(`File ${file.name} is too large (max 20MB).`);
         continue;
       }
   
@@ -154,7 +122,7 @@ export default function HeroSection({id}) {
 
   return (
     <div className={`w-full ${user.role === "INSTITUTION" ? "bg-gradient-to-tr from-white to-sky-100" : user.role === "SHOP_OWNER" ? "bg-gradient-to-tl from-lime-100 to-white" : ""}`}>
-      <div className="w-full h-60 md:h-81 relative overflow-hidden shadow-inner">
+      <div className="w-full h-60 md:h-90 relative overflow-hidden shadow-inner">
         {(images.length > 0 || user.profilePhoto) ? (
           <div className="h-full" ref={emblaRef}>
             <div className="flex h-full cursor-pointer">
@@ -192,7 +160,7 @@ export default function HeroSection({id}) {
           </div>
         ) : !isUploading && (
           <p className="text-gray-500 flex items-center justify-center h-full">
-            Upload Images here...
+            Currently, no image has been uploaded
           </p>
         )}
 

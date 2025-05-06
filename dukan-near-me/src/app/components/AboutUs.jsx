@@ -33,7 +33,7 @@ export default function AboutUs() {
 
   const handleDelete = async () => {
     try {
-      const res = await fetch('/api/auth/delete-account', {
+      const res = await fetch('/api/auth/delete-account/', {
         method: 'DELETE',
       });
 

@@ -138,7 +138,7 @@ export default function About({ profileUpdated }) {
   };
 
   return (
-    <div className="flex flex-col items-start  w-full bg-white">
+    <div className="flex flex-col items-start w-full bg-white overflow-x-hidden">
       
       <Navbar />
       <div className="mt-14 w-full">
@@ -146,18 +146,18 @@ export default function About({ profileUpdated }) {
       <HeroSectionEditProfile />
       </div>
 
-      <div className="flex w-full p-0 pb-6 md:px-8 md:py-2 justify-between items-start">
+      <div className="flex w-full p-2 md:px-8 md:py-2 justify-between items-start">
         <div className="flex flex-col gap-1 ">
           <div className="pl-2 md:pl-8 flex flex-col gap-y-1">
           <div className="flex items-center gap-2">
-  <button
-    onClick={() => router.push("/institution-edit-profile")}
-    className="flex items-center text-blue-600 hover:text-blue-800 cursor-pointer text-sm font-medium transition"
-  >
-    <Pencil size={16} className="mr-1" />
-    Edit Profile
-  </button>
-</div>
+            <button
+              onClick={() => router.push("/institution-edit-profile")}
+              className="flex items-center text-blue-600 hover:text-blue-800 cursor-pointer text-sm font-medium transition"
+            >
+              <Pencil size={16} className="mr-1" />
+              Edit Profile
+            </button>
+          </div>
             <p className="text-md text-gray-500">
               User ID: {userData?.username}
             </p>
@@ -372,13 +372,13 @@ export default function About({ profileUpdated }) {
       )}
 
       <div className="p-4 md:p-8 bg-white w-full">
-        <div className="space-y-2 items-center justify-center w-full ml-[32px]">
+        <div className="space-y-3 items-center justify-center w-full ml-0 md:ml-[32px]">
           {/* PROFILE INFO */}
           <div>
-            <h2 className="text-xl font-bold text-blue-700 mb-4">
+            <h2 className="text-[16px] md:text-xl font-bold text-blue-700 mb-4">
               Profile Information
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 ml-2 text-sm text-gray-700">
               {userData?.firstName && (
                 <div>
                   <p className="font-semibold text-gray-600">First Name</p>
@@ -412,19 +412,71 @@ export default function About({ profileUpdated }) {
             </div>
           </div>
 
-          {/* ABOUT */}
-          {userData?.description && (
-            <div>
-              <h2 className="text-xl font-bold text-blue-700 mb-4">About</h2>
-              <p className="text-sm text-gray-700">{userData.description}</p>
-            </div>
-          )}
-
           {/* ADDRESS */}
           <div className="w-full">
-            <div className="adderss flex">
-              <h2 className="text-xl font-bold text-blue-700 mb-4">Address</h2>
-              <div className="flex flex-col w-full ">
+            <div className="mb-4">
+              <h2 className="text-[16px] md:text-xl font-bold text-blue-700 mb-4">Address</h2>
+              <div className="flex flex-col w-full gap-2 md:gap-4 ml-2">
+                  {userData?.address ? (
+                  <div className="grid grid-cols-2 gap-2 md:gap-4 text-sm text-gray-700">
+                    {userData.address.houseNumber && (
+                      <div>
+                        <p className="font-semibold text-gray-600">House Number</p>
+                        <p>{userData.address.houseNumber}</p>
+                      </div>
+                    )}
+                    {userData.address.street && (
+                      <div>
+                        <p className="font-semibold text-gray-600">Street</p>
+                        <p>{userData.address.street}</p>
+                      </div>
+                    )}
+                    {userData.address.buildingName && (
+                      <div>
+                        <p className="font-semibold text-gray-600">Building Name</p>
+                        <p>{userData.address.buildingName}</p>
+                      </div>
+                    )}
+                    {userData.address.landmark && (
+                      <div>
+                        <p className="font-semibold text-gray-600">Landmark</p>
+                        <p>{userData.address.landmark}</p>
+                      </div>
+                    )}
+                    {userData.address.city && (
+                      <div>
+                        <p className="font-semibold text-gray-600">City</p>
+                        <p>{userData.address.city}</p>
+                      </div>
+                    )}
+                    {userData.address.state && (
+                      <div>
+                        <p className="font-semibold text-gray-600">State</p>
+                        <p>{userData.address.state}</p>
+                      </div>
+                    )}
+                    {userData.address.country && (
+                      <div>
+                        <p className="font-semibold text-gray-600">Country</p>
+                        <p>{userData.address.country}</p>
+                      </div>
+                    )}
+                    {userData.address.zipCode && (
+                      <div>
+                        <p className="font-semibold text-gray-600">Zip Code</p>
+                        <p>{userData.address.zipCode}</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-gray-400 italic text-sm">
+                    Address not provided
+                  </p>
+                )}
+              </div>
+              
+            </div>
+            <div className="flex flex-col w-full ">
                 <Accordion
                   type="single"
                   collapsible
@@ -474,9 +526,8 @@ export default function About({ profileUpdated }) {
                   </AccordionItem>
                 </Accordion>
               </div>
-            </div>
 
-            {userData?.address ? (
+            {/* {userData?.address ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
                 {userData.address.houseNumber && (
                   <div>
@@ -526,22 +577,21 @@ export default function About({ profileUpdated }) {
                     <p>{userData.address.zipCode}</p>
                   </div>
                 )}
-                {/* past addresses */}
               </div>
             ) : (
               <p className="text-gray-400 italic text-sm">
                 Address not provided
               </p>
-            )}
+            )} */}
           </div>
 
           {/* SHOP INFORMATION */}
           {(userData?.firmName || userData?.shopAddress) && (
             <div>
-              <h2 className="text-xl font-bold text-blue-700 ">
+              <h2 className="text-[16px] md:text-xl font-bold text-blue-700 ">
                 Shop Information
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 text-sm text-gray-700 ml-2">
                 {userData.shopAddress && (
                   <div>
                     <p className="font-semibold text-gray-600">Shop Address</p>
@@ -563,10 +613,10 @@ export default function About({ profileUpdated }) {
             userData?.shopCloseTime ||
             userData?.shopOpenDays?.length > 0) && (
             <div>
-              <h2 className="text-xl font-bold text-blue-700 mb-4">
+              <h2 className="text-[16px] md:text-xl  font-bold text-blue-700 mb-4">
                 Shop Timings
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 text-sm text-gray-700 ml-2">
                 {userData.shopOpenTime && (
                   <div>
                     <p className="font-semibold text-gray-600">Open Time</p>
@@ -591,21 +641,22 @@ export default function About({ profileUpdated }) {
 
           {/* PAYMENT DETAILS */}
           {userData?.upi_id && (
-            <div>
-              <h2 className="text-xl font-bold text-blue-700 mb-4">
-                Payment Details
-              </h2>
-              <div className="flex flex-col text-sm text-gray-700">
-                <p className="font-semibold text-gray-600 flex items-center gap-1">
-                  <IndianRupee size={18} strokeWidth={1.5} /> UPI ID
-                </p>
-                <p>{userData.upi_id}</p>
+            <div className="grid grid-cols-2 gap-2 md:gap-4 items-center w-full max-w-md mx-auto">
+              {/* Column 1 */}
+              {/* <div>
+                <h2 className="text-sm md:text-base font-bold text-blue-700">
+                  Payment Details
+                </h2>
+              </div> */}
+
+              {/* Column 2 – button only */}
+              <div className="col-span-2 sm:col-span-1 flex justify-start">
                 <button
                   onClick={() => setShowQRModal(true)}
-                  className="mt-2 inline-flex items-center bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm w-max"
+                  className="flex items-center gap-2 bg-gradient-to-r cursor-pointer from-green-400 via-emerald-500 to-teal-600 text-white font-semibold px-5 py-2.5 rounded-md shadow-md transition-all duration-300 ease-in-out"
                 >
-                  <IndianRupee size={18} />
-                  Pay Now
+                  <IndianRupee size={18} className="transition-transform group-hover:translate-x-1" />
+                  <span className="font-medium">Pay Now</span>
                 </button>
               </div>
             </div>
@@ -614,8 +665,8 @@ export default function About({ profileUpdated }) {
           {/* HASHTAGS */}
           {userData?.hashtags?.length > 0 && (
             <div>
-              <h2 className="text-xl font-bold text-blue-700 mb-4">Hashtags</h2>
-              <div className="flex flex-wrap gap-2">
+              <h2 className="text-[16px] md:text-xl font-bold text-blue-700 mb-4">Hashtags</h2>
+              <div className="flex flex-wrap gap-2 ml-2">
                 {userData.hashtags.map((tag, index) => (
                   <span
                     key={index}
@@ -627,13 +678,21 @@ export default function About({ profileUpdated }) {
               </div>
             </div>
           )}
+
+          {/* ABOUT */}
+          {userData?.description && (
+            <div>
+              <h2 className="text-[16px] md:text-xl font-bold text-blue-700 mb-4">About</h2>
+              <p className="ml-1 text-sm text-gray-700 w-80 md:w-full md:max-w-2xl bg-gradient-to-br from-blue-50 via-white to-blue-100  h-45 bg-white border border-gray-200 shadow-sm rounded-xl p-4 overflow-auto leading-relaxed whitespace-pre-line">{userData.description}</p>
+            </div>
+          )}
         </div>
       </div>
 
       {showQRModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-auto max-w-sm relative">
-            <button
+          <div className="bg-white p-6 rounded-lg shadow-lg w-65 md:w-full md:max-w-md relative">
+          <button
               className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
               onClick={() => setShowQRModal(false)}
             >

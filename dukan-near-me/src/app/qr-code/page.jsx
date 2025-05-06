@@ -21,7 +21,15 @@ const page = () => {
       }, []);
   return (
     <div>
-        <QRCodeComponent params={{ id: user?.id }} />
+      {/* <QRCodeComponent params={{ id: user?.id }} /> */}
+      
+        <QRCodeComponent
+          params={{
+            id: user?.id,
+            username: user?.username,
+            role: user?.role,
+          }}
+        />
     </div>
   )
 }

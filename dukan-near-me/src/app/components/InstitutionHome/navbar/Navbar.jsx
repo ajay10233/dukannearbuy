@@ -3,10 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { MapPin, UserRound, ChevronDown } from "lucide-react";
 // import Sidebar from "@/app/components/InstitutionHome/navbar/sidebar/InstitutionSidebar";
-import UserSidebar from "@/app/components/userProfile/navbar/sidebar/UserSidebar";
+// import UserSidebar from "@/app/components/userProfile/navbar/sidebar/UserSidebar";
+import UserSidebar from "../../userProfile/navbar/sidebar/UserSidebar";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
-import InstitutionSidebar from "@/app/components/InstitutionHome/navbar/sidebar/InstitutionSidebar";
+// import InstitutionSidebar from "@/app/components/InstitutionHome/navbar/sidebar/InstitutionSidebar";
+import InstitutionSidebar from "./sidebar/InstitutionSidebar";
 
 export default function Navbar() {
     const [location, setLocation] = useState({
@@ -158,7 +160,7 @@ export default function Navbar() {
                     <ChevronDown size={28} strokeWidth={1.5} color="#187DE6" onClick={() => router.push("/change-location")} />
                 </button>    
             </div>
-            <div className='w-1/3 flex justify-end lg:justify-around bg-transparent lg:bg-gray-100 rounded-bl-4xl mr-3'>
+            <div className='w-1/3 flex justify-end lg:justify-around bg-transparent lg:bg-gray-100 rounded-bl-4xl'>
                 <p className="text-slate-800 hidden lg:flex justify-end items-center font-[var(--font-rubik)] text-sm">Skip the Queue find the nearest dukan now</p>
                 <button className='p-2 cursor-pointer' onClick={() => setIsSidebar(true)}>
                     <UserRound size={28} strokeWidth={1.5} color="#187DE6" />

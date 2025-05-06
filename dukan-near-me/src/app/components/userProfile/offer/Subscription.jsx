@@ -31,15 +31,27 @@ export default function Subscription() {
       }
     };
 
+    const fetchUserPlan = async () => {
+      try {
+        const res = await fetch("/api/users/me"); 
+        const data = await res.json();
+        setActivePlan(data.subscriptionPlan?.name || "BASIC");
+      } catch (error) {
+        console.error("Error fetching user plan:", error);
+      }
+    };
+  
     fetchPlans();
+    fetchUserPlan();
   }, []);
+  
 
   return (
     <div className="min-h-screen px-6 py-10 flex items-center justify-center">
       <div className="w-full max-w-[1200px] flex flex-col items-center gap-5 md:gap-10">
         <div className="text-center gap-y-2 p-4">
           <h2 className="text-3xl font-bold text-gray-200">Choose Your Plan</h2>
-          <p className="text-gray-400">
+          <p className="text-gray-300">
             Let's choose the package that is best for you and explore it happily
             and cheerfully.
           </p>
@@ -50,11 +62,13 @@ export default function Subscription() {
             <div
               key={plan.id}
               className={`w-[260px] h-[330px] md:w-[300px] md:h-[350px] rounded-xl p-4 gap-y-4 flex flex-col justify-between items-center transition-all duration-300 transform
-                                ${
-                                  plan.name === "BASIC"
-                                    ? "bg-gradient-to-tr from-white to-gray-300 border-2 hover:shadow-md hover:scale-105 border-yellow-400 hover:ring-2 hover:ring-yellow-300"
-                                    : "bg-gradient-to-tr from-blue-50 via-blue-100 to-cyan-100 border-2 border-yellow-300 hover:scale-110 hover:rotate-[1deg] hover:text-gray-600 hover:shadow-xl hover:shadow-yellow-500/50 hover:ring-2 hover:ring-offset-2 hover:ring-orange-300 hover:bg-gradient-to-tr hover:from-yellow-200 hover:via-orange-200 hover:to-pink-200 animate-premium-pop"
-                                }`}
+                ${
+                  activePlan === plan.name
+                    ? " text-gray-600 shadow-xl shadow-yellow-500/50 ring-2 ring-offset-2 ring-orange-300 bg-gradient-to-tr from-yellow-200 via-orange-200 to-pink-200 animate-premium-pop"
+                    : plan.name === "BASIC"
+                    ? "bg-gradient-to-tr from-white to-gray-300 border-2 hover:shadow-md hover:scale-105 border-yellow-400 hover:ring-2 hover:ring-yellow-300"
+                    : "bg-gradient-to-tr from-blue-50 via-blue-100 to-cyan-100 border-2 border-yellow-300 hover:scale-110 hover:rotate-[1deg] hover:text-gray-600 hover:shadow-xl hover:shadow-yellow-500/50 hover:ring-2 hover:ring-offset-2 hover:ring-orange-300 hover:bg-gradient-to-tr hover:from-yellow-200 hover:via-orange-200 hover:to-pink-200 animate-premium-pop"
+                }`}
             >
               {plan.image && (
                 <Image
@@ -96,7 +110,7 @@ export default function Subscription() {
                     ${activePlan === plan.name ? "ring-2 ring-yellow-300" : ""} 
                     ${plan.price === 0 ? "cursor-not-allowed opacity-50" : ""}`} // Add opacity for free plan
                 >
-                  {plan.price === 0 ? "Selected" : (activePlan === plan.name ? "Selected" : "Select")}
+                    {activePlan === plan.name ? "Selected" : "Select"}
                 </button>
               </div>
             </div>
