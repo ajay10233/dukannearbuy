@@ -74,11 +74,11 @@ export default function PaymentHistory() {
         setEditingId(null);
         setEditedPayment({});
       } else {
-        alert(json.error || "Failed to update payment");
+        toast.error(json.error || "Failed to update payment");
       }
     } catch (error) {
       console.error("Save failed", error);
-      alert("An error occurred while saving the payment.");
+      toast.error("An error occurred while saving the payment.");
     }
   };
 
@@ -119,7 +119,7 @@ export default function PaymentHistory() {
   };
 
   return (
-    <div className="flex flex-col gap-y-4 mt-5 cursor-default">
+    <div className="flex flex-col gap-y-4 cursor-default">
       <ToastContainer position="top-right" autoClose={2000} />
 
       {/* Toggle Create Form Button */}
@@ -127,7 +127,7 @@ export default function PaymentHistory() {
         <div className="self-end">
           <button
             onClick={() => setShowCreateForm((prev) => !prev)}
-            className="flex items-center gap-x-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+            className="flex items-center gap-x-2 bg-teal-600 text-white px-4 py-2 cursor-pointer rounded-md hover:bg-teal-700 transition-all ease-in-out duration-400"
           >
             {showCreateForm ? <ArrowLeft size={16} /> : <Plus size={16} />}
             {showCreateForm ? "Back to Payments" : "Create Payment"}
@@ -155,7 +155,7 @@ export default function PaymentHistory() {
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-700 transition-all ease-in-out duration-400 cursor-pointer"
               >
                 <option value="PENDING">Pending</option>
                 <option value="SUCCESS">Success</option>
@@ -165,7 +165,7 @@ export default function PaymentHistory() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full text-white py-2 rounded-md transition ${loading ? "bg-gray-400" : "bg-green-500 hover:bg-green-600"}`}
+              className={`w-full text-white py-2 rounded-md transition-all ease-in-out duration-400 cursor-pointer ${loading ? "bg-gray-400" : "bg-emerald-600 hover:bg-emerald-700"}`}
             >
               {loading ? "Processing..." : "Create Payment"}
             </button>
@@ -231,16 +231,16 @@ export default function PaymentHistory() {
                   <div className="flex items-center gap-x-2 ml-4">
                     {isEditing ? (
                       <>
-                        <button onClick={handleSaveEdit}>
+                        <button onClick={handleSaveEdit} className="transition-all ease-in-out duration-400 cursor-pointer">
                           <Check className="text-green-500 w-4 h-4" />
                         </button>
-                        <button onClick={handleCancelEdit}>
+                        <button onClick={handleCancelEdit} className="transition-all ease-in-out duration-400 cursor-pointer">
                           <X className="text-red-500 w-4 h-4" />
                         </button>
                       </>
                     ) : (
-                      <button onClick={() => handleEditClick(payment)}>
-                        <Pencil className="text-slate-500 w-4 h-4 hover:text-blue-500" />
+                      <button onClick={() => handleEditClick(payment)} className="transition-all ease-in-out duration-400 cursor-pointer">
+                        <Pencil className="text-slate-500 w-4 h-4 hover:text-teal-700" />
                       </button>
                     )}
                   </div>

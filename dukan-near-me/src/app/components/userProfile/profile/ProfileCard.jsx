@@ -68,13 +68,16 @@ export default function ProfileCard() {
   };
 
   const handleDeletePhoto = async () => {
-    if (!user?.image) return;
-  
+    if (!image) {
+      toast.error("No image to delete.");
+      return;
+    }
+
     try {
       const res = await fetch('/api/users/delete-photo', {
-        method: 'POST',
+        method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageUrl: user.image }),
+        body: JSON.stringify({ imageUrl: image }),
       });
   
       const data = await res.json();
@@ -91,8 +94,8 @@ export default function ProfileCard() {
   };
   
   const confirmDelete = async () => {
-    setShowDeleteModal(false);
     await handleDeletePhoto();
+    setShowDeleteModal(false);
   };
 
   if (!user?.email) {
@@ -104,7 +107,7 @@ export default function ProfileCard() {
   }
 
   return (
-    <>
+    <> 
       <div className="relative bg-gradient-to-tl from-[#e7f0ec] via-[#aabec2] to-[#005d6e] rounded-lg p-6 w-full h-50 md:h-110 md:max-w-xs flex flex-col items-center gap-3 md:gap-4 shadow-md">
 
         {/* Delete Button */}

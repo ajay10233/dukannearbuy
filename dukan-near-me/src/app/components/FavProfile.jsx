@@ -84,7 +84,7 @@ export default function FavProfile() {
                       <Image
                         src={institution?.photos?.[0]  || "/default-img.jpg"}
                         alt="Profile"
-                        fill
+                        fill sizes={40}
                         className="rounded-full w-8 h-8 md:w-12 md:h-12 object-cover border border-blue-500" priority
                       />
                     </div>
@@ -94,7 +94,7 @@ export default function FavProfile() {
                   </div>
                 </li>
             
-                <li className="w-2/5 md:w-1/5 text-xs md:text-sm">{institution.username || 'N/A'}</li>
+                <li className="w-2/5 md:w-1/5 text-xs md:text-sm">{institution?.username || 'N/A'}</li>
             
                 <li className="hidden md:flex w-1/5 justify-center">{fullAddress}</li>
             

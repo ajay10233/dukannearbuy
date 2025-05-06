@@ -152,7 +152,7 @@ export default function BillHistoryTable() {
               <ul className="flex items-center text-sm text-slate-500 *:w-1/5 w-full text-center justify-around whitespace-nowrap">
                 <li className="md:flex flex-col items-center hidden">{bill.invoiceNumber}</li>
                 <li>{new Date(bill.createdAt).toLocaleDateString()}</li>
-                <li>{bill.username}</li> 
+                <li>{bill.username || "N/A"}</li> 
                 <li className="md:flex flex-col items-center hidden">{bill.totalAmount}</li>
                 <li className="flex flex-col items-center justify-center relative">
                   <span className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>

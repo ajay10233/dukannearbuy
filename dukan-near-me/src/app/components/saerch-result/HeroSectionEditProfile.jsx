@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import useEmblaCarousel from "embla-carousel-react";
-import { Plus, RefreshCcwDot, Store, Crown } from "lucide-react";
+import { Plus, RefreshCcwDot, Store, Crown, X } from "lucide-react";
 
 
 export default function HeroSectionEditProfile() {
@@ -14,6 +14,8 @@ export default function HeroSectionEditProfile() {
   const [isUploading, setIsUploading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeImage, setActiveImage] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
 
@@ -29,6 +31,18 @@ export default function HeroSectionEditProfile() {
     const stop = autoplay();
     return stop;
   }, [autoplay]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+  
+    const updateIndex = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap());
+    };
+  
+    emblaApi.on('select', updateIndex);
+    updateIndex(); // initialize
+  }, [emblaApi]);
+  
 
   // Fetch logged-in user details from the API
   useEffect(() => {
@@ -65,7 +79,7 @@ export default function HeroSectionEditProfile() {
 
     for (const file of filesToUpload) {
       if (file.size > 20 * 1024 * 1024) { // 20MB limit
-        toast.error(`File ${file.name} is too large (max 2MB).`);
+        toast.error(`File ${file.name} is too large (max 20MB).`);
         continue;
       }
 
@@ -103,6 +117,34 @@ export default function HeroSectionEditProfile() {
     setIsUploading(false);
   };
 
+  const handleDeleteImage = async () => {
+    if (!activeImage) return;
+  
+    try {
+      const res = await fetch("/api/institutions/delete-photo", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+        body: JSON.stringify({ imageUrl: activeImage }),
+      });
+  
+      const data = await res.json();
+  
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to delete image.");
+      }
+  
+      setImages((prev) => prev.filter((img) => img !== activeImage));
+      toast.success("Image deleted successfully!");
+      setIsModalOpen(false);
+      setActiveImage(null);
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };  
+
   const handleSetPrimary = (index) => {
     const rotated = [...images.slice(index), ...images.slice(0, index)];
     setImages(rotated);
@@ -119,7 +161,20 @@ export default function HeroSectionEditProfile() {
 
   return (
     <div className={`w-full ${user.role === "INSTITUTION" ? "bg-gradient-to-tr from-white to-sky-100" : user.role === "SHOP_OWNER" ? "bg-gradient-to-tl from-lime-100 to-white" : ""}`}>
-      <div className="w-full h-60 md:h-81 relative overflow-hidden shadow-inner">
+      <div className="w-full h-60 md:h-90 relative overflow-hidden shadow-inner">
+        {images.length > 0 && (
+          <button
+            className="absolute top-2 right-2 z-20 bg-white/80 cursor-pointer text-black rounded-full p-0.5 shadow-md"
+            title="Delete current image"
+            onClick={(e) => {
+              e.stopPropagation();
+              setActiveImage(images[selectedIndex]);
+              setIsDeleteModalOpen(true); 
+            }}
+          >
+            <X size={24} />
+          </button>
+        )}
         {(images.length > 0 || user.profilePhoto) ? (
           <div className="h-full" ref={emblaRef}>
             <div className="flex h-full cursor-pointer">
@@ -142,7 +197,7 @@ export default function HeroSectionEditProfile() {
                   {(user.role === "INSTITUTION" || user.role === "SHOP_OWNER") && images.includes(img) && index !== 0 && (
                     <button
                       onClick={(e) => {
-                        e.stopPropagation();  // Prevent modal from opening
+                        e.stopPropagation(); 
                         handleSetPrimary(index);
                       }}
                       className="absolute bottom-2 left-2 cursor-pointer bg-white/80 hover:bg-white rounded-full p-1 shadow group-hover:opacity-100 opacity-0 transition"
@@ -164,9 +219,9 @@ export default function HeroSectionEditProfile() {
         {(user.role === "INSTITUTION" || user.role === "SHOP_OWNER") && imageCount < 10 && (
           <div className="absolute bottom-2 right-2 z-10">
             <label htmlFor="upload-more" title="Upload up to 10 images">
-              {/* <div className="bg-white/80 hover:bg-white p-0.5 md:p-2 rounded-full cursor-pointer shadow-md">
+              <div className="bg-white/80 p-0.5 md:p-2 rounded-full cursor-pointer shadow-md">
                 <Plus className="w-6 h-6 text-gray-700" />
-              </div> */}
+              </div>
             </label>
             <input
               id="upload-more"
@@ -219,10 +274,15 @@ export default function HeroSectionEditProfile() {
       </div>
 
       {/* Modal for image preview */}
-      {isModalOpen && activeImage && (
+      {isModalOpen && activeImage && !isDeleteModalOpen &&  (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center" onClick={() => setIsModalOpen(false)}>
           <div className="relative max-w-4xl w-full px-4" onClick={(e) => e.stopPropagation()}>
-            <div className="relative w-full h-[80vh]">
+          <button
+            onClick={() => setIsModalOpen(false)}
+            className="absolute top-0 right-4 text-white cursor-pointer transition z-50">
+            <X size={24} />
+          </button>
+            <div className="relative w-full max-w-4xl h-90 flex items-center justify-center">
               <Image
                 src={activeImage}
                 alt="Preview"
@@ -231,6 +291,42 @@ export default function HeroSectionEditProfile() {
                 objectFit="contain"
                 className="rounded shadow-lg"
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal for delete confirmation */}
+      {isDeleteModalOpen && activeImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-80 text-center space-y-4 animate-fadeIn">
+            <h2 className="text-lg font-semibold text-gray-800">Are you sure?</h2>
+            <p className="text-sm text-gray-600">Do you really want to delete this image?</p>
+            <Image
+              src={activeImage}
+              alt="To be deleted"
+              width={300}
+              height={200}
+              className="object-contain rounded-md border"
+            />
+            <div className="flex justify-between gap-4 mt-4">
+              <button
+                onClick={() => {
+                  handleDeleteImage();
+                }}
+                className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer transition-all ease-in-out duration hover:bg-red-600"
+              >
+                Yes, Delete
+              </button>
+              <button
+                onClick={() => {
+                  setIsDeleteModalOpen(false);
+                  setActiveImage(null);
+                }}
+                className="bg-gray-200 text-gray-800 px-4 py-2 rounded cursor-pointer transition-all ease-in-out duration hover:bg-gray-300"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>

@@ -43,6 +43,7 @@ export default function ChatBox() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
@@ -62,6 +63,21 @@ export default function ChatBox() {
       return ''; // Return an empty string if decryption fails
     }
   }
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const res = await fetch("/api/users/me");
+        const data = await res.json();
+        setLoggedInUser(data);
+      } catch (error) {
+        console.error("Error fetching user", error);
+      }
+    }
+
+    fetchUser();
+  }, []);
+
 
   const SendLiveLocation = () => {
     if (typeof window !== "undefined" && "geolocation" in navigator) {
@@ -612,11 +628,18 @@ export default function ChatBox() {
 
             {/* Message Area */}
             <div className="flex-1 pt-2 pb-4 px-4 overflow-y-auto flex flex-col gap-3">
-              <div className="flex justify-center">
+            <div className="flex justify-center">
+              {loggedInUser?.subscriptionPlan?.name === "PREMIUM" ? (
+                <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
+                  <LockKeyhole size={20} strokeWidth={1.5} />
+                    Messages are end-to-end encrypted.
+                </span>
+              ) : (
                 <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
                   <LockKeyhole size={20} strokeWidth={1.5} />
                   Chats will be automatically deleted after 48 hours of last
                 </span>
+              )}
               </div>
 
               {messages.length > 0 ? (
@@ -744,7 +767,7 @@ export default function ChatBox() {
               <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg m-4 flex justify-between items-center">
                 <div>
                   <p className="font-medium">
-                    You haven’t accepted this chat request yet.
+                    You haven't accepted this chat request yet.
                   </p>
                   <p className="text-sm">
                     Do you want to start chatting with this person?
