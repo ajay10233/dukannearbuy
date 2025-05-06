@@ -41,7 +41,6 @@ export default function QRCodeComponent({ params }) {
   
   
   const profileUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/${route}/${params.id}`;
-  console.log("Profile URL:", profileUrl);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
