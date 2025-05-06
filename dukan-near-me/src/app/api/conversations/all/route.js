@@ -30,6 +30,14 @@ export const GET = async (req) => {
             profilePhoto: true,
             firmName: true,
             role: true,
+            subscriptionPlan: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                durationInDays: true,
+              },
+            },
           },
         },
         user2: {
@@ -40,11 +48,20 @@ export const GET = async (req) => {
             profilePhoto: true,
             firmName: true,
             role: true,
+            subscriptionPlan: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                durationInDays: true,
+              },
+            },
           },
         },
       },
       orderBy: { updatedAt: "desc" },
     });
+    
 
     if (!conversations || conversations.length === 0) {
       return NextResponse.json({ message: "No accepted conversations found." }, { status: 200 });
@@ -53,7 +70,7 @@ export const GET = async (req) => {
     const formattedConversations = conversations.map((conversation) => {
       const otherUser = conversation.user1?.id === userId ? conversation.user2 : conversation.user1;
       if (!otherUser) return null;
-
+    
       return {
         conversationId: conversation.id,
         accepted: conversation.accepted,
@@ -66,11 +83,13 @@ export const GET = async (req) => {
           profilePhoto: otherUser.profilePhoto || null,
           firmName: otherUser.firmName || null,
           role: otherUser.role,
+          subscriptionPlan: otherUser.subscriptionPlan || null,
         },
         lastMessage: conversation.messages[0] || null,
         updatedAt: conversation.updatedAt,
       };
     }).filter(Boolean);
+    
 
     return NextResponse.json({ message: "Accepted conversations fetched successfully!", data: formattedConversations }, { status: 200 });
 
