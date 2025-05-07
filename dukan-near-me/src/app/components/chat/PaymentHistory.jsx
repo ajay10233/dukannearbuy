@@ -119,7 +119,7 @@ export default function PaymentHistory() {
   };
 
   return (
-    <div className="flex flex-col gap-y-4 cursor-default">
+    <div className="flex flex-col gap-y-2 md:gap-y-4 cursor-default">
       <ToastContainer position="top-right" autoClose={2000} />
 
       {/* Toggle Create Form Button */}
@@ -127,7 +127,7 @@ export default function PaymentHistory() {
         <div className="self-end">
           <button
             onClick={() => setShowCreateForm((prev) => !prev)}
-            className="flex items-center gap-x-2 bg-teal-600 text-white px-4 py-2 cursor-pointer rounded-md hover:bg-teal-700 transition-all ease-in-out duration-400"
+            className="flex items-center gap-x-2 bg-teal-600 text-sm md:text-[16px] text-white p-2 md:px-4 md:py-2 cursor-pointer rounded-md hover:bg-teal-700 transition-all ease-in-out duration-400"
           >
             {showCreateForm ? <ArrowLeft size={16} /> : <Plus size={16} />}
             {showCreateForm ? "Back to Payments" : "Create Payment"}
@@ -239,9 +239,11 @@ export default function PaymentHistory() {
                         </button>
                       </>
                     ) : (
+                      payment.status !== "COMPLETED" && payment.status !== "SUCCESS" && (
                       <button onClick={() => handleEditClick(payment)} className="transition-all ease-in-out duration-400 cursor-pointer">
                         <Pencil className="text-slate-500 w-4 h-4 hover:text-teal-700" />
                       </button>
+                      )
                     )}
                   </div>
                 </div>

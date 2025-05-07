@@ -25,19 +25,13 @@
 //   );
 // }
 
-
 "use client";
 import { QRCodeCanvas } from "qrcode.react";
 
 export default function QRCodeComponent({ params }) {
   const { username, role } = params;
 
-  const route =
-    role === "USER"
-      ? "userProfile"
-      : role === "INSTITUTION" || role === "SHOP_OWNER"
-      ? "partnerProfile"
-        : "login"; 
+  const route = role === "USER" ? "userProfile" : role === "INSTITUTION" || role === "SHOP_OWNER" ? "partnerProfile" : "login"; 
   
   
   const profileUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/${route}/${params.id}`;
@@ -50,8 +44,11 @@ export default function QRCodeComponent({ params }) {
         size={256}
         imageSettings={{
           src: "/nearbuydukan-Logo/Logo.svg",
+          x: undefined,
+          y: undefined,
           height: 100,
           width: 100,
+          // excavate: true,
         }}
       />
       <p className="mt-4 text-gray-500">Username: {username}</p>

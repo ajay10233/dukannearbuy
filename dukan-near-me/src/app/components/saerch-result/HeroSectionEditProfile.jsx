@@ -178,7 +178,7 @@ export default function HeroSectionEditProfile() {
         {(images.length > 0 || user.profilePhoto) ? (
           <div className="h-full" ref={emblaRef}>
             <div className="flex h-full cursor-pointer">
-              {(images.length > 0 ? images : [user.profilePhoto]).map((img, index) => (
+              {(images.length > 0 && images.map((img, index) => (
                 <div className="flex-[0_0_100%] relative h-full group" key={index} onClick={() => { setActiveImage(img); setIsModalOpen(true); }}>
                   <Image
                     src={img}
@@ -207,10 +207,10 @@ export default function HeroSectionEditProfile() {
                     </button>
                   )}
                 </div>
-              ))}
+              )))}
             </div>
           </div>
-        ) : !isUploading && (
+        ) :  !isUploading && (
           <p className="text-gray-500 flex items-center justify-center h-full">
             Upload Images here...
           </p>

@@ -33,6 +33,7 @@ import HeaderLocation from "../components/Location/HeaderLocation";
 import Navbar from "../components/InstitutionHome/navbar/Navbar";
 import HeroSectionEditProfile from "../components/saerch-result/HeroSectionEditProfile";
 import EditProfile from "../components/InstitutionHome/Profile/EditProfile";
+import EditAddress from "../components/EditAddress";
 
 export default function About({ profileUpdated }) {
   const [userData, setUserData] = useState(null);
@@ -484,7 +485,7 @@ export default function About({ profileUpdated }) {
                 >
                   <AccordionItem
                     value="past-addresses"
-                    className="rounded-md overflow-hidden"
+                    className="rounded-md overflow-hidden mr-8"
                   >
                     <AccordionTrigger className="bg-white px-4 py-3 text-sm md:text-[16px] cursor-pointer hover:no-underline text-blue-700 font-semibold hover:bg-gray-100 rounded-t-md flex justify-between items-center">
                       <span>Past Addresses</span>
@@ -641,7 +642,7 @@ export default function About({ profileUpdated }) {
 
           {/* PAYMENT DETAILS */}
           {userData?.upi_id && (
-            <div className="grid grid-cols-2 gap-2 md:gap-4 items-center w-full max-w-md mx-auto">
+            <div className="grid grid-cols-2 gap-2 md:gap-4 items-center w-full max-w-md">
               {/* Column 1 */}
               {/* <div>
                 <h2 className="text-sm md:text-base font-bold text-blue-700">
@@ -787,6 +788,29 @@ export default function About({ profileUpdated }) {
           </div>
         </div>
       )}
+
+      {editingAddress && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+                <div className="flex flex-col bg-white rounded-lg shadow-lg w-[90%] max-w-3xl p-6 overflow-y-auto max-h-[90vh] dialogScroll">
+                  <div className="flex justify-between items-center border-b pb-2 mb-4">
+                    <h2 className="text-2xl font-bold text-blue-700">
+                      Edit Address
+                    </h2>
+                    <button onClick={() => setEditingAddress(false)}>
+                      <X
+                        size={20}
+                        className="cursor-pointer text-gray-500 hover:text-gray-700"
+                      />
+                    </button>
+                  </div>
+                  {editingAddress && (
+                    <EditAddress />
+                  )}
+                </div>
+              </div>
+            )}
+
+      
     </div>
   );
 }
