@@ -245,25 +245,33 @@ export default function ChatBox() {
     }
   }, [messages]);
 
-  const handleSearch = async (query) => {
+  const DEBOUNCE_DELAY = 500; // ms
+
+  const handleSearch = (query) => {
     setSearchQuery(query);
-    if (!query.trim()) {
-      setFilteredConversations(conversations);
-      return;
-    }
-
-    try {
-      const res = await fetch(`/api/users/search?query=${query}`);
-      const data = await res.json();
-      console.log(data);
-
-      const combinedResults = [...(data.data || []), ...(data.users || [])];
-
-      setFilteredConversations(combinedResults);
-    } catch (error) {
-      console.error("❌ Search failed:", error);
-    }
   };
+  
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      if (!searchQuery.trim()) {
+        setFilteredConversations(conversations);
+        return;
+      }
+  
+      try {
+        const res = await fetch(`/api/users/search?query=${searchQuery}`);
+        const data = await res.json();
+        console.log(data);
+  
+        const combinedResults = [...(data.data || []), ...(data.users || [])];
+        setFilteredConversations(combinedResults);
+      } catch (error) {
+        console.error("❌ Search failed:", error);
+      }
+    }, DEBOUNCE_DELAY);
+  
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
 
   if (status === "loading")
     return <p className="text-center text-gray-500">Loading...</p>;
@@ -503,7 +511,10 @@ export default function ChatBox() {
                 <div className="flex items-center gap-2.5">
                   <div className="relative w-14 h-14">
                     <Image
-                      src="/chatUserSvg/userImage.svg"
+                      src={partner?.otherUser ? 
+                        partner?.otherUser?.profilePhoto || "/chatUserSvg/userImage.svg"
+                        : partner?.profilePhoto || "/chatUserSvg/userImage.svg"
+                        }
                       alt="seller image"
                       fill
                       className="rounded-md object-cover"
@@ -517,18 +528,21 @@ export default function ChatBox() {
                       //   e.preventDefault();
                       //   setSelectedPartner({ ...partner });
                       // }}
-                      className={`font-medium text-[var(--secondary-foreground)] 
-                                                ${selectedPartner?.id ===
-                        partner.id && "font-medium"}`
-                      }
-                    >
-                      {console.log(partner)}
-                      {partner?.role === "INSTITUTION" || partner?.role === "SHOP_OWNER"
-                        ? partner?.firmName || "Unknown"
-                        : (partner?.firstName || partner?.lastName)
-                          ? `${partner.firstName || ""} ${partner.lastName || ""}`.trim()
-                          : "Unknown"}
+                      className={`font-medium text-[var(--secondary-foreground)] ${selectedPartner?.id === partner.id && "font-medium"}`}>
+                    {
+                      partner?.otherUser
+                        ? (partner.otherUser.role === "INSTITUTION" || partner.otherUser.role === "SHOP_OWNER")
+                            ? partner?.otherUser.firmName || `${partner?.otherUser?.firstName} ${partner?.otherUser?.lastName}`
+                            : (partner?.otherUser.firstName || partner?.otherUser.lastName)
+                                ? `${partner?.otherUser?.firstName || ""} ${partner?.otherUser?.lastName || ""}`.trim()
+                                : "Unknown"
 
+                        : (partner?.role === "INSTITUTION" || partner?.role === "SHOP_OWNER")
+                            ? partner?.firmName || `${partner.firstName} ${partner.lastName}`
+                            : (partner?.firstName || partner?.lastName)
+                                ? `${partner.firstName || ""} ${partner.lastName || ""}`.trim()
+                                : "Unknown"
+                    }
 
                     </div>
                     <span className="text-gray-500 font-normal text-[12px]">
@@ -575,7 +589,10 @@ export default function ChatBox() {
                 </button>
                 <div className="relative w-10 h-10">
                   <Image
-                    src="/chatUserSvg/userImage.svg"
+                    src={selectedPartner?.otherUser ? 
+                      selectedPartner?.otherUser?.profilePhoto || "/chatUserSvg/userImage.svg"
+                      : selectedPartner?.profilePhoto || "/chatUserSvg/userImage.svg"
+                      }
                     alt="seller image"
                     fill
                     className="rounded-lg"
@@ -584,7 +601,28 @@ export default function ChatBox() {
                 </div>
                 <div>
                   <p className="text-[var(--chatText-color)] text-lg flex items-center gap-2">
-                    {selectedPartner?.otherUser?.firmName || selectedPartner?.otherUser?.name || "Unknown"}
+                    
+                  {
+                      selectedPartner?.otherUser
+                        ? (selectedPartner.otherUser.role === "INSTITUTION" || selectedPartner.otherUser.role === "SHOP_OWNER")
+                            ? selectedPartner?.otherUser.firmName || `${selectedPartner?.otherUser?.firstName} ${selectedPartner?.otherUser?.lastName}`
+                            : (selectedPartner?.otherUser.firstName || selectedPartner?.otherUser.lastName)
+                                ? `${selectedPartner?.otherUser?.firstName || ""} ${selectedPartner?.otherUser?.lastName || ""}`.trim()
+                                : "Unknown"
+
+                        : (selectedPartner?.role === "INSTITUTION" || selectedPartner?.role === "SHOP_OWNER")
+                            ? selectedPartner?.firmName || `${selectedPartner.firstName} ${selectedPartner.lastName}`
+                            : (selectedPartner?.firstName || selectedPartner?.lastName)
+                                ? `${selectedPartner.firstName || ""} ${selectedPartner.lastName || ""}`.trim()
+                                : "Unknown"
+                    }
+
+                    {/* {selectedPartner?.otherUser ? 
+                     selectedPartner?.otherUser?.role === "INSTITUTION" || selectedPartner?.otherUser?.role === "SHOP_OWNER"
+                     ? selectedPartner?.otherUser?.firmName || "Unknown"
+                     : `${selectedPartner?.otherUser?.firstName || ""} ${selectedPartner?.otherUser?.lastName || ""}`
+                     : ""} */}
+                    {/* {selectedPartner?.otherUser?.firmName || selectedPartner?.otherUser?.name || "Unknown"} */}
 
                     {/* <Heart
                       size={20}
