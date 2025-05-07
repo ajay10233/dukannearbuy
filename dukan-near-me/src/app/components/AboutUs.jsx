@@ -70,7 +70,7 @@ export default function AboutUs() {
   return (
       <main className=" relative bg-gradient-to-br from-teal-50 via-slate-100 to-white">
             <section className="flex justify-center relative text-gray-800 px-6 md:px-20 py-14">
-        <div className="w-80 sm:w-full sm:max-w-5xl flex flex-col justify-center items-center text-center gap-4">
+        <div className="w-80 sm:w-full sm:max-w-5xl flex flex-col justify-center items-center text-center gap-4 mt-8 md:mt-12">
         <motion.h1
           className="text-3xl md:text-6xl font-bold text-blue-800"
           initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}

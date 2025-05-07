@@ -126,7 +126,7 @@ export default function HeroSection({id}) {
         {(images.length > 0 || user.profilePhoto) ? (
           <div className="h-full" ref={emblaRef}>
             <div className="flex h-full cursor-pointer">
-              {(images.length > 0 ? images : [user.profilePhoto]).map((img, index) => (
+            {(images.length > 0 && images.map((img, index) => (
                 <div className="flex-[0_0_100%] relative h-full group" key={index} onClick={() => { setActiveImage(img); setIsModalOpen(true); }}>
                   <Image
                     src={img}
@@ -155,7 +155,7 @@ export default function HeroSection({id}) {
                     </button>
                   )} */}
                 </div>
-              ))}
+              )))}
             </div>
           </div>
         ) : !isUploading && (

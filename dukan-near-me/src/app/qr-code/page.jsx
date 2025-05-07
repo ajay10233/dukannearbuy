@@ -3,6 +3,7 @@ import React from 'react'
 import QRCodeComponent from '../components/QRCodeComponent'
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Navbar from '../components/InstitutionHome/navbar/Navbar';
 
 const page = () => {
     const [user, setUser] = useState(null);
@@ -22,7 +23,7 @@ const page = () => {
   return (
     <div>
       {/* <QRCodeComponent params={{ id: user?.id }} /> */}
-      
+      <Navbar/>
         <QRCodeComponent
           params={{
             id: user?.id,

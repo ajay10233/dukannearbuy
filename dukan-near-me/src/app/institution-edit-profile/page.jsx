@@ -160,9 +160,6 @@ export default function EditProfilePage() {
     }
   };
   
-
-  
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="bg-white p-6 rounded-lg shadow-lg space-y-4">

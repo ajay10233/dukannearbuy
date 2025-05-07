@@ -84,7 +84,7 @@ const Review = () => {
                       <Image
                         src={review?.user?.profilePhoto || "/default-img.jpg"}
                         alt={review?.user?.firstName}
-                        fill size={64}
+                        fill size="64"
                         className="rounded-full object-cover" priority
                       />
                     </div>

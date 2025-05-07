@@ -147,6 +147,7 @@ import Autoplay from "embla-carousel-autoplay";
 export default function TopSeller() {
   const [location, setLocation] = useState(null);
   const [sellers, setSellers] = useState([]);
+  const [paidPromotions, setPaidPromotions] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start", slidesToScroll: 1 }
   , [Autoplay({ delay: 2500, stopOnInteraction: false })]
@@ -194,6 +195,14 @@ export default function TopSeller() {
 
   useEffect(() => {
     fetchCurrentLocation();
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/paid-promotions')
+      .then(res => res.json())
+      .then(data => {
+        console.log("paid promotion:", data);
+      });
   }, []);
 
   return (

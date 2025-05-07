@@ -11,6 +11,7 @@ import {
   SmilePlus,
   MapPin,
   SendHorizontal,
+  Crown,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
@@ -472,7 +473,15 @@ export default function ChatBox() {
                         partner.id && "font-medium"
                         }`}
                     >
-                      {partner.otherUser?.firmName || partner.otherUser?.name || "Unknown"}
+                      <span className="inline-flex items-center gap-1">
+                        {partner.otherUser?.firmName || partner.otherUser?.name || "Unknown"}
+                        {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" && (
+                          <Crown size={16} fill="#f0d000" className="text-yellow-500" />
+                        )}
+                        {partner.otherUser?.subscriptionPlan?.name === "BUSINESS" && (
+                          <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
+                        )}
+                      </span>
                     </div>
                     <span className="text-gray-500 font-normal text-[12px]">
                       {/* Last message here... */}
@@ -529,21 +538,28 @@ export default function ChatBox() {
                       //   setSelectedPartner({ ...partner });
                       // }}
                       className={`font-medium text-[var(--secondary-foreground)] ${selectedPartner?.id === partner.id && "font-medium"}`}>
-                    {
-                      partner?.otherUser
-                        ? (partner.otherUser.role === "INSTITUTION" || partner.otherUser.role === "SHOP_OWNER")
-                            ? partner?.otherUser.firmName || `${partner?.otherUser?.firstName} ${partner?.otherUser?.lastName}`
-                            : (partner?.otherUser.firstName || partner?.otherUser.lastName)
-                                ? `${partner?.otherUser?.firstName || ""} ${partner?.otherUser?.lastName || ""}`.trim()
-                                : "Unknown"
+                      <span className="inline-flex items-center gap-1">
+                        {
+                        partner?.otherUser
+                          ? (partner.otherUser.role === "INSTITUTION" || partner.otherUser.role === "SHOP_OWNER")
+                              ? partner?.otherUser.firmName || `${partner?.otherUser?.firstName} ${partner?.otherUser?.lastName}`
+                              : (partner?.otherUser.firstName || partner?.otherUser.lastName)
+                                  ? `${partner?.otherUser?.firstName || ""} ${partner?.otherUser?.lastName || ""}`.trim()
+                                  : "Unknown"
 
-                        : (partner?.role === "INSTITUTION" || partner?.role === "SHOP_OWNER")
-                            ? partner?.firmName || `${partner.firstName} ${partner.lastName}`
-                            : (partner?.firstName || partner?.lastName)
-                                ? `${partner.firstName || ""} ${partner.lastName || ""}`.trim()
-                                : "Unknown"
-                    }
-
+                          : (partner?.role === "INSTITUTION" || partner?.role === "SHOP_OWNER")
+                              ? partner?.firmName || `${partner.firstName} ${partner.lastName}`
+                              : (partner?.firstName || partner?.lastName)
+                                  ? `${partner.firstName || ""} ${partner.lastName || ""}`.trim()
+                                  : "Unknown"
+                        }
+                        {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" && (
+                          <Crown size={16} fill="#f0d000" className="text-yellow-500" />
+                        )}
+                        {partner.otherUser?.subscriptionPlan?.name === "BUSINESS" && (
+                          <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
+                        )}
+                      </span>
                     </div>
                     <span className="text-gray-500 font-normal text-[12px]">
                       {/* Last message here... */}
@@ -579,11 +595,11 @@ export default function ChatBox() {
         {selectedPartner ? (
           <>
             {/* Chat Header */}
-            <header className="flex items-center justify-between p-4 bg-[#F7F7FC]">
-              <div className="flex items-center gap-3">
+            <header className="flex items-center justify-between gap-1 md:gap-0 p-2 md:p-4 bg-[#F7F7FC]">
+              <div className="flex items-center gap-2 md:gap-3">
                 <button
                   onClick={() => setSelectedPartner(null)}
-                  className="md:hidden flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-200 transition"
+                  className="md:hidden flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-200 transition-all cursor-pointer ease-in-out duration-400"
                 >
                   <ChevronLeft size={24} strokeWidth={2} />
                 </button>
@@ -600,8 +616,8 @@ export default function ChatBox() {
                   />
                 </div>
                 <div>
-                  <p className="text-[var(--chatText-color)] text-lg flex items-center gap-2">
-                    
+                  <p className="text-[var(--chatText-color)] text-[16px] md:text-lg flex items-center gap-0 md:gap-2">
+                  <span className="inline-flex items-center gap-0 md:gap-1">
                   {
                       selectedPartner?.otherUser
                         ? (selectedPartner.otherUser.role === "INSTITUTION" || selectedPartner.otherUser.role === "SHOP_OWNER")
@@ -615,7 +631,13 @@ export default function ChatBox() {
                             : (selectedPartner?.firstName || selectedPartner?.lastName)
                                 ? `${selectedPartner.firstName || ""} ${selectedPartner.lastName || ""}`.trim()
                                 : "Unknown"
-                    }
+                      }
+                      {selectedPartner.otherUser?.subscriptionPlan?.name === "PREMIUM" && (
+                          <Crown size={18} fill="#f0d000" className="text-yellow-500" />
+                        )}
+                        {selectedPartner.otherUser?.subscriptionPlan?.name === "BUSINESS" && (
+                          <Crown size={18} fill="#AFAFAF" className="text-gray-400" />
+                        )}
 
                     {/* {selectedPartner?.otherUser ? 
                      selectedPartner?.otherUser?.role === "INSTITUTION" || selectedPartner?.otherUser?.role === "SHOP_OWNER"
@@ -632,19 +654,21 @@ export default function ChatBox() {
                       className="cursor-pointer"
                       onClick={() => handleLike(selectedPartner)}
                     /> */}
+                      
+                      </span>
                   </p>
                 </div>
               </div>
               {/* view payment history */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1 md:gap-3">
                 <Dialog>
                   <DialogTrigger asChild>
-                    <button className="bg-[var(--chart-2)] text-white gap-2.5 rounded-xl p-3 font-medium text-sm flex items-center cursor-pointer hover:bg-[#128c7e] transition">
+                    <button className="bg-[var(--chart-2)] text-white gap-1 md:gap-2.5 rounded-xl p-2 md:p-3 font-medium text-xs md:text-sm flex items-center cursor-pointer hover:bg-[#128c7e] transition">
                       <Plus size={18} strokeWidth={1.5} color="#fff" />
                       Payment History
                     </button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[500px] h-4/5 rounded-xl border-none flex flex-col bg-[#F5FAFC] overflow-auto dialogScroll">
+                  <DialogContent className="sm:max-w-[500px] h-4/5 rounded-xl border-none flex flex-col gap-2 md:gap-4 bg-[#F5FAFC] overflow-auto dialogScroll">
                     <DialogHeader>
                       <div className="hidden">
                         <DialogTitle></DialogTitle>
@@ -717,7 +741,7 @@ export default function ChatBox() {
                     >
                       {/* Date Separator */}
                       {isNewDay && (
-                        <div className="flex justify-center gap-y-2">
+                        <div className="flex justify-center gap-y-2 mb-2 md:mb-0">
                           <span className="px-4 py-1 text-xs font-medium text-[var(--withdarkinnertext)] bg-gray-200 rounded-lg">
                             {messageDate === today ? "Today" : messageDate}
                           </span>
@@ -792,7 +816,7 @@ export default function ChatBox() {
               )}
 
               {showEmojiPicker && (
-                <div className="absolute bottom-14 left-1/4 z-10">
+                <div className="absolute bottom-14 left-0 md:left-1/4 z-10">
                   <EmojiPicker
                     onEmojiClick={(e) => setMessage(message + e.emoji)}
                   ></EmojiPicker>
@@ -854,17 +878,17 @@ export default function ChatBox() {
             {selectedPartner && selectedPartner.accepted && (
               <>
                 {/* chat footer  */}
-                <footer className="p-4 flex items-center bg-[#F6F6F6] gap-3">
-                  <div className="gap-4">
+                <footer className="p-4 flex items-center bg-[#F6F6F6] gap-1 md:gap-3">
+                  <div className="flex gap-2 md:gap-4">
                     <button
-                      className="p-2 cursor-pointer"
+                      className="p-0.5 md:p-2 cursor-pointer"
                       onClick={() => {
                         setShowEmojiPicker(!showEmojiPicker);
                       }}
                     >
                       <SmilePlus size={20} strokeWidth={1.5} color="#130F26" />
                     </button>
-                    <button className="p-2 cursor-pointer relative">
+                    <button className="p-0.5 md:p-2 cursor-pointer relative">
                       <MapPin
                         size={20}
                         strokeWidth={1.5}
@@ -885,7 +909,7 @@ export default function ChatBox() {
                     placeholder="Type a message..."
                     className="flex-1 py-2 px-4 rounded-full bg-white focus:outline-none shadow-sm"
                   />
-                  <button className="p-2 cursor-pointer" onClick={sendMessage}>
+                  <button className="p-0.5 md:p-2 cursor-pointer" onClick={sendMessage}>
                     <SendHorizontal size={20} strokeWidth={1.5} />
                   </button>
                 </footer>

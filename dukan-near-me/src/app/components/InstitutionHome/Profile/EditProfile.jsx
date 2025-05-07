@@ -75,7 +75,7 @@
     useEffect(() => {
       const fetchProfileData = async () => {
         try {
-          const response = await fetch("/api/users/me"); // replace with your real API endpoint
+          const response = await fetch("/api/users/me"); 
           const data = await response.json();
           
           if (response.ok) {

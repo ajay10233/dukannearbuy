@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import Image from "next/image";
-import { Crown } from "lucide-react"; // Assuming you're using this from lucide
+import { Crown } from "lucide-react";
 
 export default function SearchBar() {
   const [searchQuery, setSearchQuery] = useState("");

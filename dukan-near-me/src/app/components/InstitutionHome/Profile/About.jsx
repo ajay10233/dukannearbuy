@@ -514,16 +514,16 @@ export default function About({ profileUpdated }) {
           {/* PAYMENT DETAILS */}
           {userData?.upi_id && (
             <div>
-              <h2 className="text-[16px] md:text-xl font-bold text-blue-700 mb-4">
+              {/* <h2 className="text-[16px] md:text-xl font-bold text-blue-700 mb-4">
                 Payment Details
-              </h2>
+              </h2> */}
               <div className="flex items-center gap-12 text-sm text-gray-700 ml-1">
-                <div>
+                {/* <div>
                   <p className="font-semibold text-gray-600 flex items-center gap-1">
                     <IndianRupee size={16} strokeWidth={1.5} /> UPI ID
                   </p>
                   <p>{userData.upi_id}</p>
-                </div>
+                </div> */}
                 <button
                   onClick={() => setShowQRModal(true)}
                   className="inline-flex items-center gap-2 bg-gradient-to-r cursor-pointer from-green-400 via-emerald-500 to-teal-600 text-white font-semibold px-5 py-2.5 rounded-md shadow-md transition-all duration-300 ease-in-out"

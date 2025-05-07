@@ -47,16 +47,7 @@ export default function page() {
                         <Image src="/login-Illustration.svg" alt="signup illustration" fill sizes="480px" priority />
                     </div>
                 {/* </div> */}
-            </div>
-            <div className="absolute bottom-1 right-4 w-17 h-17 md:w-32 md:h-32">
-                        <Image
-                            src="/nearbuydukan - watermark.png"
-                            alt="Watermark"
-                            fill size="120"
-                            className="object-contain w-17 h-17 md:w-32 md:h-32"
-                            priority
-                        />
-            </div>        
+            </div>       
         </main>
         </div>
     )
