@@ -50,6 +50,6 @@ export const config = {
     "/profile/:path*",
     "/session-manager/:path*",
     "/userProfile/:path*",
-    "/admin/:path*",
+    "/admin/:path*",    
   ],
 };

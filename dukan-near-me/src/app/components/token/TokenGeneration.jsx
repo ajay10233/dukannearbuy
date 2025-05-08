@@ -7,6 +7,7 @@ import Link from "next/link";
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import io from 'socket.io-client';
+import { useRouter } from 'next/navigation';
 
 const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { transports: ["websocket"] });
 
@@ -15,6 +16,7 @@ export default function TokenGeneration() {
   const [userId, setUserId] = useState('');
   const [tokens, setTokens] = useState([]);
   const institutionId = session?.user?.id;
+  const router = useRouter();
 
   const fetchTokens = async () => {
     if (!institutionId) return;
@@ -118,7 +120,7 @@ export default function TokenGeneration() {
           <div>
             <button
               className="flex items-center whitespace-nowrap bg-emerald-400 hover:bg-emerald-500 cursor-pointer text-sm md:text-md text-black gap-2 font-medium px-4 md:px-6 py-2 rounded-md transition duration-300 ease-in-out"
-              onClick={() => toast("Scanner not connected")}>
+              onClick={() => router.push('/scan-qr')}>
               <Scan size={20} strokeWidth={1.5} color="#ffffff" />
               Scan QR
             </button>

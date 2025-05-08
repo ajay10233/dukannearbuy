@@ -124,7 +124,8 @@ export default function SearchBar() {
               <div className="flex items-center gap-4">
                 <div className="relative w-8 h-8">
                   <Image
-                    src={profile.profilePhoto || (profile.photos?.length > 0 ? profile.photos[0] : '/default-img.jpg')}
+                    src={profile?.profilePhoto && profile?.profilePhoto!="null" ? profile?.profilePhoto : (profile.photos?.length > 0 ? profile.photos[0] : '/default-img.jpg')}
+                    // src="/default-img.jpg"
                     alt="profile-photo"
                     fill
                     sizes="32px"

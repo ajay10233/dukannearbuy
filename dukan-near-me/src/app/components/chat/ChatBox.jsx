@@ -523,9 +523,9 @@ export default function ChatBox() {
                 <div className="flex items-center gap-2.5">
                   <div className="relative w-14 h-14">
                     <Image
-                      src={partner?.otherUser ? 
-                        partner?.otherUser?.profilePhoto || "/chatUserSvg/userImage.svg"
-                        : partner?.profilePhoto || "/chatUserSvg/userImage.svg"
+                      src={partner?.otherUser  ? 
+                        partner?.otherUser?.profilePhoto && partner?.otherUser?.profilePhoto!="null" ? partner?.otherUser?.profilePhoto : "/chatUserSvg/userImage.svg"
+                        : partner?.profilePhoto && partner?.profilePhoto!="null" ? partner?.profilePhoto : "/chatUserSvg/userImage.svg"
                         }
                       alt="seller image"
                       fill
@@ -611,8 +611,8 @@ export default function ChatBox() {
                 <div className="relative w-10 h-10">
                   <Image
                     src={selectedPartner?.otherUser ? 
-                      selectedPartner?.otherUser?.profilePhoto || "/chatUserSvg/userImage.svg"
-                      : selectedPartner?.profilePhoto || "/chatUserSvg/userImage.svg"
+                      selectedPartner?.otherUser?.profilePhoto && selectedPartner?.otherUser?.profilePhoto!="null" ? selectedPartner?.otherUser?.profilePhoto : "/chatUserSvg/userImage.svg"
+                      : selectedPartner?.profilePhoto && selectedPartner?.profilePhoto!="null" ? selectedPartner?.profilePhoto : "/chatUserSvg/userImage.svg"
                       }
                     alt="seller image"
                     fill

@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useRef, useEffect, useState } from 'react';
 import Webcam from 'react-webcam';
 import jsQR from 'jsqr';
@@ -9,8 +7,8 @@ export default function QRScanner() {
   const webcamRef = useRef(null);
   const [result, setResult] = useState(null);
   const [intervalId, setIntervalId] = useState(null);
+  const [copied, setCopied] = useState(false); // for showing "Copied!" message
 
-  // Start scanning
   useEffect(() => {
     const id = setInterval(() => {
       const imageSrc = webcamRef.current?.getScreenshot();
@@ -34,31 +32,37 @@ export default function QRScanner() {
         }
       };
     }, 1000);
-    setIntervalId(id); // Set the interval ID after starting the interval
 
-    // Cleanup when component unmounts or when interval changes
+    setIntervalId(id);
+
     return () => {
-      clearInterval(id); // Clear interval on component unmount
-      stopCamera(); // Stop camera when component unmounts
+      clearInterval(id);
+      stopCamera();
     };
-  }, []); // Empty dependency array ensures this effect runs only once on mount
+  }, []);
 
   const stopCamera = () => {
     if (webcamRef.current) {
       const stream = webcamRef.current.stream;
       if (stream) {
-        stream.getTracks().forEach(track => track.stop()); // Stop all media tracks
+        stream.getTracks().forEach(track => track.stop());
       }
     }
   };
 
   const handleClickResult = () => {
-    stopCamera(); // Stop camera when QR result is clicked
+    stopCamera();
+  };
+
+  const handleCopy = () => {
+    const userId = result.split('/').pop();
+    navigator.clipboard.writeText(userId || '');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000); // Hide after 2 seconds
   };
 
   return (
-    <div className="flex flex-col items-center justify-center  p-4">
-
+    <div className="flex flex-col items-center justify-center p-4">
       <Webcam
         ref={webcamRef}
         screenshotFormat="image/png"
@@ -67,12 +71,21 @@ export default function QRScanner() {
       />
 
       {result && (
-        <p className="mt-4 p-3 bg-green-100 text-green-800 rounded max-w-sm w-full text-center">
-          ✅ <strong>Scanned:</strong>
-          <Link href={result}  className="text-blue-500 underline" onClick={handleClickResult}>
+        <div className="mt-4 p-3 bg-green-100 text-green-800 rounded max-w-sm w-full text-center">
+          ✅ <strong>Scanned:</strong>{' '}
+          <Link href={result} className="text-blue-500 underline" onClick={handleClickResult}>
             {result}
           </Link>
-        </p>
+
+          <button
+            onClick={handleCopy}
+            className="mt-2 px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Copy User ID
+          </button>
+
+          {copied && <p className="text-sm text-green-600 mt-1">✅ User ID copied!</p>}
+        </div>
       )}
     </div>
   );

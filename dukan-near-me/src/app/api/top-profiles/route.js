@@ -17,10 +17,10 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 }
 
 export async function GET(req) {
-  // const session = await getServerSession(authOptions);
-  // if (!session) {
-  //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  // }
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   const { searchParams } = new URL(req.url);
   const userLat = parseFloat(searchParams.get('latitude') || '0');
