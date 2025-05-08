@@ -552,9 +552,9 @@ export default function About({ profileUpdated }) {
           )}
 
           {userData?.description && (
-            <div>
+            <div className="mr-4 md:mr-[32px]">
               <h2 className="text-[16px] md:text-xl font-bold text-blue-700 mb-4">About</h2>
-              <p className="ml-1 text-sm text-gray-700 w-full max-w-2xl bg-gradient-to-br from-blue-50 via-white to-blue-100  h-45 bg-white border border-gray-200 shadow-sm rounded-xl p-4 overflow-auto leading-relaxed whitespace-pre-line">{userData.description}</p>
+              <p className="ml-1 text-sm text-gray-700 sm:max-w-4xl md:max-w-6xl lg:w-full lg:max-w-7xl bg-gradient-to-br from-blue-50 via-white to-blue-100  h-45 bg-white border border-gray-200 shadow-sm rounded-xl p-4 overflow-auto leading-relaxed whitespace-pre-line">{userData.description}</p>
             </div>
           )}
         </div>
@@ -562,24 +562,24 @@ export default function About({ profileUpdated }) {
 
       {showQRModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-65 md:w-full md:max-w-md relative">
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg h-100 md:h-125 w-75 md:w-95 relative">
             <button
               className="absolute top-2 right-2 text-gray-500 hover:text-red-600 cursor-pointer transition-all duration-300 ease-in-out"
               onClick={() => setShowQRModal(false)}
             >
               <X size={20} strokeWidth={1.5} />
             </button>
-            <h2 className="text-xl font-semibold text-center text-blue-700 mb-4">
+            <h2 className="text-xl font-semibold text-center text-blue-700 mb-0 md:mb-4">
               Scan QR Code
             </h2>
-            <div className="p-4">
-              <img
-                src={userData?.scanner_image}
-                alt="QR Code"
-                className="w-48 h-48 mx-auto object-contain"
+            <div className="p-4 relative">
+              <Image
+                  src={userData?.scanner_image}
+                  alt="QR Code" height={280} width={280}
+                  className="w-70 h-70 mx-auto object-contain" priority
               />
             </div>
-            <p className="pt-4 flex items-center justify-center gap-2 text-center text-gray-600">
+            <p className="pt-2 md:pt-4flex items-center justify-center gap-2 text-center text-gray-600">
               <span className="text-gray-800 text-sm font-medium">
                 UPI ID: <span className="font-normal">{userData?.upi_id}</span>
               </span>
