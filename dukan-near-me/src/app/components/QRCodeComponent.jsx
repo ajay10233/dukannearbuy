@@ -33,7 +33,6 @@ export default function QRCodeComponent({ params }) {
 
   const route = role === "USER" ? "userProfile" : role === "INSTITUTION" || role === "SHOP_OWNER" ? "partnerProfile" : "login"; 
   
-  
   const profileUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/${route}/${params.id}`;
 
   return (

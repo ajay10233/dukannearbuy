@@ -2,6 +2,7 @@
 
 import { ScanLine, Upload } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function UploadPdfImg() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -10,7 +11,7 @@ export default function UploadPdfImg() {
 
   const handleUpload = () => {
     if (userId.trim() === "" || !file) {
-      alert("Please fill User ID and upload a file.");
+      toast.error("Please fill User ID and upload a file.");
       return;
     }
     setIsModalOpen(false);

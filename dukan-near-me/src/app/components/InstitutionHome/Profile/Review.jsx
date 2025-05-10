@@ -22,12 +22,14 @@ export default function Review({ user }) {
     // const [avgRating, setAvgRating] = useState(0);
 
   useEffect(() => {
-    if (institutionId) {
+    if (session || session?.user) {
+      
       // Fetch reviews for the specific institution
       axios
-        .get(`/api/reviews?institutionId=${institutionId}`)
+        .get(`/api/reviews?institutionId=${session?.user?.id}`)
         .then((res) => {
           setReviews(res.data);
+          console.log("res", res.data);
           // const reviews = res.data;
           // setReviews(reviews);
           // const avg =
@@ -36,7 +38,7 @@ export default function Review({ user }) {
         })
         .catch(() => toast.error("Failed to fetch reviews"));
     }
-  }, [institutionId]);
+  }, [session]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,7 +51,7 @@ export default function Review({ user }) {
 
     try {
       if (editingId) {
-        // Update review
+        // Update review 
         await axios.put("/api/reviews", {
           commentId: editingId,
           rating,
@@ -114,7 +116,7 @@ export default function Review({ user }) {
   };
   
   return (
-  <div className="flex justify-center py-4 md:py-6">
+  <div className="flex justify-center items-center py-4 md:py-6 w-full">
     <div className="w-75 sm:w-3/4 px-4 py-3 md:px-8 md:py-6 flex flex-col gap-y-4 border border-gray-300 rounded-lg shadow-md bg-white transition-all duration-300 hover:shadow-lg">
 
     {session?.user?.role === "USER" && (
@@ -174,18 +176,20 @@ export default function Review({ user }) {
       </>
     )}
 
-    {/* Display Reviews */}
-    {reviews.length > 0 ? (
+      {/* Display Reviews */}
       <div className="flex flex-col gap-y-2 md:gap-y-4">
-        <h3 className="text-2xl font-semibold mb-2 text-gray-800">Reviews</h3>
+      <h3 className="text-2xl font-semibold mb-2 text-gray-800">Reviews</h3>
+        {reviews.length > 0 ? (
+        // <div className="flex flex-col gap-y-2 md:gap-y-4">
+        //   <h3 className="text-2xl font-semibold mb-2 text-gray-800">Reviews</h3>
         <ul className="flex flex-col gap-y-1.5 md:gap-y-3">
           {reviews.map((review, i) => (
             <li key={i} className="p-2.5 md:p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
               <div className="flex items-center justify-between">
                 {/* Left side: Profile photo, Name */}
-                <div className="flex items-center gap-y-1.5 md:gap-y-3">
+                <div className="flex items-center gap-1.5 md:gap-3">
                   <div className="w-8 md:w-12 h-8 md:h-12 relative">
-                    <Image src={review?.user?.profilePhoto} alt="User Profile" fill className="w-12 h-12 rounded-full" priority />
+                    <Image src={review?.user?.profilePhoto || "/default-img.jpg"} alt="User Profile" fill className="w-12 h-12 rounded-full" priority />
                   </div>
                   <div>
                     <p className="font-semibold text-sm md:text-[16px]">{review?.user?.firstName} {review?.user?.lastName}</p>
@@ -200,63 +204,42 @@ export default function Review({ user }) {
                       <Star key={idx} className="w-3 h-3 md:w-5 md:h-5 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
-                  {session?.user?.id === review?.userId && (
-                    <div className="relative">
-                      <button onClick={() => handleShowOptions(review.id)} className="cursor-pointer">
-                        <EllipsisVertical className="w-5 h-5 text-gray-500" />
-                      </button>
-                      {showOptions === review.id && (
-                        <div className="absolute right-0 mt-2 w-28 bg-white border border-gray-200 rounded shadow-md z-10">
+                  <div className="relative">
+                    <button onClick={() => handleShowOptions(review.id)} className="cursor-pointer">
+                      <EllipsisVertical className="w-5 h-5 text-gray-500" />
+                    </button>
+
+                    {showOptions === review.id && (
+                      <div className="absolute right-0 mt-2 w-28 bg-white border border-gray-200 rounded shadow-md z-10">
+                        {session?.user?.id === review?.userId && (
                           <button
                             className="block w-full text-left px-4 cursor-pointer py-2 text-sm transition-all ease-in-out duration-400 hover:bg-gray-100"
                             onClick={() => handleEdit(review)}
                           >
                             Edit
                           </button>
-                          <button
-                            className="block w-full text-left px-4 py-2 text-sm cursor-pointer transition-all ease-in-out duration-400 hover:bg-gray-100"
-                            onClick={() => confirmReport(review.id)}
-                          >
-                            Report
-                          </button>
-                        </div>
-                      )}
-                      {showReportModal && (
-                        <div className="fixed inset-0 z-50 bg-black/10 flex items-center justify-center">
-                          <div className="bg-white p-6 rounded-xl shadow-lg w-75 md:max-w-md md:w-full text-center">
-                            <h2 className="text-xl font-semibold mb-4">Report Review</h2>
-                            <p className="mb-6">Are you sure you want to report this review?</p>
-                            <div className="flex justify-center gap-4">
-                              <button
-                                onClick={handleReport}
-                                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 cursor-pointer transition-all ease-in-out duration-400"
-                              >
-                                Yes, Report
-                              </button>
-                              <button
-                                onClick={() => setShowReportModal(false)}
-                                className="border px-4 py-2 rounded hover:bg-gray-100 cursor-pointer transition-all ease-in-out duration-400"
-                              >
-                                No
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                        )}
+                        <button
+                          className="block w-full text-left px-4 py-2 text-sm cursor-pointer transition-all ease-in-out duration-400 hover:bg-gray-100"
+                          onClick={() => confirmReport(review.id)}
+                        >
+                          Report
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-
               <p className="mt-2 text-gray-700 text-sm md:text-[15px]">{review.comment}</p>
             </li>
           ))}
         </ul>
+      // </div>
+        ) : (
+          <p className="text-gray-500 text-center my-4">No reviews yet.</p>
+          )}
+          </div>
       </div>
-    ) : (
-      <p className="text-gray-500 text-center mt-4">No reviews yet.</p>
-    )}
-  </div>
-</div>
-  );
-}
+    </div>
+    );
+  }

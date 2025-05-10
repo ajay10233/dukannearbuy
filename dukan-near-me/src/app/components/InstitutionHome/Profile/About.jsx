@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import ChangeAddress from "./ChangeAddress";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent,} from "@/components/ui/accordion";
 import { useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 export default function About({ profileUpdated }) {
   const [userData, setUserData] = useState(null);
@@ -554,7 +555,7 @@ export default function About({ profileUpdated }) {
           {userData?.description && (
             <div className="mr-4 md:mr-[32px]">
               <h2 className="text-[16px] md:text-xl font-bold text-blue-700 mb-4">About</h2>
-              <p className="ml-1 text-sm text-gray-700 sm:max-w-4xl md:max-w-6xl lg:w-full lg:max-w-7xl bg-gradient-to-br from-blue-50 via-white to-blue-100  h-45 bg-white border border-gray-200 shadow-sm rounded-xl p-4 overflow-auto leading-relaxed whitespace-pre-line">{userData.description}</p>
+              <p className="ml-2 text-sm text-gray-700 sm:max-w-4xl md:max-w-6xl lg:w-full lg:max-w-7xl bg-gradient-to-br from-blue-50 via-white to-blue-100  h-45 bg-white border border-gray-200 shadow-sm rounded-xl p-4 overflow-auto leading-relaxed whitespace-pre-line">{userData.description}</p>
             </div>
           )}
         </div>
@@ -573,11 +574,20 @@ export default function About({ profileUpdated }) {
               Scan QR Code
             </h2>
             <div className="p-4 relative">
-              <Image
-                  src={userData?.scanner_image}
-                  alt="QR Code" height={280} width={280}
-                  className="w-70 h-70 mx-auto object-contain" priority
-              />
+            <div className="p-4 relative">
+              {userData?.scanner_image ? (
+                <Image
+                  src={userData.scanner_image}
+                  alt="QR Code"
+                  height={280}
+                  width={280}
+                  className="w-70 h-70 mx-auto object-contain"
+                  priority
+                />
+              ) : (
+                <div className="w-70 h-70 mx-auto bg-gray-200">No Image</div>
+              )}
+            </div>
             </div>
             <p className="pt-2 md:pt-4flex items-center justify-center gap-2 text-center text-gray-600">
               <span className="text-gray-800 text-sm font-medium">

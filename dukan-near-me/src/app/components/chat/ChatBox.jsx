@@ -622,7 +622,13 @@ export default function ChatBox() {
                 </div>
                 <div>
                   <p className="text-[var(--chatText-color)] text-[16px] md:text-lg flex items-center gap-0 md:gap-2">
-                  <span className="inline-flex items-center gap-0 md:gap-1">
+                    { selectedPartner?.otherUser && (
+                      <Link href={
+                              selectedPartner?.otherUser?.role === "INSTITUTION" ||
+                              selectedPartner?.otherUser?.role === "SHOP_OWNER"
+                                ? `/partnerProfile/${selectedPartner.otherUser.id}`
+                          : `/userProfile/${selectedPartner.otherUser.id}`}
+                        className="inline-flex items-center gap-0 md:gap-1">
                   {
                       selectedPartner?.otherUser
                         ? (selectedPartner.otherUser.role === "INSTITUTION" || selectedPartner.otherUser.role === "SHOP_OWNER")
@@ -660,7 +666,8 @@ export default function ChatBox() {
                       onClick={() => handleLike(selectedPartner)}
                     /> */}
                       
-                      </span>
+                      </Link>
+                    )}
                   </p>
                 </div>
               </div>

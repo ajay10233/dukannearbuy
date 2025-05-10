@@ -33,8 +33,8 @@ import HeaderLocation from "../components/Location/HeaderLocation";
 import Navbar from "../components/InstitutionHome/navbar/Navbar";
 import HeroSectionEditProfile from "../components/saerch-result/HeroSectionEditProfile";
 import EditProfile from "../components/InstitutionHome/Profile/EditProfile";
-import EditAddress from "../components/EditAddress";
 import Image from "next/image";
+import Review from "../components/InstitutionHome/Profile/Review";
 
 export default function About({ profileUpdated }) {
   const [userData, setUserData] = useState(null);
@@ -691,6 +691,8 @@ export default function About({ profileUpdated }) {
         </div>
       </div>
 
+      <Review />
+    
       {showQRModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg h-100 md:h-125 w-75 md:w-95 relative">
@@ -744,20 +746,10 @@ export default function About({ profileUpdated }) {
             <div className="flex flex-row items-center justify-center gap-3">
               <button
                 onClick={() => {
-                  setEditingAddress(true);
-                  setShowManageOptions(false);
-                }}
-                className="bg-blue-600 transition-all duration-500 ease-in-out hover:bg-blue-700 cursor-pointer text-white px-5 py-2 rounded"
-              >
-                Edit Address
-              </button>
-
-              <button
-                onClick={() => {
                   setChangingAddress(true);
                   setShowManageOptions(false);
                 }}
-                className="bg-gray-100 transition-all duration-500 ease-in-out hover:bg-gray-200 cursor-pointer text-gray-700 px-4 py-2 rounded"
+                className="bg-blue-600 transition-all duration-500 ease-in-out hover:bg-blue-700 cursor-pointer text-white px-7 py-2 rounded"
               >
                 Change Address
               </button>
@@ -789,29 +781,6 @@ export default function About({ profileUpdated }) {
           </div>
         </div>
       )}
-
-      {editingAddress && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-                <div className="flex flex-col bg-white rounded-lg shadow-lg w-[90%] max-w-3xl p-6 overflow-y-auto max-h-[90vh] dialogScroll">
-                  <div className="flex justify-between items-center border-b pb-2 mb-4">
-                    <h2 className="text-2xl font-bold text-blue-700">
-                      Edit Address
-                    </h2>
-                    <button onClick={() => setEditingAddress(false)}>
-                      <X
-                        size={20}
-                        className="cursor-pointer text-gray-500 hover:text-gray-700"
-                      />
-                    </button>
-                  </div>
-                  {editingAddress && (
-                    <EditAddress />
-                  )}
-                </div>
-              </div>
-            )}
-
-      
     </div>
   );
 }

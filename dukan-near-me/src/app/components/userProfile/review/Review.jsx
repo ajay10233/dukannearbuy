@@ -7,6 +7,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Star, StarHalf } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const Review = () => {
   const [reviews, setReviews] = useState([]);
@@ -75,6 +76,7 @@ const Review = () => {
             }}
             className="pb-12"
           >
+            
             {reviews.filter((review) => review.rating === 5)
               .map((review) => (
               <SwiperSlide key={review.id} className="h-50">
@@ -82,9 +84,9 @@ const Review = () => {
                   <div className="flex space-x-4 relative">
                     <div className="w-12 h-12 md:w-16 md:h-16 relative">
                       <Image
-                        src={review?.user?.profilePhoto || "/default-img.jpg"}
-                        alt={review?.user?.firstName}
-                        fill size="64"
+                          src={review?.user?.profilePhoto || "/default-img.jpg"}
+                          alt={review?.user?.firstName || "Profile"}                        
+                        fill size="64px"
                         className="rounded-full object-cover" priority
                       />
                     </div>
@@ -98,9 +100,14 @@ const Review = () => {
                           day: "numeric",
                         })}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        {/* <p className="text-sm text-gray-500">
                           Reviewed: {review?.institution?.firmName}
-                        </p>
+                        </p> */}
+                        {review?.institution?.id && (
+                          <Link href={`/partnerProfile/${review?.institution?.id}`} className="text-sm text-gray-500 font-semibold">
+                            Reviewed: {review?.institution?.firmName}
+                          </Link>
+                        )}
                     </div>
 
                     <div className="flex absolute top-4 right-1 space-x-1">

@@ -1,13 +1,17 @@
+'use client';
 import React, { useRef, useEffect, useState } from 'react';
 import Webcam from 'react-webcam';
 import jsQR from 'jsqr';
-import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 export default function QRScanner() {
   const webcamRef = useRef(null);
-  const [result, setResult] = useState(null);
+  const [userId, setUserId] = useState('');
   const [intervalId, setIntervalId] = useState(null);
-  const [copied, setCopied] = useState(false); // for showing "Copied!" message
+  const [username, setUsername] = useState('');
+  const { data: session } = useSession();
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -16,7 +20,7 @@ export default function QRScanner() {
 
       const img = new Image();
       img.src = imageSrc;
-      img.onload = () => {
+      img.onload = async () => {
         const canvas = document.createElement('canvas');
         canvas.width = img.width;
         canvas.height = img.height;
@@ -27,8 +31,18 @@ export default function QRScanner() {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const code = jsQR(imageData.data, imageData.width, imageData.height);
         if (code?.data) {
-          setResult(code.data);
-          if (intervalId) clearInterval(intervalId);
+          const extractedUserId = code.data.split('/').pop();
+          setUserId(extractedUserId);
+
+          try {
+            const res = await axios.get(`/api/users/${extractedUserId}`);
+            setUsername(res.data.username);
+            toast.success('User found: ' + res.data.username);
+            if (intervalId) clearInterval(intervalId);
+          } catch (err) {
+            toast.error('Failed to fetch user info');
+            console.error(err);
+          }
         }
       };
     }, 1000);
@@ -50,15 +64,15 @@ export default function QRScanner() {
     }
   };
 
-  const handleClickResult = () => {
-    stopCamera();
-  };
-
-  const handleCopy = () => {
-    const userId = result.split('/').pop();
-    navigator.clipboard.writeText(userId || '');
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000); // Hide after 2 seconds
+  const handleSaveToken = async () => {
+    if (!userId) return toast.error('No user ID detected from the QR code');
+    try {
+      const res = await axios.post('/api/token/create', { userId });
+      toast.success('Token generated successfully');
+    } catch (error) {
+      console.error('Error generating token', error);
+      toast.error('Error generating token');
+    }
   };
 
   return (
@@ -70,21 +84,18 @@ export default function QRScanner() {
         className="rounded shadow w-full max-w-sm"
       />
 
-      {result && (
-        <div className="mt-4 p-3 bg-green-100 text-green-800 rounded max-w-sm w-full text-center">
-          ✅ <strong>Scanned:</strong>{' '}
-          <Link href={result} className="text-blue-500 underline" onClick={handleClickResult}>
-            {result}
-          </Link>
-
+      {userId && (
+        <div className="mt-2 md:mt-4 p-2 md:p-3 bg-green-50 text-green-800 rounded max-w-sm w-full text-center">
+          {/* ✅ <strong>Scanned </strong> */}
+            {username && (
+              <p className="mt-2 text-md font-semibold">Username: {username}</p>
+            )}
           <button
-            onClick={handleCopy}
-            className="mt-2 px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+            onClick={handleSaveToken}
+            className="mt-4 p-2 md:px-6 md:py-2 text-white rounded cursor-pointer transition-all duration-400 ease-in-out bg-emerald-400 hover:bg-emerald-500"
           >
-            Copy User ID
+            Save and Generate Token
           </button>
-
-          {copied && <p className="text-sm text-green-600 mt-1">✅ User ID copied!</p>}
         </div>
       )}
     </div>
