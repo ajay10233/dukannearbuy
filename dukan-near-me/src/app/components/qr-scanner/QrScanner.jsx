@@ -3,7 +3,7 @@ import Webcam from 'react-webcam';
 import jsQR from 'jsqr';
 import Link from 'next/link';
 
-export default function QRScanner() {
+export default function QRScanner({ onScanned }) {
   const webcamRef = useRef(null);
   const [result, setResult] = useState(null);
   const [intervalId, setIntervalId] = useState(null);
@@ -28,7 +28,8 @@ export default function QRScanner() {
         const code = jsQR(imageData.data, imageData.width, imageData.height);
         if (code?.data) {
           setResult(code.data);
-          if (intervalId) clearInterval(intervalId);
+          if (onScanned) onScanned(code.data);
+          clearInterval(id);
         }
       };
     }, 1000);

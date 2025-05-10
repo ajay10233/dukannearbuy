@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import io from 'socket.io-client';
 import { useRouter } from 'next/navigation';
+import QRModal from "../modals/QRModal";
 
 const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { transports: ["websocket"] });
 
@@ -18,16 +19,48 @@ export default function TokenGeneration() {
   const institutionId = session?.user?.id;
   const router = useRouter();
 
+ const handleScanned = (data) => {
+  console.log("Raw Data is:", data);
+
+  if (!data) return;
+
+  // Trim to remove whitespace or newline characters
+  const cleaned = data.trim().replace(/\/+$/, ""); // removes trailing slashes
+
+  const splitted = cleaned.split("/");
+  const userId = splitted[splitted.length - 1];
+
+  console.log("Extracted User ID:", userId);
+
+  if (!userId || userId.length < 5) {
+    toast.error("Invalid QR Code data.");
+    return;
+  }
+
+  setUserId(userId);
+  toast.success('Generating token!');
+
+  setTimeout(() => {
+    handleCreateToken(userId);
+    toast.success('Token generated!');
+  }, 1000);
+};
+
+
   const fetchTokens = async () => {
     if (!institutionId) return;
     const res = await axios.get(`/api/token/list?institutionId=${institutionId}`);
     setTokens(res.data);
   };
 
-  const handleCreateToken = async () => {
-    if (!userId) return toast.error('Please enter a user ID');
+  const handleCreateToken = async (generatedId=null) => {
+    let userid = userId;
+    if(generatedId!=null){
+      userid = generatedId;
+    }
+    if (!userid) return toast.error('Please enter a user ID');
     try {
-      const res = await axios.post('/api/token/create', { userId });
+      const res = await axios.post('/api/token/create', { userId:userid });
       setUserId('');
       fetchTokens();
       socket.emit('newToken', { institutionId, token: res.data });
@@ -118,12 +151,21 @@ export default function TokenGeneration() {
             </button>
           </div>
           <div>
-            <button
+            {/* <button
               className="flex items-center whitespace-nowrap bg-emerald-400 hover:bg-emerald-500 cursor-pointer text-sm md:text-md text-black gap-2 font-medium px-4 md:px-6 py-2 rounded-md transition duration-300 ease-in-out"
               onClick={() => router.push('/scan-qr')}>
               <Scan size={20} strokeWidth={1.5} color="#ffffff" />
               Scan QR
-            </button>
+            </button> */}
+            {/* <button
+              className="flex items-center whitespace-nowrap bg-emerald-400 hover:bg-emerald-500 cursor-pointer text-sm md:text-md text-black gap-2 font-medium px-4 md:px-6 py-2 rounded-md transition duration-300 ease-in-out"
+              onClick={() => setOpen(true)}
+            >
+              <Scan size={20} strokeWidth={1.5} color="#ffffff" />
+              Scan QR
+            </button> */}
+
+            <QRModal onScanned={handleScanned} />
           </div>
         </div>
       </div>
