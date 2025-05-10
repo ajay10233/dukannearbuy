@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useDebounce } from "@/lib/hooks/useDebounce"; // custom debounce hook or lodash.debounce
+import { useState, useEffect, useRef } from "react";
 import { MoveRight, MoveLeft, Scan, Loader, Clock, Check } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
@@ -19,32 +20,32 @@ export default function TokenGeneration() {
   const institutionId = session?.user?.id;
   const router = useRouter();
 
- const handleScanned = (data) => {
-  console.log("Raw Data is:", data);
+  const handleScanned = (data) => {
+    console.log("Raw Data is:", data);
 
-  if (!data) return;
+    if (!data) return;
 
-  // Trim to remove whitespace or newline characters
-  const cleaned = data.trim().replace(/\/+$/, ""); // removes trailing slashes
+    // Trim to remove whitespace or newline characters
+    const cleaned = data.trim().replace(/\/+$/, ""); // removes trailing slashes
 
-  const splitted = cleaned.split("/");
-  const userId = splitted[splitted.length - 1];
+    const splitted = cleaned.split("/");
+    const userId = splitted[splitted.length - 1];
 
-  console.log("Extracted User ID:", userId);
+    console.log("Extracted User ID:", userId);
 
-  if (!userId || userId.length < 5) {
-    toast.error("Invalid QR Code data.");
-    return;
-  }
+    if (!userId || userId.length < 5) {
+      toast.error("Invalid QR Code data.");
+      return;
+    }
 
-  setUserId(userId);
-  toast.success('Generating token!');
+    setUserId(userId);
+    toast.success('Generating token!');
 
-  setTimeout(() => {
-    handleCreateToken(userId);
-    toast.success('Token generated!');
-  }, 1000);
-};
+    setTimeout(() => {
+      handleCreateToken(userId);
+      toast.success('Token generated!');
+    }, 1000);
+  };
 
 
   const fetchTokens = async () => {
@@ -53,14 +54,14 @@ export default function TokenGeneration() {
     setTokens(res.data);
   };
 
-  const handleCreateToken = async (generatedId=null) => {
+  const handleCreateToken = async (generatedId = null) => {
     let userid = userId;
-    if(generatedId!=null){
+    if (generatedId != null) {
       userid = generatedId;
     }
     if (!userid) return toast.error('Please enter a user ID');
     try {
-      const res = await axios.post('/api/token/create', { userId:userid });
+      const res = await axios.post('/api/token/create', { userId: userid });
       setUserId('');
       fetchTokens();
       socket.emit('newToken', { institutionId, token: res.data });
@@ -93,6 +94,37 @@ export default function TokenGeneration() {
   }, [institutionId]);
 
   // if (!institutionId) return <p className="p-16 text-center">Loading...</p>;
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [loadingSearch, setLoadingSearch] = useState(false);
+  const debouncedSearchTerm = useDebounce(searchTerm, 300); // use your debounce logic or lodash
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (!debouncedSearchTerm || debouncedSearchTerm.length < 2) return setSearchResults([]);
+
+      setLoadingSearch(true);
+      try {
+        const res = await axios.get(`/api/users?search=${debouncedSearchTerm}`);
+        console.log(res.data)
+        setSearchResults(res.data?.data || []);
+      } catch (err) {
+        console.error('Search error:', err);
+      } finally {
+        setLoadingSearch(false);
+      }
+    };
+
+    fetchUsers();
+  }, [debouncedSearchTerm]);
+
+  const handleUserSelect = (user) => {
+    setUserId(user.id);
+    setSearchTerm('');
+    setSearchResults([]);
+    toast.success(`Generating token for ${user.username}`);
+    handleCreateToken(user.id);
+  };
 
   return (
     <section className="flex flex-col items-center h-[calc(100vh-50px)] justify-start px-8 pb-8 pt-16 gap-y-4 bg-white">
@@ -108,16 +140,32 @@ export default function TokenGeneration() {
 
       <div className="w-full max-w-5xl rounded-xl flex flex-col gap-y-4 border border-gray-400 bg-gray-100 py-4 px-4 md:p-8 shadow-md">
         <div className="flex justify-between items-center flex-wrap gap-4">
-          <div className="flex items-center gap-4">
-            <label className="font-bold text-md text-teal-800 md:w-24 whitespace-nowrap">User ID:</label>
+          <div className="flex flex-col w-full md:w-1/2 relative">
+            <label className="font-bold text-md text-teal-800 mb-1">Search by Username</label>
             <input
               type="text"
-              placeholder="User ID"
-              className="border px-3 py-1 rounded w-42.5"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
+              className="border px-3 py-2 rounded-md w-full"
+              placeholder="Type a username..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
+            {loadingSearch && <p className="text-sm text-gray-500 mt-1">Searching...</p>}
+            {searchResults.length > 0 && (
+              <ul className="absolute top-20 z-10 w-full bg-white border rounded-md shadow-md max-h-60 overflow-y-auto">
+                {searchResults.map((user) => (
+                  <li
+                    key={user.id}
+                    onClick={() => handleUserSelect(user)}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    <p className="font-medium text-gray-700">{user.username}</p>
+                    <p className="text-sm text-gray-500">{user.email || user.mobileNumber || "No contact info"}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
+
           {/* <div>
             <button
               className="flex items-center bg-emerald-400 hover:bg-emerald-500 cursor-pointer text-black gap-2 font-medium px-6 py-2 rounded-md transition duration-300 ease-in-out"
