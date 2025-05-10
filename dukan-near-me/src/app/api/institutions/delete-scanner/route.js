@@ -2,22 +2,23 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/utils/db";
 import cloudinary from "@/utils/cloudinary";
+import { NextResponse } from "next/server";
 
 export async function DELETE(req) {
   const session = await getServerSession(authOptions);
   if (!session) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" },{ status: 401 });
   }
 
   try {
     const user = await prisma.user.findUnique({ where: { id: session.user.id } });
 
     if (!user || (user.role !== "INSTITUTION" && user.role !== "SHOP_OWNER")) {
-      return new Response(JSON.stringify({ error: "Only institutions can delete images" }), { status: 403 });
+      return NextResponse.json({ error: "Only institutions can delete images" },{ status: 403 });
     }
 
     if (!user.scanner_image) {
-      return new Response(JSON.stringify({ error: "No scanner image found to delete" }), { status: 400 });
+      return NextResponse.json({ error: "No scanner image found to delete" },{ status: 400 });
     }
 
     const urlParts = user.scanner_image.split("/");
@@ -29,9 +30,9 @@ export async function DELETE(req) {
       data: { scanner_image: null },
     });
 
-    return new Response(JSON.stringify({ message: "Image deleted successfully" }), { status: 200 });
+    return NextResponse.json({ message: "Image deleted successfully" },{ status: 200 });
   } catch (error) {
     console.error("❌ Error deleting institution photo:", error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 });
+    return NextResponse.json({ error: "Internal server error" },{ status: 500 });
   }
 }

@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-export default function QRScanner() {
+export default function QRScanner({ onScanned }) {
   const webcamRef = useRef(null);
   const [userId, setUserId] = useState('');
   const [intervalId, setIntervalId] = useState(null);
@@ -31,18 +31,9 @@ export default function QRScanner() {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const code = jsQR(imageData.data, imageData.width, imageData.height);
         if (code?.data) {
-          const extractedUserId = code.data.split('/').pop();
-          setUserId(extractedUserId);
-
-          try {
-            const res = await axios.get(`/api/users/${extractedUserId}`);
-            setUsername(res.data.username);
-            toast.success('User found: ' + res.data.username);
-            if (intervalId) clearInterval(intervalId);
-          } catch (err) {
-            toast.error('Failed to fetch user info');
-            console.error(err);
-          }
+          setResult(code.data);
+          if (onScanned) onScanned(code.data);
+          clearInterval(id);
         }
       };
     }, 1000);

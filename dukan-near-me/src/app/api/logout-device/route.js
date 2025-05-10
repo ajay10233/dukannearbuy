@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
   const session = await getServerSession(authOptions);
   if (!session) {
-    return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 401 });
+    return NextResponse.json({ message: "Unauthorized" },{ status: 401 });
   }
 
   const { sessionToken } = await req.json();
@@ -22,7 +22,7 @@ export async function POST(req) {
       });
     } catch (error) {
       console.error("Error deleting session:", error);
-      return new Response(JSON.stringify({ message: "Error removing session" }), { status: 500 });
+      return NextResponse.json({ message: "Error removing session" },{ status: 500 });
     }
   }
 

@@ -35,7 +35,7 @@ export default function About({ profileUpdated }) {
 
   const fetchPastAddresses = async () => {
     try {
-      const response = await fetch(`/api/institutions/past-address`);
+      const response = await fetch(`/api/institutions/past-address?institutionId=${profileUpdated}`);
       if (response.ok) {
         const data = await response.json();
         setPastAddresses(data);

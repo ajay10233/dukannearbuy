@@ -1,14 +1,15 @@
 import { prisma } from "@/utils/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session || session.user.role !== 'INSTITUTION') {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized: Only institutions can create tokens' }),
+    if (!session || session.user.role === 'USER') {
+      return NextResponse.json(
+        { error: 'Unauthorized: Only institutions can create tokens' },
         { status: 401 }
       );
     }
@@ -16,15 +17,18 @@ export async function POST(req) {
     const { userId, name, phoneNumber } = await req.json();
     const institutionId = session.user.id;
 
-    // Get subscription plan
     const institution = await prisma.user.findUnique({
       where: { id: institutionId },
       include: { subscriptionPlan: true },
     });
 
     if (!institution) {
-      return new Response(JSON.stringify({ error: 'Institution not found' }), { status: 404 });
+      return NextResponse.json(
+        { error: 'Institution not found' },
+        { status: 404 }
+      );
     }
+
     const isFreePlan = institution.subscriptionPlan?.name === 'BASIC';
 
     if (isFreePlan) {
@@ -45,10 +49,8 @@ export async function POST(req) {
       });
 
       if (dailyTokenCount >= 300) {
-        return new Response(
-          JSON.stringify({
-            error: 'Free plan limit reached. You can only generate 300 tokens daily.',
-          }),
+        return NextResponse.json(
+          { error: 'Free plan limit reached. You can only generate 300 tokens daily.' },
           { status: 403 }
         );
       }
@@ -77,8 +79,8 @@ export async function POST(req) {
       });
     } else {
       if (!name || !phoneNumber) {
-        return new Response(
-          JSON.stringify({ error: 'Name and phone number are required' }),
+        return NextResponse.json(
+          { error: 'Name and phone number are required' },
           { status: 400 }
         );
       }
@@ -98,9 +100,12 @@ export async function POST(req) {
       global.io.emit('tokenUpdated', { institutionId, newToken });
     }
 
-    return new Response(JSON.stringify(newToken), { status: 201 });
+    return NextResponse.json(newToken, { status: 201 });
   } catch (error) {
     console.error("Error creating token:", error);
-    return new Response(JSON.stringify({ error: 'Internal Server Error' }), { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
   }
 }

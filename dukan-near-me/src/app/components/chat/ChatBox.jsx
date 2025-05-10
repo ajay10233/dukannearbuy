@@ -142,16 +142,35 @@ export default function ChatBox() {
     if (!session) return;
 
     const fetchConversations = async () => {
-      try {
-        const res = await fetch(`/api/conversations/all`);
-        const data = await res.json();
-        console.log(data);
-        setConversations(data.data);
-        setFilteredConversations(data.data);
-      } catch (error) {
-        console.error("❌ Failed to fetch conversations:", error);
+  try {
+    const res = await fetch(`/api/conversations/all`);
+    const data = await res.json();
+    console.log(data);
+
+    const updatedConversations = data.data.map((conversation) => {
+      const lastMessage = conversation.lastMessage;
+      if (lastMessage) {
+        const isSentByCurrentUser = lastMessage.senderId === session.user.id;
+        const secretKey =
+          isSentByCurrentUser
+            ? conversation.otherUser.id + session.user.id
+            : session.user.id + conversation.otherUser.id;
+
+        // Decrypt last message content
+        lastMessage.content = decryptMessage(lastMessage.content, secretKey);
       }
-    };
+
+      return conversation;
+    });
+
+    setConversations(updatedConversations);
+    setFilteredConversations(updatedConversations);
+
+  } catch (error) {
+    console.error("❌ Failed to fetch conversations:", error);
+  }
+};
+
 
     fetchConversations();
     checkForParams();
@@ -161,9 +180,43 @@ export default function ChatBox() {
     if (!selectedPartner) return;
 
     const fetchMessages = async () => {
-      if (!selectedPartner?.conversationId) return;
+      setMessage([]);
+      console.log("Selected partner currently is: ", selectedPartner);
+      if (!selectedPartner?.conversationId) {
+        try {
+          const res = await fetch(
+            `/api/messages/conversation?userId=${selectedPartner.id}`
+          );
+          const data = await res.json();
+          let messages = data.data?.messages || [];
+  
+          if (messages.length > 0) {
+            const selected_id = selectedPartner?.otherUser ? selectedPartner?.otherUser.id : selectedPartner.id;
+  
+            const decryptedMessages = messages.map((msg) => {
+              const isSentByCurrentUser = msg.senderId === session.user.id;
+              const secretKey = isSentByCurrentUser
+                ? selected_id + session.user.id
+                : session.user.id + selected_id;
+  
+              return {
+                ...msg,
+                content: decryptMessage(msg.content, secretKey),
+              };
+            });
+  
+            setMessages(decryptedMessages);
+          } else {
+            setMessages([]);
+          }
+  
+        } catch (error) {
+          console.error("❌ Failed to fetch messages:", error);
+        } 
+      }
 
-      try {
+      else{
+        try {
         const res = await fetch(
           `/api/messages/conversation?conversationId=${selectedPartner.conversationId}`
         );
@@ -193,6 +246,7 @@ export default function ChatBox() {
       } catch (error) {
         console.error("❌ Failed to fetch messages:", error);
       }
+    }
     };
 
     fetchMessages();

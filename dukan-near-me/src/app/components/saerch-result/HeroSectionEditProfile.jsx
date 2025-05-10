@@ -5,6 +5,7 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import useEmblaCarousel from "embla-carousel-react";
 import { Plus, RefreshCcwDot, Store, Crown, X, ChevronLeft, ChevronRight } from "lucide-react";
+import axios from "axios";
 
 
 export default function HeroSectionEditProfile() {
@@ -154,10 +155,23 @@ export default function HeroSectionEditProfile() {
     }
   };  
 
-  const handleSetPrimary = (index) => {
+  const handleSetPrimary = async(index) => {
     const rotated = [...images.slice(index), ...images.slice(0, index)];
     setImages(rotated);
-    toast.success("Primary image updated!");
+    try {
+      let image_url = images[index];
+      const result = await axios.put("/api/institutions/primary-image", { url:image_url });
+      if (result.status === 200) {
+        toast.success("Primary image updated!");
+      }else{
+        toast.error("Failed to update primary image.");
+      }
+
+    } catch (error) {
+      toast.error("Failed to update primary image.");
+    }
+    console.log(images[index]);
+    // toast.success("Primary image updated!");
   };
 
   if (!user) {
