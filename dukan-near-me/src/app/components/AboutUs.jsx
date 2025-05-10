@@ -13,17 +13,17 @@ const features = [
   {
     icon: <Store className="w-8 h-8 text-indigo-600" />,
     title: "For Shops",
-    description: "Digital billing, services listings, and easy billing integration.",
+    description: "Digital billing, Services listing, Billing history and Token generation with live token update feature.",
   },
   {
     icon: <Stethoscope className="w-8 h-8 text-emerald-600" />,
     title: "For Healthcare",
-    description: "Token generation, patient tracking & billing systems.",
+    description: "Token generation for Patients with live token update feature, Digital billing, services listing, Billing history , Patient history and direct medical reports upload feature.",
   },
   {
     icon: <Smartphone className="w-8 h-8 text-pink-600" />,
     title: "For Users",
-    description: "Discover local services with digital tokens & bill records.",
+    description: "Discover nearest Shops and Healthcare centers with live chat feature, digital bill records with specialized section for medical reports and Get digital tokens with track token feature..",
   },
 ];
 
