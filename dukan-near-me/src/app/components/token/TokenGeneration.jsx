@@ -43,7 +43,6 @@ export default function TokenGeneration() {
 
     setTimeout(() => {
       handleCreateToken(userId);
-      toast.success('Token generated!');
     }, 1000);
   };
 
@@ -65,7 +64,9 @@ export default function TokenGeneration() {
       setUserId('');
       fetchTokens();
       socket.emit('newToken', { institutionId, token: res.data });
+      toast.success('Token created!');
     } catch (err) {
+      toast.error('Failed to create token');
       console.error('Error creating token', err);
     }
   };

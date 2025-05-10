@@ -6,7 +6,7 @@ export async function POST(req) {
     try {
         const session = await getServerSession(authOptions);
 
-        if (!session || session.user.role !== 'INSTITUTION') {
+        if (!session || session.user.role==='USER') {
             return new Response(JSON.stringify({ error: 'Unauthorized: Only institutions can update tokens' }), { status: 401 });
         }
 
