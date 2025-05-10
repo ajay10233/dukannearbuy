@@ -1,39 +1,45 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/utils/db";
+import { NextResponse } from "next/server";
 
 export async function GET(req) {
     const session = await getServerSession(authOptions);
-    if (!session || (session.user.role !== "INSTITUTION" && session.user.role !== "SHOP_OWNER")) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     try {
+        const { searchParams } = new URL(req.url);
+        const institutionId = searchParams.get('institutionId');
+
+        const userId = institutionId || session.user.id;
+
         const user = await prisma.user.findUnique({
-            where: { id: session.user.id },
+            where: { id: userId },
             include: {
                 pastAddresses: {
-                    take: 5,  // Only get the last 5 past addresses
+                    take: 5,
                     orderBy: {
-                        movedOutAt: 'desc', // Assuming you have a 'movedOutAt' field to determine when the address was moved out
+                        movedOutAt: 'desc',
                     },
                 },
             },
         });
 
         if (!user) {
-            return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
         const pastAddresses = user.pastAddresses || [];
+        return NextResponse.json(pastAddresses, { status: 200 });
 
-        return new Response(JSON.stringify(pastAddresses), { status: 200 });
     } catch (error) {
         console.error("Error fetching past addresses:", error);
-        return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 });
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }
-
 
 export async function PUT(req) {
   const session = await getServerSession(authOptions);

@@ -6,15 +6,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/schemas/validation";
 import toast from "react-hot-toast";
 import { useBoolToggle } from "react-haiku";
-import { Eye, EyeClosed } from "lucide-react";
+import { Eye, EyeClosed, Loader2 } from "lucide-react"; // <- Loader icon
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function LoginForm() {
   const router = useRouter();
   const [show, setShow] = useBoolToggle();
   const { data: session, status } = useSession();
+  const [isLoading, setIsLoading] = useState(false); // <- Loading state
 
   const {
     register,
@@ -25,46 +26,30 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
-  // const providers = [
-  //   {
-  //     icon: 'google.svg',
-  //     name: 'google'
-  //   },
-  //   {
-  //     icon: 'facebook.svg',
-  //     name: 'facebook'
-  //   },
-  //   {
-  //     icon: 'apple.svg',
-  //     name: 'apple'
-  //   },
-  // ]
   const getIpAddress = async () => {
-        try {
-          const res = await fetch("https://api64.ipify.org?format=json");
-          const data = await res.json();
-          return data.ip;
-        } catch (error) {
-          console.error("Error fetching IP:", error);
-          return "Unknown IP";
-        }
-      };
+    try {
+      const res = await fetch("https://api64.ipify.org?format=json");
+      const data = await res.json();
+      return data.ip;
+    } catch (error) {
+      console.error("Error fetching IP:", error);
+      return "Unknown IP";
+    }
+  };
 
-  
   const onSubmit = async (data) => {
     if (data) {
+      setIsLoading(true); // <- Set loading true
       const { email, password } = data;
       const toastId = toast.loading("Processing...");
 
       try {
-        // Fetch IP address
         const ip = await getIpAddress();
-        // Get device info
         const device = navigator.userAgent || "Unknown Device";
 
         const res = await signIn("credentials", {
           redirect: false,
-          identifier: email, // Change 'email' to 'identifier'
+          identifier: email,
           password,
           device,
           ip,
@@ -79,29 +64,25 @@ export default function LoginForm() {
       } catch (error) {
         toast.error("Auth error", { id: toastId });
         console.error(error);
+      } finally {
+        setIsLoading(false); // <- Reset loading
       }
     }
   };
-  
+
   useEffect(() => {
     if (session?.user?.role) {
       const role = session.user.role;
-
-      if (role === "SHOP_OWNER") {
-        router.push("/partnerHome");
-      } else if (role === "INSTITUTION") {
+      if (role === "SHOP_OWNER" || role === "INSTITUTION") {
         router.push("/partnerHome");
       } else if (role === "USER") {
         router.push("/UserHomePage");
       } else {
         router.push("/dashboard");
       }
-    } else {
-      router.push("/login");
     }
   }, [session, router]);
 
-  
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -129,7 +110,8 @@ export default function LoginForm() {
           <p
             className={`${
               errors?.email ? `visible` : `invisible`
-            } pl-2 text-red-500 text-sm`}>
+            } pl-2 text-red-500 text-sm`}
+          >
             {errors?.email?.message || `Error`}
           </p>
         </div>
@@ -147,7 +129,8 @@ export default function LoginForm() {
               htmlFor="password"
               className={`capitalize absolute top-1/2 -translate-y-1/2 left-5 peer-focus:-translate-y-8.5 peer-focus:scale-90 peer-focus:-translate-x-2 bg-[#C0D0D1] px-1 transition-all duration-200 ${
                 watch("password") && `-translate-x-2 scale-90 -translate-y-8.5`
-              }`}>
+              }`}
+            >
               password
             </label>
             <span className="absolute right-5 top-1/2 -translate-y-1/2">
@@ -169,19 +152,23 @@ export default function LoginForm() {
       <div className="flex flex-col gap-y-4 items-center w-full">
         <button
           type="submit"
-          className="bg-blue-600 py-2 md:py-3 w-full text-white text-sm md:text-base rounded-full font-bold cursor-pointer">
-            Login
-        </button>
-        <span className="text-gray-600 text-sm">- or -</span>
-        {/* <div className="flex justify-around gap-x-5 w-1/2">
-        {
-          providers.map((prov, i) => (
-            <span className="relative block w-6 h-6 cursor-pointer" key={i} onClick={() => signIn(prov.name, { callbackUrl: "/dashboard" })}>
-              <Image src={`/loginSvg/${prov.icon}`} fill sizes="20px" alt={prov.name} priority />
+          disabled={isLoading}
+          className={`py-2 md:py-3 w-full text-white text-sm md:text-base rounded-full font-bold cursor-pointer transition-all ${
+            isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600"
+          }`}
+        >
+          {isLoading ? (
+            <span className="flex justify-center items-center gap-2">
+              <Loader2 className="animate-spin" size={18} />
+              Logging in...
             </span>
-          ))
-        }
-        </div> */}
+          ) : (
+            "Login"
+          )}
+        </button>
+
+        <span className="text-gray-600 text-sm">- or -</span>
+
         <p className="text-gray-600 text-md">
           Don't have an account?{" "}
           <Link href="/getstarted" className="text-gray-800 font-semibold">

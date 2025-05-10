@@ -18,7 +18,7 @@ export default function Faq() {
                         <span>What is the social impact of our partnership?</span>
                         </div>
                     </AccordionTrigger>
-                    <AccordionContent className="text-gray-600 text-xs md:text-sm overflow-hidden max-h-96 transition-all duration-500 ease-out">
+                    <AccordionContent className="text-gray-600 text-xs md:text-sm overflow-hidden transition-all duration-500 ease-out">
                         The industry of 10-minute delivery is growing while local market growth is shrinking.
                         <br />
                         <span className="font-semibold">Negative Side of 10-minute Delivery</span>
@@ -64,7 +64,7 @@ export default function Faq() {
                         <span>How we can tackle e-commerce platforms?</span>
                         </div>
                     </AccordionTrigger>
-                    <AccordionContent className="text-gray-600 text-xs md:text-sm overflow-hidden max-h-96 transition-all duration-500 ease-out">
+                    <AccordionContent className="text-gray-600 text-xs md:text-sm overflow-hidden transition-all duration-500 ease-out">
                         Local shops can tackle competition from online platforms by adopting smart strategies that enhance customer experience, convenience, and digital presence. Here are some effective ways:
                         <ul className="list-disc list-inside pl-4">
                         <li>Digital Presence & Online Selling</li>
@@ -84,7 +84,7 @@ export default function Faq() {
                         <span>Why Shop Owners and Medical institutes join us?</span>
                         </div>
                     </AccordionTrigger>
-                    <AccordionContent className="text-gray-600 text-xs md:text-sm overflow-hidden max-h-96 transition-all duration-500 ease-out">
+                    <AccordionContent className="text-gray-600 text-xs md:text-sm overflow-hidden transition-all duration-500 ease-out">
                         <ul className="list-disc list-inside pl-4">
                         <li>A platform to generate token.</li>
                         <li>A platform to generate bills.</li>
@@ -106,7 +106,7 @@ export default function Faq() {
                         <span>Is this platform trustable?</span>
                         </div>
                     </AccordionTrigger>
-                    <AccordionContent className="text-gray-600 text-xs md:text-sm overflow-hidden max-h-96 transition-all duration-500 ease-out">
+                    <AccordionContent className="text-gray-600 text-xs md:text-sm overflow-hidden transition-all duration-500 ease-out">
                         We are providing end to end encrypted chats and bill generation procedure. We are highly dedicated to build trust with our platform users and keeping it safe for all. We understand your concern and queries but we are here to support our partners to scale and become more reachable to their customers.
                         <br />
                         We have taken all the required measures to safeguard your data and our trust, we will never stop improvising. 
@@ -125,7 +125,7 @@ export default function Faq() {
                         <span>How to increase your customer reach?</span>
                         </div>
                     </AccordionTrigger>
-                    <AccordionContent className="text-gray-600 text-xs md:text-sm overflow-hidden max-h-96 transition-all duration-500 ease-out">
+                    <AccordionContent className="text-gray-600 text-xs md:text-sm overflow-hidden transition-all duration-500 ease-out">
                         Fast response times show customers that you value their time. Use greetings and polite language.
                         <br /><br />
                         Better products and service quality means better reviews which increase your credibility.
