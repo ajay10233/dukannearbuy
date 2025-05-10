@@ -142,16 +142,35 @@ export default function ChatBox() {
     if (!session) return;
 
     const fetchConversations = async () => {
-      try {
-        const res = await fetch(`/api/conversations/all`);
-        const data = await res.json();
-        console.log(data);
-        setConversations(data.data);
-        setFilteredConversations(data.data);
-      } catch (error) {
-        console.error("❌ Failed to fetch conversations:", error);
+  try {
+    const res = await fetch(`/api/conversations/all`);
+    const data = await res.json();
+    console.log(data);
+
+    const updatedConversations = data.data.map((conversation) => {
+      const lastMessage = conversation.lastMessage;
+      if (lastMessage) {
+        const isSentByCurrentUser = lastMessage.senderId === session.user.id;
+        const secretKey =
+          isSentByCurrentUser
+            ? conversation.otherUser.id + session.user.id
+            : session.user.id + conversation.otherUser.id;
+
+        // Decrypt last message content
+        lastMessage.content = decryptMessage(lastMessage.content, secretKey);
       }
-    };
+
+      return conversation;
+    });
+
+    setConversations(updatedConversations);
+    setFilteredConversations(updatedConversations);
+
+  } catch (error) {
+    console.error("❌ Failed to fetch conversations:", error);
+  }
+};
+
 
     fetchConversations();
     checkForParams();
@@ -178,7 +197,7 @@ export default function ChatBox() {
               const isSentByCurrentUser = msg.senderId === session.user.id;
               const secretKey = isSentByCurrentUser
                 ? selected_id + session.user.id
-                : session.user.id + selected_id;;
+                : session.user.id + selected_id;
   
               return {
                 ...msg,
