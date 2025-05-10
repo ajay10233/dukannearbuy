@@ -2,22 +2,23 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/utils/db";
 import cloudinary from "@/utils/cloudinary";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
-  if (!session) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  if (!session) return NextResponse({ error: "Unauthorized" },{ status: 401 });
 
   try {
     const { image } = await req.json();
     if (!image || !image.startsWith("data:image/")) {
-      return new Response(JSON.stringify({ error: "Invalid image format" }), { status: 400 });
+      return NextResponse({ error: "Invalid image format" },{ status: 400 });
     }
 
     const user = await prisma.user.findUnique({ where: { id: session.user.id } });
-    if (!user) return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
+    if (!user) return NextResponse({ error: "User not found" },{ status: 404 });
 
     if (user.role === "INSTITUTION" || user.role === "SHOP_OWNER") {
-      return new Response(JSON.stringify({ error: "Institutions should use the institution upload route" }), { status: 403 });
+      return NextResponse({ error: "Institutions should use the institution upload route" },{ status: 403 });
     }
 
     // Upload base64 image to Cloudinary
@@ -29,9 +30,9 @@ export async function POST(req) {
       data: { profilePhoto: uploadRes.secure_url },
     });
 
-    return new Response(JSON.stringify({ message: "Profile photo updated successfully", url: uploadRes.secure_url }), { status: 200 });
+    return NextResponse({ message: "Profile photo updated successfully", url: uploadRes.secure_url },{ status: 200 });
   } catch (error) {
     console.error("❌ Error uploading profile photo:", error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 });
+    return NextResponse({ error: "Internal server error" },{ status: 500 });
   }
 }

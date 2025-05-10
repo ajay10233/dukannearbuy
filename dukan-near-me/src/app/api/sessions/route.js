@@ -1,11 +1,12 @@
 import { prisma } from "@/utils/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { NextResponse } from "next/server";
 
 export async function GET(req) {
   const session = await getServerSession(authOptions);
   if (!session) {
-    return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 401 });
+    return NextResponse({ message: "Unauthorized" },{ status: 401 });
   }
 
   // Fetch all active sessions of the user

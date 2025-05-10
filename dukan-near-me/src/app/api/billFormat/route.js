@@ -1,12 +1,13 @@
 import { prisma } from "@/utils/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { NextResponse } from "next/server";
 
 export async function GET(req) {
     try {
         const session = await getServerSession(authOptions);
         if (!session || session.user.role !== 'INSTITUTION' || !session.user.role!="SHOP_OWNER") {
-            return new Response(JSON.stringify({ error: 'Unauthorized: Only institutions can fetch bill formats' }), { status: 401 });
+            return NextResponse({ error: 'Unauthorized: Only institutions can fetch bill formats' },{ status: 401 });
         }
 
         const billFormat = await prisma.billFormat.findUnique({  
@@ -16,13 +17,13 @@ export async function GET(req) {
         });
 
         if (!billFormat) {
-            return new Response(JSON.stringify({ error: 'Bill format not found' }), { status: 404 });
+            return NextResponse({ error: 'Bill format not found' },{ status: 404 });
         }
 
         return new Response(JSON.stringify(billFormat), { status: 200 });
     } catch (error) {
         console.error("Error fetching bill formats:", error);
-        return new Response(JSON.stringify({ error: 'Internal Server Error' }), { status: 500 });
+        return NextResponse({ error: 'Internal Server Error' },{ status: 500 });
     }
 }
 
@@ -32,7 +33,7 @@ export async function POST(req) {
         const session = await getServerSession(authOptions);
 
         if (!session || session.user.role !== 'INSTITUTION' || !session.user.role!="SHOP_OWNER") {
-            return new Response(JSON.stringify({ error: 'Unauthorized: Only institutions can save bill formats' }), { status: 401 });
+            return NextResponse({ error: 'Unauthorized: Only institutions can save bill formats' },{ status: 401 });
         }
 
         const existingBillFormat = await prisma.billFormat.findUnique({
@@ -40,7 +41,7 @@ export async function POST(req) {
         });
 
         if (existingBillFormat) {
-            return new Response(JSON.stringify({ error: "A bill format already exists for this institution. You cannot create more than one." }), { status: 400 });
+            return NextResponse({ error: "A bill format already exists for this institution. You cannot create more than one." },{ status: 400 });
         }
 
         const { gstNumber, taxType, taxPercentage, proprietorSign, extraText } = await req.json();
@@ -60,7 +61,7 @@ export async function POST(req) {
 
     } catch (error) {
         console.error("Error creating bill format:", error);
-        return new Response(JSON.stringify({ error: 'Internal Server Error' }), { status: 500 });
+        return NextResponse({ error: 'Internal Server Error' },{ status: 500 });
     }
 }
 
@@ -69,7 +70,7 @@ export async function PUT(req) {
         const session = await getServerSession(authOptions);
 
         if (!session || session.user.role !== 'INSTITUTION' || !session.user.role!="SHOP_OWNER") {
-            return new Response(JSON.stringify({ error: 'Unauthorized: Only institutions can update bill formats' }), { status: 401 });
+            return NextResponse({ error: 'Unauthorized: Only institutions can update bill formats' },{ status: 401 });
         }
 
         const existingBillFormat = await prisma.billFormat.findUnique({
@@ -77,7 +78,7 @@ export async function PUT(req) {
         });
 
         if (!existingBillFormat) {
-            return new Response(JSON.stringify({ error: "Bill format not found. Please create one first." }), { status: 404 });
+            return NextResponse({ error: "Bill format not found. Please create one first." },{ status: 404 });
         }
 
         const { gstNumber, taxType, taxPercentage, proprietorSign, extraText } = await req.json();
@@ -98,7 +99,7 @@ export async function PUT(req) {
 
     } catch (error) {
         console.error("Error updating bill format:", error);
-        return new Response(JSON.stringify({ error: 'Internal Server Error' }), { status: 500 });
+        return NextResponse({ error: 'Internal Server Error' },{ status: 500 });
     }
 }
 
@@ -108,7 +109,7 @@ export async function DELETE(req) {
         const session = await getServerSession(authOptions);
 
         if (!session || session.user.role !== 'INSTITUTION' || !session.user.role!="SHOP_OWNER") {
-            return new Response(JSON.stringify({ error: 'Unauthorized: Only institutions can delete bill formats' }), { status: 401 });
+            return NextResponse({ error: 'Unauthorized: Only institutions can delete bill formats' },{ status: 401 });
         }
 
         const existingBillFormat = await prisma.billFormat.findUnique({
@@ -116,17 +117,17 @@ export async function DELETE(req) {
         });
 
         if (!existingBillFormat) {
-            return new Response(JSON.stringify({ error: "Bill format not found. Nothing to delete." }), { status: 404 });
+            return NextResponse({ error: "Bill format not found. Nothing to delete." },{ status: 404 });
         }
 
         await prisma.billFormat.delete({
             where: { institutionId: session.user.id },
         });
 
-        return new Response(JSON.stringify({ message: "Bill format deleted successfully" }), { status: 200 });
+        return NextResponse({ message: "Bill format deleted successfully" },{ status: 200 });
 
     } catch (error) {
         console.error("Error deleting bill format:", error);
-        return new Response(JSON.stringify({ error: 'Internal Server Error' }), { status: 500 });
+        return NextResponse({ error: 'Internal Server Error' },{ status: 500 });
     }
 }

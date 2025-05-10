@@ -1,12 +1,13 @@
 import { prisma } from "@/utils/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    return NextResponse({ error: "Unauthorized" },{ status: 401 });
   }
 
   try {
@@ -18,7 +19,7 @@ export async function POST(req) {
     });
 
     if (!payment) {
-      return new Response(JSON.stringify({ error: "Payment not found" }), { status: 404 });
+      return NextResponse({ error: "Payment not found" },{ status: 404 });
     }
 
     const updateData = {};
@@ -27,17 +28,17 @@ export async function POST(req) {
     // Check if user is authorized to mark payment as COMPLETED
     if (status === "COMPLETED") {
       if (session.user.role !== "INSTITUTION" && session.user.role !== "SHOP_OWNER") {
-        return new Response(JSON.stringify({ error: "Permission denied" }), { status: 403 });
+        return NextResponse({ error: "Permission denied" },{ status: 403 });
       }
       if (session.user.id !== payment.senderId) {
-        return new Response(JSON.stringify({ error: "Only the sender can complete the payment" }), { status: 403 });
+        return NextResponse({ error: "Only the sender can complete the payment" },{ status: 403 });
       }
     }
 
     // Handle status update
     if (status) {
       if (!allowedStatuses.includes(status)) {
-        return new Response(JSON.stringify({ error: "Invalid status value" }), { status: 400 });
+        return NextResponse({ error: "Invalid status value" },{ status: 400 });
       }
       updateData.status = status;
     }
@@ -45,10 +46,10 @@ export async function POST(req) {
     // Handle amount update (Only institutions/shop owners can update)
     if (amount !== undefined) {
       if (session.user.role !== "INSTITUTION" && session.user.role !== "SHOP_OWNER") {
-        return new Response(JSON.stringify({ error: "Permission denied" }), { status: 403 });
+        return NextResponse({ error: "Permission denied" },{ status: 403 });
       }
       if (isNaN(amount) || amount <= 0) {
-        return new Response(JSON.stringify({ error: "Invalid amount" }), { status: 400 });
+        return NextResponse({ error: "Invalid amount" },{ status: 400 });
       }
 
       updateData.amount = parseFloat(amount);
@@ -65,9 +66,9 @@ export async function POST(req) {
       data: updateData,
     });
 
-    return new Response(JSON.stringify({ message: "Payment updated successfully" }), { status: 200 });
+    return NextResponse({ message: "Payment updated successfully" },{ status: 200 });
   } catch (error) {
     console.error("❌ Error updating payment:", error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 });
+    return NextResponse({ error: "Internal server error" },{ status: 500 });
   }
 }
