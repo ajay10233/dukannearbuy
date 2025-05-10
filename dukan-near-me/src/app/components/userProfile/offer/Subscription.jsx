@@ -47,7 +47,7 @@ export default function Subscription() {
   
 
   return (
-    <div className="min-h-screen px-6 py-10 flex items-center justify-center">
+    <div className="min-h-screen px-6 py-10 flex items-center justify-center" id="subscription">
       <div className="w-full max-w-[1200px] flex flex-col items-center gap-5 md:gap-10">
         <div className="text-center gap-y-2 p-4">
           <h2 className="text-3xl font-bold text-gray-200">Choose Your Plan</h2>
@@ -104,11 +104,11 @@ export default function Subscription() {
                   className={`px-6 py-2 tracking-wide cursor-pointer rounded-full text-sm font-semibold transition
                     ${
                       plan.name === "BASIC"
-                        ? "border border-yellow-500 text-yellow-500 hover:bg-yellow-100"
+                        ? "border border-yellow-500 text-yellow-500 bg-yellow-100"
                         : "border border-yellow-500 text-yellow-500 bg-yellow-100"
                     }
                     ${activePlan === plan.name ? "ring-2 ring-yellow-300" : ""} 
-                    ${plan.price === 0 ? "cursor-not-allowed opacity-50" : ""}`} // Add opacity for free plan
+                    ${plan.price === 0 ? "cursor-not-allowed opacity-70" : ""}`} // Add opacity for free plan
                 >
                     {activePlan === plan.name ? "Selected" : "Select"}
                 </button>

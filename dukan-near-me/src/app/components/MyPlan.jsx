@@ -1,14 +1,14 @@
-"use client";
-
+import { useEffect, useState } from "react";
 import { BadgeCheck, XCircle, Sparkles, ArrowRight } from "lucide-react";
 import Head from "next/head";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function MyPlans() {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUserPlans = async () => {
@@ -20,16 +20,43 @@ export default function MyPlans() {
 
         const userPlans = [];
 
+        // Include subscription plan if available
         if (data.subscriptionPlan) {
+          const subscribedAt = new Date(data.createdAt);
+          const durationDays = data.subscriptionPlan.durationInDays || 0;
+          const expiryDate = new Date(subscribedAt);
+          expiryDate.setDate(expiryDate.getDate() + durationDays);
+        
+          const isExpired = new Date() > expiryDate;
+        
           userPlans.push({
             id: data.subscriptionPlan.id,
             name: data.subscriptionPlan.name,
             type: "subscription",
-            status: "active", 
-            date: `Subscribed on: ${new Date(data.createdAt).toLocaleDateString()}`,
+            status: isExpired ? "expired" : "active",
+            date: `Subscribed on: ${subscribedAt.toLocaleDateString()}\nValid till: ${expiryDate.toLocaleDateString()}`,
             description: `Plan: ${data.subscriptionPlan.name}, Price: ₹${data.subscriptionPlan.price}`,
           });
         }
+        
+        // Include paid promotions if available
+        if (data.paidPromotions && data.paidPromotions.length > 0) {
+          data.paidPromotions.forEach((promo) => {
+            const promoStart = new Date(promo.createdAt);
+            const promoEnd = new Date(promo.expiresAt);
+            const isPromoExpired = new Date() > promoEnd;
+      
+            userPlans.push({
+              id: promo.id,
+              name: "Paid Promotion",
+              type: "paid",
+              status: isPromoExpired ? "expired" : "active",
+              date: `Promotion started on: ${promoStart.toLocaleDateString()}\nValid till: ${promoEnd.toLocaleDateString()}`,
+              description: `Amount Paid: ₹${promo.amountPaid}, Range: ${promo.range}` + (promo.notes ? `, Reason: ${promo.notes}` : ""),
+            });
+          });
+        }
+        
         setPlans(userPlans);
       } catch (error) {
         console.error(error);
@@ -84,7 +111,7 @@ export default function MyPlans() {
                     <div className="flex flex-col gap-1 md:gap-2">
                       <h3 className="text-lg font-semibold text-gray-800">{plan.name}</h3>
                       <p className="text-sm text-gray-600">{plan.description}</p>
-                      <p className="text-xs text-gray-500">{plan.date}</p>
+                      <p className="text-xs text-gray-500 whitespace-pre-line">{plan.date}</p>
                     </div>
 
                     <div className="flex items-center gap-3 text-sm font-medium">
@@ -103,12 +130,23 @@ export default function MyPlans() {
                           </>
                         )}
                       </span>
-                      {plan.status === "expired" && (
-                        <button className="inline-flex cursor-pointer items-center text-indigo-600 hover:text-indigo-800 transition font-semibold text-sm">
+                      {plan.status === "expired" && plan.type === "paid" && (
+                        <button onClick={() => {
+                          const target = plan.type === "paid" ? "#promotion" : "#subscription";
+                          router.push(`/partnerHome${target}`);
+                        }}
+                        className="inline-flex cursor-pointer items-center text-indigo-600 hover:text-indigo-800 transition font-semibold text-sm">
                           Renew <ArrowRight className="h-4 w-4 ml-1" />
-                        </button>
+                      </button>
                       )}
                     </div>
+
+                    {/* Displaying Image for Paid Promotions */}
+                    {plan.type === "paid" && plan.image && (
+                      <div className="mt-2">
+                        <Image src={plan.image} alt="Promotion Image" width={150} height={150} className="rounded-md shadow-sm" />
+                      </div>
+                    )}
                   </motion.div>
                 ))
               ) : (
