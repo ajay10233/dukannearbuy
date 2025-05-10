@@ -8,7 +8,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 
-export default function BillHistoryTable() {
+export default function BillHistoryTable({setDates}) {
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [showAmountSort, setShowAmountSort] = useState(false);
   const [fromDate, setFromDate] = useState('');
@@ -55,8 +55,10 @@ export default function BillHistoryTable() {
       });
 
       setFilteredData(filtered);
+      setDates({ startDate: fromDate, endDate: toDate });
     } else {
       setFilteredData(billData);
+      setDates({ startDate: "", endDate: "" }); 
     }
   }, [fromDate, toDate, billData]);
 
