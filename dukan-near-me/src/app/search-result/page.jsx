@@ -34,6 +34,7 @@ import Navbar from "../components/InstitutionHome/navbar/Navbar";
 import HeroSectionEditProfile from "../components/saerch-result/HeroSectionEditProfile";
 import EditProfile from "../components/InstitutionHome/Profile/EditProfile";
 import EditAddress from "../components/EditAddress";
+import Image from "next/image";
 
 export default function About({ profileUpdated }) {
   const [userData, setUserData] = useState(null);
@@ -372,14 +373,14 @@ export default function About({ profileUpdated }) {
         </div>
       )}
 
-      <div className="p-4 md:p-8 bg-white w-full">
+      <div className="py-4 px-6 md:p-8 bg-white w-full">
         <div className="space-y-3 items-center justify-center w-full ml-0 md:ml-[32px]">
           {/* PROFILE INFO */}
           <div>
             <h2 className="text-[16px] md:text-xl font-bold text-blue-700 mb-4">
               Profile Information
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 ml-2 text-sm text-gray-700">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 ml-4 text-sm text-gray-700">
               {userData?.firstName && (
                 <div>
                   <p className="font-semibold text-gray-600">First Name</p>
@@ -417,7 +418,7 @@ export default function About({ profileUpdated }) {
           <div className="w-full">
             <div className="mb-4">
               <h2 className="text-[16px] md:text-xl font-bold text-blue-700 mb-4">Address</h2>
-              <div className="flex flex-col w-full gap-2 md:gap-4 ml-2">
+              <div className="flex flex-col w-full gap-2 md:gap-4 ml-4">
                   {userData?.address ? (
                   <div className="grid grid-cols-2 gap-2 md:gap-4 text-sm text-gray-700">
                     {userData.address.houseNumber && (
@@ -592,7 +593,7 @@ export default function About({ profileUpdated }) {
               <h2 className="text-[16px] md:text-xl font-bold text-blue-700 ">
                 Shop Information
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 text-sm text-gray-700 ml-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 text-sm text-gray-700 ml-4">
                 {userData.shopAddress && (
                   <div>
                     <p className="font-semibold text-gray-600">Shop Address</p>
@@ -617,7 +618,7 @@ export default function About({ profileUpdated }) {
               <h2 className="text-[16px] md:text-xl  font-bold text-blue-700 mb-4">
                 Shop Timings
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 text-sm text-gray-700 ml-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 text-sm text-gray-700 ml-4">
                 {userData.shopOpenTime && (
                   <div>
                     <p className="font-semibold text-gray-600">Open Time</p>
@@ -667,7 +668,7 @@ export default function About({ profileUpdated }) {
           {userData?.hashtags?.length > 0 && (
             <div>
               <h2 className="text-[16px] md:text-xl font-bold text-blue-700 mb-4">Hashtags</h2>
-              <div className="flex flex-wrap gap-2 ml-2">
+              <div className="flex flex-wrap gap-2 ml-4">
                 {userData.hashtags.map((tag, index) => (
                   <span
                     key={index}
@@ -682,9 +683,9 @@ export default function About({ profileUpdated }) {
 
           {/* ABOUT */}
           {userData?.description && (
-            <div>
+            <div className="mr-4 md:mr-[32px]">
               <h2 className="text-[16px] md:text-xl font-bold text-blue-700 mb-4">About</h2>
-              <p className="ml-1 text-sm text-gray-700 w-80 md:w-full md:max-w-2xl bg-gradient-to-br from-blue-50 via-white to-blue-100  h-45 bg-white border border-gray-200 shadow-sm rounded-xl p-4 overflow-auto leading-relaxed whitespace-pre-line">{userData.description}</p>
+              <p className="ml-2 text-sm text-gray-700 sm:max-w-4xl md:max-w-6xl lg:w-full lg:max-w-7xl bg-gradient-to-br from-blue-50 via-white to-blue-100  h-45 bg-white border border-gray-200 shadow-sm rounded-xl p-4 overflow-auto leading-relaxed whitespace-pre-line">{userData.description}</p>
             </div>
           )}
         </div>
@@ -692,28 +693,28 @@ export default function About({ profileUpdated }) {
 
       {showQRModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-65 md:w-full md:max-w-md relative">
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg h-100 md:h-125 w-75 md:w-95 relative">
           <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer"
               onClick={() => setShowQRModal(false)}
             >
               <X size={20} strokeWidth={1.5} />
             </button>
-            <h2 className="text-xl font-semibold text-center text-blue-700 mb-4">
+            <h2 className="text-xl font-semibold text-center text-blue-700 mb-0 md:mb-4">
               Scan QR Code
             </h2>
-            <div className="p-4">
-              <img
+            <div className="p-4 relative">
+              <Image
                 src={userData?.scanner_image}
-                alt="QR Code"
-                className="w-48 h-48 mx-auto object-contain"
+                alt="QR Code" height={280} width={280}
+                className="w-70 h-70 mx-auto object-contain" priority
               />
             </div>
-            <p className="pt-4 flex items-center justify-center gap-2 text-center text-gray-600">
+            <p className="pt-2 md:pt-4 flex items-center justify-center gap-2 text-center text-gray-600">
               <span className="text-gray-800 text-sm font-medium">
                 UPI ID: <span className="font-normal">{userData?.upi_id}</span>
               </span>
-              <button onClick={handleCopyUpi} title="Copy UPI ID">
+              <button onClick={handleCopyUpi} title="Copy UPI ID" className="cursor-pointer transition-all duration-300 ease-in-out">
                 {copiedUPI ? (
                   <Check className="text-green-600" size={18} />
                 ) : (

@@ -311,6 +311,7 @@ export default function ChatBox() {
 
   if (status === "loading")
     return <p className="text-center text-gray-500">Loading...</p>;
+  
   if (!session)
     return (
       <p className="text-center text-red-500">
@@ -329,7 +330,9 @@ export default function ChatBox() {
     const encryptedMessage = encryptMessage(message, secretKey);
     let msgData;
     console.log("Selected partner currently is: ", selectedPartner);
-    const decryptedMessage = message;
+    
+    const decryptedMessage = message;                                
+
 
     if (selectedPartner.otherUser) {
       msgData = {
@@ -598,21 +601,23 @@ export default function ChatBox() {
                     </div>
                     <span className="text-gray-500 font-normal text-[12px]">
                       {/* Last message here... */}
-                      {partner.lastMessageContent
-                        ? partner.lastMessageContent
-                        : "No messages yet"}
+                      {partner.lastMessage?.content
+                      ? partner.lastMessage.content.split(' ').slice(0, 20).join(' ') + (partner.lastMessage.content.split(' ').length > 20 ? '...' : '')
+                      : "No messages yet"
+                    }
                     </span>
                   </div>
                 </div>
                 <div className="flex flex-col items-end justify-center gap-1">
-                  <span className="text-[var(--chat-color)] text-sm">
-                    {/* Display the time */}
-                    {partner.lastMessageTimestamp
-                      ? new Date(
-                        partner.lastMessageTimestamp
-                      ).toLocaleTimeString()
-                      : " "}
+                {partner.lastMessage?.content && partner.lastMessage?.timestamp && (
+                  <span className="text-gray-500 text-sm">
+                    {new Date(partner.lastMessage.timestamp).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: true,
+                    }).toUpperCase()}
                   </span>
+                )}
                 </div>
               </div>
             ))

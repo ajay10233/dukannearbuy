@@ -100,7 +100,7 @@ export default function Subscription() {
 
                 <button
                   onClick={() => handleClick(plan.name, plan.price)} // Pass plan.price here
-                  disabled={plan.price === 0} 
+                  disabled={plan.price === 0 || activePlan === plan.name} 
                   className={`px-6 py-2 tracking-wide cursor-pointer rounded-full text-sm font-semibold transition
                     ${
                       plan.name === "BASIC"
