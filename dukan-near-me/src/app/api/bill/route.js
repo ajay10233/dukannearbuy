@@ -70,7 +70,7 @@ export async function POST(req) {
       const remarks = form.get('remarks');
       const invoiceNumber = form.get('invoiceNumber');
       const report = form.get('report') || false;
-
+      console.log("report",report)
       if (!file || typeof file === 'string') {
         return NextResponse.json({ success: false, error: 'No file uploaded' }, { status: 400 });
       }
@@ -119,8 +119,10 @@ export async function POST(req) {
         fileType: file.type || null,
         paymentStatus: 'PENDING',
         expiresAt: expiresAt,
-        type: report ? 'REPORT' : 'BILL',
+        type: report=='true' ? 'REPORT' : 'BILL',
       }
+
+      console.log("report",report,"billData",billData)
 
       if (tokenId) {
         billData.tokenNumber = { connect: { id: tokenId } };
@@ -185,11 +187,13 @@ export async function POST(req) {
     });
 
     let shortBill = null;
+    console.log("generateShortBill",generateShortBill)
     if (generateShortBill) {
+      console.log("generateShortBill",generateShortBill)
       shortBill = await prisma.shortBill.create({
         data: {
           billId: bill.id,
-          summary: `ShortBill for ${name || 'Unknown'} with ${items.length} item(s)`,
+          summary: `ShortBill for ${name || 'Unknown'} with ${items.length} items`,
           expiresAt: new Date(Date.now() + 60 * 60 * 1000),
         },
       });
