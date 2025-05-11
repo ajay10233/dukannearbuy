@@ -24,6 +24,7 @@ export default function EditFormatComponent() {
     // const [file, setFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState('');
     const [items, setItems] = useState([{ particulars: '', qty: 1, rate: 0, amount: 0 }]);
+    const [shortBillDetails, setShortBillDetails] = useState(null);
     const billRef = useRef();
 
     const [invoiceDate, setInvoiceDate] = useState(() => {
@@ -94,34 +95,28 @@ export default function EditFormatComponent() {
             return;
         }
 
-        console.log("isReport",isReport,"shortBill",shortBill)
-
         try {
             const hasFile = file !== null;
+            let data;
 
             if (hasFile) {
-                // Use FormData when uploading file
                 const formData = new FormData();
                 formData.append('userId', userId);
                 formData.append('name', `${username.firstName} ${username.lastName}`);
                 formData.append('phoneNumber', mobile);
                 formData.append('invoiceNumber', invoiceNo);
-                formData.append('remarks', ''); // Optional, update if needed
+                formData.append('remarks', '');
                 formData.append('otherCharges', '0');
-                formData.append('file', file); // Your selected file (image/pdf)
-                formData.append('generateShortBill', shortBill); // Your selected file (image/pdf)
+                formData.append('file', file);
+                formData.append('generateShortBill', shortBill);
                 formData.append('report', isReport);
 
-                const { data } = await axios.post('/api/bill', formData, {
+                data = await axios.post('/api/bill', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
-
-                toast.success('Bill with file uploaded successfully!');
-                console.log('Bill response:', data);
             } else {
-                // If no file, send as JSON
                 const payload = {
                     userId,
                     name: `${username.firstName} ${username.lastName}`,
@@ -137,10 +132,15 @@ export default function EditFormatComponent() {
                     generateShortBill: shortBill,
                 };
 
-                const { data } = await axios.post('/api/bill', payload);
-                toast.success('Bill generated successfully!');
-                console.log('Generated bill:', data);
+                data = await axios.post('/api/bill', payload);
             }
+            console.log(data.data);
+            if (data?.data?.shortBill) {
+                setShortBillDetails(data.data.shortBill); // Save shortBill data to state
+            }
+
+            toast.success('Bill generated successfully!');
+            console.log('Generated bill:', data);
         } catch (error) {
             console.error('Error generating bill:', error);
             toast.error(error.response?.data?.error || 'Error generating bill');
@@ -153,7 +153,7 @@ export default function EditFormatComponent() {
         fetchUserDetails();
     }, []);
 
-    
+
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files?.[0];
@@ -397,6 +397,14 @@ export default function EditFormatComponent() {
                         <div className="text-right mt-10 text-xs text-gray-500 uppercase">
                             This bill is generated using <span className="font-semibold text-black">NearBuyDukan</span>
                         </div>
+                        {/* Short Bill Display Section */}
+                        {shortBillDetails && (
+                            <div className="mt-6 bg-gray-100 p-4 rounded-md">
+                                <h2 className="text-lg font-semibold">Short Bill Details</h2>
+                                <p><strong>Summary:</strong> {shortBillDetails.summary}</p>
+                                <p><strong>Expires At:</strong> {new Date(shortBillDetails.expiresAt).toLocaleString()}</p>
+                            </div>
+                        )}
                     </div>
 
                     {/* Modal for QR Scanner */}
@@ -424,7 +432,9 @@ export default function EditFormatComponent() {
                             </div>
                         </div>
                     )}
+
                 </div>
+
 
                 {/* <CreateBill /> */}
 

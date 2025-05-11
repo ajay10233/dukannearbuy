@@ -122,8 +122,6 @@ export async function POST(req) {
         type: report=='true' ? 'REPORT' : 'BILL',
       }
 
-      console.log("report",report,"billData",billData)
-
       if (tokenId) {
         billData.tokenNumber = { connect: { id: tokenId } };
       }
@@ -187,9 +185,7 @@ export async function POST(req) {
     });
 
     let shortBill = null;
-    console.log("generateShortBill",generateShortBill)
     if (generateShortBill) {
-      console.log("generateShortBill",generateShortBill)
       shortBill = await prisma.shortBill.create({
         data: {
           billId: bill.id,
