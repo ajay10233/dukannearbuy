@@ -18,6 +18,8 @@ export async function GET(req, { params }) {
       },
       include: {
         items: true,
+        user: true,
+        institution: true,
       },
     });
 
