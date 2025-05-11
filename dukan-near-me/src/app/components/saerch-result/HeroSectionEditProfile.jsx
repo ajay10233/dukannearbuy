@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import useEmblaCarousel from "embla-carousel-react";
 import { Plus, RefreshCcwDot, Store, Crown, X, ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "axios";
+import { Grid } from "react-loader-spinner";
 
 
 export default function HeroSectionEditProfile() {
@@ -176,8 +177,19 @@ export default function HeroSectionEditProfile() {
 
   if (!user) {
     return (
-      <div className="text-center">
-        <p>Loading user data...</p>
+      <div className="h-full flex items-center justify-center">
+        <p>
+           <Grid
+                visible={true}
+                height="80"
+                width="80"
+                color="#7C3AED"
+                ariaLabel="grid-loading"
+                radius="12.5"
+                wrapperStyle={{}}
+                wrapperClass="grid-wrapper"
+              />
+        </p>
       </div>
     );
   }
