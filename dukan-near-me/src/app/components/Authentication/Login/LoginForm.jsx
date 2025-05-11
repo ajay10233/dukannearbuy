@@ -58,9 +58,13 @@ export default function LoginForm() {
         if (res.status === 200) {
           toast.success("Login successfully!", { id: toastId });
           router.push("/dashboard");
+        } else if (res.error === "NOT_VERIFIED") {
+          toast.error("You must verify your email first.", { id: toastId });
+          router.push(`/otp-verify/`);
         } else {
           toast.error(res.error || "Invalid credentials", { id: toastId });
         }
+
       } catch (error) {
         toast.error("Auth error", { id: toastId });
         console.error(error);
@@ -100,17 +104,15 @@ export default function LoginForm() {
             />
             <label
               htmlFor="email"
-              className={`capitalize absolute top-1/2 -translate-y-1/2 left-5 peer-focus:-translate-y-8.5 peer-focus:scale-90 peer-focus:-translate-x-2 bg-[#C8D7D7] px-1 transition-all duration-200 ${
-                watch("email") && `-translate-x-2 scale-90 -translate-y-8.5`
-              }`}
+              className={`capitalize absolute top-1/2 -translate-y-1/2 left-5 peer-focus:-translate-y-8.5 peer-focus:scale-90 peer-focus:-translate-x-2 bg-[#C8D7D7] px-1 transition-all duration-200 ${watch("email") && `-translate-x-2 scale-90 -translate-y-8.5`
+                }`}
             >
               email
             </label>
           </div>
           <p
-            className={`${
-              errors?.email ? `visible` : `invisible`
-            } pl-2 text-red-500 text-sm`}
+            className={`${errors?.email ? `visible` : `invisible`
+              } pl-2 text-red-500 text-sm`}
           >
             {errors?.email?.message || `Error`}
           </p>
@@ -127,9 +129,8 @@ export default function LoginForm() {
             />
             <label
               htmlFor="password"
-              className={`capitalize absolute top-1/2 -translate-y-1/2 left-5 peer-focus:-translate-y-8.5 peer-focus:scale-90 peer-focus:-translate-x-2 bg-[#C0D0D1] px-1 transition-all duration-200 ${
-                watch("password") && `-translate-x-2 scale-90 -translate-y-8.5`
-              }`}
+              className={`capitalize absolute top-1/2 -translate-y-1/2 left-5 peer-focus:-translate-y-8.5 peer-focus:scale-90 peer-focus:-translate-x-2 bg-[#C0D0D1] px-1 transition-all duration-200 ${watch("password") && `-translate-x-2 scale-90 -translate-y-8.5`
+                }`}
             >
               password
             </label>
@@ -153,9 +154,8 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className={`py-2 md:py-3 w-full text-white text-sm md:text-base rounded-full font-bold cursor-pointer transition-all ${
-            isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600"
-          }`}
+          className={`py-2 md:py-3 w-full text-white text-sm md:text-base rounded-full font-bold cursor-pointer transition-all ${isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600"
+            }`}
         >
           {isLoading ? (
             <span className="flex justify-center items-center gap-2">

@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/utils/db";
 import crypto from "crypto";
-import { ObjectId } from "mongodb"; 
+import { ObjectId } from "mongodb";
 
 export const authOptions = {
   session: {
@@ -15,7 +15,7 @@ export const authOptions = {
         if (!credentials.identifier || !credentials.password) {
           throw new Error("Identifier and password are required");
         }
-      
+
         const user = await prisma.user.findFirst({
           where: {
             OR: [
@@ -28,31 +28,34 @@ export const authOptions = {
             subscriptionPlan: true,
           },
         });
-      
+
         if (!user) throw new Error("User not found");
-      
+
         if (!user.verified) {
-          throw new Error("User is not verified. Please verify your account.");
+          const error = new Error("NOT_VERIFIED");
+          error.name = "NotVerified";
+          throw error;
         }
-      
+
+
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) throw new Error("Invalid credentials");
-      
+
         const userId = new ObjectId(user.id);
         const plan = user.subscriptionPlan?.name?.toLowerCase();
         let maxDevices = 1;
-      
+
         if (plan === "business") {
           maxDevices = 2;
         } else if (plan === "premium") {
           maxDevices = 4;
         }
-      
+
         const activeSessions = await prisma.session.findMany({
           where: { userId },
           orderBy: { createdAt: "asc" }
         });
-      
+
         if (activeSessions.length >= maxDevices) {
           const sessionsToRemove = activeSessions.length - maxDevices + 1;
           const sessionsToDelete = activeSessions.slice(0, sessionsToRemove);
@@ -62,9 +65,9 @@ export const authOptions = {
             });
           }
         }
-      
+
         const sessionToken = crypto.randomBytes(32).toString("hex");
-      
+
         await prisma.session.create({
           data: {
             userId,
@@ -73,7 +76,7 @@ export const authOptions = {
             ip: credentials.ip || "Unknown IP",
           },
         });
-      
+
         return {
           id: user.id,
           firstName: user.firstName,
@@ -111,8 +114,8 @@ export const authOptions = {
           } : null,
         };
       }
-      
-      
+
+
     }),
   ],
   callbacks: {

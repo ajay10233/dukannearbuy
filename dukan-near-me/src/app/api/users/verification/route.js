@@ -18,10 +18,13 @@ export async function POST(req) {
 
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
+  if(user.verified) return NextResponse.json({ error: "User already verified" }, { status: 400 });
+  
   const tasks = [];
 
   if (email) {
-    const emailOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const emailOtp = Math.floor(1000 + Math.random() * 9000).toString();
+
     tasks.push(
       prisma.verificationToken.create({
         data: {
@@ -37,7 +40,7 @@ export async function POST(req) {
   }
 
   if (phone) {
-    const phoneOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const phoneOtp = Math.floor(1000 + Math.random() * 9000).toString();
     tasks.push(
       prisma.verificationToken.create({
         data: {

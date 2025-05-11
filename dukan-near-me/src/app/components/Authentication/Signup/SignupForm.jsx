@@ -52,6 +52,7 @@ export default function SignupForm() {
       router.push("/getstarted");
     }
   }, [role, router]);
+  
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
