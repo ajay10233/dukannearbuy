@@ -1,54 +1,15 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ScanLine, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import UserQrScan from '../../components/userqr-scan/UserQrScan';
+import axios from 'axios';
 
 export default function BillGeneratorWithSave() {
-  const [invoiceNo, setInvoiceNo] = useState('');
-  const [invoiceDate, setInvoiceDate] = useState(() => {
-    const now = new Date();
-    return now.toLocaleDateString('en-GB').split('/').join('-');
-  });
+  
 
-  const [userId, setUserId] = useState('');
-  const [username, setUsername] = useState({ firstName: '', lastName: '' });
-  const [address, setAddress] = useState('');
-  const [mobile, setMobile] = useState('');
-  const [isScanning, setIsScanning] = useState(false);
-
-  const billRef = useRef();
-
-  const [items, setItems] = useState([{ particulars: '', qty: 1, rate: 0, amount: 0 }]);
-
-  const handleItemChange = (index, key, value) => {
-    const newItems = [...items];
-    newItems[index][key] = key === 'qty' || key === 'rate' ? parseFloat(value) || 0 : value;
-    newItems[index].amount = newItems[index].qty * newItems[index].rate;
-    setItems(newItems);
-  };
-
-  const itemsSubtotal = items.reduce((acc, item) => acc + item.amount, 0);
-  const totalAmount = itemsSubtotal;
-
-  const handleScanSuccess = (userData) => {
-    setUserId(userData.userId);
-    setUsername(userData.username);
-    setAddress(userData.address);
-    setMobile(userData.mobile);
-    toast.success('User details fetched successfully!');
-    setIsScanning(false);
-  };
-
-  const handlePrint = () => {
-    const printContents = billRef.current.innerHTML;
-    const originalContents = document.body.innerHTML;
-    document.body.innerHTML = printContents;
-    window.print();
-    document.body.innerHTML = originalContents;
-    window.location.reload();
-  };
+  
 
   return (
     <div className="p-4 relative">
@@ -70,10 +31,9 @@ export default function BillGeneratorWithSave() {
         {/* Bill Information */}
         <div className="grid grid-cols-2 gap-4 border-b pb-2 mb-4">
           <div className="p-2 border-r border-black">
-            <h1 className="text-lg font-bold text-[#0D6A9C]">SHRI GANESH TRADING CO.</h1>
-            <p>SHOP: 6.7 KARAWAL NAGAR OPPOSITE NEW SHANDYA PUBLIC SCHOOL</p>
-            <p>Delhi</p>
-            <p>Mobile: 8851723708</p>
+            <h1 className="text-lg font-bold text-[#0D6A9C]">{user?.firmName}</h1>
+            <p>{user?.address && `${user.address.houseNumber}, ${user.address?.buildingName ? user.address.buildingName + ', ' : ''}${user.address.street}, ${user.address.landmark}, ${user.address.city}, ${user.address.state} - ${user.address.zipCode}, ${user.address.country}`}</p>
+            <p>Mobile: {user?.mobileNumber}</p>
           </div>
           <div className="p-2">
             <h2 className="font-bold mb-1">RECEIVER DETAILS</h2>
@@ -186,6 +146,7 @@ export default function BillGeneratorWithSave() {
           >
             Print
           </button>
+          <button onClick={handleGenerateBill} className="bg-blue-500 text-white px-4 py-2 rounded text-sm">Generate Bill</button>
         </div>
         <div className="text-right mt-10 text-xs text-gray-500 uppercase">
           This bill is generated using <span className="font-semibold text-black">NearBuyDukan</span>

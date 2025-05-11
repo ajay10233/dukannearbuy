@@ -55,7 +55,7 @@ export async function POST(req) {
     expiresAt.setMonth(expiresAt.getMonth() + 1);
     if (institution.subscriptionPlan?.name === "PREMIUM") {
       expiresAt.setMonth(expiresAt.getMonth() + 6);
-    } else if (institution.subscriptionPlan?.name === "BUSINESS") {                                               
+    } else if (institution.subscriptionPlan?.name === "BUSINESS") {
       expiresAt.setMonth(expiresAt.getMonth() + 15);
     }
 
@@ -108,21 +108,25 @@ export async function POST(req) {
           }
         ).end(buffer);
       });
+      const billData = {
+        user: { connect: { id: userId } },
+        institution: { connect: { id: institutionId } },
+        // tokenNumber: { connect: { id: tokenId } },
+        remarks,
+        invoiceNumber,
+        totalAmount: 0,
+        fileUrl: uploadResult.secure_url,
+        fileType: file.type || null,
+        paymentStatus: 'PENDING',
+        expiresAt: expiresAt,
+        type: report ? 'REPORT' : 'BILL',
+      }
 
+      if (tokenId) {
+        billData.tokenNumber = { connect: { id: tokenId } };
+      }
       const bill = await prisma.bill.create({
-        data: {
-          user: { connect: { id: userId } },
-          institution: { connect: { id: institutionId } },
-          tokenNumber: { connect: { id: tokenId } },
-          remarks,
-          invoiceNumber,
-          totalAmount: 0,
-          fileUrl: uploadResult.secure_url,
-          fileType: file.type || null,
-          paymentStatus: 'PENDING',
-          expiresAt: expiresAt,
-          type: report ? 'REPORT' : 'BILL',
-        },
+        data: billData,
       });
 
       return NextResponse.json({ success: true, bill });
@@ -151,29 +155,32 @@ export async function POST(req) {
       (sum, item) => sum + item.price * item.quantity,
       0
     ) + (parsedCharges || 0);
-
-    const bill = await prisma.bill.create({
-      data: {
-        user: { connect: { id: userId } },
-        institution: { connect: { id: institutionId } },
-        tokenNumber: { connect: { id: tokenId } },
-        name,
-        phoneNumber,
-        totalAmount,
-        paymentStatus: 'PENDING',
-        remarks,
-        invoiceNumber,
-        otherCharges: parsedCharges,
-        items: {
-          create: items.map((item) => ({
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            total: item.price * item.quantity,
-          })),
-        },
-        expiresAt: expiresAt,
+    const billData =
+    {
+      user: { connect: { id: userId } },
+      institution: { connect: { id: institutionId } },
+      name,
+      phoneNumber,
+      totalAmount,
+      paymentStatus: 'PENDING',
+      remarks,
+      invoiceNumber,
+      otherCharges: parsedCharges,
+      items: {
+        create: items.map((item) => ({
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          total: item.price * item.quantity,
+        })),
       },
+      expiresAt: expiresAt,
+    };
+    if (tokenId) {
+      billData.tokenNumber = { connect: { id: tokenId } };
+    }
+    const bill = await prisma.bill.create({
+      data: billData,
       include: { items: true },
     });
 
@@ -199,7 +206,7 @@ export async function GET(req) {
   try {
     const session = await getServerSession(authOptions)
     if (!session || !['INSTITUTION', 'SHOP_OWNER'].includes(session.user.role)) {
-      return NextResponse({ error: 'Unauthorized' },{ status: 401 })
+      return NextResponse({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const bills = await prisma.bill.findMany({
@@ -219,7 +226,7 @@ export async function PUT(req) {
   try {
     const session = await getServerSession(authOptions)
     if (!session || !['INSTITUTION', 'SHOP_OWNER'].includes(session.user.role)) {
-      return NextResponse({ error: 'Unauthorized' },{ status: 401 })
+      return NextResponse({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await req.json()
@@ -249,7 +256,7 @@ export async function DELETE(req) {
   try {
     const session = await getServerSession(authOptions)
     if (!session || !['INSTITUTION', 'SHOP_OWNER'].includes(session.user.role)) {
-      return NextResponse({ error: 'Unauthorized' },{ status: 401 })
+      return NextResponse({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await req.json()
