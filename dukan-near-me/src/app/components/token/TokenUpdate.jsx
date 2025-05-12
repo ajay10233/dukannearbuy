@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import io from "socket.io-client";
 import { useParams } from "next/navigation";
+import { useRouter } from 'next/navigation';
 
 
 const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { transports: ["websocket"] });;
@@ -15,6 +16,26 @@ export default function TokenUpdate() {
     const [currentTokens, setCurrentTokens] = useState([]); // Now an array
     const [completedTokens, setCompletedTokens] = useState([]);
     const [selectedToken, setSelectedToken] = useState(null);
+    const [role, setRole] = useState(null);
+    const router = useRouter();
+
+    const handleRedirection = async () => {
+        try {
+            const res = await fetch("/api/users/me");
+            const data = await res.json();
+            if (data?.role) {
+                setRole(data.role);
+                // Redirect based on user role
+                if (data.role === "USER") {
+                    router.push("/UserHomePage"); 
+                } else {
+                    Router.push("/partnerHome"); 
+                }
+            }
+        } catch (err) {
+            console.error("Failed to fetch user role:", err);
+        }
+    };
 
     useEffect(() => {
         if (!institutionId) return;
@@ -62,9 +83,9 @@ export default function TokenUpdate() {
     return (
         <section className="flex flex-col items-center h-[calc(100vh-50px)] justify-start px-8 pb-8 pt-16 gap-y-4 bg-white">
             <div className="flex items-center justify-between w-full">
-                <Link href="/partnerHome" className="flex items-center gap-1">
+                <div onClick={handleRedirection} className="flex items-center gap-1 cursor-pointer">
                     <MoveLeft size={20} strokeWidth={1.5} />
-                </Link>
+                </div>
                 <h2 className="text-2xl font-bold text-gray-700 text-center flex-1">
                     Live Token Update
                 </h2>

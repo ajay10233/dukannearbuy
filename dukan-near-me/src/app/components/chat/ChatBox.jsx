@@ -450,6 +450,17 @@ export default function ChatBox() {
     }
   };
 
+
+  const getTruncatedMessage = (message) => {
+  const maxLength = 20; 
+
+  if (message.length > maxLength) {
+    return message.substring(0, maxLength) + " ...";
+  }
+
+  return message;
+};
+
   return (
     <div className="flex h-screen bg-white font-[var(--font-plus-jakarta)]">
       {/* Left Sidebar */}
@@ -485,7 +496,7 @@ export default function ChatBox() {
                 ? "bg-[var(--chart-2)] text-white font-semibold"
                 : "bg-white text-[var(--withdarktext)] font-normal"
               }`}
-            onClick={() => setIsFavorite(false)}
+            // onClick={() => setIsFavorite(false)}
           >
             Select a seller
           </button>
@@ -494,7 +505,7 @@ export default function ChatBox() {
                 ? "bg-[var(--chart-2)] text-white font-semibold"
                 : "bg-white text-[var(--withdarktext)] font-normal"
               }`}
-            onClick={() => setIsFavorite(true)}
+            // onClick={() => setIsFavorite(true)}
           >
             Message requests
           </button>
@@ -620,10 +631,15 @@ export default function ChatBox() {
                     </div>
                     <span className="text-gray-500 font-normal text-[12px]">
                       {/* Last message here... */}
-                      {partner.lastMessage?.content
+                      {/* {partner.lastMessage?.content
                       ? partner.lastMessage.content.split(' ').slice(0, 20).join(' ') + (partner.lastMessage.content.split(' ').length > 20 ? '...' : '')
                       : "No messages yet"
-                    }
+                    } */}
+                      {
+                        partner?.lastMessage?.content
+                          ? getTruncatedMessage(partner?.lastMessage?.content)
+                          : "No messages yet"
+                      }
                     </span>
                   </div>
                 </div>
@@ -807,7 +823,7 @@ export default function ChatBox() {
                     >
                       {/* Date Separator */}
                       {isNewDay && (
-                        <div className="flex justify-center gap-y-2 mb-2 md:mb-0">
+                        <div className="flex justify-center gap-y-2 mb-2">
                           <span className="px-4 py-1 text-xs font-medium text-[var(--withdarkinnertext)] bg-gray-200 rounded-lg">
                             {messageDate === today ? "Today" : messageDate}
                           </span>

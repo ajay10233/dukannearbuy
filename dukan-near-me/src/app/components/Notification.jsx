@@ -24,7 +24,7 @@ export default function Notification() {
 
   const markAsRead = async (id) => {
     try {
-      const res = await fetch(`/api/notification/${id}`, {
+      const res = await fetch(`/api/notification/${userId}`, {
         method: "PUT",
       });
       if (res.ok) {
@@ -87,7 +87,7 @@ export default function Notification() {
                     <div className="flex-1">
                       <h4 className="text-md md:text-lg font-semibold text-gray-800">{n.title}</h4>
                       <p className="text-sm text-gray-600">{n.message}</p>
-                      <span className="text-xs text-gray-400 mt-1 block">{n.time}</span>
+                      <span className="text-xs text-gray-400 mt-1 block">{new Date(n.createdAt).toLocaleString()}</span>
                       <div className="flex gap-2 mt-2">
                         {!n.isRead && (
                           <button

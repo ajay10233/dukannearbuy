@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShieldCheck, Store, Stethoscope, Smartphone, SquareCheckBig, MoveRight, Phone, Mail, Instagram, Linkedin } from "lucide-react";
+import { ShieldCheck, Store, Stethoscope, Smartphone, SquareCheckBig, MoveRight, Phone, Mail, Instagram, Linkedin, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import Link from "next/link";
@@ -211,7 +211,7 @@ export default function AboutUs() {
                 
                 <li className="flex items-center gap-2 cursor-pointer">
                         <ShieldCheck size={20} strokeWidth={1.5} />
-                        <Link href="/terms&condition" className="hover:text-blue-700">
+                        <Link href="/terms&condition" className="cursor-pointer transition-all ease-in-out duration-400 hover:text-blue-700">
                         Terms & Conditions
                         </Link>
                 </li>
@@ -223,7 +223,7 @@ export default function AboutUs() {
 
                 <li className="flex items-center gap-2 cursor-pointer">
                     <Mail size={20} strokeWidth={1.5} />
-                    <a href="mailto:contact@nearbuydukaan.com" className="hover:text-blue-700">
+                    <a href="mailto:contact@nearbuydukaan.com" className="cursor-pointer transition-all ease-in-out duration-400 hover:text-blue-700">
                       contact@nearbuydukaan.com
                     </a>
                 </li>
@@ -234,11 +234,19 @@ export default function AboutUs() {
                     href="https://www.instagram.com/nearbuydukaan?igsh=Zzl0N3AzN2w1cmRu&utm_source=qr"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-blue-700"
+                    className="cursor-pointer transition-all ease-in-out duration-400 hover:text-blue-700"
                     >
                     Connect with us on Instagram
                     </a>
                 </li>
+                  
+                <li className="flex items-center gap-2 cursor-pointer">
+                  <MessageCircle size={20} strokeWidth={1.5} />
+                  <Link href="/feedback" className="cursor-pointer transition-all ease-in-out duration-400 hover:text-blue-700">
+                    Connect with our Support Team
+                  </Link>
+                </li>
+
             
                 <li className="transition-all ease-in-out duration-500 cursor-pointer hover:text-blue-700 flex items-center gap-2" onClick={() => setShowModal(true)}>
                     <RiDeleteBin6Line size={20} strokeWidth={1.5} />

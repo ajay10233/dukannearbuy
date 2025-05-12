@@ -57,34 +57,34 @@ export default function BillGeneratorWithSave() {
         ref={billRef}
       >
         {/* Header Section */}
-        <div className="flex justify-between items-center my-8">
-          <h1 className="text-2xl font-bold text-center w-full">BILL GENERATION</h1>
+        <div className="flex justify-between items-center my-4 md:my-8">
+          <h1 className="text-xl md:text-2xl font-bold text-center w-full">BILL GENERATION</h1>
           <button
             onClick={() => setIsScanning(true)}
-            className="flex items-center gap-2 px-3 py-2 bg-blue-600 cursor-pointer text-white rounded-md hover:bg-blue-800 transition-all duration-500 ease-in-out"
+            className="flex items-center gap-2 px-2.5 py-2 md:px-3 md:py-2 bg-blue-600 cursor-pointer text-white rounded-md hover:bg-blue-800 transition-all duration-500 ease-in-out"
           >
             <ScanLine size={20} strokeWidth={1.5} /> Scan
           </button>
         </div>
 
         {/* Bill Information */}
-        <div className="grid grid-cols-2 gap-4 border-b pb-2 mb-4">
+        <div className="grid grid-cols-2 gap-2 md:gap-4 border-b pb-2 mb-4">
           <div className="p-2 border-r border-black">
-            <h1 className="text-lg font-bold text-[#0D6A9C]">SHRI GANESH TRADING CO.</h1>
-            <p>SHOP: 6.7 KARAWAL NAGAR OPPOSITE NEW SHANDYA PUBLIC SCHOOL</p>
-            <p>Delhi</p>
-            <p>Mobile: 8851723708</p>
+            <h1 className="text-md md:text-lg font-bold text-[#0D6A9C]">SHRI GANESH TRADING CO.</h1>
+            <p className='text-xs md:text-[16px]'>Shop: <span className='text-gray-700'>6.7 Karawal Nagar opposite New Shandya Public School</span> </p>
+            <p className='text-xs md:text-[16px]'>Delhi</p>
+            <p className='text-xs md:text-[16px]'>Mobile: <span className='text-gray-700'>8851723708</span></p>
           </div>
           <div className="p-2">
-            <h2 className="font-bold mb-1">RECEIVER DETAILS</h2>
+            <h2 className="text-md md:text-lg font-bold mb-1">RECEIVER DETAILS</h2>
             <div className="flex flex-col mb-1">
-              <p className="flex items-start">
+              <p className="text-xs md:text-[16px] flex items-start">
                 Name:&nbsp;
                 <span className="text-sm text-gray-700">
                   {username.firstName || 'N/A'} {username.lastName || ''}
                 </span>
               </p>
-              <p className="flex items-start">
+              <p className="text-xs md:text-[16px] flex items-start">
                 <span className="font-medium">Address:&nbsp;</span>
                 {address ? (
                   <span className="text-sm text-gray-700">
@@ -94,13 +94,13 @@ export default function BillGeneratorWithSave() {
                   <span className="text-sm text-gray-500">N/A</span>
                 )}
               </p>
-              <p>Phone: <span className="text-sm text-gray-700">{mobile || 'N/A'}</span></p>
+              <p className='text-xs md:text-[16px]'>Phone: <span className="text-sm text-gray-700">{mobile || 'N/A'}</span></p>
             </div>
           </div>
         </div>
 
         {/* Invoice Details */}
-        <div className="grid grid-cols-2 gap-4 border-b pb-2 mb-4 items-center">
+        <div className="grid grid-cols-2 gap-4 border-b pb-2 mb-4 items-center text-xs md:text-[16px]">
           <div className="text-left">
             <p className="text-sm text-gray-600">Invoice Number</p>
             <input
@@ -120,19 +120,19 @@ export default function BillGeneratorWithSave() {
         <div className="overflow-x-auto mb-4">
           <table className="w-full border-collapse border text-left">
             <thead>
-              <tr className="bg-[#CFEBF9]">
-                <th className="border p-2">S.NO</th>
-                <th className="border p-2">PARTICULARS</th>
-                <th className="border p-2">QUANTITY</th>
-                <th className="border p-2">RATE</th>
-                <th className="border p-2">AMOUNT</th>
+              <tr className="bg-[#CFEBF9] text-xs md:text-[16px]">
+                <th className="border p-1 md:p-2">S.NO</th>
+                <th className="border p-1 md:p-2">PARTICULARS</th>
+                <th className="border p-1 md:p-2">QUANTITY</th>
+                <th className="border p-1 md:p-2">RATE</th>
+                <th className="border p-1 md:p-2">AMOUNT</th>
               </tr>
             </thead>
             <tbody>
               {items.map((item, index) => (
                 <tr key={index}>
-                  <td className="border p-2 text-center">{index + 1}</td>
-                  <td className="border p-2">
+                  <td className="border p-1 md:p-2 text-center">{index + 1}</td>
+                  <td className="border p-1 md:p-2">
                     <input
                       type="text"
                       value={item.particulars}
@@ -140,7 +140,7 @@ export default function BillGeneratorWithSave() {
                       className="w-full border-none outline-none"
                     />
                   </td>
-                  <td className="border p-2">
+                  <td className="border p-1 md:p-2">
                     <input
                       type="number"
                       value={item.qty}
@@ -148,7 +148,7 @@ export default function BillGeneratorWithSave() {
                       className="w-full border-none outline-none"
                     />
                   </td>
-                  <td className="border p-2">
+                  <td className="border p-1 md:p-2">
                     <input
                       type="number"
                       value={item.rate}
@@ -156,7 +156,7 @@ export default function BillGeneratorWithSave() {
                       className="w-full border-none outline-none"
                     />
                   </td>
-                  <td className="border p-2 text-center">{item.amount.toFixed(2)}</td>
+                  <td className="border p-1 md:p-2 text-center">{item.amount.toFixed(2)}</td>
                 </tr>
               ))}
               <tr>
@@ -176,7 +176,7 @@ export default function BillGeneratorWithSave() {
         </div> */}
 
         {/* Total Amount */}
-        <div className="text-right font-bold text-lg">Total Amount: ₹{totalAmount.toFixed(2)}</div>
+        <div className="text-right font-bold text-md md:text-lg">Total Amount: ₹{totalAmount.toFixed(2)}</div>
 
         {/* Action Buttons */}
         <div className="flex space-x-4 mt-4">
@@ -195,7 +195,7 @@ export default function BillGeneratorWithSave() {
       {/* Modal for QR Scanner */}
       {isScanning && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-          <div className="bg-white relative p-4 rounded-lg shadow-lg max-w-md w-full">
+          <div className="bg-white relative p-4 rounded-lg shadow-lg w-75 md:max-w-md md:w-full">
             <button
               className="absolute cursor-pointer top-2 right-2 text-gray-600 transition-all duration-500 ease-in-out hover:text-black"
               onClick={() => setIsScanning(false)}

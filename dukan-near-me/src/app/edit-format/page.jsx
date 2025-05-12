@@ -11,7 +11,7 @@ export default function Home() {
       <Navbar />
       <main className="flex flex-col flex-1 gap-y-4">
         
-        <div className="flex flex-col flex-1 bg-white p-3 md:p-6 gap-4 shadow-md w-full md:w-full md:max-w-5xl border border-black self-center mt-16">
+        <div className="flex flex-col flex-1 bg-white p-3 md:p-6 gap-4 shadow-md w-85 sm:w-full sm:max-w-5xl border border-black self-center mt-16">
           <EditFormat />
           <Toggles />
           <UploadPdfImage />

@@ -29,11 +29,11 @@ export default function UploadPdfImg() {
     <div className="flex flex-col gap-6">
       {/* Upload Box */}
       <div className="flex justify-between items-center border border-gray-400 p-2 md:p-4 rounded-md">
-        <span className="text-gray-700 font-semibold text-md">Upload Image or PDF</span>
+        <span className="text-gray-700 font-semibold text-sm md:text-[16px]">Upload Image or PDF</span>
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-2 md:px-4 py-2 cursor-pointer rounded-md bg-blue-600 text-white hover:bg-blue-800 transition-all duration-500 ease-in-out"
+          className="flex items-center gap-2 px-2 md:px-4 py-2 text-sm md:text-[16px] cursor-pointer rounded-md bg-blue-600 text-white hover:bg-blue-800 transition-all duration-500 ease-in-out"
         >
           <Upload size={20} strokeWidth={1.5} /> Upload
         </button>
@@ -42,7 +42,7 @@ export default function UploadPdfImg() {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white p-6 rounded-md w-96 flex flex-col gap-4">
+          <div className="bg-white p-4 md:p-6 rounded-md w-75 md:w-96 flex flex-col gap-2 md:gap-4">
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Upload Details</h2>
 
             {/* User ID Input + QR Button */}
@@ -55,7 +55,7 @@ export default function UploadPdfImg() {
                   setUserId(e.target.value);
                   setUsername(''); 
                 }}
-                className="flex-1 border p-2 rounded-md"
+                className="flex-1 border p-2 rounded-md w-42"
               />
 
               <button
@@ -108,7 +108,7 @@ export default function UploadPdfImg() {
           {/* QR Scanner Modal */}
           {showQRScanner && (
             <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center">
-              <div className="bg-white rounded-lg p-4 shadow-lg w-full max-w-md relative">
+              <div className="bg-white rounded-lg p-4 shadow-lg w-75 md:w-full md:max-w-md relative">
                 <h1 className="text-2xl md:text-3xl font-semibold text-center text-gray-700 mb-3 md:mb-6">QR Code Scanner</h1>
                 <div className="text-center text-gray-500 mb-2 md:mb-4">
                   <p>Scan a QR code using your camera</p>

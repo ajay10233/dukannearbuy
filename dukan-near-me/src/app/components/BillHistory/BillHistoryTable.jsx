@@ -50,7 +50,7 @@ export default function BillHistoryTable() {
       const to = new Date(toDate);
 
       const filtered = billData.filter((bill) => {
-        const billDate = new Date(bill.billingDate);
+      const billDate = new Date(bill.createdAt);
         return billDate >= from && billDate <= to;
       });
 
@@ -63,8 +63,8 @@ export default function BillHistoryTable() {
 
   const sortAmount = (order) => {
     const sorted = [...filteredData].sort((a, b) => {
-      const aNum = parseInt(a.amount.replace(/[^\d]/g, ""));
-      const bNum = parseInt(b.amount.replace(/[^\d]/g, ""));
+    const aNum = parseInt(a.totalAmount.toString().replace(/[^\d]/g, ""));
+    const bNum = parseInt(b.totalAmount.toString().replace(/[^\d]/g, ""));
       return order === "asc" ? aNum - bNum : bNum - aNum;
     });
 
@@ -88,7 +88,7 @@ export default function BillHistoryTable() {
               Billing Date <Calendar size={16} className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-teal-700" />
             </div>
             {showDateFilter && (
-              <div className="absolute top-9 bg-white border border-gray-300 p-4 rounded-lg shadow-lg z-10 text-black w-60 space-y-2">
+              <div className="absolute top-9 left-0 bg-white border border-gray-300 p-4 rounded-lg shadow-lg z-10 text-black w-60 space-y-2">
                 <label className="flex flex-row items-center gap-2 text-sm font-medium text-gray-600">From: {" "}
                   <input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="mt-1 w-40 border rounded px-2 py-1 text-sm" />
                 </label>
@@ -150,10 +150,10 @@ export default function BillHistoryTable() {
           filteredData.map((bill, i) => (
             <div className="flex items-center bg-white p-2 py-3 rounded-lg" key={i}>
               <ul className="flex items-center text-sm text-slate-500 *:w-1/5 w-full text-center justify-around whitespace-nowrap">
-                <li className="md:flex flex-col items-center hidden">{bill.invoiceNumber}</li>
-                <li>{new Date(bill.createdAt).toLocaleDateString()}</li>
-                <li>{bill.username || "N/A"}</li> 
-                <li className="md:flex flex-col items-center hidden">{bill.totalAmount}</li>
+                <li className="md:flex flex-col items-center hidden">{bill?.invoiceNumber}</li>
+                <li>{new Date(bill?.createdAt).toLocaleDateString()}</li>
+                <li>{bill?.username || "N/A"}</li> 
+                <li className="md:flex flex-col items-center hidden">{bill?.totalAmount}</li>
                 <li className="flex flex-col items-center justify-center relative">
                   <span className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
                     <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>

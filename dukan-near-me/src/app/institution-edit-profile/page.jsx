@@ -39,23 +39,34 @@ export default function EditProfilePage() {
   
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday"];
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    
-    // Handle file inputs separately
-    if (e.target.type === 'file') {
-      const file = (e.target ).files?.[0];
-      setForm((prev) => ({
-        ...prev,
-        [name]: file
-      }));
-    } else {
-      setForm((prev) => ({
-        ...prev,
-        [name]: value
-      }));
-    }
-  };
+ const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  // Address field handling
+  if (
+    ["houseNumber", "street", "buildingName", "landmark", "city", "state", "country", "zipCode"].includes(name)
+  ) {
+    setForm((prev) => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        [name]: value,
+      },
+    }));
+  } else if (e.target.type === 'file') {
+    const file = e.target.files?.[0];
+    setForm((prev) => ({
+      ...prev,
+      [name]: file
+    }));
+  } else {
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+};
+
 
   const handleLocationFetch = () => {
     if (!navigator.geolocation) {
@@ -140,8 +151,8 @@ export default function EditProfilePage() {
     const formData = new FormData(e.target);
     formData.set('hashtags', JSON.stringify(hashtagsArray));
     formData.set('shopOpenDays', JSON.stringify(form.shopOpenDays));
+    formData.set('address', JSON.stringify(form.address));
 
-  
     try {
       const response = await fetch('/api/institutions/edit-details', {
         method: 'POST',
@@ -446,7 +457,7 @@ export default function EditProfilePage() {
               type="file"
               accept="image/*"
               onChange={handleChange}
-              className="border p-2 rounded w-full"
+              className="border p-2 rounded w-full" required
             />
             {errors?.scanner_image && <span className="text-sm text-red-500">{errors.scanner_image}</span>}
           </div>
