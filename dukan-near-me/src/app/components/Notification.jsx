@@ -1,25 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bell, CheckCircle, AlertCircle } from "lucide-react";
+import { Bell, CheckCircle, AlertCircle, Trash } from "lucide-react";
 import Head from "next/head";
-import { Grid } from "react-loader-spinner";
 import Image from "next/image";
 
 export default function Notification() {
   const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const res = await fetch("/api/notification");
+        const res = await fetch("/api/notification"); 
         const data = await res.json();
         setNotifications(data);
       } catch (error) {
         console.error("Failed to fetch notifications", error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -33,7 +29,9 @@ export default function Notification() {
       });
       if (res.ok) {
         setNotifications((prev) =>
-          prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+          prev.map((n) =>
+            n.id === id ? { ...n, isRead: true } : n
+          )
         );
       }
     } catch (err) {
@@ -54,21 +52,6 @@ export default function Notification() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-gray-50 to-gray-200">
-        <Grid
-          height="80"
-          width="80"
-          color="#3b82f6"
-          ariaLabel="grid-loading"
-          radius="12.5"
-          visible={true}
-        />
-      </div>
-    );
-  }
-
   return (
     <>
       <Head>
@@ -82,12 +65,11 @@ export default function Notification() {
               Notifications
             </h2>
           </div>
-
           <div className="max-h-[500px] md:max-h-[520px] overflow-y-auto p-2 md:p-8 flex flex-col gap-2 md:gap-4 dialogScroll">
+            
             {notifications.length === 0 ? (
               <p className="text-center text-gray-500 text-sm">No notifications yet.</p>
             ) : (
-<<<<<<< HEAD
                 notifications.map((n) => (
                   <div
                     key={n.id}
@@ -115,49 +97,16 @@ export default function Notification() {
                             Mark as Read
                           </button>
                         )}
-=======
-              notifications.map((n) => (
-                <div
-                  key={n.id}
-                  className={`flex items-start gap-2.5 md:gap-4 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl p-2.5 md:p-4 shadow-sm transition-all duration-300 ${
-                    n.isRead ? "" : "bg-yellow-50"
-                  }`}
-                >
-                  <div className="flex items-center justify-center rounded-full bg-gray-100 border p-2 shadow-inner">
-                    {n.type === "success" ? (
-                      <CheckCircle className="h-5 w-5 text-green-600" />
-                    ) : n.type === "info" ? (
-                      <Bell className="h-5 w-5 text-blue-600" />
-                    ) : (
-                      <AlertCircle className="h-5 w-5 text-yellow-600" />
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="text-md md:text-lg font-semibold text-gray-800">
-                      {n.title}
-                    </h4>
-                    <p className="text-sm text-gray-600">{n.message}</p>
-                    <span className="text-xs text-gray-400 mt-1 block">{n.time}</span>
-                    <div className="flex gap-2 mt-2">
-                      {!n.isRead && (
->>>>>>> psc1
                         <button
-                          className="text-blue-500 text-xs cursor-pointer hover:underline"
-                          onClick={() => markAsRead(n.id)}
+                          className="text-red-500 text-xs cursor-pointer hover:underline"
+                          onClick={() => deleteNotification(n.id)}
                         >
-                          Mark as Read
+                          Delete
                         </button>
-                      )}
-                      <button
-                        className="text-red-500 text-xs cursor-pointer hover:underline"
-                        onClick={() => deleteNotification(n.id)}
-                      >
-                        Delete
-                      </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                ))
             )}
           </div>
         </div>
@@ -165,8 +114,7 @@ export default function Notification() {
           <Image
             src="/nearbuydukan - watermark.png"
             alt="Watermark"
-            fill
-            sizes="128px"
+            fill sizes="128px"
             className="object-contain"
             priority
           />
