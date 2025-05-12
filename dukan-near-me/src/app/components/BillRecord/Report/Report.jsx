@@ -47,7 +47,11 @@ export default function Report() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ billId }),
+        // body: JSON.stringify({ billId }),
+        body: JSON.stringify({
+        billId,
+        userId: session?.user?.id, 
+      }),
       });
   
       if (res.ok) {
@@ -94,22 +98,23 @@ export default function Report() {
   //   localStorage.setItem('favReports', JSON.stringify(saveToStorage));
   // };  
 
-  // const filteredReports = reports.filter((report) => {
-  //   const isFavoriteValid =
-  //     favoriteFilter === null || report.favorited === favoriteFilter;
-  
-  //   const isDateValid =
-  //     (!dateFrom || new Date(report.date) >= new Date(dateFrom)) &&
-  //     (!dateTo || new Date(report.date) <= new Date(dateTo));
-  
-  //   const query = searchTerm.toLowerCase();
-  //   const matchesSearch =
-  //     report.report.toLowerCase().includes(query) ||
-  //     report.institution.toLowerCase().includes(query);
-  
-  //   return isFavoriteValid && isDateValid && matchesSearch;
-  // });
-  
+const filteredReports = reports.filter((report) => {
+  const isFavorite = favoriteFilter === null || 
+    (favoriteFilter === true && favorites.some(fav => fav.billId === report.id)) ||
+    (favoriteFilter === false && !favorites.some(fav => fav.billId === report.id));
+
+  const isDateValid =
+    (!dateFrom || new Date(report.createdAt) >= new Date(dateFrom)) &&
+    (!dateTo || new Date(report.createdAt) <= new Date(dateTo));
+
+  const query = searchTerm.toLowerCase();
+  const matchesSearch =
+    report.report?.toLowerCase().includes(query) ||
+    report.institution?.firmName?.toLowerCase().includes(query);
+
+  return isFavorite && isDateValid && matchesSearch;
+});
+
   const handleDropdownChange = (action) => {
     setSelectedAction(action);
     setIsDropdownOpen(false); 
@@ -124,7 +129,7 @@ export default function Report() {
       {/* Search Bar */}
       <input
         type="text"
-        placeholder="Search by institution and reports..."
+        placeholder="Search by institution..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg shadow-md focus:ring-2 focus:ring-teal-700 transition-all duration-300 ease-in-out outline-none hover:border-gray-400"
@@ -135,8 +140,8 @@ export default function Report() {
         <ul className="flex w-full *:w-1/5 justify-between relative">
         <li className="hidden md:flex justify-center items-center relative">
             Favorite
-            <Heart
-              className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-red-500"
+            <Heart fill='#ec0909' stroke='#ec0909'
+              className="ml-1 w-4 h-4 cursor-pointer"
               onClick={() => {
                 setShowFavFilter(!showFavFilter);
                 setShowDateFilter(false);
@@ -238,12 +243,12 @@ export default function Report() {
 
       {/* Report List */}
       <div className="flex flex-col gap-3 h-[60vh] overflow-y-scroll dialogScroll pr-0 md:pr-2">
-        {reports.length > 0 ? (
-          reports.map((report, idx) => (
+        {filteredReports.length > 0 ? (
+          filteredReports.map((report, idx) => (
             <div key={report.id} className="bg-white md-2 p-2 md:p-4 rounded-xl shadow-sm flex items-center w-full">
               <ul className="flex items-center text-sm text-slate-600 w-full justify-between *:w-1/5 text-center">
                 <li className='hidden md:block'>
-                  <button onClick={() => toggleFavorite(report.id, favorites.some(fav => fav.billId === bill.id))}>
+                  <button onClick={() => toggleFavorite(report.id, favorites.some(fav => fav.billId === report.id))}>
                     <Heart
                       size={20}
                       strokeWidth={1.5}

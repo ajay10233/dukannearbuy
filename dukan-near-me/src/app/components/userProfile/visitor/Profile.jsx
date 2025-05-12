@@ -32,7 +32,7 @@ export default function Profile() {
   if (!user) return <p className="text-center py-20 text-gray-700">No user data found.</p>;
 
   return (
-    <section className="min-h-screen bg-white pt-13 px-4">
+    <section className="relative min-h-screen bg-white pt-13 px-4">
       <div className="flex flex-col md:flex-row gap-x-8 gap-y-6 p-4 md:px-12 md:py-8">
         <ProfileCard user={user} />
         <div className="flex-1 px-0 md:px-8">
@@ -82,6 +82,14 @@ export default function Profile() {
           </div>
         </div>
       </div>
+      <div className="absolute bottom-1 right-4 w-17 h-17 md:w-32 md:h-32">
+                  <Image
+                      src="/nearbuydukan - watermark.png"
+                      alt="Watermark"
+                      fill size="120"
+                      className="object-contain w-17 h-17 md:w-32 md:h-32"
+                      priority />
+      </div>      
     </section>
   );
 }

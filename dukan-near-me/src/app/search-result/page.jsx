@@ -282,7 +282,7 @@ export default function About({ profileUpdated }) {
                       <div className="flex flex-col gap-3">
                         {pastAddresses?.map((addr, i) => (
                           <div
-                            key={addr.id}
+                            key={addr.id || i}
                             className="p-3 bg-white rounded-md shadow-sm border border-blue-200 transition-all hover:shadow-md"
                           >
                             <p className="font-semibold text-blue-700">

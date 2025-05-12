@@ -23,7 +23,7 @@ export default function Toggles() {
     <div className="flex flex-wrap gap-2 md:gap-4 p-2 md:p-4 justify-evenly">
       {/* Short Bill Toggle */}
       <div className="flex items-center justify-evenly gap-2 w-full sm:w-auto">
-        <span className="text-lg font-semibold text-gray-700 whitespace-nowrap">Short Bill Generation</span>
+        <span className="text-md md:text-lg font-semibold text-gray-700 whitespace-nowrap">Short Bill Generation</span>
         <label className="relative cursor-pointer">
           <input
             type="checkbox"
@@ -40,7 +40,7 @@ export default function Toggles() {
 
       {/* Token Generation Toggle */}
       <div className="flex items-center justify-evenly gap-2 w-full sm:w-auto">
-        <span className="text-lg font-semibold text-gray-700 whitespace-nowrap">Token Generation</span>
+        <span className="text-md md:text-lg font-semibold text-gray-700 whitespace-nowrap">Token Generation</span>
         <label className="relative cursor-pointer">
           <input
             type="checkbox"

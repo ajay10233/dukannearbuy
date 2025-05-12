@@ -238,7 +238,31 @@ export default function Review({ user }) {
         ) : (
           <p className="text-gray-500 text-center my-4">No reviews yet.</p>
           )}
+        </div>
+        
+        {showReportModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 ">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+              <h2 className="text-lg font-semibold mb-4">Report Review</h2>
+              <p className="mb-4">Are you sure you want to report this review?</p>
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setShowReportModal(false)}
+                  className="px-4 py-2 border rounded bg-gray-100 cursor-pointer transition-all ease-in-out duration-400 hover:bg-gray-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleReport(selectedReviewId)}
+                  className="px-4 py-2 bg-red-600 text-white rounded cursor-pointer transition-all ease-in-out duration-400 hover:bg-red-700"
+                >
+                  Report
+                </button>
+              </div>
+            </div>
           </div>
+        )}
+
       </div>
     </div>
     );

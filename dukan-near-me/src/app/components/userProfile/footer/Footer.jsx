@@ -27,7 +27,7 @@ export default function Footer() {
         if (role === "USER") {
         router.push("/userProfile");
         } else if (role === "SHOP_OWNER" || role === "INSTITUTION") {
-        router.push("/partnerProfile");
+        router.push("/search-result");
         } else {
         router.push("/login");
         }
@@ -64,6 +64,9 @@ export default function Footer() {
               </div>
             <div className='hidden md:block  grid-cols-1 sm:grid-cols-2 md:grid-cols-3 w-full max-w-5xl mx-auto text-center'>
                 <h3 className="font-semibold text-lg md:text-xl pb-2.5">Support</h3>
+                    <a href="/feedback" className="text-xs md:text-sm p-1 transition-all ease-in-out duration-500 hover:text-teal-400 cursor-pointer">
+                        Connect with our Support Team
+                    </a><br/>
                 <a href="mailto:contact@nearbuydukaan.com" className="text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">contact@nearbuydukaan.com</a><br />
                 <a href="https://www.instagram.com/nearbuydukaan?igsh=Zzl0N3AzN2w1cmRu&utm_source=qr"
                     target="_blank"
@@ -93,6 +96,12 @@ export default function Footer() {
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 w-full max-w-5xl mx-auto text-center md:hidden'>
                 <h3 className="font-semibold text-lg md:text-xl pb-2.5">Support</h3>
                 {/* <p className="font-normal text-xs md:text-sm p-1">Delhi Shahdara near Hanuman Mandir.</p> */}
+                {/* <li className="flex items-center gap-2 cursor-pointer"> */}
+                    {/* <MessageCircle size={20} strokeWidth={1.5} /> */}
+                    <a href="/feedback" className="text-xs md:text-sm p-1 transition-all ease-in-out duration-500 hover:text-teal-400 cursor-pointer">
+                        Connect with our Support Team
+                    </a>
+                {/* </li> */}
                 <a href="mailto:contact@nearbuydukaan.com" className="text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">contact@nearbuydukaan.com</a>
                 <a href="https://www.instagram.com/nearbuydukaan?igsh=Zzl0N3AzN2w1cmRu&utm_source=qr"
                     target="_blank"

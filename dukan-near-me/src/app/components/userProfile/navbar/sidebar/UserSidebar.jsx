@@ -80,7 +80,7 @@ export default function UserSidebar({ isOpen, onClose }) {
                             <QrCode size={20} strokeWidth={1.5} />
                                 My QR         
                         </Link>
-                        <Link href="#"
+                        <Link href="/scanqr"
                             className="flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200"> 
                             <ScanLine size={20} strokeWidth={1.5} />
                             Scan QR

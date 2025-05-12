@@ -21,6 +21,7 @@ export default function Bill() {
   const [showTypeFilter, setShowTypeFilter] = useState(false);
   const [showFavFilter, setShowFavFilter] = useState(false);
   const [favorites, setFavorites] = useState([]);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchBills = async () => {
@@ -51,7 +52,10 @@ export default function Bill() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ billId }),
+        body: JSON.stringify({
+        billId,
+        userId: session?.user?.id, 
+      }),
       });
   
       if (res.ok) {
@@ -99,19 +103,23 @@ export default function Bill() {
   //   localStorage.setItem('favBills', JSON.stringify(saveToStorage));
   // };
 
-  // const filteredBills = bills.filter((bill) => {
-  //   const isFavValid =
-  //     favoriteFilter === null ||
-  //     bill.favorited === favoriteFilter;
+  const filteredBills = bills.filter((bill) => {
+  const matchesSearch = bill.institution?.firmName.toLowerCase().includes(search.toLowerCase());
 
-  //   const isDateValid =
-  //     (!dateFrom || new Date(bill.date) >= new Date(dateFrom)) &&
-  //     (!dateTo || new Date(bill.date) <= new Date(dateTo));
+  const isDateValid =
+    (!dateFrom || new Date(bill.createdAt) >= new Date(dateFrom)) &&
+    (!dateTo || new Date(bill.createdAt) <= new Date(dateTo));
 
-  //   const matchesSearch = bill.institution.toLowerCase().includes(search.toLowerCase());
+  const isTypeValid = !typeFilter || bill.type === typeFilter;
 
-  //   return isFavValid && isDateValid && (!typeFilter || bill.type === typeFilter) && matchesSearch;
-  // });
+  const isFavValid =
+    favoriteFilter === null ||
+    (favoriteFilter === true && bill.favorited) ||
+    (favoriteFilter === false && !bill.favorited);
+
+  return matchesSearch && isDateValid && isTypeValid && isFavValid;
+});
+
 
   const handleDropdownChange = (action) => {
     setSelectedAction(action);
@@ -139,8 +147,8 @@ export default function Bill() {
         <ul className="flex w-full *:w-1/5 justify-between relative">
           <li className='justify-center items-center relative hidden md:flex'>
             Favorite
-            <Heart
-              className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-red-500"
+            <Heart fill='#ec0909' stroke='#ec0909'
+              className="ml-1 w-4 h-4 cursor-pointer"
               onClick={() => {
                 setShowFavFilter(!showFavFilter);
                 setShowTypeFilter(false);
@@ -148,10 +156,10 @@ export default function Bill() {
               }}
             />
             {showFavFilter && (
-              <div className="absolute top-6 bg-white w-28 text-sm border border-gray-300 rounded-md shadow-md p-2 flex flex-col">
-                <label><input type="radio" checked={favoriteFilter === null} onChange={() => setFavoriteFilter(null)} className="mr-1" />All</label>
-                <label><input type="radio" checked={favoriteFilter === true} onChange={() => setFavoriteFilter(true)} className="mr-1" />Favorites</label>
-                <label><input type="radio" checked={favoriteFilter === false} onChange={() => setFavoriteFilter(false)} className="mr-1" />UnFavorite</label>
+              <div className="absolute top-6 bg-white w-28 text-sm border border-gray-300 rounded-md shadow-md p-2 flex flex-col cursor-pointer">
+                <label><input type="radio" checked={favoriteFilter === null} onChange={() => setFavoriteFilter(null)} className="mr-1 cursor-pointer" />All</label>
+                <label><input type="radio" checked={favoriteFilter === true} onChange={() => setFavoriteFilter(true)} className="mr-1 cursor-pointer" />Favorites</label>
+                <label><input type="radio" checked={favoriteFilter === false} onChange={() => setFavoriteFilter(false)} className="mr-1 cursor-pointer" />UnFavorite</label>
               </div>
             )}
           </li>
@@ -179,7 +187,7 @@ export default function Bill() {
           </li>
 
           <li className='flex justify-center items-center relative'>
-            Institution
+            Firm Name
             <Filter
               className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-teal-700"
               onClick={() => {
@@ -211,8 +219,8 @@ export default function Bill() {
 
       {/* Scrollable list */}
       <div className="flex flex-col gap-3 h-[60vh] overflow-y-scroll dialogScroll pr-2">
-        {bills.length > 0 ? (
-          bills.map((bill) => (
+        {filteredBills.length > 0 ? (
+          filteredBills.map((bill) => (
             <div key={bill.id} className="bg-white p-2 md:p-4 rounded-xl shadow-sm flex items-center w-full">
               <ul className="flex items-center text-sm text-slate-600 w-full justify-between *:w-1/5 text-center">
                 <li className='hidden md:block'>

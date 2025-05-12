@@ -46,7 +46,7 @@ export default function Faq() {
                                 <span>What is the social impact of our partnership?</span>
                             </div>
                         </AccordionTrigger>
-                        <AccordionContent className="text-gray-600 text-xs md:text-sm overflow-hidden max-h-96 transition-all duration-500 ease-out">
+                        <AccordionContent className="text-gray-600 text-xs md:text-sm overflow-hidden transition-all duration-500 ease-out">
                             The industry of 10-minute delivery is growing while local market growth is shrinking.
                             <br />
                             <span className="font-semibold">Negative Side of 10-minute Delivery</span>

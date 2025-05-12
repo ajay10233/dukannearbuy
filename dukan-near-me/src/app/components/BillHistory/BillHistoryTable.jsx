@@ -45,34 +45,37 @@ export default function BillHistoryTable({setDates}) {
   }, []);
 
   useEffect(() => {
-    if (fromDate && toDate) {
-      const from = new Date(fromDate);
-      const to = new Date(toDate);
+  if (fromDate && toDate) {
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+    const toDateEnd = new Date(to);
+    toDateEnd.setHours(23, 59, 59, 999); // ensure full day included
 
-      const filtered = billData.filter((bill) => {
-        const billDate = new Date(bill.billingDate);
-        return billDate >= from && billDate <= to;
-      });
+    const filtered = billData.filter((bill) => {
+      const billDate = new Date(bill.createdAt);
+      return billDate >= from && billDate <= toDateEnd;
+    });
 
-      setFilteredData(filtered);
-      setDates({ startDate: fromDate, endDate: toDate });
-    } else {
-      setFilteredData(billData);
-      setDates({ startDate: "", endDate: "" }); 
-    }
-  }, [fromDate, toDate, billData]);
+    setFilteredData(filtered);
+    setDates({ startDate: fromDate, endDate: toDate });
+  } else {
+    setFilteredData(billData);
+    setDates({ startDate: "", endDate: "" });
+  }
+}, [fromDate, toDate, billData]);
+
 
 
   const sortAmount = (order) => {
-    const sorted = [...filteredData].sort((a, b) => {
-      const aNum = parseInt(a.amount.replace(/[^\d]/g, ""));
-      const bNum = parseInt(b.amount.replace(/[^\d]/g, ""));
-      return order === "asc" ? aNum - bNum : bNum - aNum;
-    });
+  const sorted = [...filteredData].sort((a, b) => {
+    const aNum = parseFloat(a.totalAmount.toString().replace(/[^\d.]/g, ""));
+    const bNum = parseFloat(b.totalAmount.toString().replace(/[^\d.]/g, ""));
+    return order === "asc" ? aNum - bNum : bNum - aNum;
+  });
 
-    setFilteredData(sorted);
-    setShowAmountSort(false);
-  };
+  setFilteredData(sorted);
+  setShowAmountSort(false);
+};
 
   if (loading) {
     return <div>Loading...</div>;
@@ -90,7 +93,7 @@ export default function BillHistoryTable({setDates}) {
               Billing Date <Calendar size={16} className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-teal-700" />
             </div>
             {showDateFilter && (
-              <div className="absolute top-9 bg-white border border-gray-300 p-4 rounded-lg shadow-lg z-10 text-black w-60 space-y-2">
+              <div className="absolute top-9 left-0 bg-white border border-gray-300 p-4 rounded-lg shadow-lg z-10 text-black w-60 space-y-2">
                 <label className="flex flex-row items-center gap-2 text-sm font-medium text-gray-600">From: {" "}
                   <input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="mt-1 w-40 border rounded px-2 py-1 text-sm" />
                 </label>
@@ -152,10 +155,10 @@ export default function BillHistoryTable({setDates}) {
           filteredData.map((bill, i) => (
             <div className="flex items-center bg-white p-2 py-3 rounded-lg" key={i}>
               <ul className="flex items-center text-sm text-slate-500 *:w-1/5 w-full text-center justify-around whitespace-nowrap">
-                <li className="md:flex flex-col items-center hidden">{bill.invoiceNumber}</li>
-                <li>{new Date(bill.createdAt).toLocaleDateString()}</li>
-                <li>{bill.username || "N/A"}</li> 
-                <li className="md:flex flex-col items-center hidden">{bill.totalAmount}</li>
+                <li className="md:flex flex-col items-center hidden">{bill?.invoiceNumber}</li>
+                <li>{new Date(bill?.createdAt).toLocaleDateString()}</li>
+                <li>{bill?.username || "N/A"}</li> 
+                <li className="md:flex flex-col items-center hidden">{bill?.totalAmount}</li>
                 <li className="flex flex-col items-center justify-center relative">
                   <span className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
                     <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>

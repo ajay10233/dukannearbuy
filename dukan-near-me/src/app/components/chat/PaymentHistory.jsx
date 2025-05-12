@@ -217,10 +217,10 @@ export default function PaymentHistory() {
                         <span
                           className={`${
                             payment.status === "PENDING"
-                              ? `bg-yellow-100 text-yellow-400`
-                              : payment.status === "CONFLICT"
-                              ? `bg-red-100 text-red-400`
-                              : `bg-green-100 text-green-400`
+                              ? `bg-yellow-100 text-yellow-400 text-xs md:text-sm`
+                              : payment.status === "CONFLICT "
+                              ? `bg-red-100 text-red-400 text-xs md:text-sm`
+                              : `bg-green-100 text-green-400 text-xs md:text-sm`
                           } rounded-full block w-3/4 p-0.5`}
                         >
                           {payment.status}
@@ -228,7 +228,7 @@ export default function PaymentHistory() {
                       )}
                     </li>
                   </ul>
-                  <div className="flex items-center gap-x-2 ml-4">
+                  <div className="flex items-center gap-x-1 md:gap-x-2 ml-4">
                     {isEditing ? (
                       <>
                         <button onClick={handleSaveEdit} className="transition-all ease-in-out duration-400 cursor-pointer">
