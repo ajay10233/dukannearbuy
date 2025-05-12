@@ -47,7 +47,11 @@ export default function Report() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ billId }),
+        // body: JSON.stringify({ billId }),
+        body: JSON.stringify({
+        billId,
+        userId: session?.user?.id, 
+      }),
       });
   
       if (res.ok) {
@@ -244,7 +248,7 @@ const filteredReports = reports.filter((report) => {
             <div key={report.id} className="bg-white md-2 p-2 md:p-4 rounded-xl shadow-sm flex items-center w-full">
               <ul className="flex items-center text-sm text-slate-600 w-full justify-between *:w-1/5 text-center">
                 <li className='hidden md:block'>
-                  <button onClick={() => toggleFavorite(report.id, favorites.some(fav => fav.billId === bill.id))}>
+                  <button onClick={() => toggleFavorite(report.id, favorites.some(fav => fav.billId === report.id))}>
                     <Heart
                       size={20}
                       strokeWidth={1.5}

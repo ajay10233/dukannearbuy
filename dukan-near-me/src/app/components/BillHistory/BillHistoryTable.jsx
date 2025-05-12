@@ -8,7 +8,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 
-export default function BillHistoryTable() {
+export default function BillHistoryTable({setDates}) {
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [showAmountSort, setShowAmountSort] = useState(false);
   const [fromDate, setFromDate] = useState('');
@@ -45,32 +45,37 @@ export default function BillHistoryTable() {
   }, []);
 
   useEffect(() => {
-    if (fromDate && toDate) {
-      const from = new Date(fromDate);
-      const to = new Date(toDate);
+  if (fromDate && toDate) {
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+    const toDateEnd = new Date(to);
+    toDateEnd.setHours(23, 59, 59, 999); // ensure full day included
 
-      const filtered = billData.filter((bill) => {
+    const filtered = billData.filter((bill) => {
       const billDate = new Date(bill.createdAt);
-        return billDate >= from && billDate <= to;
-      });
+      return billDate >= from && billDate <= toDateEnd;
+    });
 
-      setFilteredData(filtered);
-    } else {
-      setFilteredData(billData);
-    }
-  }, [fromDate, toDate, billData]);
+    setFilteredData(filtered);
+    setDates({ startDate: fromDate, endDate: toDate });
+  } else {
+    setFilteredData(billData);
+    setDates({ startDate: "", endDate: "" });
+  }
+}, [fromDate, toDate, billData]);
+
 
 
   const sortAmount = (order) => {
-    const sorted = [...filteredData].sort((a, b) => {
-    const aNum = parseInt(a.totalAmount.toString().replace(/[^\d]/g, ""));
-    const bNum = parseInt(b.totalAmount.toString().replace(/[^\d]/g, ""));
-      return order === "asc" ? aNum - bNum : bNum - aNum;
-    });
+  const sorted = [...filteredData].sort((a, b) => {
+    const aNum = parseFloat(a.totalAmount.toString().replace(/[^\d.]/g, ""));
+    const bNum = parseFloat(b.totalAmount.toString().replace(/[^\d.]/g, ""));
+    return order === "asc" ? aNum - bNum : bNum - aNum;
+  });
 
-    setFilteredData(sorted);
-    setShowAmountSort(false);
-  };
+  setFilteredData(sorted);
+  setShowAmountSort(false);
+};
 
   if (loading) {
     return <div>Loading...</div>;

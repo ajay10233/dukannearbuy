@@ -46,7 +46,7 @@ export default function Feedback() {
   return (
     <div className="h-screen relative flex flex-col items-center justify-center bg-gradient-to-br from-teal-50 via-slate-100 to-white-200 p-6"> 
       <motion.p
-            className="absolute top-16 right-8 text-[16px] md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-cyan-500 to-indigo-600 mb-6"
+            className="absolute top-16 left-8 text-[16px] md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-cyan-500 to-indigo-600 mb-6"
             animate={{ scale: 1.1 }}
             transition={{ repeat: Infinity, repeatType: "reverse", duration: 1 }}
           >
@@ -60,7 +60,7 @@ export default function Feedback() {
         transition={{ duration: 0.5 }}
         className="bg-white p-4 md:p-8 rounded-2xl shadow-xl w-full max-w-4xl space-y-4"
       >
-        <h2 className="text-2xl font-bold text-center text-gray-800">Share your thoughts</h2>
+        <h2 className="text-2xl font-bold text-center text-gray-800">Connect with our Support Team</h2>
 
         {/* <select
           name="type"

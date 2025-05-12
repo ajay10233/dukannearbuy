@@ -21,6 +21,7 @@ export default function Bill() {
   const [showTypeFilter, setShowTypeFilter] = useState(false);
   const [showFavFilter, setShowFavFilter] = useState(false);
   const [favorites, setFavorites] = useState([]);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchBills = async () => {
@@ -51,7 +52,10 @@ export default function Bill() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ billId }),
+        body: JSON.stringify({
+        billId,
+        userId: session?.user?.id, 
+      }),
       });
   
       if (res.ok) {
@@ -183,7 +187,7 @@ export default function Bill() {
           </li>
 
           <li className='flex justify-center items-center relative'>
-            Firmname
+            Firm Name
             <Filter
               className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-teal-700"
               onClick={() => {
