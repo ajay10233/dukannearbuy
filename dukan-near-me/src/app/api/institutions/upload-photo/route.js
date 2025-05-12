@@ -6,28 +6,28 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
-  if (!session) return NextResponse({ error: "Unauthorized" },{ status: 401 });
+  if (!session) return NextResponse.json({ error: "Unauthorized" },{ status: 401 });
 
   try {
     const { images } = await req.json();
     if (!images || !Array.isArray(images) || images.length === 0) {
-      return NextResponse({ error: "No images provided" },{ status: 400 });
+      return NextResponse.json({ error: "No images provided" },{ status: 400 });
     }
 
     const user = await prisma.user.findUnique({ where: { id: session.user.id } });
     if (!user || user.role !== "INSTITUTION" && user.role !== "SHOP_OWNER") {
-      return NextResponse({ error: "Only institutions can upload multiple images" },{ status: 403 });
+      return NextResponse.json({ error: "Only institutions can upload multiple images" },{ status: 403 });
     }
 
     // Check if institution already has 10 images
     if (user.photos.length + images.length > 10) {
-      return NextResponse({ error: "Cannot upload more than 10 images" },{ status: 400 });
+      return NextResponse.json({ error: "Cannot upload more than 10 images" },{ status: 400 });
     }
 
     // Validate images (must be base64)
     const validImages = images.filter(img => img.startsWith("data:image/"));
     if (validImages.length !== images.length) {
-      return NextResponse({ error: "Invalid image format" },{ status: 400 });
+      return NextResponse.json({ error: "Invalid image format" },{ status: 400 });
     }
 
     // Upload base64 images to Cloudinary
@@ -41,9 +41,9 @@ export async function POST(req) {
       data: { photos: { push: imageUrls } },
     });
 
-    return NextResponse({ message: "Images uploaded successfully", urls: imageUrls },{ status: 200 });
+    return NextResponse.json({ message: "Images uploaded successfully", urls: imageUrls },{ status: 200 });
   } catch (error) {
     console.error("❌ Error uploading institution photos:", error);
-    return NextResponse({ error: "Internal server error" },{ status: 500 });
+    return NextResponse.json({ error: "Internal server error" },{ status: 500 });
   }
 }

@@ -206,7 +206,7 @@ export async function GET(req) {
   try {
     const session = await getServerSession(authOptions)
     if (!session || !['INSTITUTION', 'SHOP_OWNER'].includes(session.user.role)) {
-      return NextResponse({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const bills = await prisma.bill.findMany({
@@ -226,7 +226,7 @@ export async function PUT(req) {
   try {
     const session = await getServerSession(authOptions)
     if (!session || !['INSTITUTION', 'SHOP_OWNER'].includes(session.user.role)) {
-      return NextResponse({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await req.json()
@@ -256,7 +256,7 @@ export async function DELETE(req) {
   try {
     const session = await getServerSession(authOptions)
     if (!session || !['INSTITUTION', 'SHOP_OWNER'].includes(session.user.role)) {
-      return NextResponse({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await req.json()
