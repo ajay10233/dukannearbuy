@@ -45,7 +45,7 @@ export async function PUT(req) {
   const session = await getServerSession(authOptions);
 
   if (!session || (session.user.role !== "INSTITUTION" && session.user.role !== "SHOP_OWNER")) {
-    return NextResponse.json(json({ error: "Unauthorized" },{ status: 401 });
+    return NextResponse.json({ error: "Unauthorized" },{ status: 401 });
   }
 
   try {
@@ -55,7 +55,7 @@ export async function PUT(req) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
 
     if (!user) {
-      return NextResponse.json(json({ error: "User not found" },{ status: 404 });
+      return NextResponse.json({ error: "User not found" },{ status: 404 });
     }
 
     const addressFields = [
@@ -83,7 +83,7 @@ export async function PUT(req) {
     }
 
     if (!addressChanged) {
-      return NextResponse.json(json({ error: "No address changes detected" },{ status: 400 });
+      return NextResponse.json({ error: "No address changes detected" },{ status: 400 });
     }
 
     await prisma.pastAddress.create({
@@ -124,6 +124,6 @@ export async function PUT(req) {
     );
   } catch (error) {
     console.error("❌ Error updating address:", error);
-    return NextResponse.json(json({ error: "Internal server error" },{ status: 500 });
+    return NextResponse.json({ error: "Internal server error" },{ status: 500 });
   }
 }

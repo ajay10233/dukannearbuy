@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
     const session = await getServerSession(authOptions);
     if (!session || (session.user.role !== "INSTITUTION" && session.user.role !== "SHOP_OWNER")) {
-        return NextResponse.json(json(json(json(json(json({ error: "Unauthorized" },{ status: 401 });
+        return NextResponse.json({ error: "Unauthorized" },{ status: 401 });
     }
 
     try {
@@ -76,7 +76,7 @@ export async function POST(req) {
         }
 
         if (Object.keys(updateData).length === 0) {
-            return NextResponse.json(json(json(json(json(json({ error: "No valid fields provided to update" },{ status: 400 });
+            return NextResponse.json({ error: "No valid fields provided to update" },{ status: 400 });
         }
 
         if (updateData.phone) {
@@ -89,7 +89,7 @@ export async function POST(req) {
             });
 
             if (existingUser) {
-                return NextResponse.json(json(json(json(json(json({ error: "Phone number already in use" },{ status: 409 });
+                return NextResponse.json({ error: "Phone number already in use" },{ status: 409 });
             }
         }
 
@@ -99,10 +99,10 @@ export async function POST(req) {
             data: updateData,
         });
 
-        return NextResponse.json(json(json(json(json(json({ message: "Profile updated successfully", user: updatedUser },{ status: 200 });
+        return NextResponse.json({ message: "Profile updated successfully", user: updatedUser },{ status: 200 });
 
     } catch (error) {
         console.error("❌ Error updating profile:", error);
-        return NextResponse.json(json(json(json(json(json({ error: "Internal server error" },{ status: 500 });
+        return NextResponse.json({ error: "Internal server error" },{ status: 500 });
     }
 }

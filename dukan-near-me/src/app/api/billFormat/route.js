@@ -7,7 +7,7 @@ export async function GET(req) {
     try {
         const session = await getServerSession(authOptions);
         if (!session || session.user.role !== 'INSTITUTION' || !session.user.role!="SHOP_OWNER") {
-            return NextResponse.json(json({ error: 'Unauthorized: Only institutions can fetch bill formats' },{ status: 401 });
+            return NextResponse.json({ error: 'Unauthorized: Only institutions can fetch bill formats' },{ status: 401 });
         }
 
         const billFormat = await prisma.billFormat.findUnique({  
@@ -17,7 +17,7 @@ export async function GET(req) {
         });
 
         if (!billFormat) {
-            return NextResponse.json(json(json({ error: 'Bill format not found' },{ status: 404 });
+            return NextResponse.json({ error: 'Bill format not found' },{ status: 404 });
         }
 
         return new Response(JSON.stringify(billFormat), { status: 200 });
