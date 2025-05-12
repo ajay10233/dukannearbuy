@@ -5,7 +5,7 @@ let socket;
 
 export const initiateSocket = () => {
   if (!socket) {
-    socket = io("http://localhost:3002",{transports: ["websocket"]});
+    socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3002",{transports: ["websocket"]});
   }
   console.log(socket);
   return socket;
