@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import useEmblaCarousel from "embla-carousel-react";
 import { Plus, RefreshCcwDot, Store, Crown, X, ChevronLeft, ChevronRight } from "lucide-react";
 import ProfileWrapper from "./ProfileWrapper";
+import { Grid } from "react-loader-spinner";
 
 export default function HeroSection({id}) {
   const [user, setUser] = useState(null);  // Store user data
@@ -14,6 +15,7 @@ export default function HeroSection({id}) {
   const [isUploading, setIsUploading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeImage, setActiveImage] = useState(null);
+
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
 
@@ -210,7 +212,16 @@ export default function HeroSection({id}) {
 
         {isUploading && (
           <div className="absolute inset-0 bg-white/60 flex items-center justify-center text-sm text-gray-700 font-medium">
-            Uploading...
+             <Grid
+                  visible={true}
+                  height="80"
+                  width="80"
+                  color="#7C3AED"
+                  ariaLabel="grid-loading"
+                  radius="12.5"
+                  wrapperStyle={{}}
+                  wrapperClass="grid-wrapper"
+                />
           </div>
         )}
       </div>
