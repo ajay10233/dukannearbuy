@@ -1,5 +1,6 @@
 import Image from "next/image";
 import RolesCard from "../components/GetStarted/RolesCard";
+import Link from "next/link";
 
 export default function GetStarted() {
   return (
@@ -11,9 +12,12 @@ export default function GetStarted() {
           </div>
           <span className="font-semibold text-sm uppercase">nearbuydukan</span>
         </div>
-        <div className="flex text-sm gap-x-5 text-slate-700">
-            <button className="cursor-pointer">Need help?</button>
-            <button className="cursor-pointer">Contact us</button>
+        <div className="flex items-center whitespace-nowrap text-sm gap-x-2 md:gap-x-5 text-slate-700">
+            {/* <button className="cursor-pointer">Need help?</button> */}
+            {/* <button className="cursor-pointer">Contact us</button> */}
+            <Link href="/aboutus#help" className="text-[10px] md:text-sm cursor-pointer">Need help?</Link>
+            <Link href="mailto:contact@nearbuydukaan.com" className="text-[10px] md:text-sm cursor-pointer">Contact us</Link>
+
         </div>
       </header>
       <section className='flex justify-center items-center h-full'>

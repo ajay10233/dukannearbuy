@@ -97,7 +97,7 @@ export default function FavProfile() {
             
                 <li className="w-2/5 md:w-1/5 text-xs md:text-sm">{institution?.username || 'N/A'}</li>
             
-                <li className="hidden md:flex w-1/5 justify-center">{fullAddress}</li>
+                <li className="hidden md:flex w-1/5 justify-center">{fullAddress || "N/A"}</li>
             
                 <li className="flex w-2/5 md:w-1/5 justify-center">
                   <button onClick={() => removeFromFavorites(fav.institutionId)}>

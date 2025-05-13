@@ -62,15 +62,6 @@ export default function Feedback() {
       >
         <h2 className="text-2xl font-bold text-center text-gray-800">Connect with our Support Team</h2>
 
-        {/* <select
-          name="type"
-          value={formData.type}
-          onChange={handleChange}
-          className="w-full border border-gray-300 p-2 rounded-md cursor-pointer transition-all ease-in-out duration-400 focus:outline-none focus:ring-2 focus:ring-blue-700"
-        >
-          <option value="FEEDBACK">Feedback</option>
-          <option value="COMPLAINT">Complaint</option>
-        </select> */}
         <select
           name="type"
           value={formData.type}
@@ -84,15 +75,21 @@ export default function Feedback() {
         </select>
 
 
-        <textarea
-          name="content"
-          rows={4}
-          placeholder="Type your message..."
-          value={formData.content}
-          onChange={handleChange}
-          className="w-full border border-gray-300 p-2 rounded-md cursor-pointer transition-all ease-in-out duration-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-700"
-          required
-        />
+          <textarea
+            name="content"
+            rows={4}
+            placeholder="Type your message..."
+            value={formData.content}
+            onChange={handleChange}
+            maxLength={1000}
+            className="w-full dialogScroll border border-gray-300 p-2 rounded-md cursor-pointer transition-all ease-in-out duration-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-700"
+            required
+          />
+          {formData.content.length === 1000 && (
+            <p className="text-red-500 text-xs font-medium text-right">
+              You have reached the maximum character limit.
+            </p>
+          )}
 
         <input
           type="text"

@@ -496,7 +496,7 @@ export default function ChatBox() {
                 ? "bg-[var(--chart-2)] text-white font-semibold"
                 : "bg-white text-[var(--withdarktext)] font-normal"
               }`}
-            // onClick={() => setIsFavorite(false)}
+            onClick={() => setIsFavorite(false)}
           >
             Select a seller
           </button>
@@ -505,7 +505,7 @@ export default function ChatBox() {
                 ? "bg-[var(--chart-2)] text-white font-semibold"
                 : "bg-white text-[var(--withdarktext)] font-normal"
               }`}
-            // onClick={() => setIsFavorite(true)}
+            onClick={() => setIsFavorite(true)}
           >
             Message requests
           </button>

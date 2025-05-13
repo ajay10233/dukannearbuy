@@ -5,6 +5,8 @@ import jsQR from 'jsqr';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
+
 
 export default function QRScanner({ onScanned }) {
   const webcamRef = useRef(null);
@@ -12,6 +14,9 @@ export default function QRScanner({ onScanned }) {
   const [intervalId, setIntervalId] = useState(null);
   const [username, setUsername] = useState('');
   const { data: session } = useSession();
+  const [result, setResult] = useState();
+  const router = useRouter();
+
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -32,6 +37,7 @@ export default function QRScanner({ onScanned }) {
         const code = jsQR(imageData.data, imageData.width, imageData.height);
         if (code?.data) {
           setResult(code.data);
+          setUserId(code.data);
           if (onScanned) onScanned(code.data);
           clearInterval(id);
         }
@@ -46,6 +52,27 @@ export default function QRScanner({ onScanned }) {
     };
   }, []);
 
+  useEffect(() => {
+  const fetchUser = async () => {
+    if (!userId) return;
+    try {
+      const scannedUserId = userId.split('/').pop(); 
+      console.log("Raw QR Id:", userId);
+      console.log("scannedUserId:", scannedUserId);
+
+      const res = await axios.get(`/api/users/${scannedUserId}`);
+      setUsername(res?.data?.username || 'Unknown');
+      console.log(res?.data?.username);
+    } catch (err) {
+      toast.error('User not found');
+      console.error('Error fetching user:', err);
+    }
+  };
+
+  fetchUser();
+}, [userId]);
+
+
   const stopCamera = () => {
     if (webcamRef.current) {
       const stream = webcamRef.current.stream;
@@ -58,8 +85,11 @@ export default function QRScanner({ onScanned }) {
   const handleSaveToken = async () => {
     if (!userId) return toast.error('No user ID detected from the QR code');
     try {
-      const res = await axios.post('/api/token/create', { userId });
+      const scannedUserId = userId.split('/').pop(); s
+      const res = await axios.post('/api/token/create', { userId: scannedUserId });
+
       toast.success('Token generated successfully');
+      router.push('/tokengenerate'); 
     } catch (error) {
       console.error('Error generating token', error);
       toast.error('Error generating token');

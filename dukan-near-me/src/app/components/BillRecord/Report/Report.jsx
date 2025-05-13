@@ -1,6 +1,7 @@
 'use client';
 
 import { Heart, Calendar, ArrowDownToLine, MoreVertical } from 'lucide-react';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function Report() {
@@ -104,8 +105,8 @@ const filteredReports = reports.filter((report) => {
     (favoriteFilter === false && !favorites.some(fav => fav.billId === report.id));
 
   const isDateValid =
-    (!dateFrom || new Date(report.createdAt) >= new Date(dateFrom)) &&
-    (!dateTo || new Date(report.createdAt) <= new Date(dateTo));
+  (!dateFrom || new Date(report.createdAt) >= new Date(dateFrom)) &&
+  (!dateTo || new Date(report.createdAt) <= new Date(dateTo));
 
   const query = searchTerm.toLowerCase();
   const matchesSearch =
@@ -139,7 +140,7 @@ const filteredReports = reports.filter((report) => {
       <div className="flex text-sm text-slate-400 font-medium pr-8 relative z-10">
         <ul className="flex w-full *:w-1/5 justify-between relative">
         <li className="hidden md:flex justify-center items-center relative">
-            Favorite
+            Favourite
             <Heart fill='#ec0909' stroke='#ec0909'
               className="ml-1 w-4 h-4 cursor-pointer"
               onClick={() => {
@@ -165,7 +166,7 @@ const filteredReports = reports.filter((report) => {
                     onChange={() => setFavoriteFilter(true)}
                     className="mr-1"
                   />
-                  Favorites
+                  Favourites
                 </label>
                 <label>
                   <input
@@ -174,7 +175,7 @@ const filteredReports = reports.filter((report) => {
                     onChange={() => setFavoriteFilter(false)}
                     className="mr-1"
                   />
-                  Unfavorite
+                  Others
                 </label>
               </div>
             )}
@@ -260,7 +261,11 @@ const filteredReports = reports.filter((report) => {
                 </li>
                 <li className="font-semibold hidden md:block">{report.invoiceNumber}</li>
                 <li>{new Date(report.createdAt).toLocaleDateString()}</li>
-                <li>{report.institution?.firmName}</li>  {/* //institution name? , report name*/}
+                <li>
+                  <Link href={`/partnerProfile/${report?.institution?.id}`}>
+                    {report?.institution?.firmName}
+                  </Link>
+                </li>  {/* //institution name? , report name*/}
                 {/* <li>{report.report}</li>    */}
                 <li className="flex justify-center items-center">
                   <span className='hidden md:flex text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out'>

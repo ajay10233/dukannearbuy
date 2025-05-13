@@ -19,26 +19,41 @@ export default function Review({ user }) {
     const [showReportModal, setShowReportModal] = useState(false);
     const [selectedReviewId, setSelectedReviewId] = useState(null);
 
-    // const [avgRating, setAvgRating] = useState(0);
-
-  useEffect(() => {
-    if (session || session?.user) {
+  // useEffect(() => {
+  //   if (session || session?.user) {
       
-      // Fetch reviews for the specific institution
-      axios
-        .get(`/api/reviews?institutionId=${session?.user?.id}`)
-        .then((res) => {
-          setReviews(res.data);
-          console.log("res", res.data);
-          // const reviews = res.data;
-          // setReviews(reviews);
-          // const avg =
-          //   reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length || 0;
-          // setAvgRating(avg.toFixed(1));
-        })
-        .catch(() => toast.error("Failed to fetch reviews"));
-    }
-  }, [session]);
+  //     // Fetch reviews for the specific institution
+  //     axios
+  //       .get(`/api/reviews?institutionId=${session?.user?.id}`)
+  //       .then((res) => {
+  //         setReviews(res.data);
+  //         console.log("res", res.data);
+
+  //       })
+  //       .catch(() => toast.error("Failed to fetch reviews"));
+  //   }
+  // }, [session]);
+  
+  useEffect(() => {
+  if (session || session?.user) {
+    const role = session?.user?.role;
+
+    const fetchReviews = async () => {
+      try {
+        const idToUse =
+          role === "USER" ? institutionId : session?.user?.id;
+
+        const res = await axios.get(`/api/reviews?institutionId=${idToUse}`);
+        setReviews(res.data);
+      } catch {
+        toast.error("Failed to fetch reviews");
+      }
+    };
+
+    fetchReviews();
+  }
+}, [session, institutionId]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
