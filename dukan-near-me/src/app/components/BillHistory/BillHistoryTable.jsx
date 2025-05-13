@@ -17,6 +17,10 @@ export default function BillHistoryTable({setDates}) {
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
 
+
+  const handleDownload = async (id) => {
+    window.location.href = `/download-bill/${id}`;
+  }
   useEffect(() => {
     const fetchBillData = async () => {
       try {
@@ -161,7 +165,7 @@ export default function BillHistoryTable({setDates}) {
                 <li className="md:flex flex-col items-center hidden">{bill?.totalAmount}</li>
                 <li className="flex flex-col items-center justify-center relative">
                   <span className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
-                    <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>
+                    <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff" onClick={() => handleDownload(bill?.id)}/>
                   </span>
                 </li>
               </ul>

@@ -4,15 +4,8 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { ChevronLeft, ChevronRight } from "lucide-react"; // ✅ ADD this line
+import { ChevronLeft, ChevronRight } from "lucide-react"; 
 import axios from "axios";
-
-const images = [
-    "/hero-section.png",
-    "/hero-section.png",
-    "/hero-section.png",
-    "/hero-section.png"
-];
 
 const DotButton = ({ onClick, isSelected }) => (
     <button

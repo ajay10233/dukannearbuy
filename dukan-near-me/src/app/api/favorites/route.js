@@ -6,7 +6,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 export async function GET(req) {
   const session = await getServerSession(authOptions);
   if (!session)
-    return NextResponse({ error: "Unauthorized" },{ status: 401 });
+    return NextResponse.json({ error: "Unauthorized" },{ status: 401 });
   try {
     var favorites = await prisma.favoriteInstitution.findMany({
       where: { userId: session.user.id },
@@ -49,7 +49,7 @@ export async function GET(req) {
 
 export async function POST(req) {
     const session = await getServerSession(authOptions);
-    if (!session) return NextResponse({ error: "Unauthorized" },{ status: 401 });
+    if (!session) return NextResponse.json({ error: "Unauthorized" },{ status: 401 });
 
   const { institutionId } = await req.json();
   try {
@@ -68,7 +68,7 @@ export async function POST(req) {
 
 export async function DELETE(req) {
     const session = await getServerSession(authOptions);
-    if (!session) return NextResponse({ error: "Unauthorized" },{ status: 401 });
+    if (!session) return NextResponse.json({ error: "Unauthorized" },{ status: 401 });
   
     const { institutionId } = await req.json();
     try {

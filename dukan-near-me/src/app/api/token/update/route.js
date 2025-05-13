@@ -8,18 +8,18 @@ export async function POST(req) {
         const session = await getServerSession(authOptions);
 
         if (!session || session.user.role==='USER') {
-            return NextResponse({ error: 'Unauthorized: Only institutions can update tokens' },{ status: 401 });
+            return NextResponse.json({ error: 'Unauthorized: Only institutions can update tokens' },{ status: 401 });
         }
 
         const { tokenId } = await req.json();
         if (!tokenId) {
-            return NextResponse({ error: 'Token ID is required' },{ status: 400 });
+            return NextResponse.json({ error: 'Token ID is required' },{ status: 400 });
         }
 
         const token = await prisma.token.findUnique({ where: { id: tokenId } });
 
         if (!token) {
-            return NextResponse({ error: 'Token not found' },{ status: 404 });
+            return NextResponse.json({ error: 'Token not found' },{ status: 404 });
         }
 
         const updatedToken = await prisma.token.update({
@@ -34,6 +34,6 @@ export async function POST(req) {
         return new Response(JSON.stringify(updatedToken), { status: 200 });
     } catch (error) {
         console.error("Error updating token:", error);
-        return NextResponse({ error: 'Internal Server Error' },{ status: 500 });
+        return NextResponse.json({ error: 'Internal Server Error' },{ status: 500 });
     }
 }

@@ -5,6 +5,7 @@ import SocketInitializer from "@/app/components/SocketInitializer";
 import SessionProviderWrapper from "@/app/components/SessionManager/SessionProviderWrapper"; 
 import HeaderLocation from "./components/Location/HeaderLocation";
 import LoaderWrapper from "./components/LoaderWrapper";
+import { UserProvider } from "@/context/UserContext";
 
 const rubik = Rubik({
   variable: "--font-rubik",
@@ -50,6 +51,7 @@ export default function RootLayout({ children }) {
       {/* <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}> */}
       <body className={`${rubik.variable} ${plusJakartaSans.variable} ${poppins.variable} antialiased`}>
       {/* <HeaderLocation /> */}
+      <UserProvider>
         <SessionProviderWrapper> {/* ✅ Wrap in a client component */}
         {/* <LoaderWrapper>  */}
             {children}
@@ -57,6 +59,7 @@ export default function RootLayout({ children }) {
           <Toaster position="bottom-right" reverseOrder={false} />
             {/* <SocketInitializer /> */}
         </SessionProviderWrapper>
+      </UserProvider>
       </body>
     </html>
   );
