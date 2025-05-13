@@ -156,7 +156,7 @@ export default function DownloadBill({ params }) {
           </div>
           <div className="text-right">
             <p className="text-sm text-gray-600">Invoice Date</p>
-            <p className="font-bold">{bill?.createdAt}</p>
+            <p className="font-bold">{bill?.createdAt ? bill?.createdAt?.split("T")[0] : "N/A"}</p>
           </div>
         </div>
 
@@ -181,13 +181,15 @@ export default function DownloadBill({ params }) {
                   <td className="border p-2">
                     <input
                       type="text"
+                      disabled
                       value={item?.particulars}
                       onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
                       className="w-full border-none outline-none"
-                    />
+                      />
                   </td>
                   <td className="border p-2">
                     <input
+                      disabled
                       type="number"
                       value={item?.qty}
                       onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
@@ -198,6 +200,7 @@ export default function DownloadBill({ params }) {
                     <input
                       type="number"
                       value={item?.rate}
+                      disabled
                       onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
                       className="w-full border-none outline-none"
                     />
