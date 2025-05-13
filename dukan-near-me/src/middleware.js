@@ -47,9 +47,9 @@ export const config = {
     // "/chats/:path*",
     "/dashboard/:path*",
     "/payments/:path*",
-    "/profile/:path*",
+    // "/profile/:path*",
     "/session-manager/:path*",
-    "/userProfile/:path*",
+    // "/userProfile/:path*",
     "/admin/:path*",    
   ],
 };
