@@ -40,77 +40,6 @@ export default function DownloadBill({ params }) {
 
 
   return (
-    // <div className="p-6 max-w-4xl mx-auto bg-white shadow-md rounded-md print:shadow-none print:bg-white">
-    //   <div className="flex justify-between items-center mb-6">
-    //     <h1 className="text-2xl font-bold">Bill #{bill.id}</h1>
-    //     <button
-    //       onClick={handlePrint}
-    //       className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 print:hidden"
-    //     >
-    //       Print
-    //     </button>
-    //   </div>
-
-    //   <div className="mb-4">
-    //     <p><strong>Date:</strong> {new Date(bill.createdAt).toLocaleDateString()}</p>
-    //     {bill.user && (
-    //       <>
-    //         <p><strong>Customer:</strong> {bill.user.name}</p>
-    //         <p><strong>Email:</strong> {bill.user.email}</p>
-    //       </>
-    //     )}
-    //   </div>
-
-    //   <h2 className="text-xl font-semibold mb-2 mt-6">Bill Items</h2>
-    //   <table className="w-full border border-gray-300 text-sm">
-    //     <thead className="bg-gray-100">
-    //       <tr>
-    //         <th className="border p-2 text-left">#</th>
-    //         <th className="border p-2 text-left">Item</th>
-    //         <th className="border p-2 text-left">Qty</th>
-    //         <th className="border p-2 text-left">Price</th>
-    //         <th className="border p-2 text-left">Total</th>
-    //       </tr>
-    //     </thead>
-    //     <tbody>
-    //       {bill.items?.map((item, idx) => (
-    //         <tr key={idx}>
-    //           <td className="border p-2">{idx + 1}</td>
-    //           <td className="border p-2">{item?.name}</td>
-    //           <td className="border p-2">{item?.quantity}</td>
-    //           <td className="border p-2">₹{item?.price}</td>
-    //           <td className="border p-2">₹{item?.price * item?.quantity}</td>
-    //         </tr>
-    //       ))}
-    //     </tbody>
-    //   </table>
-
-    //   {bill.charges?.length > 0 && (
-    //     <>
-    //       <h2 className="text-xl font-semibold mb-2 mt-6">Additional Charges</h2>
-    //       <table className="w-full border border-gray-300 text-sm">
-    //         <thead className="bg-gray-100">
-    //           <tr>
-    //             <th className="border p-2 text-left">Label</th>
-    //             <th className="border p-2 text-left">Amount</th>
-    //           </tr>
-    //         </thead>
-    //         <tbody>
-    //           {bill.charges.map((charge, idx) => (
-    //             <tr key={idx}>
-    //               <td className="border p-2">{charge.label}</td>
-    //               <td className="border p-2">₹{charge.amount}</td>
-    //             </tr>
-    //           ))}
-    //         </tbody>
-    //       </table>
-    //     </>
-    //   )}
-
-    //   <div className="text-right mt-6 text-lg font-semibold">
-    //     Total: ₹{bill.totalAmount}
-    //   </div>
-    // </div>
 
     <div className="p-4 relative">
       <div className="max-w-5xl mx-auto p-4 bg-white shadow-md border text-sm text-black" >
@@ -181,7 +110,7 @@ export default function DownloadBill({ params }) {
                   <td className="border p-2">
                     <input
                       type="text"
-                      disabled
+                      readonly
                       value={item?.particulars}
                       onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
                       className="w-full border-none outline-none"
@@ -189,7 +118,7 @@ export default function DownloadBill({ params }) {
                   </td>
                   <td className="border p-2">
                     <input
-                      disabled
+                      readonly
                       type="number"
                       value={item?.qty}
                       onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
@@ -200,7 +129,7 @@ export default function DownloadBill({ params }) {
                     <input
                       type="number"
                       value={item?.rate}
-                      disabled
+                      readonly
                       onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
                       className="w-full border-none outline-none"
                     />
