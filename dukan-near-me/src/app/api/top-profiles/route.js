@@ -26,7 +26,7 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const userLat = parseFloat(searchParams.get('latitude') || '0');
   const userLng = parseFloat(searchParams.get('longitude') || '0');
-  const radiusKm = parseFloat(searchParams.get('radius') || '5');
+  const radiusKm = parseFloat(searchParams.get('radius') || '10');
 
   if (!userLat || !userLng) {
     return NextResponse.json({ error: 'Latitude and longitude are required' }, { status: 400 });
