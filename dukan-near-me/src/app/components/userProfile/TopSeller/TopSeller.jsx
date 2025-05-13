@@ -43,6 +43,7 @@ export default function TopSeller() {
 
             const response = await fetch(`/api/top-profiles?latitude=${latitude}&longitude=${longitude}`);
             const nearbySellers = await response.json();
+            console.log("Nearby sellers:", nearbySellers);
             console.log("Nearby sellers returned:", nearbySellers.length)
 
             setSellers(nearbySellers);

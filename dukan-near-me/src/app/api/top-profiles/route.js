@@ -4,16 +4,17 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/utils/db';
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Earth radius in km
+  const R = 6371;
   const dLat = (lat2 - lat1) * (Math.PI / 180);
   const dLon = (lon2 - lon1) * (Math.PI / 180);
-  const a = 
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) *
+    Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) ** 2;
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c; // Distance in km
+  return R * c;
 }
 
 export async function GET(req) {
@@ -25,42 +26,48 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const userLat = parseFloat(searchParams.get('latitude') || '0');
   const userLng = parseFloat(searchParams.get('longitude') || '0');
-  const radiusKm = parseFloat(searchParams.get('radius') || '5'); 
+  const radiusKm = parseFloat(searchParams.get('radius') || '5');
 
   if (!userLat || !userLng) {
     return NextResponse.json({ error: 'Latitude and longitude are required' }, { status: 400 });
   }
 
-  // Fetch all valid paid profiles
+  // Step 1: Get distinct paid user IDs from PaidProfile
   const paidProfiles = await prisma.paidProfile.findMany({
+    select: { userId: true },
+    distinct: ['userId']
+  });
+  const paidUserIds = paidProfiles.map(p => p.userId);
+
+  // Step 2: Get paid users
+  const paidUsers = await prisma.user.findMany({
     where: {
-      expiresAt: {
-        gt: new Date(),
-      },
-      user: {
-        latitude: { not: null },
-        longitude: { not: null },
-      },
-    },
-    include: {
-      user: true,
+      id: { in: paidUserIds },
+      role: { in: ['INSTITUTION', 'SHOP_OWNER'] },
+      latitude: { not: null },
+      longitude: { not: null },
     },
   });
 
-  const institutionIds = paidProfiles.map(p => p.user.id);
+  // Step 3: Get free users
+  const freeUsersRaw = await prisma.user.findMany({
+    where: {
+      id: { notIn: paidUserIds },
+      role: { in: ['INSTITUTION', 'SHOP_OWNER'] },
+      latitude: { not: null },
+      longitude: { not: null },
+    },
+  });
+  const freeUserIds = freeUsersRaw.map(u => u.id);
 
-  // Get average ratings per institution
+  // Step 4: Fetch rating data for all users (paid + free)
   const ratingData = await prisma.review.groupBy({
     by: ['institutionId'],
     where: {
-      institutionId: { in: institutionIds },
+      institutionId: { in: [...paidUserIds, ...freeUserIds] },
     },
-    _avg: {
-      rating: true,
-    },
-    _count: {
-      rating: true,
-    },
+    _avg: { rating: true },
+    _count: { rating: true },
   });
 
   const ratingMap = new Map(
@@ -70,40 +77,50 @@ export async function GET(req) {
     }])
   );
 
-  // Enrich profiles with distance and rating
-  const enrichedProfiles = paidProfiles
-    .map(profile => {
-      const distance = calculateDistance(
-        userLat,
-        userLng,
-        profile.user.latitude,
-        profile.user.longitude
-      );
-
-      const ratingInfo = ratingMap.get(profile.user.id) || {
+  // Step 5: Enrich paid users
+  const enrichedPaid = paidUsers
+    .map(user => {
+      const distance = calculateDistance(userLat, userLng, user.latitude, user.longitude);
+      const ratingInfo = ratingMap.get(user.id) || {
         averageRating: 0,
         reviewCount: 0,
       };
 
       return {
-        ...profile,
+        user,
         distance,
         averageRating: ratingInfo.averageRating,
         reviewCount: ratingInfo.reviewCount,
+        isPaid: true,
       };
     })
-    .filter(p => {
-      const maxAllowedDistance = Math.min(radiusKm, p.range || radiusKm);
-      return p.distance <= maxAllowedDistance;
-    })
-    .sort((a, b) => {
-      // Sort by averageRating descending, then by distance ascending
-      if ((b.averageRating || 0) !== (a.averageRating || 0)) {
-        return (b.averageRating || 0) - (a.averageRating || 0);
-      }
-      return a.distance - b.distance;
-    })
-    .slice(0, 10); // Limit to 10 results
+    .filter(p => p.distance <= radiusKm)
+    .sort((a, b) => a.distance - b.distance);
 
-  return NextResponse.json(enrichedProfiles, { status: 200 });
+  // Step 6: Enrich free users if needed
+  let enrichedFree = [];
+  if (enrichedPaid.length < 10) {
+    enrichedFree = freeUsersRaw
+      .map(user => {
+        const distance = calculateDistance(userLat, userLng, user.latitude, user.longitude);
+        const ratingInfo = ratingMap.get(user.id) || {
+          averageRating: 0,
+          reviewCount: 0,
+        };
+
+        return {
+          user,
+          distance,
+          averageRating: ratingInfo.averageRating,
+          reviewCount: ratingInfo.reviewCount,
+          isPaid: false,
+        };
+      })
+      .filter(p => p.distance <= radiusKm)
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 10 - enrichedPaid.length);
+  }
+
+  const finalResult = [...enrichedPaid, ...enrichedFree].slice(0, 10);
+  return NextResponse.json(finalResult, { status: 200 });
 }
