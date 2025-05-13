@@ -111,18 +111,20 @@ export default function DownloadBill({ params }) {
                     <input
                       type="text"
                       readonly
+                      tabIndex={-1}
                       value={item?.particulars}
                       onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
-                      className="w-full border-none outline-none"
+                      className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
                       />
                   </td>
                   <td className="border p-2">
                     <input
                       readonly
+                      tabIndex={-1}
                       type="number"
                       value={item?.qty}
                       onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
-                      className="w-full border-none outline-none"
+                      className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
                     />
                   </td>
                   <td className="border p-2">
@@ -130,8 +132,9 @@ export default function DownloadBill({ params }) {
                       type="number"
                       value={item?.rate}
                       readonly
+                      tabIndex={-1}
                       onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
-                      className="w-full border-none outline-none"
+                      className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
                     />
                   </td>
                   <td className="border p-2 text-center">{item?.amount?.toFixed(2)}</td>
