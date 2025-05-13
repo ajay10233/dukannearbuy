@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function GET(req) {
     try {
         const session = await getServerSession(authOptions);
-        if (!session || session.user.role !== 'INSTITUTION' || !session.user.role!="SHOP_OWNER") {
+        if (!session || (session.user.role !== 'INSTITUTION' && session.user.role !== 'SHOP_OWNER')) {
             return NextResponse.json({ error: 'Unauthorized: Only institutions can fetch bill formats' },{ status: 401 });
         }
 
@@ -32,7 +32,7 @@ export async function POST(req) {
     try {
         const session = await getServerSession(authOptions);
 
-        if (!session || session.user.role !== 'INSTITUTION' || !session.user.role!="SHOP_OWNER") {
+        if (!session || (session.user.role !== 'INSTITUTION' && session.user.role !== 'SHOP_OWNER')) {
             return NextResponse.json({ error: 'Unauthorized: Only institutions can save bill formats' },{ status: 401 });
         }
 
@@ -69,7 +69,7 @@ export async function PUT(req) {
     try {
         const session = await getServerSession(authOptions);
 
-        if (!session || session.user.role !== 'INSTITUTION' || !session.user.role!="SHOP_OWNER") {
+        if (!session || (session.user.role !== 'INSTITUTION' && session.user.role !== 'SHOP_OWNER')) {
             return NextResponse.json({ error: 'Unauthorized: Only institutions can update bill formats' },{ status: 401 });
         }
 
@@ -108,7 +108,7 @@ export async function DELETE(req) {
     try {
         const session = await getServerSession(authOptions);
 
-        if (!session || session.user.role !== 'INSTITUTION' || !session.user.role!="SHOP_OWNER") {
+        if (!session || (session.user.role !== 'INSTITUTION' && session.user.role !== 'SHOP_OWNER')) {
             return NextResponse.json({ error: 'Unauthorized: Only institutions can delete bill formats' },{ status: 401 });
         }
 

@@ -230,22 +230,34 @@ export default function EditFormatModal({ closeModal }) {
       return;
     }
 
-    const formPayload = new FormData();
-    formPayload.append("gstNumber", formData.gstNo);
-    formPayload.append("taxType", "CGST+SGST"); 
-    formPayload.append(
-      "taxPercentage",
-      `${formData.cgst || 0} + ${formData.sgst || 0}`
-    );
-    formPayload.append("extraText", `${formData.terms}\n${formData.updates}`);
+    const payload = {
+      gstNumber: formData.gstNo,
+      taxType: "CGST+SGST",
+      taxPercentage: `${formData.cgst || 0} + ${formData.sgst || 0}`,
+      extraText: `${formData.terms}\n${formData.updates}`,
+    };
+
+
+
+    // const formPayload = new FormData();
+    // formPayload.append("gstNumber", formData.gstNo);
+    // formPayload.append("taxType", "CGST+SGST"); 
+    // formPayload.append(
+    //   "taxPercentage",
+    //   `${formData.cgst || 0} + ${formData.sgst || 0}`
+    // );
+    // formPayload.append("extraText", `${formData.terms}\n${formData.updates}`);
+    // if (formData.proprietorSign) {
+    //   formPayload.append("proprietorSign", formData.proprietorSign);
+    // }
     if (formData.proprietorSign) {
-      formPayload.append("proprietorSign", formData.proprietorSign);
+      payload["proprietorSign"]= formData.proprietorSign;
     }
 
     try {
       const res = await fetch("/api/billFormat", {
         method: "POST",
-        body: formPayload,
+        body: JSON.stringify(payload),
       });
 
       if (res.ok) {
