@@ -31,106 +31,147 @@ export default function EditFormatModal({ closeModal }) {
         <h2 className="text-xl font-bold mb-4">Edit Format Details</h2>
 
         <form className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto pr-4">
-          <input
-            type="text"
-            placeholder="Enter your Firm Name"
-            name="firmName"
-            value={formData.firmName}
-            onChange={handleChange}
-            required
-            className="border p-2 rounded"
-          />
-          <input
-            type="text"
-            placeholder="Enter your Firm Address"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            required
-            className="border p-2 rounded"
-          />
-          <input
-            type="text"
-            placeholder="Type your Contact No."
-            name="contactNo"
-            value={formData.contactNo}
-            onChange={handleChange}
-            required
-            className="border p-2 rounded"
-          />
-          <input
-            type="text"
-            placeholder="Type your GST No."
-            name="gstNo"
-            value={formData.gstNo}
-            onChange={handleChange}
-            className="border p-2 rounded"
-          />
-          <input
-            type="email"
-            placeholder="Type your Email ID"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="border p-2 rounded"
-          />
-          <input
-            type="text"
-            placeholder="CGST (%)"
-            name="cgst"
-            value={formData.cgst}
-            onChange={handleChange}
-            className="border p-2 rounded"
-          />
-          <input
-            type="text"
-            placeholder="SGST (%)"
-            name="sgst"
-            value={formData.sgst}
-            onChange={handleChange}
-            className="border p-2 rounded"
-          />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                proprietorSign: e.target.files ? e.target.files[0] : null,
-              }))
-            }
-            className="border p-2 rounded"
-          />
+          <label className="flex flex-col">
+            Firm Name:
+            <input
+              type="text"
+              name="firmName"
+              value={formData.firmName}
+              onChange={handleChange}
+              required
+              className="border p-2 rounded mt-1"
+              placeholder="Enter your Firm Name"
+            />
+          </label>
 
-          {/* Terms & Conditions Textarea */}
-          <textarea
-            placeholder="Terms & Conditions (max 250 characters)"
-            name="terms"
-            value={formData.terms}
-            maxLength={250}
-            onChange={handleChange}
-            className="border p-2 rounded resize-none min-h-[120px]"
-          />
+          <label className="flex flex-col">
+            Firm Address:
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              required
+              className="border p-2 rounded mt-1"
+              placeholder="Enter your Firm Address"
+            />
+          </label>
 
-          {/* Updates Textarea */}
-          <textarea
-            placeholder="Updates / Offer Information (max 150 characters)"
-            name="updates"
-            value={formData.updates}
-            maxLength={150}
-            onChange={handleChange}
-            className="border p-2 rounded resize-none min-h-[80px]"
-          />
+          <label className="flex flex-col">
+            Contact No.:
+            <input
+              type="text"
+              name="contactNo"
+              value={formData.contactNo}
+              onChange={handleChange}
+              required
+              className="border p-2 rounded mt-1"
+              placeholder="Type your Contact No."
+            />
+          </label>
+
+          <label className="flex flex-col">
+            GST No.:
+            <input
+              type="text"
+              name="gstNo"
+              value={formData.gstNo}
+              onChange={handleChange}
+              className="border p-2 rounded mt-1"
+              placeholder="Type your GST No."
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Email:
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="border p-2 rounded mt-1"
+              placeholder="Type your Email ID"
+            />
+          </label>
+
+          <label className="flex flex-col">
+            CGST (%):
+            <input
+              type="number"
+              name="cgst"
+              value={formData.cgst}
+              onChange={handleChange}
+              min="0"
+              max="100"
+              step="0.01"
+              className="border p-2 rounded mt-1"
+              placeholder="CGST in %"
+            />
+          </label>
+
+          <label className="flex flex-col">
+            SGST (%):
+            <input
+              type="number"
+              name="sgst"
+              value={formData.sgst}
+              onChange={handleChange}
+              min="0"
+              max="100"
+              step="0.01"
+              className="border p-2 rounded mt-1"
+              placeholder="SGST in %"
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Upload Proprietor Signature:
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  proprietorSign: e.target.files?.[0] || null,
+                }))
+              }
+              className="border p-2 rounded mt-1"
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Terms & Conditions (max 250 characters):
+            <textarea
+              name="terms"
+              value={formData.terms}
+              maxLength={250}
+              onChange={handleChange}
+              className="border p-2 rounded resize-none mt-1 min-h-[120px]"
+              placeholder="Enter Terms & Conditions"
+            />
+          </label>
+
+          <label className="flex flex-col">
+            Updates / Offer Information (max 150 characters):
+            <textarea
+              name="updates"
+              value={formData.updates}
+              maxLength={150}
+              onChange={handleChange}
+              className="border p-2 rounded resize-none mt-1 min-h-[80px]"
+              placeholder="Enter Updates or Offers"
+            />
+          </label>
 
           <div className="flex justify-center gap-4 mt-4">
-          <button
+            <button
               type="submit"
               onClick={(e) => {
                 e.preventDefault();
                 const form = e.target.form;
                 if (form.checkValidity()) {
                   closeModal();
-                  toast.success("Format details saved successfully!"); 
+                  toast.success("Format details saved successfully!");
                 } else {
                   form.reportValidity();
                 }

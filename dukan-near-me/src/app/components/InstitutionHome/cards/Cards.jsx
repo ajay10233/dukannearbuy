@@ -24,7 +24,7 @@ export default function HomeCards() {
 
   const cardData = [
     { title: "Live Chat", href: "/chat", slogan: "Connect to The World" },
-    { title: "Generate Bills", href: "/bill-generation-page", slogan: "Digital Record" },
+    { title: "Generate Bills", href: "/edit-format", slogan: "Digital Record" },
     { title: "Generate Token", href: "/tokengenerate", slogan: "Smart Crowd Handling" },
     { title: "Update Live Token",       href: institutionId ? `/tokenupdate/${institutionId}` : "#", slogan: "Realtime Token Updates" }
   ];

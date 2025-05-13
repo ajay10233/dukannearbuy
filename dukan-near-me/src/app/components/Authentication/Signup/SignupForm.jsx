@@ -31,19 +31,25 @@ export default function SignupForm() {
 
   const onSubmit = async (data) => {
     if (data) {
-      const toastId = toast.loading("Processing...");
-      data["role"] = role;
-      try {
-        const res = await axios.post("/api/auth/signup", data);
-        if (res.status === 200) {
-          toast.success("Register successfully!", { id: toastId });
-          router.push("/login");
-        } else {
-          toast.error(`Something went wrong!`, { id: toastId });
-        }
-      } catch (error) {
-        toast.error(`Api error!`, { id: toastId });
-      }
+        const toastId = toast.loading("Processing...");
+        data["role"] = role;
+        try {
+            const res = await axios.post("/api/auth/signup", data);
+            if (res.status === 200) {
+                toast.success("Register successfully!", { id: toastId });
+                router.push("/login");
+            } else {
+                toast.error("Something went wrong!", { id: toastId });
+            }
+        } catch (error) {
+            const errorMessage = error?.response?.data?.message;
+
+            if (errorMessage === "User already exists") {
+                toast.error("User with this email or phone already exists!", { id: toastId });
+            } else {
+                toast.error("API error!", { id: toastId });
+            }
+        } 
     }
   };
 

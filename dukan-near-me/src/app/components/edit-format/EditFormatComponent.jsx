@@ -23,7 +23,7 @@ export default function EditFormatComponent() {
     const [isScanning, setIsScanning] = useState(false);
     // const [file, setFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState('');
-    const [items, setItems] = useState([{ particulars: '', qty: 1, rate: 0, amount: 0 }]);
+    const [items, setItems] = useState([{ particulars: '', qty: 0, rate: 0, amount: 0 }]);
     const [shortBillDetails, setShortBillDetails] = useState(null);
     const billRef = useRef();
 
@@ -55,7 +55,6 @@ export default function EditFormatComponent() {
         }
     };
 
-
     const handleItemChange = (index, key, value) => {
         const newItems = [...items];
         newItems[index][key] = key === 'qty' || key === 'rate' ? parseFloat(value) || 0 : value;
@@ -66,13 +65,18 @@ export default function EditFormatComponent() {
     const itemsSubtotal = items.reduce((acc, item) => acc + item.amount, 0);
     const totalAmount = itemsSubtotal;
 
+    const addItemRow = () => {
+    setItems([...items, { particulars: '', qty: 0, rate: 0, amount: 0 }]);
+  };
+
     const handleScanSuccess = (userData) => {
         setUserId(userData.userId);
         setUsername(userData.username);
         setAddress(userData.address);
         setMobile(userData.mobile);
         toast.success('User details fetched successfully!');
-        setIsScanning(false);
+
+        setIsScanning(false); 
     };
 
     const handlePrint = () => {
@@ -265,42 +269,67 @@ export default function EditFormatComponent() {
                     >
                         {/* Header Section */}
                         <div className="flex justify-between items-center my-8">
-                            <h1 className="text-2xl font-bold text-center w-full">BILL GENERATION</h1>
-                            <button
+                            <h1 className="text-2xl font-bold text-center w-full">INVOICE</h1>
+                            <span
                                 onClick={() => setIsScanning(true)}
-                                className="flex items-center gap-2 px-3 py-2 bg-blue-600 cursor-pointer text-white rounded-md hover:bg-blue-800 transition-all duration-500 ease-in-out"
+                                className="flex items-center print:hidden gap-2 px-3 py-2 bg-blue-600 cursor-pointer text-white rounded-md hover:bg-blue-800 transition-all duration-500 ease-in-out"
                             >
                                 <ScanLine size={20} strokeWidth={1.5} /> Scan
-                            </button>
+                            </span>
                         </div>
 
                         {/* Bill Information */}
                         <div className="grid grid-cols-2 gap-4 border-b pb-2 mb-4">
                             <div className="p-2 border-r border-black">
-                                <h1 className="text-lg font-bold text-[#0D6A9C]">{user?.firmName}</h1>
+                                <h1 className="text-lg font-bold text-[#0D6A9C] capitalize">{user?.firmName}</h1>
                                 <p>{user?.address && `${user.address.houseNumber}, ${user.address?.buildingName ? user.address.buildingName + ', ' : ''}${user.address.street}, ${user.address.landmark}, ${user.address.city}, ${user.address.state} - ${user.address.zipCode}, ${user.address.country}`}</p>
                                 <p>Mobile: {user?.mobileNumber}</p>
                             </div>
                             <div className="p-2">
                                 <h2 className="font-bold mb-1">RECEIVER DETAILS</h2>
                                 <div className="flex flex-col mb-1">
-                                    <p className="flex items-start">
-                                        Name:&nbsp;
-                                        <span className="text-sm text-gray-700">
-                                            {username.firstName || 'N/A'} {username.lastName || ''}
-                                        </span>
-                                    </p>
-                                    <p className="flex items-start">
-                                        <span className="font-medium">Address:&nbsp;</span>
-                                        {address ? (
-                                            <span className="text-sm text-gray-700">
-                                                {address.houseNumber}, {address.street}, {address.buildingName}, {address.city}, {address.state}, {address.zipCode}
-                                            </span>
-                                        ) : (
-                                            <span className="text-sm text-gray-500">N/A</span>
-                                        )}
-                                    </p>
-                                    <p>Phone: <span className="text-sm text-gray-700">{mobile || 'N/A'}</span></p>
+                                    <div className="flex items-start">
+                                        <label htmlFor="receiver-name" className="mr-1">Name:</label>
+                                        <input
+                                            id="receiver-name"
+                                            type="text"
+                                            value={username.firstName || ''} 
+                                            onChange={(e) => setUsername({ ...username, firstName: e.target.value })}
+                                            className="text-sm text-gray-700 capitalize outline-none"
+                                            placeholder="Enter Name"
+                                        />
+                                        {/* <input
+                                            id="receiver-lastname"
+                                            type="text"
+                                            value={username.lastName || ''} 
+                                            onChange={(e) => setUsername({ ...username, lastName: e.target.value })}
+                                            className="text-sm text-gray-700 capitalize outline-none"
+                                            placeholder="Enter Last Name"
+                                        /> */}
+                                    </div>
+
+                                    <div className="flex items-start">
+                                        <label htmlFor="receiver-address" className="font-medium mr-1">Address:</label>
+                                        <input
+                                            id="receiver-address"
+                                            type="text"
+                                            value={address ? `${address.houseNumber}, ${address.street}, ${address.buildingName}, ${address.city}, ${address.state}, ${address.zipCode}` : ''}
+                                            onChange={(e) => setAddress(parseAddress(e.target.value))}
+                                            className="text-sm text-gray-700 outline-none"
+                                            placeholder="Enter Address"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="receiver-phone" className="mr-1">Phone:</label>
+                                        <input
+                                            id="receiver-phone"
+                                            type="text"
+                                            value={mobile || ''}
+                                            onChange={(e) => setMobile(e.target.value)}
+                                            className="text-sm text-gray-700 outline-none"
+                                            placeholder="Enter Phone"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -311,7 +340,7 @@ export default function EditFormatComponent() {
                                 <p className="text-sm text-gray-600">Invoice Number</p>
                                 <input
                                     type="text"
-                                    className="font-bold w-full outline-none"
+                                    className="font-bold w-full outline-none border-b border-gray-400"
                                     value={invoiceNo}
                                     onChange={(e) => setInvoiceNo(e.target.value)}
                                 />
@@ -328,9 +357,15 @@ export default function EditFormatComponent() {
                                 <thead>
                                     <tr className="bg-[#CFEBF9]">
                                         <th className="border p-2">S.NO</th>
-                                        <th className="border p-2">PARTICULARS</th>
-                                        <th className="border p-2">QUANTITY</th>
-                                        <th className="border p-2">RATE</th>
+                                        <th className="border p-2">
+                                            {user?.role === 'INSTITUTION' ? 'CHIEF COMPLAINT' : 'PARTICULARS'}
+                                        </th>
+                                        <th className="border p-2">
+                                            {user?.role === 'INSTITUTION' ? 'TREATMENT' : 'QUANTITY'}
+                                        </th>
+                                        <th className="border p-2">
+                                            {user?.role === 'INSTITUTION' ? 'OTHERS' : 'RATE'}
+                                        </th>
                                         <th className="border p-2">AMOUNT</th>
                                     </tr>
                                 </thead>
@@ -386,13 +421,14 @@ export default function EditFormatComponent() {
 
                         {/* Action Buttons */}
                         <div className="flex space-x-4 mt-4">
+                            <button onClick={addItemRow} className="bg-yellow-500 print:hidden text-white px-2 py-1 rounded text-sm">Add Item</button>
                             <button
                                 onClick={handlePrint}
-                                className="px-3 py-1 bg-[#3f51b5] text-white text-sm rounded"
+                                className="px-3 py-1 bg-indigo-500 print:hidden text-white text-sm rounded"
                             >
                                 Print
                             </button>
-                            <button onClick={handleGenerateBill} className="bg-blue-500 text-white px-4 py-2 rounded text-sm">Generate Bill</button>
+                            <button onClick={handleGenerateBill} className="bg-blue-500 print:hidden text-white px-4 py-2 rounded text-sm">Generate Bill</button>
                         </div>
                         <div className="text-right mt-10 text-xs text-gray-500 uppercase">
                             This bill is generated using <span className="font-semibold text-black">NearBuyDukan</span>

@@ -8,7 +8,7 @@ import { toast } from 'react-hot-toast';
 export default function Scanner() {
   const webcamRef = useRef(null);
   const router = useRouter();
-  const [scanned, setScanned] = useState(false); // prevent duplicate scans
+  const [scanned, setScanned] = useState(false); 
 
   useEffect(() => {
     const id = setInterval(() => {

@@ -3,6 +3,7 @@ import { Heart, Calendar, Filter, ArrowDownToLine, MoreVertical } from 'lucide-r
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSession } from "next-auth/react";
+import Link from 'next/link';
 
 export default function Bill() {
   const [bills, setBills] = useState([]);
@@ -42,6 +43,7 @@ export default function Bill() {
   
     fetchBills();
   }, []);
+
   
   const toggleFavorite = async (billId, isCurrentlyFav) => {
     try {
@@ -146,7 +148,7 @@ export default function Bill() {
       <div className="flex text-sm text-slate-400 font-medium pr-8 relative z-5">
         <ul className="flex w-full *:w-1/5 justify-between relative">
           <li className='justify-center items-center relative hidden md:flex'>
-            Favorite
+            Favourite
             <Heart fill='#ec0909' stroke='#ec0909'
               className="ml-1 w-4 h-4 cursor-pointer"
               onClick={() => {
@@ -158,8 +160,8 @@ export default function Bill() {
             {showFavFilter && (
               <div className="absolute top-6 bg-white w-28 text-sm border border-gray-300 rounded-md shadow-md p-2 flex flex-col cursor-pointer">
                 <label><input type="radio" checked={favoriteFilter === null} onChange={() => setFavoriteFilter(null)} className="mr-1 cursor-pointer" />All</label>
-                <label><input type="radio" checked={favoriteFilter === true} onChange={() => setFavoriteFilter(true)} className="mr-1 cursor-pointer" />Favorites</label>
-                <label><input type="radio" checked={favoriteFilter === false} onChange={() => setFavoriteFilter(false)} className="mr-1 cursor-pointer" />UnFavorite</label>
+                <label><input type="radio" checked={favoriteFilter === true} onChange={() => setFavoriteFilter(true)} className="mr-1 cursor-pointer" />Favourites</label>
+                <label><input type="radio" checked={favoriteFilter === false} onChange={() => setFavoriteFilter(false)} className="mr-1 cursor-pointer" />Others</label>
               </div>
             )}
           </li>
@@ -229,7 +231,7 @@ export default function Bill() {
                       size={20}
                       strokeWidth={1.5}
                       stroke="red"
-                      fill={favorites.some(fav => fav.billId === bill.id) ? 'red' : 'transparent'}
+                      fill={(favorites || []).some(fav => fav.billId === bill.id) ? 'red' : 'transparent'}
                       className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110"
                       // onClick={() => removeFromFavorites(bill.id)}
                     />
@@ -239,20 +241,24 @@ export default function Bill() {
                 <li className='whitespace-nowrap'>
                   {new Date(bill.createdAt).toLocaleDateString()}
                 </li>
-                <li>{bill.institution?.firmName}</li>
-                <li className='hidden md:block'>₹{bill.totalAmount}</li>
+                <li>
+                  <Link href={`/partnerProfile/${bill?.institution?.id}`}>
+                  {bill.institution?.firmName}
+                  </Link>
+                </li>
+                <li className='hidden md:block'>₹{bill?.totalAmount}</li>
                 <li className="flex justify-center items-center">
-                  <span className='hidden md:flex text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out'>
+                  <Link href="#" className='hidden md:flex text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out'>
                           <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>
-                    </span>
+                    </Link>
                     {/* Show icon based on selected dropdown option */}
                     <span className='md:hidden flex justify-center items-center'>
                     {selectedAction === 'favorite' ? (
-                      <Heart size={20} strokeWidth={1.5} stroke="red" fill={favorites.some(fav => fav.billId === bill.id) ? 'red' : 'transparent'}  className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110" onClick={() => toggleFavorite(bill.id, favorites.some(fav => fav.billId === bill.id))} />
+                      <Heart size={20} strokeWidth={1.5} stroke="red" fill={(favorites || []).some(fav => fav.billId === bill.id) ? 'red' : 'transparent'}  className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110" onClick={() => toggleFavorite(bill.id, favorites.some(fav => fav.billId === bill.id))} />
                     ) : selectedAction === 'download' ? (
-                          <span className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
+                          <Link   href="#" className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
                           <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>
-                      </span>
+                      </Link>
                     ) : null}
                     </span>
                 </li>

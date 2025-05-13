@@ -43,8 +43,29 @@ export default function SearchBar() {
     try {
       const response = await fetch(`/api/global-search-institutions/?search=${encodeURIComponent(query)}`);
       const data = await response.json();
-      setResults(data.results || []);
+      console.log("data:", data); 
+
+      const sortedResults = data.results.sort((a, b) => {
+
+        const queryLower = query.toLowerCase();
+        const aName = (a.firmName || a.firstName).toLowerCase();
+        const bName = (b.firmName || b.firstName).toLowerCase();
+        
+        // Profiles whose names start with the query should come first
+        const aStartsWith = aName.startsWith(queryLower);
+        const bStartsWith = bName.startsWith(queryLower);
+
+        if (aStartsWith && !bStartsWith) return -1;
+        if (!aStartsWith && bStartsWith) return 1;
+        
+        return aName.localeCompare(bName); 
+    });
+
+    setResults(sortedResults);
+    setSuggestions(data.suggestions || []);
+
       setSuggestions(data.suggestions || []);
+
     } catch (error) {
       console.error("Error fetching search results:", error);
     } finally {

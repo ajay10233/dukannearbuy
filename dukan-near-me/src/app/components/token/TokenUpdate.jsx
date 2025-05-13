@@ -29,7 +29,7 @@ export default function TokenUpdate() {
                 if (data.role === "USER") {
                     router.push("/UserHomePage"); 
                 } else {
-                    Router.push("/partnerHome"); 
+                    router.push("/partnerHome"); 
                 }
             }
         } catch (err) {
@@ -151,7 +151,7 @@ export default function TokenUpdate() {
             {/* Display previous/completed tokens */}
             <div className="w-full max-w-5xl rounded-xl bg-white p-6 border border-gray-300 shadow-md">
                 <h2 className="text-xl md:text-2xl font-semibold text-teal-800 mb-4">
-                    Previous Tokens
+                    Completed Tokens
                 </h2>
                 <div className="flex flex-col gap-3 max-h-64 overflow-y-auto pr-2 dialogScroll">
                     {completedTokens.length === 0 ? (
