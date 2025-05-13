@@ -232,7 +232,7 @@ export default function EditFormatModal({ closeModal }) {
 
     const formPayload = new FormData();
     formPayload.append("gstNumber", formData.gstNo);
-    formPayload.append("taxType", "CGST+SGST"); // You can customize this
+    formPayload.append("taxType", "CGST+SGST"); 
     formPayload.append(
       "taxPercentage",
       `${formData.cgst || 0} + ${formData.sgst || 0}`

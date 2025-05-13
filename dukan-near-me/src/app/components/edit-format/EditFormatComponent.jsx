@@ -355,7 +355,7 @@ export default function EditFormatComponent() {
                             <div className="text-left">
                                 <p className="text-sm text-gray-600">Invoice Number</p>
                                 <input
-                                    type="text"
+                                    type="number"
                                     className="font-bold w-full outline-none border-b border-gray-400"
                                     value={invoiceNo}
                                     onChange={(e) => setInvoiceNo(e.target.value)}
@@ -369,7 +369,7 @@ export default function EditFormatComponent() {
 
                         {/* Bill Items Table */}
                         <div className="overflow-x-auto mb-4">
-                            <table className="w-full border-collapse border text-left">
+                            <table className="w-[98%] border-collapse border text-left">
                                 <thead>
                                     <tr className="bg-[#CFEBF9]">
                                         <th className="border p-2">S.NO</th>
