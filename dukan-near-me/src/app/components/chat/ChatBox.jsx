@@ -147,7 +147,7 @@ export default function ChatBox() {
     const data = await res.json();
     console.log(data);
 
-    const updatedConversations = data.data.map((conversation) => {
+    const updatedConversations = data?.data?.map((conversation) => {
       const lastMessage = conversation.lastMessage;
       if (lastMessage) {
         const isSentByCurrentUser = lastMessage.senderId === session.user.id;

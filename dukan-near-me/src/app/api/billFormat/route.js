@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function GET(req) {
     try {
         const session = await getServerSession(authOptions);
-        if (!session || session.user.role !== 'INSTITUTION' || !session.user.role!="SHOP_OWNER") {
+        if (!session || (session.user.role !== 'INSTITUTION' && session.user.role !== 'SHOP_OWNER')) {
             return NextResponse.json({ error: 'Unauthorized: Only institutions can fetch bill formats' },{ status: 401 });
         }
 
