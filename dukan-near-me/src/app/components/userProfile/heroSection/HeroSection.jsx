@@ -52,7 +52,7 @@ export default function HeroSection() {
         <div className="flex gap-x-5 px-2">
           {images.map((img, index) => (
             <div
-              className={`min-w-75 h-50 md:min-w-[1000px] md:h-[400px] flex-shrink-0 rounded-md overflow-hidden shadow-lg transition-opacity duration-500 relative z-0 ${
+              className={`min-w-75 h-50 md:min-w-[1000px] md:h-[500px] flex-shrink-0 rounded-md overflow-hidden shadow-lg transition-opacity duration-500 relative z-0 ${
                 index === selectedIndex ? "opacity-100" : "opacity-20"
               }`}
               key={img.id || index}
@@ -62,7 +62,8 @@ export default function HeroSection() {
                 src={img.link}
                 alt={img.details || `Promotion image ${index + 1}`}
                 layout="fill"
-                objectFit="contain"
+                // objectFit="contain"
+                objectFit="cover"
                 className="transition-opacity duration-500"
                 priority
               />

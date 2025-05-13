@@ -6,7 +6,10 @@ import { ScanLine, Upload, X } from 'lucide-react';
 import UserQrScan from '../../components/userqr-scan/UserQrScan';
 import axios from 'axios';
 import Navbar from "@/app/components/InstitutionHome/navbar/Navbar";
-import EditFormat from "@/app/components/bill-format/EditFormat";
+// import EditFormat from "@/app/components/bill-format/EditFormat";
+import EditFormatModal from "../../components/bill-format/EditFormatModal";
+import { FaEdit } from "react-icons/fa";
+
 
 export default function EditFormatComponent() {
     const [shortBill, setShortBill] = useState(false);
@@ -26,6 +29,8 @@ export default function EditFormatComponent() {
     const [items, setItems] = useState([{ particulars: '', qty: 0, rate: 0, amount: 0 }]);
     const [shortBillDetails, setShortBillDetails] = useState(null);
     const billRef = useRef();
+    const [isOpen, setIsOpen] = useState(false);
+
 
     const [invoiceDate, setInvoiceDate] = useState(() => {
         const now = new Date();
@@ -178,7 +183,18 @@ export default function EditFormatComponent() {
             <main className="flex flex-col flex-1 gap-y-4">
 
                 <div className="flex flex-col flex-1 bg-white p-3 md:p-6 gap-4 shadow-md w-full md:w-full md:max-w-5xl border border-black self-center mt-16">
-                    <EditFormat />
+                    {/* <EditFormat /> */}
+                    <div className="flex items-center justify-between mt-2 md:mt-6 p-2 md:p-4 border rounded-md border-gray-400 ">
+                          <button
+                            onClick={() => setIsOpen(true)}
+                            className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 text-sm md:text-[16px] bg-blue-600 cursor-pointer text-white rounded transition-all duration-500 ease-in-out hover:bg-blue-800 hover:font-medium"
+                          >
+                            <FaEdit size={20} strokeWidth={1.5} color="#fff" /> Edit Format
+                          </button>
+                          <span className="text-gray-700 font-semibold text-sm md:text-[16px]">Save your details</span>
+                    
+                          {isOpen && <EditFormatModal closeModal={() => setIsOpen(false)} />}
+                    </div>
                     {/* toggles */}
                     <div className="flex flex-wrap gap-2 md:gap-4 p-2 md:p-4 justify-evenly">
                         {/* Short Bill Toggle */}
@@ -339,7 +355,7 @@ export default function EditFormatComponent() {
                             <div className="text-left">
                                 <p className="text-sm text-gray-600">Invoice Number</p>
                                 <input
-                                    type="text"
+                                    type="number"
                                     className="font-bold w-full outline-none border-b border-gray-400"
                                     value={invoiceNo}
                                     onChange={(e) => setInvoiceNo(e.target.value)}
@@ -353,7 +369,7 @@ export default function EditFormatComponent() {
 
                         {/* Bill Items Table */}
                         <div className="overflow-x-auto mb-4">
-                            <table className="w-full border-collapse border text-left">
+                            <table className="w-[98%] border-collapse border text-left">
                                 <thead>
                                     <tr className="bg-[#CFEBF9]">
                                         <th className="border p-2">S.NO</th>
