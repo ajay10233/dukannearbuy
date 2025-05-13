@@ -76,10 +76,10 @@ export default function DownloadBill({ params }) {
     //       {bill.items?.map((item, idx) => (
     //         <tr key={idx}>
     //           <td className="border p-2">{idx + 1}</td>
-    //           <td className="border p-2">{item.name}</td>
-    //           <td className="border p-2">{item.quantity}</td>
-    //           <td className="border p-2">₹{item.price}</td>
-    //           <td className="border p-2">₹{item.price * item.quantity}</td>
+    //           <td className="border p-2">{item?.name}</td>
+    //           <td className="border p-2">{item?.quantity}</td>
+    //           <td className="border p-2">₹{item?.price}</td>
+    //           <td className="border p-2">₹{item?.price * item?.quantity}</td>
     //         </tr>
     //       ))}
     //     </tbody>
@@ -181,7 +181,7 @@ export default function DownloadBill({ params }) {
                   <td className="border p-2">
                     <input
                       type="text"
-                      value={item.particulars}
+                      value={item?.particulars}
                       onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
                       className="w-full border-none outline-none"
                     />
@@ -189,7 +189,7 @@ export default function DownloadBill({ params }) {
                   <td className="border p-2">
                     <input
                       type="number"
-                      value={item.qty}
+                      value={item?.qty}
                       onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
                       className="w-full border-none outline-none"
                     />
@@ -197,12 +197,12 @@ export default function DownloadBill({ params }) {
                   <td className="border p-2">
                     <input
                       type="number"
-                      value={item.rate}
+                      value={item?.rate}
                       onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
                       className="w-full border-none outline-none"
                     />
                   </td>
-                  <td className="border p-2 text-center">{item.amount.toFixed(2)}</td>
+                  <td className="border p-2 text-center">{item?.amount?.toFixed(2)}</td>
                 </tr>
               ))}
               <tr>
