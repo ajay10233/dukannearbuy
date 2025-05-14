@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 
-export default function EditFormatModal({ closeModal }) {
+export default function EditFormatModal({ closeModal, onFormDetailsChange }) {
   const [formData, setFormData] = useState({
     firmName: "",
     address: "",
@@ -87,6 +87,7 @@ export default function EditFormatModal({ closeModal }) {
 
           if (res.ok) {
             toast.success("Format details saved successfully!");
+            onFormDetailsChange(formData);
             closeModal();
           } else {
             toast.error("Failed to save format.");
@@ -106,6 +107,7 @@ export default function EditFormatModal({ closeModal }) {
 
               if (res.ok) {
                 toast.success("Format details saved successfully!");
+                onFormDetailsChange(formData); 
                 closeModal();
               } else {
                 toast.error("Failed to save format.");
@@ -147,6 +149,7 @@ export default function EditFormatModal({ closeModal }) {
 
       if (res.ok) {
         toast.success("Format details updated successfully!");
+        onFormDetailsChange(formData); 
         closeModal();
       } else {
         toast.error("Failed to update format details.");
@@ -166,6 +169,7 @@ export default function EditFormatModal({ closeModal }) {
 
     if (res.ok) {
       toast.success("Format details saved successfully!");
+      onFormDetailsChange(formData); 
       closeModal();
     } else {
       toast.error("Failed to save format.");

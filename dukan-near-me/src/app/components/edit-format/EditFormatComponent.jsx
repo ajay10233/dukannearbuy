@@ -31,6 +31,12 @@ export default function EditFormatComponent() {
     const billRef = useRef();
     const [isOpen, setIsOpen] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
+    const [formDetails, setFormDetails] = useState(null);
+
+    const handleFormDetailsChange = (updatedForm) => {
+        setFormDetails(updatedForm); // Set the updated form data 
+        console.log(updatedForm);
+    };
 
     const [invoiceDate, setInvoiceDate] = useState(() => {
         const now = new Date();
@@ -202,7 +208,7 @@ export default function EditFormatComponent() {
                           </button>
                           <span className="text-gray-700 font-semibold text-sm md:text-[16px]">Save your details</span>
                     
-                          {isOpen && <EditFormatModal closeModal={() => setIsOpen(false)} />}
+                          {isOpen && <EditFormatModal closeModal={() => setIsOpen(false)} onFormDetailsChange={handleFormDetailsChange}  />}
                     </div>
                     {/* toggles */}
                     <div className="flex flex-wrap gap-2 md:gap-4 p-2 md:p-4 justify-evenly">
@@ -305,11 +311,26 @@ export default function EditFormatComponent() {
 
                         {/* Bill Information */}
                         <div className="grid grid-cols-2 gap-4 border-b pb-2 mb-4">
-                            <div className="p-2 border-r border-black">
-                                <h1 className="text-lg font-bold text-[#0D6A9C] capitalize">{user?.firmName}</h1>
+                            {/* <div className="p-2 border-r border-black">
+                                <h2 className="text-lg font-bold text-[#0D6A9C] capitalize">{user?.firmName}</h2>
                                 <p>{user?.address && `${user.address.houseNumber}, ${user.address?.buildingName ? user.address.buildingName + ', ' : ''}${user.address.street}, ${user.address.landmark}, ${user.address.city}, ${user.address.state} - ${user.address.zipCode}, ${user.address.country}`}</p>
                                 <p>Mobile: {user?.mobileNumber}</p>
+                            </div> */} 
+                            {formDetails && (
+                                <div className="p-2 border-r border-black">
+                                <h2 className="text-lg font-bold text-[#0D6A9C] capitalize">{formDetails?.firmName}</h2>
+                                <p>{formDetails.address}</p>
+                                <p>Mobile: {formDetails.contactNo}</p>
+                                {formDetails.email &&
+                                    <p>Email: {formDetails.email}</p>
+                                }
+                                {formDetails.gstNo &&
+                                    <p>GST No: {formDetails.gstNo}</p>
+                                }    
+
                             </div>
+                            )}
+
                             <div className="p-2">
                                 <h2 className="font-bold mb-1">RECEIVER DETAILS</h2>
                                 <div className="flex flex-col mb-1">
@@ -456,6 +477,25 @@ export default function EditFormatComponent() {
                             </button>
                             <button onClick={handleGenerateBill} disabled={isGenerating} className={`px-4 py-2 rounded-md print:hidden text-white ${isGenerating ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}>Generate Bill</button>
                         </div>
+
+                        <div className='w-full flex flex-col items-center justify-center gap-4 mt-10'>
+                            {formDetails?.terms && (
+                                <div className="w-full border p-4 border-gray-400">
+                                    <strong className="block font-semibold">Terms & Conditions: </strong>
+                                    <p>{formDetails?.terms}</p>
+                                </div>
+                            )}
+
+                            {formDetails?.updates && (
+                                <div className="w-full border p-4 border-gray-400">
+                                    <strong className="block font-semibold">Updates / Offer Information:</strong>
+                                    <p>{formDetails?.updates}</p>
+                                </div>
+                            )}
+                        </div>
+
+
+
                         <div className="text-right mt-10 text-xs text-gray-500 uppercase">
                             This bill is generated using <span className="font-semibold text-black">NearBuyDukan</span>
                         </div>
