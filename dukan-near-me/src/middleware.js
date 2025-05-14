@@ -48,14 +48,14 @@ export async function middleware(req) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // Redirect to role-specific homepage only if visiting the root "/"
-  if (pathname === "/") {
-    if (token.role === "USER") {
-      return NextResponse.redirect(new URL("/UserHomePage", req.url));
-    } else if (token.role === "INSTITUTION") {
-      return NextResponse.redirect(new URL("/partnerHome", req.url));
-    }
-  }
+  // // Redirect to role-specific homepage only if visiting the root "/"
+  // if (pathname === "/") {
+  //   if (token.role === "USER") {
+  //     return NextResponse.redirect(new URL("/UserHomePage", req.url));
+  //   } else if (token.role === "INSTITUTION") {
+  //     return NextResponse.redirect(new URL("/partnerHome", req.url));
+  //   }
+  // }
 
   // Allow all other requests to proceed
   return NextResponse.next();

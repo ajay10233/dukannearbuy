@@ -6,7 +6,7 @@ import LogoutButton from "@/app/components/LogoutButton";
 import ChangePastAddress from "../components/ChangePastAddress";
 import QRCodeComponent from "../components/QRCodeComponent";
 import { useUser } from '@/context/UserContext';
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 // import other components as needed
 export default function Dashboard() {
   const { user, socket, loading, fetchUserDetails } = useUser();
@@ -36,19 +36,6 @@ export default function Dashboard() {
     //   setNotificationStatus("❌ Failed to send notification.");
     // }
   };
-
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on("receiveNotification", ({message, title }) => {
-      console.log("🔔 Notification received:", message);
-      toast.success(message);
-    });
-
-    return () => {
-      socket.off("receiveNotification");
-    };
-  }, [socket]);
 
   if (!user) {
     return <p>Loading user details...</p>;

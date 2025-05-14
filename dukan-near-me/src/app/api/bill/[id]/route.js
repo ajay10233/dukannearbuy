@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server'
 export async function GET(req, { params }) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || !['INSTITUTION', 'SHOP_OWNER'].includes(session.user.role)) {
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     const {id:billId} = await params;
