@@ -15,6 +15,9 @@ export async function GET(req) {
                 institutionId: session.user.id,
             },
         });
+        
+        // firmname, address, number, email
+
 
         if (!billFormat) {
             return NextResponse.json({ error: 'Bill format not found' },{ status: 404 });

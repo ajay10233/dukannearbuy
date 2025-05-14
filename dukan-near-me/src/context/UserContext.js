@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { initiateSocket } from '@/lib/socket';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const UserContext = createContext();
 
@@ -63,6 +64,20 @@ export const UserProvider = ({ children }) => {
       }
     };
   }, []);
+
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("receiveNotification", ({message }) => {
+      console.log("🔔 Notification received:", message);
+      toast.success(message);
+    });
+
+    return () => {
+      socket.off("receiveNotification");
+    };
+  }, [socket]);
 
   return (
     <UserContext.Provider value={{ user, socket, loading, fetchUserDetails, connectSocket }}>

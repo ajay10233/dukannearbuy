@@ -7,13 +7,15 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
-import io from 'socket.io-client';
 import { useRouter } from 'next/navigation';
 import QRModal from "../modals/QRModal";
+import { useUser } from '@/context/UserContext';
 
-const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { transports: ["websocket"] });
+// const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { transports: ["websocket"] });
 
 export default function TokenGeneration() {
+  const { socket  } = useUser();
+
   const { data: session } = useSession();
   const [userId, setUserId] = useState('');
   const [tokens, setTokens] = useState([]);
@@ -25,8 +27,7 @@ export default function TokenGeneration() {
 
     if (!data) return;
 
-    // Trim to remove whitespace or newline characters
-    const cleaned = data.trim().replace(/\/+$/, ""); // removes trailing slashes
+    const cleaned = data.trim().replace(/\/+$/, ""); 
 
     const splitted = cleaned.split("/");
     const userId = splitted[splitted.length - 1];
@@ -63,7 +64,13 @@ export default function TokenGeneration() {
       const res = await axios.post('/api/token/create', { userId: userid });
       setUserId('');
       fetchTokens();
-      socket.emit('newToken', { institutionId, token: res.data });
+      socket?.emit('newToken', { institutionId, token: res.data });
+      let message = `Your token has been generated`;
+      if (res.data?.tokenNumber){
+        message = `Your token has been generated with token number ${res?.data?.tokenNumber}`
+      }
+    
+      socket?.emit("sendNotification",{toUserId:userid,message:message});
       toast.success('Token created!');
     } catch (err) {
       toast.error('Failed to create token');
@@ -71,28 +78,38 @@ export default function TokenGeneration() {
     }
   };
 
-  const handleStartProcessing = (tokenId) => {
-    socket.emit('startProcessing', { institutionId, tokenId });
+  const handleStartProcessing = (tokenId,tokenNumber,userId) => {
+    socket?.emit('startProcessing', { institutionId, tokenId });
+    let message = `Your token has been started processing`;
+    if (tokenNumber){
+      message = `Your token has been started processing with token number ${tokenNumber}`
+    }
+    socket?.emit("sendNotification",{toUserId:userId,message:message});
   };
 
-  const handleComplete = (tokenId) => {
-    socket.emit('completeToken', { institutionId, tokenId });
+  const handleComplete = (tokenId,tokenNumber,userId) => {
+    socket?.emit('completeToken', { institutionId, tokenId });
+    let message = `Your token has been completed`;
+    if (tokenNumber){
+      message = `Your token has been completed with token number ${tokenNumber}`
+    }
+    socket?.emit("sendNotification",{toUserId:userId,message:message});
   };
 
   useEffect(() => {
     if (!institutionId) return;
 
     fetchTokens();
-    socket.emit('joinInstitutionRoom', institutionId);
+    socket?.emit('joinInstitutionRoom', institutionId);
 
-    socket.on('processingTokenUpdated', fetchTokens);
-    socket.on('completedTokensUpdated', fetchTokens);
+    socket?.on('processingTokenUpdated', fetchTokens);
+    socket?.on('completedTokensUpdated', fetchTokens);
 
     return () => {
-      socket.off('processingTokenUpdated');
-      socket.off('completedTokensUpdated');
+      socket?.off('processingTokenUpdated');
+      socket?.off('completedTokensUpdated');
     };
-  }, [institutionId]);
+  }, [socket,institutionId]);
 
   // if (!institutionId) return <p className="p-16 text-center">Loading...</p>;
   const [searchTerm, setSearchTerm] = useState('');
@@ -166,32 +183,10 @@ export default function TokenGeneration() {
               </ul>
             )}
           </div>
-
-          {/* <div>
-            <button
-              className="flex items-center bg-emerald-400 hover:bg-emerald-500 cursor-pointer text-black gap-2 font-medium px-6 py-2 rounded-md transition duration-300 ease-in-out"
-              onClick={() => toast("Scanner not connected")}>
-                <Scan size={20} strokeWidth={1.5} color="#ffffff" />
-                Scan QR
-            </button>
-          </div> */}
         </div>
 
         <div className="flex justify-between items-center gap-4">
-          {/* <div className="flex items-center gap-4">
-            <label className="font-bold text-md text-sky-900 w-24">Token No:</label>
-            <input
-              type="text"
-              value={tokenNumber}
-                onChange={(e) => setTokenNumber(e.target.value)}
-                onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                        handleTokenGeneration();
-                    }
-                }}      
-              placeholder="Enter Token number"
-              className="border-2 border-dashed border-yellow-500 p-2 rounded-md w-60 text-center bg-gray-100"/>
-          </div> */}
+        
           <div>
             <button
               onClick={handleCreateToken}
@@ -200,19 +195,6 @@ export default function TokenGeneration() {
             </button>
           </div>
           <div>
-            {/* <button
-              className="flex items-center whitespace-nowrap bg-emerald-400 hover:bg-emerald-500 cursor-pointer text-sm md:text-md text-black gap-2 font-medium px-4 md:px-6 py-2 rounded-md transition duration-300 ease-in-out"
-              onClick={() => router.push('/scan-qr')}>
-              <Scan size={20} strokeWidth={1.5} color="#ffffff" />
-              Scan QR
-            </button> */}
-            {/* <button
-              className="flex items-center whitespace-nowrap bg-emerald-400 hover:bg-emerald-500 cursor-pointer text-sm md:text-md text-black gap-2 font-medium px-4 md:px-6 py-2 rounded-md transition duration-300 ease-in-out"
-              onClick={() => setOpen(true)}
-            >
-              <Scan size={20} strokeWidth={1.5} color="#ffffff" />
-              Scan QR
-            </button> */}
 
             <QRModal onScanned={handleScanned} />
           </div>
@@ -257,14 +239,14 @@ export default function TokenGeneration() {
                   {!token.completed && (
                     <>
                       <button
-                        onClick={() => handleStartProcessing(token.id)}
+                        onClick={() => handleStartProcessing(token.id,token?.tokenNumber,token?.userId)}
                         className="bg-yellow-500 hover:bg-yellow-400 transition duration-300 ease-in-out p-1 md:px-2 md:py-1 rounded text-white cursor-pointer flex items-center justify-center gap-1">
                         <Loader size={16} className="md:hidden" />
                         <span className="hidden md:inline">Set Processing</span>
                       </button>
 
                       <button
-                        onClick={() => handleComplete(token.id)}
+                        onClick={() => handleComplete(token.id,token?.tokenNumber,token?.userId)}
                         className="bg-green-500 hover:bg-green-400 transition duration-300 ease-in-out p-1 md:px-2 md:py-1 rounded text-white cursor-pointer flex items-center justify-center gap-1">
                         <Check size={16} className="md:hidden" />
                         <span className="hidden md:inline">Complete</span>
