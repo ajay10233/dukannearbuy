@@ -53,7 +53,7 @@ export default function BillHistoryTable({setDates}) {
     const from = new Date(fromDate);
     const to = new Date(toDate);
     const toDateEnd = new Date(to);
-    toDateEnd.setHours(23, 59, 59, 999); // ensure full day included
+    toDateEnd.setHours(23, 59, 59, 999);
 
     const filtered = billData.filter((bill) => {
       const billDate = new Date(bill.createdAt);
