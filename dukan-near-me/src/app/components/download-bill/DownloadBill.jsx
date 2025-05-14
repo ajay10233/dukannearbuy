@@ -44,7 +44,7 @@ export default function DownloadBill({ params }) {
     <div className="p-4 relative">
       <div className="max-w-5xl mx-auto p-4 bg-white shadow-md border text-sm text-black" >
         <div className="flex justify-between items-center my-8">
-          <h1 className="text-2xl font-bold text-center w-full">BILL</h1>
+          <h1 className="text-2xl font-bold text-center w-full uppercase">Invoice</h1>
         </div>
 
         {/* Bill Information */}

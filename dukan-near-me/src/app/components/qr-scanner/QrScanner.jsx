@@ -85,7 +85,7 @@ export default function QRScanner({ onScanned }) {
   const handleSaveToken = async () => {
     if (!userId) return toast.error('No user ID detected from the QR code');
     try {
-      const scannedUserId = userId.split('/').pop(); s
+      const scannedUserId = userId.split('/').pop(); 
       const res = await axios.post('/api/token/create', { userId: scannedUserId });
 
       toast.success('Token generated successfully');

@@ -10,12 +10,14 @@ import { Eye, EyeClosed, Loader2 } from "lucide-react"; // <- Loader icon
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function LoginForm() {
   const router = useRouter();
   const [show, setShow] = useBoolToggle();
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false); // <- Loading state
+  const [showModal, setShowModal] = useState(false);
 
   const {
     register,
@@ -60,7 +62,8 @@ export default function LoginForm() {
           router.push("/dashboard");
         } else if (res.error === "NOT_VERIFIED") {
           toast.error("You must verify your email first.", { id: toastId });
-          router.push(`/otp-verify/`);
+          // router.push(`/otp-verify/`);
+          setShowModal(true); 
         } else {
           toast.error(res.error || "Invalid credentials", { id: toastId });
         }
@@ -176,6 +179,50 @@ export default function LoginForm() {
           </Link>
         </p>
       </div>
+      
+      {/* Verification Modal */}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="bg-white p-4 md:p-6 rounded-xl border-4 border-double border-sky-800 shadow-xl w-75 md:w-full md:max-w-lg text-center"
+            >
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Email Verification Required</h2>
+              <p className="text-sm text-gray-600 mb-6">
+                It looks like your email hasn't been verified yet. Please verify your email address to continue logging in.
+              </p>
+
+              <div className="flex flex-row gap-4 items-center justify-center whitespace-nowrap">
+                <Link href="/otp-verify">
+                  <motion.span
+                    whileHover={{ scale: 1.05}}
+                    className="px-3 md:px-6 py-3 bg-blue-600 text-white rounded-md cursor-pointer transition-all ease-in-out duration-300 hover:bg-blue-700"
+                  >
+                    Verify My Email
+                  </motion.span>
+                </Link>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="px-3 md:px-6 py-2 bg-gray-50 border border-gray-300 text-gray-800 rounded-md cursor-pointer transition-all ease-in-out duration-300 hover:bg-gray-100"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+
+
     </form>
   );
 }

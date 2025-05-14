@@ -268,17 +268,17 @@ const filteredReports = reports.filter((report) => {
                 </li>  {/* //institution name? , report name*/}
                 {/* <li>{report.report}</li>    */}
                 <li className="flex justify-center items-center">
-                  <span className='hidden md:flex text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out'>
+                  <Link href={`download-bill/${report.id}`} className='hidden md:flex text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out'>
                         <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>
-                  </span>
+                  </Link>
                   {/* Show icon based on selected dropdown option */}
                   <span className='md:hidden flex justify-center items-center'>
                   {selectedAction === 'favorite' ? (
                     <Heart size={20} strokeWidth={1.5} stroke="red"  fill={favorites.some(fav => fav.billId === report.id) ? 'red' : 'transparent'} className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110" onClick={() => toggleFavorite(report.id, favorites.some(fav => fav.billId === bill.id))} />
                   ) : selectedAction === 'download' ? (
-                        <span className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
+                        <Link href={`download-bill/${report.id}`} className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
                         <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>
-                    </span>
+                    </Link>
                   ) : null}
                   </span>
                 </li>

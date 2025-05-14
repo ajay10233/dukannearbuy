@@ -30,7 +30,7 @@ export default function EditFormatComponent() {
     const [shortBillDetails, setShortBillDetails] = useState(null);
     const billRef = useRef();
     const [isOpen, setIsOpen] = useState(false);
-
+    const [isGenerating, setIsGenerating] = useState(false);
 
     const [invoiceDate, setInvoiceDate] = useState(() => {
         const now = new Date();
@@ -77,10 +77,12 @@ export default function EditFormatComponent() {
     const handleScanSuccess = (userData) => {
         setUserId(userData.userId);
         setUsername(userData.username);
-        setAddress(userData.address);
+        const formattedAddress = `${userData.address.houseNumber}, ${userData.address.buildingName}, ${userData.address.street}, ${userData.address.city}, ${userData.address.state} - ${userData.address.zipCode}`;
+
+        setAddress(formattedAddress); 
+
         setMobile(userData.mobile);
         toast.success('User details fetched successfully!');
-
         setIsScanning(false); 
     };
 
@@ -94,13 +96,18 @@ export default function EditFormatComponent() {
     };
 
     const handleGenerateBill = async () => {
+        if (isGenerating) return; // Prevent multiple clicks
+        setIsGenerating(true);
+        
         if (!userId) {
             toast.error('Please scan a user QR code first.');
+            setIsGenerating(false);
             return;
         }
 
         if (!invoiceNo.trim()) {
             toast.error('Please enter an invoice number.');
+            setIsGenerating(false);
             return;
         }
 
@@ -153,7 +160,9 @@ export default function EditFormatComponent() {
         } catch (error) {
             console.error('Error generating bill:', error);
             toast.error(error.response?.data?.error || 'Error generating bill');
-        }
+        }   finally {
+        setIsGenerating(false); 
+    }
     };
 
 
@@ -311,7 +320,7 @@ export default function EditFormatComponent() {
                                             type="text"
                                             value={username.firstName || ''} 
                                             onChange={(e) => setUsername({ ...username, firstName: e.target.value })}
-                                            className="text-sm text-gray-700 capitalize outline-none"
+                                            className="w-full text-sm text-gray-700 capitalize outline-none"
                                             placeholder="Enter Name"
                                         />
                                         {/* <input
@@ -326,23 +335,21 @@ export default function EditFormatComponent() {
 
                                     <div className="flex items-start">
                                         <label htmlFor="receiver-address" className="font-medium mr-1">Address:</label>
-                                        <input
-                                            id="receiver-address"
+                                        <input id="receiver-address"
                                             type="text"
-                                            value={address ? `${address.houseNumber}, ${address.street}, ${address.buildingName}, ${address.city}, ${address.state}, ${address.zipCode}` : ''}
-                                            onChange={(e) => setAddress(parseAddress(e.target.value))}
-                                            className="text-sm text-gray-700 outline-none"
-                                            placeholder="Enter Address"
-                                        />
+                                            value={address}
+                                            onChange={(e) => setAddress(e.target.value)}
+                                            className="w-full text-sm text-gray-700 outline-none"
+                                            placeholder="Enter Address"/>
                                     </div>
-                                    <div>
-                                        <label htmlFor="receiver-phone" className="mr-1">Phone:</label>
+                                    <div className="flex items-start">
+                                        <label htmlFor="receiver-phone" className="font-medium mr-1">Phone:</label>
                                         <input
                                             id="receiver-phone"
-                                            type="text"
+                                            type="number"
                                             value={mobile || ''}
                                             onChange={(e) => setMobile(e.target.value)}
-                                            className="text-sm text-gray-700 outline-none"
+                                            className="w-full text-sm text-gray-700 outline-none"
                                             placeholder="Enter Phone"
                                         />
                                     </div>
@@ -356,7 +363,8 @@ export default function EditFormatComponent() {
                                 <p className="text-sm text-gray-600">Invoice Number</p>
                                 <input
                                     type="number"
-                                    className="font-bold w-full outline-none border-b border-gray-400"
+                                    min="1"
+                                    className="font-bold outline-none border-b border-gray-400"
                                     value={invoiceNo}
                                     onChange={(e) => setInvoiceNo(e.target.value)}
                                 />
@@ -369,7 +377,7 @@ export default function EditFormatComponent() {
 
                         {/* Bill Items Table */}
                         <div className="overflow-x-auto mb-4">
-                            <table className="w-[98%] border-collapse border text-left">
+                            <table className="w-full border-collapse border text-left">
                                 <thead>
                                     <tr className="bg-[#CFEBF9]">
                                         <th className="border p-2">S.NO</th>
@@ -399,6 +407,7 @@ export default function EditFormatComponent() {
                                             </td>
                                             <td className="border p-2">
                                                 <input
+                                                    min="0"
                                                     type="number"
                                                     value={item.qty}
                                                     onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
@@ -407,6 +416,7 @@ export default function EditFormatComponent() {
                                             </td>
                                             <td className="border p-2">
                                                 <input
+                                                    min="0"
                                                     type="number"
                                                     value={item.rate}
                                                     onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
@@ -444,7 +454,7 @@ export default function EditFormatComponent() {
                             >
                                 Print
                             </button>
-                            <button onClick={handleGenerateBill} className="bg-blue-500 print:hidden text-white px-4 py-2 rounded text-sm">Generate Bill</button>
+                            <button onClick={handleGenerateBill} disabled={isGenerating} className={`px-4 py-2 rounded-md print:hidden text-white ${isGenerating ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}>Generate Bill</button>
                         </div>
                         <div className="text-right mt-10 text-xs text-gray-500 uppercase">
                             This bill is generated using <span className="font-semibold text-black">NearBuyDukan</span>
@@ -475,20 +485,19 @@ export default function EditFormatComponent() {
                                 </div>
 
                                 <UserQrScan
-                                    setUserId={setUserId}
-                                    setUsername={setUsername}
-                                    setAddress={setAddress}
-                                    setMobile={setMobile}
-                                    onScanSuccess={handleScanSuccess}
+                                    // setUserId={setUserId}
+                                    // setUsername={setUsername}
+                                    // setAddress={setAddress}
+                                    // setMobile={setMobile}
+                                    // onScanSuccess={() => setIsScanning(false)} 
+                                        onScanSuccess={handleScanSuccess}
+
                                 />
                             </div>
                         </div>
                     )}
 
                 </div>
-
-
-                {/* <CreateBill /> */}
 
 
             </main>

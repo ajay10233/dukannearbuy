@@ -67,7 +67,6 @@ export default function EditProfilePage() {
   }
 };
 
-
   const handleLocationFetch = () => {
     if (!navigator.geolocation) {
       toast.error("Geolocation not supported");
@@ -101,7 +100,6 @@ export default function EditProfilePage() {
       () => toast.error("Location access denied")
     );
   };
-
 
   const handleDayToggle = (e) => {
     const { value, checked } = e.target;

@@ -6,7 +6,7 @@ import jsQR from 'jsqr';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-export default function UserQrScan({ setUserId, setUsername, setAddress, setMobile }) {
+export default function UserQrScan({ onScanSuccess }) {
   const webcamRef = useRef(null);
   const intervalRef = useRef(null);
 
@@ -27,19 +27,29 @@ export default function UserQrScan({ setUserId, setUsername, setAddress, setMobi
         ctx.drawImage(img, 0, 0);
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const code = jsQR(imageData.data, imageData.width, imageData.height);
+
         if (code?.data) {
           const extractedUserId = code.data.split('/').pop();
-          setUserId(extractedUserId);
 
           try {
             const res = await axios.get(`/api/users/${extractedUserId}`);
             if (res?.data) {
-                setUsername({ firstName: res.data.firstName, lastName: res.data.lastName });
-                setAddress(res.data.address);
-                setMobile(res.data.phone); 
-                toast.success(`User found: ${res.data.firstName} ${res.data.lastName}`);
-                clearInterval(intervalRef.current);
-                }
+              const userData = {
+                userId: extractedUserId,
+                username: {
+                  firstName: res.data.firstName,
+                  lastName: res.data.lastName,
+                },
+                address: res.data.address, 
+                mobile: res.data.phone,
+              };
+
+              clearInterval(intervalRef.current);
+              toast.success(`User found: ${res.data.firstName}`);
+
+              // Pass userData to handleScanSuccess
+              onScanSuccess?.(userData);
+            }
           } catch (err) {
             toast.error('Failed to fetch user details');
             console.error(err);
