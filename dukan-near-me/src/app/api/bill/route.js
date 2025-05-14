@@ -70,7 +70,7 @@ export async function POST(req) {
       const remarks = form.get('remarks');
       const invoiceNumber = form.get('invoiceNumber');
       const report = form.get('report') || false;
-      console.log("report",report)
+      console.log("report", report)
       if (!file || typeof file === 'string') {
         return NextResponse.json({ success: false, error: 'No file uploaded' }, { status: 400 });
       }
@@ -119,7 +119,7 @@ export async function POST(req) {
         fileType: file.type || null,
         paymentStatus: 'PENDING',
         expiresAt: expiresAt,
-        type: report=='true' ? 'REPORT' : 'BILL',
+        type: report == 'true' ? 'REPORT' : 'BILL',
       }
 
       if (tokenId) {
@@ -211,9 +211,40 @@ export async function GET(req) {
 
     const bills = await prisma.bill.findMany({
       where: { institutionId: session.user.id },
-      include: { items: true },
+      include: {
+        items: true,
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            username: true,
+            phone: true,
+            profilePhoto: true,
+            gender: true,
+            age: true,
+            city: true,
+            state: true,
+            country: true,
+          }
+        },
+        institution: {
+          select: {
+            id: true,
+            firmName: true,
+            email: true,
+            phone: true,
+            profilePhoto: true,
+            shopAddress: true,
+            city: true,
+            state: true,
+            country: true,
+          }
+        }
+      },
       orderBy: { createdAt: 'desc' },
-    })
+    });
 
     return NextResponse.json({ success: true, bills })
   } catch (error) {

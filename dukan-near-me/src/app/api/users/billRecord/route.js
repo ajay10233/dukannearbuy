@@ -47,6 +47,7 @@ export async function GET(req) {
       institution: bill.institution
         ? {
             id: bill.institution.id,
+            role: bill.institution.role,
             firmName: bill.institution.firmName,
             contactEmail: bill.institution.contactEmail,
             phone: bill.institution.phone,
