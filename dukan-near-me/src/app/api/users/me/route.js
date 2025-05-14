@@ -15,7 +15,7 @@ export async function GET() {
     include: {
       subscriptionPlan: true,
       pastAddresses: true,
-      paidProfilesGiven: true, // <-- include paid promotions
+      paidProfilesGiven: true,
     },
   });
 
@@ -23,7 +23,6 @@ export async function GET() {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  // Shared address object
   const address = {
     houseNumber: user.houseNumber,
     street: user.street,

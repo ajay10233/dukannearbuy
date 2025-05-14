@@ -16,6 +16,7 @@ export const GET = async (req, { params }) => {
             where: { id: id },
             include: {
                 subscriptionPlan: true,
+                paidProfilesGiven: true,
             },
         });
 
@@ -69,6 +70,15 @@ export const GET = async (req, { params }) => {
                     maxUploadSizeMB: user.subscriptionPlan.maxUploadSizeMB,
                 }
                 : null,
+            paidPromotions: user.paidProfilesGiven.map((promo) => ({
+                id: promo.id,
+                amountPaid: promo.amountPaid,
+                createdAt: promo.createdAt,
+                expiresAt: promo.expiresAt,
+                notes: promo.notes,
+                image: promo.image,
+                range: promo.range,
+            })),
 
         });
 
