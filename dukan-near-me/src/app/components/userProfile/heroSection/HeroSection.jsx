@@ -29,7 +29,7 @@ export default function HeroSection() {
   // ✅ Fetch images from your API
   const fetchImages = async () => {
     try {
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin-images`);
+      const res = await axios.get(`/api/admin-images`);
       setImages(res.data); // assuming res.data is an array of { link, details }
     } catch (err) {
       console.error("Failed to fetch images:", err);
