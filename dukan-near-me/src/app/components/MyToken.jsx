@@ -42,7 +42,7 @@ export default function MyToken() {
               </tr>
             ) : ( 
               tokens.map((token) => (
-                <tr key={token.id} className="hover:bg-slate-100 transition duration-200 flex flex-row items-center justify-evenly">
+                <tr key={token.id} className="hover:bg-slate-100 *:w-2/5  transition duration-200 flex flex-row items-center justify-evenly">
                   <td className="p-3 md:px-6 md:py-4 font-semibold text-blue-700">{token.tokenNumber}</td>
                   <td className="p-3 md:px-6 md:py-4 hidden md:table-cell">
                     <Link href={`/partnerProfile/${token.institutionId}`}>

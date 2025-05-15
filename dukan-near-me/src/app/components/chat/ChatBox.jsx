@@ -771,7 +771,7 @@ export default function ChatBox() {
             </header>
 
             {/* Message Area */}
-            <div className="flex-1 pt-2 pb-4 px-4 overflow-y-auto flex flex-col gap-3">
+            <div className="flex-1 pt-2 pb-4 px-4 overflow-y-auto flex flex-col gap-3 h-[calc(100vh-40px)]">
             <div className="flex justify-center">
               {loggedInUser?.subscriptionPlan?.name === "PREMIUM" ? (
                 <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">

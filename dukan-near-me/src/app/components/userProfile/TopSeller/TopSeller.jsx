@@ -99,19 +99,24 @@ export default function TopSeller() {
         {loading ? (
           <div className="text-center text-gray-400 py-10">Fetching trusted sellers near you...</div>
         ) : sellers.length > 0 ? (
-          <div className="relative">
-            <button
-              onClick={() => emblaApi?.scrollPrev()}
-              className="absolute -left-4 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white/20 hover:bg-white/25 transition-all ease-in-out duration-400 rounded-full p-2 shadow-md"
-            >
-              <ChevronLeft className="text-yellow-300" />
-            </button>
+            <div className="relative">
+              {/* {sellers.length > 4 && ( */}
+                <button
+                  onClick={() => emblaApi?.scrollPrev()}
+                  className="absolute -left-4 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white/20 hover:bg-white/25 transition-all ease-in-out duration-400 rounded-full p-2 shadow-md"
+                >
+                  <ChevronLeft className="text-yellow-300" />
+                </button>
+              {/* )} */}
 
             <div className="overflow-hidden" ref={emblaRef}>
-              <div className="flex flex-row">
-                {sellers.map((seller) => (
+              {/* <div className={`flex flex-row ${
+                  sellers.length < 4 ? "justify-center gap-4" : ""
+                }`}> */}
+                <div className={`flex flex-row md:justify-center`}>
+                {sellers.map((seller, i) => (
                   <div
-                    key={seller.id}
+                    key={seller.id || i}
                     className="px-2 flex-[0_0_100%] sm:flex-[0_0_50%] md:flex-[0_0_33.3333%] xl:flex-[0_0_25%]"
                   >
                     <Link href={`/partnerProfile/${seller?.user?.id}`} className="block cursor-pointer">
@@ -186,12 +191,14 @@ export default function TopSeller() {
               </div>
             </div>
 
-            <button
-              onClick={() => emblaApi?.scrollNext()}
-              className="absolute -right-4 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white/20 hover:bg-white/25 transition-all ease-in-out duration-400 rounded-full p-2 shadow-md"
-            >
-              <ChevronRight className="text-yellow-300" />
-            </button>
+              {/* {sellers.length > 4 && ( */}
+                <button
+                  onClick={() => emblaApi?.scrollNext()}
+                  className="absolute -right-4 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white/20 hover:bg-white/25 transition-all ease-in-out duration-400 rounded-full p-2 shadow-md"
+                >
+                  <ChevronRight className="text-yellow-300" />
+                </button>
+              {/* )} */}
           </div>
         ) : (
           <div className="text-center text-gray-500 py-10">No sellers found near you.</div>

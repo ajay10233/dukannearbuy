@@ -158,7 +158,7 @@ export default function BillHistoryTable({setDates}) {
         ) : (
           filteredData.map((bill, i) => (
             <div className="flex items-center bg-white p-2 py-3 rounded-lg" key={i}>
-              <ul className="flex items-center text-sm text-slate-500 *:w-1/5 w-full text-center justify-around whitespace-nowrap">
+              <ul className="flex items-center *:w-2/5  text-sm text-slate-500 w-full text-center justify-around whitespace-nowrap">
                 <li className="md:flex flex-col items-center hidden">{bill?.invoiceNumber}</li>
                 <li>{new Date(bill?.createdAt).toLocaleDateString()}</li>
                 <li>{bill?.user?.username || "N/A"}</li> 

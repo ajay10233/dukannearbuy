@@ -33,6 +33,7 @@ export default function EditFormatComponent() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [formDetails, setFormDetails] = useState(null);
 
+
     const handleFormDetailsChange = (updatedForm) => {
         setFormDetails(updatedForm); // Set the updated form data 
         console.log(updatedForm);
@@ -67,11 +68,24 @@ export default function EditFormatComponent() {
     };
 
     const handleItemChange = (index, key, value) => {
-        const newItems = [...items];
-        newItems[index][key] = key === 'qty' || key === 'rate' ? parseFloat(value) || 0 : value;
+    const newItems = [...items];
+    
+    if (key === 'qty' || key === 'rate') {
+        newItems[index][key] = parseFloat(value) || 0;
+        // For shop_owner, update amount automatically
+        if (user?.role !== 'INSTITUTION') {
         newItems[index].amount = newItems[index].qty * newItems[index].rate;
-        setItems(newItems);
+        }
+    } else if (key === 'amount') {
+        // For institution, allow manual amount input
+        newItems[index][key] = parseFloat(value) || 0;
+    } else {
+        newItems[index][key] = value;
+    }
+    
+    setItems(newItems);
     };
+
 
     const itemsSubtotal = items.reduce((acc, item) => acc + item.amount, 0);
     const totalAmount = itemsSubtotal;
@@ -102,7 +116,7 @@ export default function EditFormatComponent() {
     };
 
     const handleGenerateBill = async () => {
-        if (isGenerating) return; // Prevent multiple clicks
+        if (isGenerating) return; 
         setIsGenerating(true);
         
         if (!userId) {
@@ -118,6 +132,19 @@ export default function EditFormatComponent() {
         }
 
         try {
+
+            const checkResponse = await axios.get('/api/bill', {
+                params: { invoiceNumber: invoiceNo }
+            });
+
+            const existingBills = checkResponse.data.bills.filter(bill => bill.invoiceNumber === invoiceNo);
+
+            if (existingBills.length > 1) {
+                toast.error('A bill with this invoice number already exists.');
+                setIsGenerating(false);
+                return;
+            }
+
             const hasFile = file !== null;
             let data;
 
@@ -172,11 +199,9 @@ export default function EditFormatComponent() {
     };
 
 
-
     useEffect(() => {
         fetchUserDetails();
     }, []);
-
 
 
     const handleFileChange = (e) => {
@@ -191,6 +216,13 @@ export default function EditFormatComponent() {
             setPreviewUrl('');
         }
     };
+
+    const cgstPercent = formDetails?.cgst || 0;
+    const sgstPercent = formDetails?.sgst || 0;
+
+    const cgstAmount = (itemsSubtotal * cgstPercent) / 100;
+    const sgstAmount = (itemsSubtotal * sgstPercent) / 100;
+
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col relative">
@@ -316,20 +348,36 @@ export default function EditFormatComponent() {
                                 <p>{user?.address && `${user.address.houseNumber}, ${user.address?.buildingName ? user.address.buildingName + ', ' : ''}${user.address.street}, ${user.address.landmark}, ${user.address.city}, ${user.address.state} - ${user.address.zipCode}, ${user.address.country}`}</p>
                                 <p>Mobile: {user?.mobileNumber}</p>
                             </div> */} 
-                            {formDetails && (
+                            {formDetails ? (
                                 <div className="p-2 border-r border-black">
-                                <h2 className="text-lg font-bold text-[#0D6A9C] capitalize">{formDetails?.firmName}</h2>
-                                <p>{formDetails.address}</p>
-                                <p>Mobile: {formDetails.contactNo}</p>
-                                {formDetails.email &&
-                                    <p>Email: {formDetails.email}</p>
-                                }
-                                {formDetails.gstNo &&
-                                    <p>GST No: {formDetails.gstNo}</p>
-                                }    
-
-                            </div>
+                                    <h2 className="text-lg font-bold text-[#0D6A9C] capitalize">
+                                        {formDetails?.firmName || "N/A"}
+                                    </h2>
+                                    <p>
+                                        {formDetails?.address || "Address: N/A"}
+                                    </p>
+                                    <p> Mobile: <span className='text-gray-600'>{formDetails?.contactNo || "N/A"}</span></p>
+                                    {formDetails?.email ? (
+                                        <p>Email: <span className='text-gray-600'>{formDetails?.email}</span></p>
+                                    ) : (
+                                        <p>Email: N/A</p>
+                                    )}
+                                    {formDetails?.gstNo ? (
+                                        <p>GST No: <span className='text-gray-600'>{formDetails?.gstNo}</span> </p>
+                                    ) : (
+                                        <p>GST No: N/A</p>
+                                    )}
+                                </div>
+                                ) : (
+                                <div className="p-2 border-r border-black">
+                                    <h2 className="text-lg font-bold text-[#0D6A9C] capitalize">Firm Name: N/A</h2>
+                                    <p>Address: N/A</p>
+                                    <p>Mobile: N/A</p>
+                                    {/* <p>Email: N/A</p>
+                                    <p>GST No: N/A</p> */}
+                                </div>
                             )}
+
 
                             <div className="p-2">
                                 <h2 className="font-bold mb-1">RECEIVER DETAILS</h2>
@@ -341,7 +389,7 @@ export default function EditFormatComponent() {
                                             type="text"
                                             value={username.firstName || ''} 
                                             onChange={(e) => setUsername({ ...username, firstName: e.target.value })}
-                                            className="w-full text-sm text-gray-700 capitalize outline-none"
+                                            className="w-full text-sm text-gray-600 capitalize outline-none"
                                             placeholder="Enter Name"
                                         />
                                         {/* <input
@@ -360,7 +408,7 @@ export default function EditFormatComponent() {
                                             type="text"
                                             value={address}
                                             onChange={(e) => setAddress(e.target.value)}
-                                            className="w-full text-sm text-gray-700 outline-none"
+                                            className="w-full text-sm text-gray-600 outline-none"
                                             placeholder="Enter Address"/>
                                     </div>
                                     <div className="flex items-start">
@@ -370,7 +418,7 @@ export default function EditFormatComponent() {
                                             type="number"
                                             value={mobile || ''}
                                             onChange={(e) => setMobile(e.target.value)}
-                                            className="w-full text-sm text-gray-700 outline-none"
+                                            className="w-full text-sm text-gray-600 outline-none"
                                             placeholder="Enter Phone"
                                         />
                                     </div>
@@ -418,6 +466,7 @@ export default function EditFormatComponent() {
                                     {items.map((item, index) => (
                                         <tr key={index}>
                                             <td className="border p-2 text-center">{index + 1}</td>
+
                                             <td className="border p-2">
                                                 <input
                                                     type="text"
@@ -426,31 +475,80 @@ export default function EditFormatComponent() {
                                                     className="w-full border-none outline-none"
                                                 />
                                             </td>
+
                                             <td className="border p-2">
-                                                <input
-                                                    min="0"
+                                                {user?.role === 'INSTITUTION' ? (
+                                                    <input
+                                                    type="text"
+                                                    value={item.treatment || item.qty || ''}
+                                                    onChange={(e) => handleItemChange(index, 'treatment', e.target.value)}
+                                                    className="w-full border-none outline-none"
+                                                    />
+                                                ) : (
+                                                    <input
                                                     type="number"
+                                                    min="0"
                                                     value={item.qty}
                                                     onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
                                                     className="w-full border-none outline-none"
-                                                />
+                                                    />
+                                                )}
                                             </td>
                                             <td className="border p-2">
-                                                <input
-                                                    min="0"
+                                                {user?.role === 'INSTITUTION' ? (
+                                                    <input
+                                                    type="text"
+                                                    value={item.others || item.rate || ''}
+                                                    onChange={(e) => handleItemChange(index, 'others', e.target.value)}
+                                                    className="w-full border-none outline-none"
+                                                    />
+                                                ) : (
+                                                    <input
                                                     type="number"
+                                                    min="0"
                                                     value={item.rate}
                                                     onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
                                                     className="w-full border-none outline-none"
-                                                />
+                                                    />
+                                                )}
                                             </td>
-                                            <td className="border p-2 text-center">{item.amount.toFixed(2)}</td>
+                                            <td className="border p-2 text-center">
+                                                {user?.role === 'INSTITUTION' ? (
+                                                    <input
+                                                    type="number"
+                                                    min="0"
+                                                    value={item.amount || ''}
+                                                    onChange={(e) => handleItemChange(index, 'amount', e.target.value)}
+                                                    className="w-full border-none outline-none text-center"
+                                                    />
+                                                ) : (
+                                                    item.amount.toFixed(2)
+                                                )}
+                                            </td>
                                         </tr>
                                     ))}
                                     <tr>
                                         <td colSpan="4" className="border p-2 text-right font-bold">Items Subtotal</td>
                                         <td className="border p-2 text-center font-bold">{itemsSubtotal.toFixed(2)}</td>
                                     </tr>
+
+                                    {formDetails && formDetails?.cgst && formDetails?.sgst && (
+                                        <>
+                                            <tr>
+                                                <td className="border p-2 text-center" rowSpan={2}></td>
+                                                <td className="border p-2 font-semibold" rowSpan={2}>Tax</td>
+                                                <td className="border p-2">CGST</td>
+                                                <td className="border p-2 text-center">{formDetails.cgst}%</td>
+                                                <td className="border p-2 text-center">{cgstAmount.toFixed(2)}</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="border p-2">SGST</td>
+                                                <td className="border p-2 text-center">{formDetails.sgst}%</td>
+                                                <td className="border p-2 text-center">{sgstAmount.toFixed(2)}</td>
+                                            </tr>
+                                        </>
+                                    )}
+
                                 </tbody>
                             </table>
                         </div>
@@ -465,6 +563,19 @@ export default function EditFormatComponent() {
 
                         {/* Total Amount */}
                         <div className="text-right font-bold text-lg">Total Amount: ₹{totalAmount.toFixed(2)}</div>
+
+                        {/* proprietorSign */}
+                        {/* {formDetails?.proprietorSign && (
+                            <div className="flex justify-end mt-4">
+                                <div className="border p-2 border-gray-400 max-w-50">
+                                <Image
+                                    src={formDetails.proprietorSign}
+                                    alt="Proprietor Signature"
+                                    className="w-full h-auto object-contain" priority
+                                />
+                                </div>
+                            </div>
+                        )} */}
 
                         {/* Action Buttons */}
                         <div className="flex space-x-4 mt-4">

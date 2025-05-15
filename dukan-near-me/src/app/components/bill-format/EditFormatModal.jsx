@@ -82,6 +82,7 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange }) {
         try {
           const res = await fetch("/api/billFormat", {
             method: "POST", 
+            headers: { "Content-Type": "application/json" }, 
             body: JSON.stringify(payload),
           });
 

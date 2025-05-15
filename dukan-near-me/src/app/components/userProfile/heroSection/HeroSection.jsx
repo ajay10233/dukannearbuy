@@ -48,12 +48,12 @@ export default function HeroSection() {
 
   return (
     <div className="flex flex-col items-center w-full md:p-4 gap-y-4 py-0 px-2">
-      <div className="overflow-hidden w-full relative" ref={emblaRef}> {/* relative daala for positioning buttons */}
+      <div className="overflow-hidden w-full relative" ref={emblaRef}> {/* relative data for positioning buttons */}
         <div className="flex gap-x-5 px-2">
           {images.map((img, index) => (
             <div
               className={`min-w-75 h-50 md:min-w-[1000px] md:h-[500px] flex-shrink-0 rounded-md overflow-hidden shadow-lg transition-opacity duration-500 relative z-0 ${
-                index === selectedIndex ? "opacity-100" : "opacity-20"
+                index === selectedIndex ? "opacity-100" : "opacity-40"
               }`}
               key={img.id || index}
             >

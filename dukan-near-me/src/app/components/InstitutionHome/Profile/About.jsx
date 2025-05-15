@@ -574,7 +574,6 @@ export default function About({ profileUpdated }) {
               Scan QR Code
             </h2>
             <div className="p-4 relative">
-            <div className="p-4 relative">
               {userData?.scanner_image ? (
                 <Image
                   src={userData.scanner_image}
@@ -588,8 +587,7 @@ export default function About({ profileUpdated }) {
                 <div className="w-70 h-70 mx-auto bg-gray-200">No Image</div>
               )}
             </div>
-            </div>
-            <p className="pt-2 md:pt-4flex items-center justify-center gap-2 text-center text-gray-600">
+            <p className="md:pt-4flex items-center justify-center gap-2 text-center text-gray-600">
               <span className="text-gray-800 text-sm font-medium">
                 UPI ID: <span className="font-normal">{userData?.upi_id}</span>
               </span>

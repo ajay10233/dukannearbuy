@@ -131,9 +131,9 @@ export default function HeroSection({id}) {
 
   return (
     <div className={`w-full relative ${user.role === "INSTITUTION" ? "bg-gradient-to-tr from-white to-sky-100" : user.role === "SHOP_OWNER" ? "bg-gradient-to-tl from-lime-100 to-white" : ""}`}>
-      {user.paidPromotions?.[0]?.notes && (
+      {user?.paidPromotions?.[0]?.notes && (
         <div
-          className={`absolute top-6 right-10 z-10 py-1 px-4 text-white text-sm rounded-lg animate-bounce rounded-tl-2xl rounded-bl-sm rounded-br-2xl rounded-tr-sm
+          className={`absolute top-3 md:top-6 right-3 md:right-10 z-10 py-1 px-4 text-white text-sm rounded-lg animate-bounce rounded-tl-2xl rounded-bl-sm rounded-br-2xl rounded-tr-sm
             ${user.paidPromotions[0].notes === 'On Sale' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
             ${user.paidPromotions[0].notes === 'New Shop opening' ? 'bg-gradient-to-br from-blue-500 via-green-500 to-teal-500' : ''}
             ${user.paidPromotions[0].notes === 'Festive Offer' ? 'bg-gradient-to-tl from-orange-500 via-yellow-500 to-red-500' : ''}
@@ -144,11 +144,11 @@ export default function HeroSection({id}) {
             ${user.paidPromotions[0].notes === 'Reloacate' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
           `}
         >
-          {user.paidPromotions[0].notes}
+          {user?.paidPromotions[0].notes}
         </div>
       )}
       
-      <div className="w-full h-60 md:h-90 relative overflow-hidden shadow-inner">
+      <div className="w-full h-60 md:h-100 relative overflow-hidden shadow-inner">
         {(images.length > 0 || user.profilePhoto) ? (
           <div className="h-full" ref={emblaRef}>
             <div className="flex h-full cursor-pointer">

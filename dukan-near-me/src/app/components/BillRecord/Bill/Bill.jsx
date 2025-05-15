@@ -13,7 +13,7 @@ export default function Bill() {
   const [search, setSearch] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
+  const [roleFilter, setRoleFilter] = useState('');
   const [favoriteFilter, setFavoriteFilter] = useState(null);
   const [selectedAction, setSelectedAction] = useState(''); 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -77,49 +77,43 @@ export default function Bill() {
   };
     
 
-  // const toggleFavorite = (id) => {
-  //   const updated = bills.map((bill) => {
-  //     if (bill.id === id) {
-  //       const isNowFav = !bill.favorited;
-  //       const expiry = isNowFav ? null : new Date(Date.now() + 24 * 60 * 60 * 1000);
-  //       return {
-  //         ...bill,
-  //         favorited: isNowFav,
-  //         expiry: expiry?.toISOString() || null,
-  //       };
-  //     }
-  //     return bill;
-  //   });
 
-  //   setBills(updated);
+//   const filteredBills = bills.filter((bill) => {
+//   const matchesSearch = bill.institution?.firmName.toLowerCase().includes(search.toLowerCase());
 
-  //   const saveToStorage = {};
-  //   updated.forEach((bill) => {
-  //     if (bill.favorited || (bill.expiry && new Date(bill.expiry) > new Date())) {
-  //       saveToStorage[bill.id] = {
-  //         expiry: bill.expiry,
-  //       };
-  //     }
-  //   });
+//   const isDateValid =
+//     (!dateFrom || new Date(bill.createdAt) >= new Date(dateFrom)) &&
+//     (!dateTo || new Date(bill.createdAt) <= new Date(dateTo));
 
-  //   localStorage.setItem('favBills', JSON.stringify(saveToStorage));
-  // };
+//   const isTypeValid = !typeFilter || bill.type === typeFilter;
+
+//   const isFavValid =
+//     favoriteFilter === null ||
+//     (favoriteFilter === true && bill.favorited) ||
+//     (favoriteFilter === false && !bill.favorited);
+
+//   return matchesSearch && isDateValid && isTypeValid && isFavValid;
+// });
 
   const filteredBills = bills.filter((bill) => {
-  const matchesSearch = bill.institution?.firmName.toLowerCase().includes(search.toLowerCase());
+  const firmName = bill.institution?.firmName || bill.institution?.firmName || '';
+  const matchesSearch = firmName.toLowerCase().includes(search.toLowerCase());
 
   const isDateValid =
     (!dateFrom || new Date(bill.createdAt) >= new Date(dateFrom)) &&
     (!dateTo || new Date(bill.createdAt) <= new Date(dateTo));
 
-  const isTypeValid = !typeFilter || bill.type === typeFilter;
+  const isRoleValid =
+  roleFilter === '' ||
+  (roleFilter === 'Institution' && bill.institution?.role === 'INSTITUTION') ||
+  (roleFilter === 'Shop Owner' && bill.institution?.role === 'SHOP_OWNER');
 
   const isFavValid =
     favoriteFilter === null ||
     (favoriteFilter === true && bill.favorited) ||
     (favoriteFilter === false && !bill.favorited);
 
-  return matchesSearch && isDateValid && isTypeValid && isFavValid;
+  return matchesSearch && isDateValid && isRoleValid && isFavValid;
 });
 
 
@@ -146,7 +140,7 @@ export default function Bill() {
 
       {/* Header */}
       <div className="flex text-sm text-slate-400 font-medium pr-8 relative z-5">
-        <ul className="flex w-full *:w-1/5 justify-between relative">
+        <ul className="flex w-full *:w-2/5 justify-between relative">
           <li className='justify-center items-center relative hidden md:flex'>
             Favourite
             <Heart fill='#ec0909' stroke='#ec0909'
@@ -188,7 +182,7 @@ export default function Bill() {
             )}
           </li>
 
-          <li className='flex justify-center items-center relative'>
+          <li className='flex justify-center items-center relative whitespace-nowrap'>
             Firm Name
             <Filter
               className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-teal-700"
@@ -198,13 +192,22 @@ export default function Bill() {
                 setShowFavFilter(false);
               }}
             />
-            {showTypeFilter && (
+            {/* {showTypeFilter && (
               <select value={typeFilter} onChange={(e) => { setTypeFilter(e.target.value); setShowTypeFilter(false); }} className="absolute top-6 w-40 bg-white border border-gray-300 rounded-lg shadow-md p-2 text-sm">
                 <option value="">All</option>
-                <option value="Medical">Medical</option>
+                <option value="Medical">Institition</option>
                 <option value="Shop Owner">Shop Owner</option>
               </select>
+            )} */}
+
+            {showTypeFilter && (
+              <div className="absolute top-6 w-40 bg-white border border-gray-300 rounded-lg shadow-md p-2 text-sm flex flex-col gap-1 z-10">
+                <button className='cursor-pointer transition-all ease-in-out duration-400 hover:bg-gray-100' onClick={() => { setRoleFilter(''); setShowTypeFilter(false); }}>All</button>
+                <button className='cursor-pointer transition-all ease-in-out duration-400 hover:bg-gray-100' onClick={() => { setRoleFilter('Institution'); setShowTypeFilter(false); }}>Institution</button>
+                <button className='cursor-pointer transition-all ease-in-out duration-400 hover:bg-gray-100' onClick={() => { setRoleFilter('Shop Owner'); setShowTypeFilter(false); }}>Shop Owner</button>
+              </div>
             )}
+
           </li>
 
           <li className='hidden md:flex justify-center items-center'>₹Amount</li>

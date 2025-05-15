@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 
 export default function EditProfile({ user, onCancel, onSuccess }) {
   const [formData, setFormData] = useState({ ...user });
-  const [otpRequired, setOtpRequired] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
 
@@ -61,11 +60,6 @@ export default function EditProfile({ user, onCancel, onSuccess }) {
       setIsSaving(false); 
       onSuccess(result.user);
 
-      // if (formData.email !== previousEmail || formData.phone !== previousPhone) {
-      //   router.push(`/otp-verify?email=${formData.email}&phone=${formData.phone}`);
-      // } else {
-      //   onSuccess();
-      // }
     } catch (err) {
       toast.error(err.message);
       setIsSaving(false);
