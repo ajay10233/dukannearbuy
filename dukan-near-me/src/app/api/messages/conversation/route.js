@@ -32,7 +32,7 @@ export const GET = async (req) => {
         },
       });
     } else if (otherUserIdStr) {
-      const otherUserId = new ObjectId(otherUserIdStr);
+      const otherUserId = otherUserIdStr;
       conversation = await prisma.conversation.findFirst({
         where: {
           OR: [
