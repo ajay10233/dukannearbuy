@@ -793,7 +793,7 @@ export default function ChatBox() {
                       </div>
                     </DialogHeader>
                     <div className="flex flex-col">
-                      <PaymentHistory />
+                      <PaymentHistory receiverId={selectedPartner?.otherUser ? selectedPartner.otherUser.id : selectedPartner.id} />
                     </div>
                   </DialogContent>
                 </Dialog>

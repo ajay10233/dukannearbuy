@@ -49,7 +49,7 @@ export async function middleware(req) {
   if (pathname === "/") {
     if (token.role === "USER") {
       return NextResponse.redirect(new URL("/UserHomePage", req.url));
-    } else if (token.role === "INSTITUTION") {
+    } else if (token.role === "INSTITUTION"|| token.role === "SHOP_OWNER") {
       return NextResponse.redirect(new URL("/partnerHome", req.url));
     }
   }
@@ -61,7 +61,7 @@ export async function middleware(req) {
 // Route matcher config
 export const config = {
   matcher: [
-    "/",
+    // "/",
     "/billGenerator/:path*",
     "/change-location/:path*",
     "/dashboard/:path*",
