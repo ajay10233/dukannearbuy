@@ -28,11 +28,13 @@ export async function PUT(req, { params }) {
 
 
 export async function DELETE(req, { params }) {
+  const param = await params;
+  const id = await param.id;
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const notification = await prisma.notification.findUnique({
-    where: { id: params.id },
+    where: { id: id },
   });
 
   if (!notification || notification.receiverId !== session.user.id) {
