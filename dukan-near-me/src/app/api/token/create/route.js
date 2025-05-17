@@ -7,7 +7,7 @@ export async function POST(req) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session || session.user.role === 'USER') {
+    if (!session || (session.user.role !== 'INSTITUTION' && session.user.role !== 'SHOP_OWNER')) {
       return NextResponse.json(
         { error: 'Unauthorized: Only institutions can create tokens' },
         { status: 401 }
