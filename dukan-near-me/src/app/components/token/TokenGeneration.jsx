@@ -70,7 +70,7 @@ export default function TokenGeneration() {
         message = `Your token has been generated with token number ${res?.data?.tokenNumber}`
       }
     
-      socket?.emit("sendNotification",{toUserId:userid,message:message});
+      socket?.emit("sendNotification",{toUserId:userid,message:message,fromUserId:session?.user?.id});
       toast.success('Token created!');
     } catch (err) {
       toast.error('Failed to create token');
@@ -84,7 +84,7 @@ export default function TokenGeneration() {
     if (tokenNumber){
       message = `Your token has been started processing with token number ${tokenNumber}`
     }
-    socket?.emit("sendNotification",{toUserId:userId,message:message});
+    socket?.emit("sendNotification",{toUserId:userId,message:message,fromUserId:session?.user?.id});
   };
 
   const handleComplete = (tokenId,tokenNumber,userId) => {
@@ -93,7 +93,7 @@ export default function TokenGeneration() {
     if (tokenNumber){
       message = `Your token has been completed with token number ${tokenNumber}`
     }
-    socket?.emit("sendNotification",{toUserId:userId,message:message});
+    socket?.emit("sendNotification",{toUserId:userId,message:message,fromUserId:session?.user?.id});
   };
 
   useEffect(() => {

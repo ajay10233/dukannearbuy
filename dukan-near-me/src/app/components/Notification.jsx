@@ -13,6 +13,7 @@ export default function Notification() {
       try {
         const res = await fetch("/api/notification"); 
         const data = await res.json();
+        console.log(data);
         setNotifications(data);
       } catch (error) {
         console.error("Failed to fetch notifications", error);
@@ -24,7 +25,7 @@ export default function Notification() {
 
   const markAsRead = async (id) => {
     try {
-      const res = await fetch(`/api/notification/${userId}`, {
+      const res = await fetch(`/api/notification/${id}`, {
         method: "PUT",
       });
       if (res.ok) {
