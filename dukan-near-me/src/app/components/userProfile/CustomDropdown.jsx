@@ -31,7 +31,7 @@ export default function CustomDropdown({ promotionType, setPromotionType }) {
       {/* Conditionally render the dropdown */}
       {isOpen && (
         <div
-          className="absolute bg-white shadow-lg w-full border rounded mt-1 max-h-60 overflow-y-auto opacity-100 transition-all duration-300 ease-in-out"
+          className="z-50 absolute bg-white shadow-lg w-full border rounded mt-1 max-h-60 overflow-y-auto opacity-100 transition-all duration-300 ease-in-out"
         >
           <div
             className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"

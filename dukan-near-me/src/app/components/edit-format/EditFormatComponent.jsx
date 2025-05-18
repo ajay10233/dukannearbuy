@@ -210,6 +210,45 @@ export default function EditFormatComponent() {
         fetchUserDetails();
     }, []);
 
+    useEffect(() => {
+  const fetchFormatDetails = async () => {
+    try {
+      const response = await fetch('/api/billFormat');
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Split tax and extra text for internal handling
+        const [cgst, sgst] = data.taxPercentage?.split('+').map((val) => val.trim()) || [0, 0];
+        const [terms = '', updates = ''] = data.extraText?.split('\n') || ['', ''];
+
+        const institution = data.institutionRelation || {};
+
+        setFormDetails({
+          firmName: institution.firmName || '',
+          address: institution.shopAddress || '',
+          contactNo: institution.phone || '',
+          gstNo: data.gstNumber || '',
+          email: institution.contactEmail || '',
+          cgst: parseFloat(cgst),
+          sgst: parseFloat(sgst),
+          proprietorSign: data.proprietorSign || null,
+          terms,
+          updates,
+        });
+      } else {
+        const error = await response.json();
+        toast.error(error?.error || 'Failed to fetch format');
+      }
+    } catch (err) {
+      console.error('Error fetching format details:', err);
+      toast.error('Error fetching format details');
+    }
+  };
+
+  fetchFormatDetails();
+}, []);
+
+
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files?.[0];
@@ -593,17 +632,22 @@ export default function EditFormatComponent() {
                         <div className="text-right font-bold text-lg">Total Amount: ₹{totalAmount.toFixed(2)}</div>
 
                         {/* proprietorSign */}
-                        {/* {formDetails?.proprietorSign && (
+                        {/* {formDetails?.proprietorSign && ( */}
+                        {formDetails?.proprietorSign && typeof formDetails.proprietorSign === 'string' && formDetails.proprietorSign.length > 0 && (
+
                             <div className="flex justify-end mt-4">
-                                <div className="border p-2 border-gray-400 max-w-50">
+                                <div className="border p-2 border-gray-400 max-w-[200px]">
                                 <Image
-                                    src={formDetails.proprietorSign}
+                                    src={formDetails?.proprietorSign || ''}
                                     alt="Proprietor Signature"
-                                    className="w-full h-auto object-contain" priority
+                                    width={200}
+                                    height={100}
+                                    className="object-contain"
+                                    priority
                                 />
                                 </div>
                             </div>
-                        )} */}
+                        )}
 
                         {/* Action Buttons */}
                         <div className="flex space-x-4 mt-4">
@@ -652,6 +696,7 @@ export default function EditFormatComponent() {
                                 <p><strong>Invoice No:</strong> {invoiceNo}</p>
                                 {/* <p><strong>Username:</strong> {username || 'N/A'}</p> */}
                                 <p><strong>Name:</strong> {username.firstName} {username.lastName}</p>
+                                <p>  <strong>Phone:</strong> {user?.phone || phoneNumber || "N/A"}</p>
                                 <p><strong>Products:</strong></p>
                                 <ul className="list-inside list-decimal">
                                     {items.map((item, index) => (

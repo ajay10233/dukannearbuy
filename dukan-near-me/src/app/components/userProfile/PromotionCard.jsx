@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 export default function PromotionCard() {
-    const [days, setDays] = useState(1);
+    const [days, setDays] = useState(0);
     const [durationSelected, setDurationSelected] = useState(false);
     const [isPremium, setIsPremium] = useState(false);
     const [selectedKm, setSelectedKm] = useState(''); 
@@ -31,9 +31,13 @@ export default function PromotionCard() {
       100: 800,
     };
   
-    const costPerKm = kmCosts[selectedKm];
-    const totalCost = days * costPerKm;
-    const discountedCost = isPremium ? totalCost * 0.7 : totalCost;
+    // const costPerKm = kmCosts[selectedKm];
+    // const totalCost = days * costPerKm;
+  // const discountedCost = isPremium ? totalCost * 0.7 : totalCost;
+  const costPerKm = kmCosts[selectedKm] || 0;
+  const totalCost = (days || 0) * costPerKm;
+  const discountedCost = isPremium ? totalCost * 0.7 : totalCost;
+
   
     const handleDaysChange = (e) => {
       const value = Math.min(10, Math.max(1, Number(e.target.value)));

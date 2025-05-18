@@ -20,36 +20,38 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
   const [error, setError] = useState("");
 
     
-    useEffect(() => {
-  const fetchFormat = async () => {
-    try {
-      const res = await fetch("/api/billFormat"); 
-      if (res.ok) {
-        const data = await res.json();
+  useEffect(() => {
+    const fetchFormat = async () => {
+      try {
+        const res = await fetch("/api/billFormat"); 
+        if (res.ok) {
+          const data = await res.json();
 
-        const [cgst, sgst] = data.taxPercentage?.split("+").map((t) => t.trim()) || [0, 0];
-        const [terms = "", updates = ""] = data.extraText?.split("\n") || ["", ""];
+          const [cgst, sgst] = data.taxPercentage?.split("+").map((t) => t.trim()) || [0, 0];
+          const [terms = "", updates = ""] = data.extraText?.split("\n") || ["", ""];
 
-        setFormData({
-          firmName: data.firmName || "",
-          address: data.address || "",
-          contactNo: data.contactNo || "",
-          gstNo: data.gstNumber || "",
-          email: data.email || "",
-          cgst,
-          sgst,
-          proprietorSign: null, 
-          terms,
-          updates,
-        });
+          const institution = data.institutionRelation || {};
+
+          setFormData({
+            firmName: institution.firmName || "",
+            address: institution.shopAddress || "",
+            contactNo: institution.phone || "",
+            gstNo: data.gstNumber || "",
+            email: institution.contactEmail || "",
+            cgst,
+            sgst,
+            proprietorSign: data.proprietorSign || null,
+            terms,
+            updates,
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching format:", err);
       }
-    } catch (err) {
-      console.error("Error fetching format:", err);
-    }
-  };
+    };
 
-  fetchFormat();
-}, []);
+    fetchFormat();
+  }, []);
 
 
   const handleChange = (e) => {
@@ -76,8 +78,8 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-        if (formData.contactNo.length !== 10) {
-      setError("Contact number must be exactly 10 digits");
+    if (formData.contactNo.length !== 10) {
+      setError("Contact number cannot be more than 10 digits");
       return;
     }
 
@@ -95,9 +97,8 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
     };
 
     if (formData.proprietorSign) {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        payload["proprietorSign"] = reader.result; 
+      payload["proprietorSign"] = formData.proprietorSign;
+
 
         try {
           const res = await fetch("/api/billFormat", {
@@ -117,8 +118,8 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
           console.error(err);
           toast.error("An error occurred.");
         }
-      };
-      reader.readAsDataURL(formData.proprietorSign);
+      // };
+      // reader.readAsDataURL(formData.proprietorSign);
           } else {
             try {
               const res = await fetch("/api/billFormat", {
@@ -158,9 +159,7 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
     };
 
     if (formData.proprietorSign) {
-  const reader = new FileReader();
-  reader.onloadend = async () => {
-    payload["proprietorSign"] = reader.result; // base64 string
+  payload["proprietorSign"] = formData.proprietorSign;
 
     try {
       const res = await fetch("/api/billFormat", {
@@ -179,8 +178,8 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
       console.error(err);
       toast.error("An error occurred.");
     }
-  };
-  reader.readAsDataURL(formData.proprietorSign);
+  // };
+  // reader.readAsDataURL(formData.proprietorSign);
 } else {
   try {
     const res = await fetch("/api/billFormat", {
@@ -310,12 +309,27 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
             <input
               type="file"
               accept="image/*"
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  proprietorSign: e.target.files?.[0] || null,
-                }))
-              }
+              // onChange={(e) =>
+              //   setFormData((prev) => ({
+              //     ...prev,
+              //     proprietorSign: e.target.files?.[0] || null,
+              //   }))
+              // }
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      proprietorSign: reader.result,
+                    }));
+                  };
+                  reader.readAsDataURL(file);
+                } else {
+                  setFormData((prev) => ({ ...prev, proprietorSign: null }));
+                }
+              }}
               className="border p-2 rounded mt-1"
             />
           </label>
