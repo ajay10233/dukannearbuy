@@ -70,7 +70,7 @@ export async function middleware(req) {
 export const config = {
   matcher: [
     // "/",
-    "/((?!login|otp-verify|getstarted|api|_next|favicon.ico|images|icons).*)",
+    // "/((?!login|otp-verify|getstarted|api|_next|favicon.ico|images|icons).*)",
     "/billGenerator/:path*",
     "/change-location/:path*",
     "/dashboard/:path*",
