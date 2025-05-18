@@ -354,8 +354,11 @@ model BillItem {
 
 model ShortBill {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  billId     String   @unique @db.ObjectId // <-- Add @unique here
+  billId     String   @unique @db.ObjectId
   summary    String
+  userName   String?
+  userPhone  String?
+  total      Float?
   createdAt  DateTime @default(now())
   expiresAt  DateTime?
 
