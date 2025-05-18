@@ -40,12 +40,12 @@ export default function PromotionCard() {
 
   
     const handleDaysChange = (e) => {
-      const value = Math.min(10, Math.max(1, Number(e.target.value)));
+      const value = Math.min(10, Math.max(0, Number(e.target.value)));
       setDays(value);
       setDurationSelected(true);
     };
   
-    const min = 1;
+    const min = 0;
     const max = 10;
     const percentage = ((days - min) / (max - min)) * 100;
   
@@ -61,6 +61,11 @@ export default function PromotionCard() {
     if (!durationSelected) {
     toast.error("Please select the promotion duration before continuing.");
     return;
+    }
+    
+    if (days < 1) {
+    toast.error("Please select at least 1 day to continue.");
+    return;
   }
 
     if (!promotionType) {
@@ -72,6 +77,7 @@ export default function PromotionCard() {
       toast.error("Please agree to the Terms and Conditions to continue.");
       return;
     }
+
   
     router.push(`/payment?amount=${discountedCost}`);
   };

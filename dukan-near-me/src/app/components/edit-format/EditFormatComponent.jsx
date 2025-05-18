@@ -32,7 +32,7 @@ export default function EditFormatComponent() {
     const [isOpen, setIsOpen] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [formDetails, setFormDetails] = useState(null);
-    const [token, setToken] = useState(false);
+    const [token, setToken] = useState('');
 
 
     const handleFormDetailsChange = (updatedForm) => {
@@ -248,6 +248,26 @@ export default function EditFormatComponent() {
   fetchFormatDetails();
 }, []);
 
+    const handleFetch = async () => {
+        if (!token) return toast.error("Please enter a token number");
+
+        try {
+            const response = await fetch(`/api/tokens/${token_number}/`);
+            const data = await response.json();
+
+            if (response.ok && data) {
+                setUsername({ firstName: data.firstName || '' });
+                setAddress(data.address || '');
+                setMobile(data.mobile || '');
+                toast.success("Receiver details fetched successfully!");
+            } else {
+                toast.error("No data found for this token.");
+            }
+        } catch (err) {
+            console.error("Error fetching data:", err);
+            toast.error("Something went wrong.");
+        }
+    };
 
 
     const handleFileChange = (e) => {
@@ -400,12 +420,34 @@ export default function EditFormatComponent() {
                         {/* Header Section */}
                         <div className="flex justify-between items-center my-8">
                             <h1 className="text-2xl font-bold text-center w-full">INVOICE</h1>
-                            <span
+                            {/* <span
                                 onClick={() => setIsScanning(true)}
                                 className="flex items-center print:hidden gap-2 px-3 py-2 bg-blue-600 cursor-pointer text-white rounded-md hover:bg-blue-800 transition-all duration-500 ease-in-out"
                             >
                                 <ScanLine size={20} strokeWidth={1.5} /> Scan
-                            </span>
+                            </span> */}
+
+                            <div className="flex items-center gap-2 print:hidden ml-auto">
+                                <input
+                                    type="text"
+                                    value={token}
+                                    onChange={(e) => setToken(e.target.value)}
+                                    placeholder="Enter Token No."
+                                    className="px-3 py-2 border border-gray-300 transition-all duration-500 ease-in-out rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <button
+                                    onClick={handleFetch}
+                                    className="px-3 py-2 bg-blue-600 cursor-pointer text-white rounded-md hover:bg-blue-800 transition-all duration-500 ease-in-out"
+                                >
+                                    Fetch
+                                </button>
+                                <span
+                                    onClick={() => setIsScanning(true)}
+                                    className="flex items-center gap-2 px-3 py-2 bg-blue-600 cursor-pointer text-white rounded-md hover:bg-blue-800 transition-all duration-500 ease-in-out"
+                                >
+                                    <ScanLine size={20} strokeWidth={1.5} /> Scan
+                                </span>
+                            </div>
                         </div>
 
                         {/* Bill Information */}
