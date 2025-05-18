@@ -406,26 +406,31 @@ export default function ChatBox() {
     function updateConversationsArray(prevConversations) {
       if (!Array.isArray(prevConversations)) return [createNewConversation()];
 
-      const convIndex = prevConversations.findIndex((conv) => {
+      const selectedUserId = selectedPartner?.otherUser ? selectedPartner.otherUser.id : selectedPartner.id;
+      const updatedConversation = {
+        otherUser: {
+          id: selectedPartner.id,
+          name:
+            selectedPartner.role === "INSTITUTION" || selectedPartner.role === "SHOP_OWNER"
+              ? selectedPartner.firmName
+              : `${selectedPartner.firstName || ""} ${selectedPartner.lastName || ""}`.trim(),
+          profilePhoto: selectedPartner.profilePhoto || null,
+          firmName: selectedPartner.firmName || null,
+          role: selectedPartner.role,
+        },
+        lastMessage,
+        updatedAt: timestamp,
+        accepted: selectedPartner.accepted,
+      };
+
+      // Filter out the existing conversation (if any)
+      const filtered = prevConversations.filter((conv) => {
         const userId = conv.otherUser?.id || conv.id;
-        const selectedUserId = selectedPartner?.otherUser ? selectedPartner.otherUser.id : selectedPartner.id;
-        return userId === selectedUserId;
+        return userId !== selectedUserId;
       });
 
-      if (convIndex !== -1) {
-        // Update existing conversation
-        const updatedConversations = [...prevConversations];
-        updatedConversations[convIndex] = {
-          ...updatedConversations[convIndex],
-          lastMessage,
-          updatedAt: timestamp,
-          accepted: selectedPartner.accepted,
-        };
-        return updatedConversations;
-      } else {
-        // Add new conversation
-        return [...prevConversations, createNewConversation()];
-      }
+      // Place updated conversation at the top
+      return [updatedConversation, ...filtered];
     }
 
     function createNewConversation() {
@@ -449,6 +454,7 @@ export default function ChatBox() {
     // Update both conversations and filtered conversations states
     setConversations(updateConversationsArray);
     setFilteredConversations(updateConversationsArray);
+
 
     console.log("msg data: ", msgData);
 
