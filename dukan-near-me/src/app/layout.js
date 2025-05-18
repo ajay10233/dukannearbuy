@@ -1,12 +1,9 @@
 import { Plus_Jakarta_Sans, Rubik, Work_Sans, Poppins, Roboto } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
-import SocketInitializer from "@/app/components/SocketInitializer";
 import SessionProviderWrapper from "@/app/components/SessionManager/SessionProviderWrapper"; 
-import HeaderLocation from "./components/Location/HeaderLocation";
-import LoaderWrapper from "./components/LoaderWrapper";
 import { UserProvider } from "@/context/UserContext";
-
+import { StrictMode } from 'react';
 const rubik = Rubik({
   variable: "--font-rubik",
   subsets: ["latin"],
@@ -50,16 +47,18 @@ export default function RootLayout({ children }) {
     <html lang="en">
       {/* <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}> */}
       <body className={`${rubik.variable} ${plusJakartaSans.variable} ${poppins.variable} antialiased`}>
-      {/* <HeaderLocation /> */}
-      <UserProvider>
-        <SessionProviderWrapper> {/* ✅ Wrap in a client component */}
-        {/* <LoaderWrapper>  */}
-            {children}
-          {/* </LoaderWrapper> */}
-          <Toaster position="bottom-right" reverseOrder={false} />
-            {/* <SocketInitializer /> */}
-        </SessionProviderWrapper>
-      </UserProvider>
+        <StrictMode>
+          {/* <HeaderLocation /> */}
+          <UserProvider>
+            <SessionProviderWrapper> {/* ✅ Wrap in a client component */}
+            {/* <LoaderWrapper>  */}
+                {children}
+              {/* </LoaderWrapper> */}
+              <Toaster position="bottom-right" reverseOrder={false} />
+                {/* <SocketInitializer /> */}
+            </SessionProviderWrapper>
+          </UserProvider>
+        </StrictMode>
       </body>
     </html>
   );

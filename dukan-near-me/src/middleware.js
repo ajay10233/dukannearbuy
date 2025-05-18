@@ -1,13 +1,10 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-/**
- * Middleware to protect routes and route users based on their role.
- */
 export async function middleware(req) {
   const { nextUrl } = req;
   const { pathname, origin } = nextUrl;
-
+  
   // Get session token using NextAuth
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
@@ -48,14 +45,14 @@ export async function middleware(req) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // // Redirect to role-specific homepage only if visiting the root "/"
-  // if (pathname === "/") {
-  //   if (token.role === "USER") {
-  //     return NextResponse.redirect(new URL("/UserHomePage", req.url));
-  //   } else if (token.role === "INSTITUTION") {
-  //     return NextResponse.redirect(new URL("/partnerHome", req.url));
-  //   }
-  // }
+  // Redirect to role-specific homepage only if visiting the root "/"
+  if (pathname === "/") {
+    if (token.role === "USER") {
+      return NextResponse.redirect(new URL("/UserHomePage", req.url));
+    } else if (token.role === "INSTITUTION"|| token.role === "SHOP_OWNER") {
+      return NextResponse.redirect(new URL("/partnerHome", req.url));
+    }
+  }
 
   // Allow all other requests to proceed
   return NextResponse.next();
@@ -64,12 +61,45 @@ export async function middleware(req) {
 // Route matcher config
 export const config = {
   matcher: [
-    "/",
+    // "/",
     "/billGenerator/:path*",
     "/change-location/:path*",
     "/dashboard/:path*",
     "/payments/:path*",
     "/session-manager/:path*",
     "/admin/:path*",
+    "/bill-genration-page/:path*",
+    "/billGenerator/:path*",
+    "/billHistory/:path*",
+    "/billRecord/:path*",
+    "/change-location/:path*",
+    "/chat/:path*",
+    "/create-bill/:path*",
+    "/dashboard/:path*",
+    "/download-bill/:path*",
+    "/edit-format/:path*",
+    "/favprofile/:path*",
+    "/feedback/:path*",
+    "/forgot-password/:path*",
+    "/generate-bill/:path*",
+    "/institution-edit-profile/:path*",
+    "/institution-profile/:path*",
+    "/myplan/:path*",
+    "/mytoken/:path*",
+    "/notification/:path*",
+    "/partnerHome/:path*",
+    "/partnerProfile/:path*",
+    "/payment/:path*",
+    "/payments/:path*",
+    "/qr-code/:path*",
+    // "/reset/:path*", // uncomment if needed
+    "/scan-qr/:path*",
+    "/scanqr/:path*",
+    "/shortBill/:path*",
+    "/token/:path*",
+    "/tokengenerate/:path*",
+    "/tokenupdate/:path*",
+    "/UserHomePage/:path*",
+    "/userProfile/:path*",
   ],
 };

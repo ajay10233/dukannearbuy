@@ -32,9 +32,11 @@ import PaymentHistory from "./PaymentHistory";
 import CryptoJS from 'crypto-js';
 import { ChevronLeft } from "lucide-react";
 import axios from "axios";
+import { useUser } from "@/context/UserContext";
 
 export default function ChatBox() {
   const searchParams = useSearchParams();
+  const { socket, user: loggedInUser } = useUser();
 
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
@@ -44,12 +46,31 @@ export default function ChatBox() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState(null);
+  // const [loggedInUser, setLoggedInUser] = useState(null);
 
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
   const router = useRouter();
   const { data: session, status } = useSession();
+
+
+  const getDisplayName = (partner) => {
+    const user = partner?.otherUser || partner;
+
+    if (!user) return "Unknown";
+
+    const isInstitutionOrShop = user.role === "INSTITUTION" || user.role === "SHOP_OWNER";
+
+    if (isInstitutionOrShop) {
+      return user.firmName || `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Unknown";
+    }
+
+    if (user.firstName || user.lastName) {
+      return `${user.firstName || ""} ${user.lastName || ""}`.trim();
+    }
+
+    return "Unknown";
+  };
 
   const encryptMessage = (message, secretKey) => {
     return CryptoJS.AES.encrypt(message, secretKey).toString();
@@ -65,19 +86,20 @@ export default function ChatBox() {
     }
   }
 
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        const res = await fetch("/api/users/me");
-        const data = await res.json();
-        setLoggedInUser(data);
-      } catch (error) {
-        console.error("Error fetching user", error);
-      }
-    }
+  // useEffect(() => {
+  //   async function fetchUser() {
+  //     try {
+  //       const res = await fetch("/api/users/me");
+  //       const data = await res.json();
+  //       setLoggedInUser(data);
+  //     } catch (error) {
+  //       console.error("Error fetching user", error);
+  //     }
+  //   }
 
-    fetchUser();
-  }, []);
+  //   fetchUser();
+  // }, []);
+
 
 
   const SendLiveLocation = () => {
@@ -142,38 +164,42 @@ export default function ChatBox() {
     if (!session) return;
 
     const fetchConversations = async () => {
-  try {
-    const res = await fetch(`/api/conversations/all`);
-    const data = await res.json();
-    console.log(data);
+      try {
+        const res = await fetch(`/api/conversations/all`);
+        const data = await res.json();
+        console.log(data);
 
-    const updatedConversations = data?.data?.map((conversation) => {
-      const lastMessage = conversation.lastMessage;
-      if (lastMessage) {
-        const isSentByCurrentUser = lastMessage.senderId === session.user.id;
-        const secretKey =
-          isSentByCurrentUser
-            ? conversation.otherUser.id + session.user.id
-            : session.user.id + conversation.otherUser.id;
+        const updatedConversations = data?.data?.map((conversation) => {
+          const lastMessage = conversation.lastMessage;
+          if (lastMessage) {
+            const isSentByCurrentUser = lastMessage.senderId === session.user.id;
+            const secretKey =
+              isSentByCurrentUser
+                ? conversation.otherUser.id + session.user.id
+                : session.user.id + conversation.otherUser.id;
 
-        // Decrypt last message content
-        lastMessage.content = decryptMessage(lastMessage.content, secretKey);
+            // Decrypt last message content
+            lastMessage.content = decryptMessage(lastMessage.content, secretKey);
+          }
+
+          return conversation;
+        });
+
+        console.log("Updated conversations: ", updatedConversations);
+
+        setConversations(updatedConversations);
+        setFilteredConversations(updatedConversations);
+
+        checkForParams(updatedConversations);
+
+      } catch (error) {
+        console.error("❌ Failed to fetch conversations:", error);
       }
-
-      return conversation;
-    });
-
-    setConversations(updatedConversations);
-    setFilteredConversations(updatedConversations);
-
-  } catch (error) {
-    console.error("❌ Failed to fetch conversations:", error);
-  }
-};
+    };
 
 
     fetchConversations();
-    checkForParams();
+    // checkForParams();
   }, [session]);
 
   useEffect(() => {
@@ -189,74 +215,75 @@ export default function ChatBox() {
           );
           const data = await res.json();
           let messages = data.data?.messages || [];
-  
+
           if (messages.length > 0) {
             const selected_id = selectedPartner?.otherUser ? selectedPartner?.otherUser.id : selectedPartner.id;
-  
+
             const decryptedMessages = messages.map((msg) => {
               const isSentByCurrentUser = msg.senderId === session.user.id;
               const secretKey = isSentByCurrentUser
                 ? selected_id + session.user.id
                 : session.user.id + selected_id;
-  
+
               return {
                 ...msg,
                 content: decryptMessage(msg.content, secretKey),
               };
             });
-  
+
             setMessages(decryptedMessages);
           } else {
             setMessages([]);
           }
-  
+
         } catch (error) {
           console.error("❌ Failed to fetch messages:", error);
-        } 
-      }
-
-      else{
-        try {
-        const res = await fetch(
-          `/api/messages/conversation?conversationId=${selectedPartner.conversationId}`
-        );
-        const data = await res.json();
-        let messages = data.data?.messages || [];
-
-        if (messages.length > 0) {
-          const selected_id = selectedPartner?.otherUser ? selectedPartner?.otherUser.id : selectedPartner.id;
-
-          const decryptedMessages = messages.map((msg) => {
-            const isSentByCurrentUser = msg.senderId === session.user.id;
-            const secretKey = isSentByCurrentUser
-              ? selected_id + session.user.id
-              : session.user.id + selected_id;;
-
-            return {
-              ...msg,
-              content: decryptMessage(msg.content, secretKey),
-            };
-          });
-
-          setMessages(decryptedMessages);
-        } else {
-          setMessages([]);
         }
-
-      } catch (error) {
-        console.error("❌ Failed to fetch messages:", error);
       }
-    }
+
+      else {
+        try {
+          const res = await fetch(
+            `/api/messages/conversation?conversationId=${selectedPartner.conversationId}`
+          );
+          const data = await res.json();
+          let messages = data.data?.messages || [];
+
+          if (messages.length > 0) {
+            const selected_id = selectedPartner?.otherUser ? selectedPartner?.otherUser.id : selectedPartner.id;
+
+            const decryptedMessages = messages.map((msg) => {
+              const isSentByCurrentUser = msg.senderId === session.user.id;
+              const secretKey = isSentByCurrentUser
+                ? selected_id + session.user.id
+                : session.user.id + selected_id;;
+
+              return {
+                ...msg,
+                content: decryptMessage(msg.content, secretKey),
+              };
+            });
+
+            setMessages(decryptedMessages);
+          } else {
+            setMessages([]);
+          }
+
+        } catch (error) {
+          console.error("❌ Failed to fetch messages:", error);
+        }
+      }
     };
 
     fetchMessages();
   }, [selectedPartner]);
 
-  const checkForParams = async () => {
+  const checkForParams = async (allConversations = conversations) => {
     const toParam = searchParams.get("to");
-    if (toParam === session.user.id) return;
+    if (toParam == null || toParam === session.user.id) return;
+
     if (toParam) {
-      const conversation = conversations.find(
+      const conversation = allConversations.find(
         (conv) => conv.otherUser.id === toParam
       );
       if (conversation) {
@@ -277,22 +304,13 @@ export default function ChatBox() {
         );
         console.log("res isL ", res);
         if (!res) {
+          console.log("Called !res")
           setFilteredConversations(prev => [...prev, newConversation]);
+          setConversations(prev => [...prev, newConversation]);
         }
       }
     }
   }
-  //   const checkIfFavorite = async () => {
-  //     if (!selectedPartner) return;
-  //     try {
-  //       const res = await fetch(`/api/favorites`);
-  //       const data = await res.json();
-  //       console.log(data);
-  //       setIsFavorite(data.favorites.some((fav) => fav.institutionId === selectedPartner.conversationId));
-  //     } catch (error) {
-  //       console.error("❌ Failed to check favorite status:", error);
-  //     }
-  //   };
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -300,37 +318,52 @@ export default function ChatBox() {
     }
   }, [messages]);
 
-  const DEBOUNCE_DELAY = 500; // ms
+  const DEBOUNCE_DELAY = 300; // ms
 
   const handleSearch = (query) => {
     setSearchQuery(query);
   };
-  
+
   useEffect(() => {
     const delayDebounce = setTimeout(async () => {
-      if (!searchQuery.trim()) {
-        setFilteredConversations(conversations);
+      if (!searchQuery || searchQuery.trim() == "") {
+        // console.log(searchQuery.trim()=="")
+        // console.log("called !searchquerry",conversations);
+        if (conversations.length > 0) {
+          setFilteredConversations(conversations);
+        }
         return;
       }
-  
       try {
         const res = await fetch(`/api/users/search?query=${searchQuery}`);
         const data = await res.json();
-        console.log(data);
-  
-        const combinedResults = [...(data.data || []), ...(data.users || [])];
+        // console.log(data);
+        const combinedResults = [
+          ...(Array.isArray(data.data) ? data.data : []),
+          ...(Array.isArray(data.users) ? data.users : [])
+        ];
+
+        if (combinedResults.length > 0) {
+          console.log("Combined results: ");
+          setFilteredConversations(combinedResults);
+        } else {
+          console.log("Combined else ");
+          setFilteredConversations(conversations); // fallback to default
+        }
+
+        console.log("Combined results out ");
         setFilteredConversations(combinedResults);
       } catch (error) {
         console.error("❌ Search failed:", error);
       }
     }, DEBOUNCE_DELAY);
-  
+
     return () => clearTimeout(delayDebounce);
   }, [searchQuery]);
 
   if (status === "loading")
     return <p className="text-center text-gray-500">Loading...</p>;
-  
+
   if (!session)
     return (
       <p className="text-center text-red-500">
@@ -340,71 +373,101 @@ export default function ChatBox() {
 
   const sendMessage = async () => {
     if (!message.trim() || !socketRef.current || !selectedPartner) return;
+
     const timestamp = new Date().toISOString();
-    const selected_id = selectedPartner?.otherUser ? selectedPartner?.otherUser.id : selectedPartner.id;
-    console.log("sessing user id is: ", selected_id, session.user.id);
+    const selected_id = selectedPartner?.otherUser ? selectedPartner.otherUser.id : selectedPartner.id;
     const secretKey = selected_id + session.user.id;
-    console.log("Selected partner currently is: ", selectedPartner);
-    console.log("Key is: ", secretKey);
     const encryptedMessage = encryptMessage(message, secretKey);
-    let msgData;
-    console.log("Selected partner currently is: ", selectedPartner);
-    
-    const decryptedMessage = message;                                
 
+    const decryptedMessage = message;
 
-    if (selectedPartner.otherUser) {
-      msgData = {
-        senderId: session.user.id,
-        senderType: session.user.role,
-        receiverId: selectedPartner?.otherUser.id,
-        content: encryptedMessage,
-        timestamp,
-        accepted: selectedPartner?.accepted,
-      };
-    } else {
-      const newConversation = {
+    // Create the lastMessage object
+    const lastMessage = {
+      // id: generateUniqueId(), // replace with real ID from backend if available
+      senderId: session.user.id,
+      senderType: session.user.role,
+      receiverId: selectedPartner?.otherUser ? selectedPartner.otherUser.id : selectedPartner.id,
+      content: decryptedMessage,
+      timestamp,
+      conversationId: selectedPartner?.conversationId || null,
+      expiresAt: null,
+    };
+
+    let msgData = {
+      senderId: session.user.id,
+      senderType: session.user.role,
+      receiverId: selectedPartner?.otherUser ? selectedPartner.otherUser.id : selectedPartner.id,
+      content: encryptedMessage,
+      timestamp,
+      accepted: selectedPartner?.accepted,
+    };
+
+    // Helper function to update conversations array
+    function updateConversationsArray(prevConversations) {
+      if (!Array.isArray(prevConversations)) return [createNewConversation()];
+
+      const selectedUserId = selectedPartner?.otherUser ? selectedPartner.otherUser.id : selectedPartner.id;
+      const updatedConversation = {
         otherUser: {
-          id: selectedPartner?.id,
-          name: selectedPartner?.role === "INSTITUTION" || selectedPartner?.role === "SHOP_OWNER"
-            ? selectedPartner?.firmName
-            : `${selectedPartner?.firstName || ""} ${selectedPartner?.lastName || ""}`.trim(),
-          profilePhoto: selectedPartner?.profilePhoto || null,
-          firmName: selectedPartner?.firmName || null,
-          role: selectedPartner?.role,
+          id: selectedPartner.id,
+          name:
+            selectedPartner.role === "INSTITUTION" || selectedPartner.role === "SHOP_OWNER"
+              ? selectedPartner.firmName
+              : `${selectedPartner.firstName || ""} ${selectedPartner.lastName || ""}`.trim(),
+          profilePhoto: selectedPartner.profilePhoto || null,
+          firmName: selectedPartner.firmName || null,
+          role: selectedPartner.role,
         },
-        lastMessage: decryptedMessage,
-        updatedAt: new Date().toISOString(),
-        accepted: selectedPartner?.accepted,
+        lastMessage,
+        updatedAt: timestamp,
+        accepted: selectedPartner.accepted,
       };
 
-      setConversations((prevConversations) =>
-        Array.isArray(prevConversations)
-          ? [...prevConversations, newConversation]
-          : [newConversation]
-      );
+      // Filter out the existing conversation (if any)
+      const filtered = prevConversations.filter((conv) => {
+        const userId = conv.otherUser?.id || conv.id;
+        return userId !== selectedUserId;
+      });
 
-      msgData = {
-        senderId: session.user.id,
-        senderType: session.user.role,
-        receiverId: selectedPartner.id,
-        content: encryptedMessage,
-        timestamp,
-        accepted: selectedPartner?.accepted,
+      // Place updated conversation at the top
+      return [updatedConversation, ...filtered];
+    }
+
+    function createNewConversation() {
+      return {
+        otherUser: {
+          id: selectedPartner.id,
+          name:
+            selectedPartner.role === "INSTITUTION" || selectedPartner.role === "SHOP_OWNER"
+              ? selectedPartner.firmName
+              : `${selectedPartner.firstName || ""} ${selectedPartner.lastName || ""}`.trim(),
+          profilePhoto: selectedPartner.profilePhoto || null,
+          firmName: selectedPartner.firmName || null,
+          role: selectedPartner.role,
+        },
+        lastMessage,
+        updatedAt: timestamp,
+        accepted: selectedPartner.accepted,
       };
     }
 
-    console.log("msg data: ", msgData);
+    // Update both conversations and filtered conversations states
+    setConversations(updateConversationsArray);
+    setFilteredConversations(updateConversationsArray);
 
+
+    console.log("msg data: ", msgData);
 
     await socketRef.current.emit("sendMessage", msgData);
 
-
-    setMessages((prev) => Array.isArray(prev) ? [...prev, { ...msgData, content: decryptedMessage }] : [{ ...msgData, content: decryptedMessage }]);
+    setMessages((prev) =>
+      Array.isArray(prev) ? [...prev, { ...msgData, content: decryptedMessage }] : [{ ...msgData, content: decryptedMessage }]
+    );
 
     setMessage("");
     setShowEmojiPicker(false);
   };
+
 
   const handleLike = async () => {
     if (!selectedPartner) return;
@@ -435,9 +498,9 @@ export default function ChatBox() {
   // Function to fetch the session data
   const fetchSessionAndRedirect = async () => {
     try {
-      const res = await fetch("/api/users/me");
-      const data = await res.json();
-
+      // const res = await fetch("/api/users/me");
+      // const data = await res.json();
+      const data = loggedInUser;
       if (data?.role === "USER") {
         router.push("/UserHomePage");
       } else if (data?.role === "INSTITUTION" || data?.role === "SHOP_OWNER") {
@@ -452,14 +515,14 @@ export default function ChatBox() {
 
 
   const getTruncatedMessage = (message) => {
-  const maxLength = 20; 
+    const maxLength = 20;
 
-  if (message.length > maxLength) {
-    return message.substring(0, maxLength) + " ...";
-  }
+    if (message.length > maxLength) {
+      return message.substring(0, maxLength) + " ...";
+    }
 
-  return message;
-};
+    return message;
+  };
 
   return (
     <div className="flex h-screen bg-white font-[var(--font-plus-jakarta)]">
@@ -493,8 +556,8 @@ export default function ChatBox() {
         <div className="flex items-center justify-center w-full">
           <button
             className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tl-xl rounded-bl-xl transition-all duration-500 cursor-pointer ${!isFavorite
-                ? "bg-[var(--chart-2)] text-white font-semibold"
-                : "bg-white text-[var(--withdarktext)] font-normal"
+              ? "bg-[var(--chart-2)] text-white font-semibold"
+              : "bg-white text-[var(--withdarktext)] font-normal"
               }`}
             onClick={() => setIsFavorite(false)}
           >
@@ -502,8 +565,8 @@ export default function ChatBox() {
           </button>
           <button
             className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tr-xl rounded-br-xl transition-all duration-500 cursor-pointer ${isFavorite
-                ? "bg-[var(--chart-2)] text-white font-semibold"
-                : "bg-white text-[var(--withdarktext)] font-normal"
+              ? "bg-[var(--chart-2)] text-white font-semibold"
+              : "bg-white text-[var(--withdarktext)] font-normal"
               }`}
             onClick={() => setIsFavorite(true)}
           >
@@ -588,15 +651,22 @@ export default function ChatBox() {
                 <div className="flex items-center gap-2.5">
                   <div className="relative w-14 h-14">
                     <Image
-                      src={partner?.otherUser  ? 
-                        partner?.otherUser?.profilePhoto && partner?.otherUser?.profilePhoto!="null" ? partner?.otherUser?.profilePhoto : "/chatUserSvg/userImage.svg"
-                        : partner?.profilePhoto && partner?.profilePhoto!="null" ? partner?.profilePhoto : "/chatUserSvg/userImage.svg"
-                        }
+                      src={
+                        partner?.otherUser
+                          ? partner?.otherUser?.profilePhoto && partner?.otherUser?.profilePhoto !== "null"
+                            ? partner?.otherUser?.profilePhoto
+                            : "/chatUserSvg/userImage.svg"
+                          : partner?.profilePhoto && partner?.profilePhoto !== "null"
+                            ? partner?.profilePhoto
+                            : "/chatUserSvg/userImage.svg"
+                      }
                       alt="seller image"
                       fill
+                      sizes="(max-width: 768px) 40px, (max-width: 1200px) 50px, 60px"
                       className="rounded-md object-cover"
                       priority
                     />
+
                   </div>
                   <div className="flex flex-col justify-center gap-1 flex-grow">
                     <div
@@ -607,20 +677,7 @@ export default function ChatBox() {
                       // }}
                       className={`font-medium text-[var(--secondary-foreground)] ${selectedPartner?.id === partner.id && "font-medium"}`}>
                       <span className="inline-flex items-center gap-1">
-                        {
-                        partner?.otherUser
-                          ? (partner.otherUser.role === "INSTITUTION" || partner.otherUser.role === "SHOP_OWNER")
-                              ? partner?.otherUser.firmName || `${partner?.otherUser?.firstName} ${partner?.otherUser?.lastName}`
-                              : (partner?.otherUser.firstName || partner?.otherUser.lastName)
-                                  ? `${partner?.otherUser?.firstName || ""} ${partner?.otherUser?.lastName || ""}`.trim()
-                                  : "Unknown"
-
-                          : (partner?.role === "INSTITUTION" || partner?.role === "SHOP_OWNER")
-                              ? partner?.firmName || `${partner.firstName} ${partner.lastName}`
-                              : (partner?.firstName || partner?.lastName)
-                                  ? `${partner.firstName || ""} ${partner.lastName || ""}`.trim()
-                                  : "Unknown"
-                        }
+                        {getDisplayName(partner)}
                         {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" && (
                           <Crown size={16} fill="#f0d000" className="text-yellow-500" />
                         )}
@@ -644,15 +701,15 @@ export default function ChatBox() {
                   </div>
                 </div>
                 <div className="flex flex-col items-end justify-center gap-1">
-                {partner.lastMessage?.content && partner.lastMessage?.timestamp && (
-                  <span className="text-gray-500 text-sm">
-                    {new Date(partner.lastMessage.timestamp).toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      hour12: true,
-                    }).toUpperCase()}
-                  </span>
-                )}
+                  {partner.lastMessage?.content && partner.lastMessage?.timestamp && (
+                    <span className="text-gray-500 text-sm">
+                      {new Date(partner.lastMessage.timestamp).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true,
+                      }).toUpperCase()}
+                    </span>
+                  )}
                 </div>
               </div>
             ))
@@ -663,10 +720,7 @@ export default function ChatBox() {
       </div>
 
       {/* Right Chat Box */}
-      <div
-        className={`${selectedPartner ? "flex" : "hidden md:flex"
-          } flex-col w-full md:w-[70%] h-full bg-[#FAFAFA]`}
-      >
+      <div className={`${selectedPartner ? "flex" : "hidden md:flex"} flex-col w-full md:w-[70%] h-full bg-[#FAFAFA]`} >
         {selectedPartner ? (
           <>
             {/* Chat Header */}
@@ -680,10 +734,10 @@ export default function ChatBox() {
                 </button>
                 <div className="relative w-10 h-10">
                   <Image
-                    src={selectedPartner?.otherUser ? 
-                      selectedPartner?.otherUser?.profilePhoto && selectedPartner?.otherUser?.profilePhoto!="null" ? selectedPartner?.otherUser?.profilePhoto : "/chatUserSvg/userImage.svg"
-                      : selectedPartner?.profilePhoto && selectedPartner?.profilePhoto!="null" ? selectedPartner?.profilePhoto : "/chatUserSvg/userImage.svg"
-                      }
+                    src={selectedPartner?.otherUser ?
+                      selectedPartner?.otherUser?.profilePhoto && selectedPartner?.otherUser?.profilePhoto != "null" ? selectedPartner?.otherUser?.profilePhoto : "/chatUserSvg/userImage.svg"
+                      : selectedPartner?.profilePhoto && selectedPartner?.profilePhoto != "null" ? selectedPartner?.profilePhoto : "/chatUserSvg/userImage.svg"
+                    }
                     alt="seller image"
                     fill
                     className="rounded-lg"
@@ -692,52 +746,34 @@ export default function ChatBox() {
                 </div>
                 <div>
                   <p className="text-[var(--chatText-color)] text-[16px] md:text-lg flex items-center gap-0 md:gap-2">
-                    { selectedPartner?.otherUser && (
-                      <Link href={
+                    {selectedPartner
+                      &&
+                      (
+                        <Link href=
+                          {
+                            selectedPartner?.otherUser
+                              ?
                               selectedPartner?.otherUser?.role === "INSTITUTION" ||
-                              selectedPartner?.otherUser?.role === "SHOP_OWNER"
+                                selectedPartner?.otherUser?.role === "SHOP_OWNER"
                                 ? `/partnerProfile/${selectedPartner.otherUser.id}`
-                          : `/userProfile/${selectedPartner.otherUser.id}`}
-                        className="inline-flex items-center gap-0 md:gap-1">
-                  {
-                      selectedPartner?.otherUser
-                        ? (selectedPartner.otherUser.role === "INSTITUTION" || selectedPartner.otherUser.role === "SHOP_OWNER")
-                            ? selectedPartner?.otherUser.firmName || `${selectedPartner?.otherUser?.firstName} ${selectedPartner?.otherUser?.lastName}`
-                            : (selectedPartner?.otherUser.firstName || selectedPartner?.otherUser.lastName)
-                                ? `${selectedPartner?.otherUser?.firstName || ""} ${selectedPartner?.otherUser?.lastName || ""}`.trim()
-                                : "Unknown"
+                                : `/userProfile/${selectedPartner.otherUser.id}`
 
-                        : (selectedPartner?.role === "INSTITUTION" || selectedPartner?.role === "SHOP_OWNER")
-                            ? selectedPartner?.firmName || `${selectedPartner.firstName} ${selectedPartner.lastName}`
-                            : (selectedPartner?.firstName || selectedPartner?.lastName)
-                                ? `${selectedPartner.firstName || ""} ${selectedPartner.lastName || ""}`.trim()
-                                : "Unknown"
-                      }
-                      {selectedPartner.otherUser?.subscriptionPlan?.name === "PREMIUM" && (
-                          <Crown size={18} fill="#f0d000" className="text-yellow-500" />
-                        )}
-                        {selectedPartner.otherUser?.subscriptionPlan?.name === "BUSINESS" && (
-                          <Crown size={18} fill="#AFAFAF" className="text-gray-400" />
-                        )}
-
-                    {/* {selectedPartner?.otherUser ? 
-                     selectedPartner?.otherUser?.role === "INSTITUTION" || selectedPartner?.otherUser?.role === "SHOP_OWNER"
-                     ? selectedPartner?.otherUser?.firmName || "Unknown"
-                     : `${selectedPartner?.otherUser?.firstName || ""} ${selectedPartner?.otherUser?.lastName || ""}`
-                     : ""} */}
-                    {/* {selectedPartner?.otherUser?.firmName || selectedPartner?.otherUser?.name || "Unknown"} */}
-
-                    {/* <Heart
-                      size={20}
-                      color="#DA3036"
-                      fill={isFavorite ? "#DA3036" : "none"}
-                      strokeWidth={1.5}
-                      className="cursor-pointer"
-                      onClick={() => handleLike(selectedPartner)}
-                    /> */}
-                      
-                      </Link>
-                    )}
+                              :
+                              selectedPartner?.role === "INSTITUTION" ||
+                                selectedPartner?.role === "SHOP_OWNER"
+                                ? `/partnerProfile/${selectedPartner.id}`
+                                : `/userProfile/${selectedPartner.id}`
+                          }
+                          className="inline-flex items-center gap-0 md:gap-1">
+                          {getDisplayName(selectedPartner)}
+                          {selectedPartner.otherUser?.subscriptionPlan?.name === "PREMIUM" && (
+                            <Crown size={18} fill="#f0d000" className="text-yellow-500" />
+                          )}
+                          {selectedPartner.otherUser?.subscriptionPlan?.name === "BUSINESS" && (
+                            <Crown size={18} fill="#AFAFAF" className="text-gray-400" />
+                          )}
+                        </Link>
+                      )}
                   </p>
                 </div>
               </div>
@@ -763,7 +799,7 @@ export default function ChatBox() {
                       </div>
                     </DialogHeader>
                     <div className="flex flex-col">
-                      <PaymentHistory />
+                      <PaymentHistory receiverId={selectedPartner?.otherUser ? selectedPartner.otherUser.id : selectedPartner.id} />
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -772,18 +808,18 @@ export default function ChatBox() {
 
             {/* Message Area */}
             <div className="flex-1 pt-2 pb-4 px-4 overflow-y-auto flex flex-col gap-3 h-[calc(100vh-40px)]">
-            <div className="flex justify-center">
-              {loggedInUser?.subscriptionPlan?.name === "PREMIUM" ? (
-                <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
-                  <LockKeyhole size={20} strokeWidth={1.5} />
+              <div className="flex justify-center">
+                {loggedInUser?.subscriptionPlan?.name === "PREMIUM" ? (
+                  <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
+                    <LockKeyhole size={20} strokeWidth={1.5} />
                     Messages are end-to-end encrypted.
-                </span>
-              ) : (
-                <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
-                  <LockKeyhole size={20} strokeWidth={1.5} />
-                  Chats will be automatically deleted after 48 hours of last
-                </span>
-              )}
+                  </span>
+                ) : (
+                  <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
+                    <LockKeyhole size={20} strokeWidth={1.5} />
+                    Chats will be automatically deleted after 48 hours of last
+                  </span>
+                )}
               </div>
 
               {messages.length > 0 ? (
@@ -833,14 +869,14 @@ export default function ChatBox() {
                       {/* Message Bubble */}
                       <div
                         className={`flex ${msg.senderId === session.user.id
-                            ? "justify-end"
-                            : "justify-start"
+                          ? "justify-end"
+                          : "justify-start"
                           }`}
                       >
                         <div
                           className={`p-2.5 ${msg.senderId === session.user.id
-                              ? "bg-[#D7F8F4]"
-                              : "bg-white"
+                            ? "bg-[#D7F8F4]"
+                            : "bg-white"
                             }
                             ${msg.senderId === session.user.id
                               ? "rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl"

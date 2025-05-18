@@ -6,8 +6,8 @@ import { useSession } from "next-auth/react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function PaymentHistory() {
-  const [receiverId, setReceiverId] = useState(null);
+export default function PaymentHistory({receiverId}) {
+  // const [receiverId, setReceiverId] = useState(null);
   const [payments, setPayments] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editedPayment, setEditedPayment] = useState({});
@@ -17,24 +17,10 @@ export default function PaymentHistory() {
   const [loading, setLoading] = useState(false);
   const { data: session } = useSession();
 
-  useEffect(() => {
-    const fetchReceiverId = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/conversations/all`);
-        const json = await res.json();
-        const id = json?.data?.[0]?.otherUser?.id;
-        if (id) setReceiverId(id);
-      } catch (error) {
-        console.error("Error fetching conversations", error);
-      }
-    };
-    fetchReceiverId();
-  }, []);
-
   const fetchPayments = async () => {
     if (!receiverId) return;
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/payments/history?receiverId=${receiverId}`);
+      const res = await fetch(`/api/payments/history?receiverId=${receiverId}`);
       const json = await res.json();
       setPayments(json.payments || []);
     } catch (error) {
@@ -44,7 +30,7 @@ export default function PaymentHistory() {
 
   useEffect(() => {
     fetchPayments();
-  }, [receiverId]);
+  }, [session, receiverId]);
 
   const handleEditClick = (payment) => {
     setEditingId(payment.id);
@@ -218,7 +204,7 @@ export default function PaymentHistory() {
                           className={`${
                             payment.status === "PENDING"
                               ? `bg-yellow-100 text-yellow-400 text-xs md:text-sm`
-                              : payment.status === "CONFLICT "
+                              : payment.status === "CONFLICT"
                               ? `bg-red-100 text-red-400 text-xs md:text-sm`
                               : `bg-green-100 text-green-400 text-xs md:text-sm`
                           } rounded-full block w-3/4 p-0.5`}

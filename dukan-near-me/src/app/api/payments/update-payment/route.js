@@ -25,7 +25,6 @@ export async function POST(req) {
     const updateData = {};
     const allowedStatuses = ["PENDING", "COMPLETED", "CONFLICT"];
 
-    // Check if user is authorized to mark payment as COMPLETED
     if (status === "COMPLETED") {
       if (session.user.role !== "INSTITUTION" && session.user.role !== "SHOP_OWNER") {
         return NextResponse.json({ error: "Permission denied" },{ status: 403 });
@@ -44,7 +43,7 @@ export async function POST(req) {
     }
 
     // Handle amount update (Only institutions/shop owners can update)
-    if (amount !== undefined) {
+    if (amount !== undefined && amount!==payment?.amount) {
       if (session.user.role !== "INSTITUTION" && session.user.role !== "SHOP_OWNER") {
         return NextResponse.json({ error: "Permission denied" },{ status: 403 });
       }

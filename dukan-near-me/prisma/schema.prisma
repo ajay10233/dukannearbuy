@@ -456,9 +456,9 @@ model AdminImages{
 
 model Notification {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  message     String
-  type        String   // e.g., "info", "warning", "alert", "chat", etc.
+  title       String?
+  message     String?
+  type        String?   // e.g., "info", "warning", "alert", "chat", etc.
   isRead      Boolean  @default(false)
   createdAt   DateTime @default(now())
 
