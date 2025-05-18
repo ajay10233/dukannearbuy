@@ -6,7 +6,13 @@ export async function middleware(req) {
   const { pathname, origin } = nextUrl;
   
   // Get session token using NextAuth
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const token = await getToken({
+  req,
+  secret: process.env.NEXTAUTH_SECRET,
+  raw: true, // Optional: gives you raw token value
+  secureCookie: process.env.NODE_ENV === "production",
+});
+
 
   // Redirect to login if no session token
   if (!token) {
@@ -62,6 +68,7 @@ export async function middleware(req) {
 export const config = {
   matcher: [
     // "/",
+    "/((?!login|otp-verify|getstarted|api|_next|favicon.ico|images|icons).*)",
     "/billGenerator/:path*",
     "/change-location/:path*",
     "/dashboard/:path*",
