@@ -54,7 +54,7 @@ export default function RootLayout({ children }) {
             {/* <LoaderWrapper>  */}
                 {children}
               {/* </LoaderWrapper> */}
-              <Toaster position="bottom-right" reverseOrder={false} />
+              <Toaster position="top-right" reverseOrder={false} />
                 {/* <SocketInitializer /> */}
             </SessionProviderWrapper>
           </UserProvider>
