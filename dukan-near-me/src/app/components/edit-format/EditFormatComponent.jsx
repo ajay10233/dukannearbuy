@@ -32,6 +32,7 @@ export default function EditFormatComponent() {
     const [isOpen, setIsOpen] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [formDetails, setFormDetails] = useState(null);
+    const [token, setToken] = useState(false);
 
 
     const handleFormDetailsChange = (updatedForm) => {
@@ -55,6 +56,12 @@ export default function EditFormatComponent() {
         const newValue = !isReport;
         setIsReport(newValue);
         toast.success(`Is Report ${newValue ? "Enabled" : "Disabled"}`);
+    };
+
+    const handleTokenToggle = () => {
+        const newValue = !token;
+        setToken(newValue);
+        toast.success(`Token ${newValue ? "Enabled" : "Disabled"}`);
     };
 
     const fetchUserDetails = async () => {
@@ -231,7 +238,8 @@ export default function EditFormatComponent() {
             <Navbar />
             <main className="flex flex-col flex-1 gap-y-4">
 
-                <div className="flex flex-col flex-1 bg-white p-3 md:p-6 gap-4 shadow-md w-full md:w-full md:max-w-5xl border border-black self-center mt-16">
+                <div className='p-4 relative flex justify-center items-center'>
+                    <div className="flex flex-col flex-1 bg-white p-3 md:p-6 gap-4 shadow-md w-full md:w-full md:max-w-5xl border border-black self-center mt-16">
                     {/* <EditFormat /> */}
                     <div className="flex items-center justify-between mt-2 md:mt-6 p-2 md:p-4 border rounded-md border-gray-400 ">
                           <button
@@ -242,12 +250,12 @@ export default function EditFormatComponent() {
                           </button>
                           <span className="text-gray-700 font-semibold text-sm md:text-[16px]">Save your details</span>
                     
-                          {isOpen && <EditFormatModal closeModal={() => setIsOpen(false)} onFormDetailsChange={handleFormDetailsChange}  />}
+                          {isOpen && <EditFormatModal closeModal={() => setIsOpen(false)} user={user} formDetails={formDetails} onFormDetailsChange={handleFormDetailsChange}  />}
                     </div>
                     {/* toggles */}
                     <div className="flex flex-wrap gap-2 md:gap-4 p-2 md:p-4 justify-evenly">
                         {/* Short Bill Toggle */}
-                        <div className="flex items-center justify-evenly gap-2 w-full sm:w-auto">
+                        <div className="flex items-center justify-between md:justify-evenly gap-2 w-full sm:w-auto">
                             <span className="text-lg font-semibold text-gray-700 whitespace-nowrap">Short Bill Generation</span>
                             <label className="relative cursor-pointer">
                                 <input
@@ -263,8 +271,8 @@ export default function EditFormatComponent() {
                             </label>
                         </div>
 
-                        {/* Token Generation Toggle */}
-                        <div className="flex items-center justify-evenly gap-2 w-full sm:w-auto">
+                        {/* Is Report Toggle */}
+                        <div className="flex items-center justify-between md:justify-evenly gap-2 w-full sm:w-auto">
                             <span className="text-lg font-semibold text-gray-700 whitespace-nowrap">Is Report</span>
                             <label className="relative cursor-pointer">
                                 <input
@@ -279,8 +287,25 @@ export default function EditFormatComponent() {
                                 </div>
                             </label>
                         </div>
+
+                        {/* Token generation toggle */}
+                        <div className="flex items-center justify-between md:justify-evenly gap-2 w-full sm:w-auto">
+                            <span className="text-lg font-semibold text-gray-700 whitespace-nowrap">Token Generation</span>
+                            <label className="relative cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only peer"
+                                    checked={token}
+                                    onChange={handleTokenToggle}
+                                />
+                                <div className="relative h-6.5 md:h-9 w-14 md:w-22 rounded-full bg-gradient-to-r from-gray-600 to-gray-700 shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)] transition-all duration-500 after:absolute after:left-1 after:top-0.5 after:h-5 after:w-5 md:after:h-8 md:after:w-8 after:rounded-full after:bg-gradient-to-br after:from-gray-100 after:to-gray-300 after:shadow-[2px_2px_8px_rgba(0,0,0,0.3)] after:transition-all after:duration-500 peer-checked:bg-gradient-to-r peer-checked:from-teal-600 peer-checked:to-blue-600 peer-checked:after:translate-x-7 md:peer-checked:after:translate-x-12 peer-checked:after:from-white peer-checked:after:to-gray-100 hover:after:scale-95 active:after:scale-90">
+                                    <span className="absolute inset-1 rounded-full bg-gradient-to-tr from-white/20 via-transparent to-transparent"></span>
+                                    <span className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-500 peer-checked:animate-glow peer-checked:opacity-100 [box-shadow:0_0_15px_rgba(167,139,250,0.5)]"></span>
+                                </div>
+                            </label>
+                        </div>
                     </div>
-                    {/* <Toggles /> */}
+
                     {/* upload image */}
                     <div className="flex flex-col gap-6">
                         {/* Upload Section */}
@@ -298,7 +323,7 @@ export default function EditFormatComponent() {
                             <button
                                 type="button"
                                 onClick={() => document.getElementById('hiddenFileInput').click()}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-800 transition-all"
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-800 cursor-pointer transition-all ease-in-out duration-400"
                             >
                                 <Upload size={20} /> Upload
                             </button>
@@ -324,6 +349,7 @@ export default function EditFormatComponent() {
 
                     {/* <UploadPdfImage /> */}
 
+                </div>
                 </div>
                 {/* Create bill */}
 
@@ -581,14 +607,14 @@ export default function EditFormatComponent() {
 
                         {/* Action Buttons */}
                         <div className="flex space-x-4 mt-4">
-                            <button onClick={addItemRow} className="bg-yellow-500 print:hidden text-white px-2 py-1 rounded text-sm">Add Item</button>
+                            <button onClick={addItemRow} className="bg-yellow-500 cursor-pointer transition-all ease-in-out duration-400 hover:bg-amber-500 print:hidden text-white px-2 py-1 rounded text-sm">Add Item</button>
                             <button
                                 onClick={handlePrint}
-                                className="px-3 py-1 bg-indigo-500 print:hidden text-white text-sm rounded"
+                                className="px-3 py-1 bg-indigo-500 cursor-pointer transition-all ease-in-out duration-400 hover:bg-indigo-600 print:hidden text-white text-sm rounded"
                             >
                                 Print
                             </button>
-                            <button onClick={handleGenerateBill} disabled={isGenerating} className={`px-4 py-2 rounded-md print:hidden text-white ${isGenerating ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}>{isGenerating ? 'Generating...' : 'Generate Bill'}</button>
+                            <button onClick={handleGenerateBill} disabled={isGenerating} className={`px-4 py-2 rounded-md cursor-pointer transition-all ease-in-out duration-400 print:hidden text-white ${isGenerating ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}>{isGenerating ? 'Generating...' : 'Generate Bill'}</button>
                         </div>
 
                         <div className='w-full flex flex-col items-center justify-center gap-4 mt-10'>
@@ -613,13 +639,29 @@ export default function EditFormatComponent() {
                             This bill is generated using <span className="font-semibold text-black">NearBuyDukan</span>
                         </div>
                         {/* Short Bill Display Section */}
-                        {shortBillDetails && (
+                        {/* {shortBillDetails && (
                             <div className="mt-6 bg-gray-100 p-4 rounded-md">
                                 <h2 className="text-lg font-semibold">Short Bill Details</h2>
                                 <p><strong>Summary:</strong> {shortBillDetails.summary}</p>
                                 <p><strong>Expires At:</strong> {new Date(shortBillDetails.expiresAt).toLocaleString()}</p>
                             </div>
+                        )} */}
+                        {shortBillDetails && (
+                            <div className="mt-6 bg-gray-100 p-4 rounded-md">
+                                <h2 className="text-lg font-semibold">Short Bill Details</h2>
+                                <p><strong>Invoice No:</strong> {invoiceNo}</p>
+                                {/* <p><strong>Username:</strong> {username || 'N/A'}</p> */}
+                                <p><strong>Name:</strong> {username.firstName} {username.lastName}</p>
+                                <p><strong>Products:</strong></p>
+                                <ul className="list-inside list-decimal">
+                                    {items.map((item, index) => (
+                                        <li key={index}>{item.particulars} - Qty: {item.qty}</li>
+                                    ))}
+                                </ul>
+                                <p><strong>Total Amount:</strong> ₹{totalAmount.toFixed(2)}</p>
+                            </div>
                         )}
+
                     </div>
 
                     {/* Modal for QR Scanner */}
@@ -643,7 +685,7 @@ export default function EditFormatComponent() {
                                     // setAddress={setAddress}
                                     // setMobile={setMobile}
                                     // onScanSuccess={() => setIsScanning(false)} 
-                                        onScanSuccess={handleScanSuccess}
+                                    onScanSuccess={handleScanSuccess}
 
                                 />
                             </div>
@@ -652,16 +694,7 @@ export default function EditFormatComponent() {
 
                 </div>
 
-
             </main>
-            {/* <div className="absolute bottom-1 right-4 w-17 h-17 md:w-32 md:h-32">
-        <Image
-            src="/nearbuydukan - watermark.png"
-            alt="Watermark"
-            fill sizes="120"
-            className="object-contain w-17 h-17 md:w-32 md:h-32"
-            priority/>
-      </div>       */}
         </div>
 
     );

@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { Bell, CheckCircle, AlertCircle, Trash } from "lucide-react";
 import Head from "next/head";
 import Image from "next/image";
+import { TfiAnnouncement } from "react-icons/tfi";
+
 
 export default function Notification() {
   const [notifications, setNotifications] = useState([]);
@@ -77,13 +79,15 @@ export default function Notification() {
                     className={`flex items-start gap-2.5 md:gap-4 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl p-2.5 md:p-4 shadow-sm transition-all duration-300 ${n.isRead ? "" : "bg-yellow-50"}`}
                   >
                     <div className="flex items-center justify-center rounded-full bg-gray-100 border p-2 shadow-inner">
-                      {n.type === "success" ? (
+                      {/* {n.type === "success" ? (
                         <CheckCircle className="h-5 w-5 text-green-600" />
                       ) : n.type === "info" ? (
                         <Bell className="h-5 w-5 text-blue-600" />
                       ) : (
                         <AlertCircle className="h-5 w-5 text-yellow-600" />
-                      )}
+                      )} */}
+
+                        <TfiAnnouncement className="h-5 w-5 text-blue-600" />
                     </div>
                     <div className="flex-1">
                       <h4 className="text-md md:text-lg font-semibold text-gray-800">{n.title}</h4>
