@@ -6,12 +6,14 @@ export async function middleware(req) {
   const { pathname, origin } = nextUrl;
   
   // Get session token using NextAuth
+  console.log("req.url: ", req.url);
+  if(req.url.includes("/login")) return NextResponse.next();
   const token = await getToken({
-  req,
-  secret: process.env.NEXTAUTH_SECRET,
-  raw: true, // Optional: gives you raw token value
-  secureCookie: process.env.NODE_ENV === "production",
-});
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+    // raw: true, // Optional: gives you raw token value
+    secureCookie: process.env.NODE_ENV === "production",
+  });
 
 
   // Redirect to login if no session token
