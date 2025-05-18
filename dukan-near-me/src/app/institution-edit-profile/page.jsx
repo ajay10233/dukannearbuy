@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 
 export default function EditProfilePage() {
   const router = useRouter();
+  const [isSaving, setIsSaving] = useState(false); 
   const [form, setForm] = useState({
     firmName: '',
     contactEmail: '',
@@ -137,6 +138,7 @@ export default function EditProfilePage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSaving(true);
   
     let hashtagsArray = [];
   
@@ -161,11 +163,15 @@ export default function EditProfilePage() {
       if (response.ok) {
         toast.success(result.message || "Profile updated successfully");
         console.log("Profile updated successfully:", result);
+
+        router.push('/search-result');
       } else {
         toast.error(result?.error || "Failed to update profile");
       }
     } catch (error) {
       toast.error("An error occurred while updating the profile");
+    } finally {
+      setIsSaving(false); 
     }
   };
   
@@ -483,10 +489,10 @@ export default function EditProfilePage() {
           </div>
 
           <button 
-            type="submit"
+            type="submit" disabled={isSaving}
             className="mt-4 w-full px-4 py-2 cursor-pointer bg-blue-600 text-white rounded hover:bg-blue-700"
           >
-            Save Changes
+              {isSaving ? "Saving..." : "Save Changes"}
           </button>
         </form>
         {message && <p className="mt-4 text-sm">{message}</p>}

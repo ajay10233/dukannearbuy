@@ -6,7 +6,7 @@ import { ChevronDown, ChevronUp, MapPin } from "lucide-react";
 export default function KilometerDropdown({ selectedKm, onKmChange }) {
     const [isOpen, setIsOpen] = useState(false);
   
-    const options = [
+  const options = [
       { label: "5 km", value: 5 },
       { label: "20 km", value: 20 },
       { label: "50 km", value: 50 },

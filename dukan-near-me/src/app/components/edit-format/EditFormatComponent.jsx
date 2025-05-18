@@ -88,7 +88,7 @@ export default function EditFormatComponent() {
 
 
     const itemsSubtotal = items.reduce((acc, item) => acc + item.amount, 0);
-    const totalAmount = itemsSubtotal;
+    // const totalAmount = itemsSubtotal;
 
     const addItemRow = () => {
     setItems([...items, { particulars: '', qty: 0, rate: 0, amount: 0 }]);
@@ -139,7 +139,7 @@ export default function EditFormatComponent() {
 
             const existingBills = checkResponse.data.bills.filter(bill => bill.invoiceNumber === invoiceNo);
 
-            if (existingBills.length > 1) {
+            if (existingBills.length > 0) {
                 toast.error('A bill with this invoice number already exists.');
                 setIsGenerating(false);
                 return;
@@ -222,6 +222,8 @@ export default function EditFormatComponent() {
 
     const cgstAmount = (itemsSubtotal * cgstPercent) / 100;
     const sgstAmount = (itemsSubtotal * sgstPercent) / 100;
+
+    const totalAmount = itemsSubtotal + cgstAmount + sgstAmount;
 
 
     return (
@@ -586,7 +588,7 @@ export default function EditFormatComponent() {
                             >
                                 Print
                             </button>
-                            <button onClick={handleGenerateBill} disabled={isGenerating} className={`px-4 py-2 rounded-md print:hidden text-white ${isGenerating ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}>Generate Bill</button>
+                            <button onClick={handleGenerateBill} disabled={isGenerating} className={`px-4 py-2 rounded-md print:hidden text-white ${isGenerating ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}>{isGenerating ? 'Generating...' : 'Generate Bill'}</button>
                         </div>
 
                         <div className='w-full flex flex-col items-center justify-center gap-4 mt-10'>

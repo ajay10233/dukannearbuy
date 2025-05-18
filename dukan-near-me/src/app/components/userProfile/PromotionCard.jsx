@@ -17,9 +17,11 @@ import toast from "react-hot-toast";
 
 export default function PromotionCard() {
     const [days, setDays] = useState(1);
+    const [durationSelected, setDurationSelected] = useState(false);
     const [isPremium, setIsPremium] = useState(false);
-    const [selectedKm, setSelectedKm] = useState(5); 
+    const [selectedKm, setSelectedKm] = useState(''); 
     const [agreed, setAgreed] = useState(false);
+    const [promotionType, setPromotionType] = useState(''); 
 
   
     const kmCosts = {
@@ -34,8 +36,9 @@ export default function PromotionCard() {
     const discountedCost = isPremium ? totalCost * 0.7 : totalCost;
   
     const handleDaysChange = (e) => {
-      const value = Math.min(14, Math.max(1, Number(e.target.value)));
+      const value = Math.min(10, Math.max(1, Number(e.target.value)));
       setDays(value);
+      setDurationSelected(true);
     };
   
     const min = 1;
@@ -45,13 +48,24 @@ export default function PromotionCard() {
   const router = useRouter();
 
   const handleClick = () => {
-    if (!agreed) {
-      toast.error("Please agree to the Terms and Conditions to continue.");
-      return;
-    }
   
     if (!selectedKm) {
       toast.error("Please select a distance before continuing.");
+      return;
+    }
+
+    if (!durationSelected) {
+    toast.error("Please select the promotion duration before continuing.");
+    return;
+  }
+
+    if (!promotionType) {
+      toast.error("Please select a promotion type before continuing.");
+      return;
+  }
+
+    if (!agreed) {
+      toast.error("Please agree to the Terms and Conditions to continue.");
       return;
     }
   
@@ -210,7 +224,7 @@ export default function PromotionCard() {
                             
               {/* no. of days */}
               <label htmlFor="days" className="font-medium text-gray-700">
-                Select Duration (1-10 days)
+                Select Duration (1-10 days) <span className="text-red-500">*</span>
               </label>
               <input
                 type="range"
@@ -248,7 +262,7 @@ export default function PromotionCard() {
                   <option value="new"><Store color="#05fbff" /> New Shop</option>
                   <option value="popular"><Store color="#05fbff" /> Popular Reach</option>
                 </select> */}
-                  <CustomDropdown />
+                  <CustomDropdown promotionType={promotionType} setPromotionType={setPromotionType}/>
             </div>
             
             {/* <div className="pt-4 text-sm text-gray-500"> */}
@@ -272,17 +286,16 @@ export default function PromotionCard() {
 
               {/* </div> */}
 
-            
-              <button
-        onClick={handleClick}
-        className={`p-2 flex items-center justify-center gap-2 cursor-pointer bg-gradient-to-r from-teal-500 to-blue-600 text-white font-medium rounded-md hover:opacity-90 transition duration-300 ${
-          agreed && selectedKm
-            ? "bg-emerald-500 text-white hover:bg-emerald-600"
-            : ""
-        }`}
-      >
-        <SquareCheckBig color="#fff" /> Confirm and Boost Now
-      </button>
+            <button disabled={!durationSelected} 
+              onClick={handleClick}
+              className={`z-0 p-2 flex items-center justify-center gap-2 cursor-pointer bg-gradient-to-r from-teal-500 to-blue-600 text-white font-medium rounded-md hover:opacity-90 transition duration-300 ${
+                agreed && selectedKm
+                  ? "bg-emerald-500 text-white hover:bg-emerald-600"
+                  : "opacity-50 cursor-not-allowed pointer-events-none"
+              }`}
+            >
+              <SquareCheckBig color="#fff" /> Confirm and Boost Now
+            </button>
             </div>
               </DialogContent>
         </Dialog>
