@@ -186,14 +186,27 @@ export async function POST(req) {
 
     let shortBill = null;
     if (generateShortBill) {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          firstName: true,
+          lastName: true,
+          phone: true,
+        },
+      });
+
       shortBill = await prisma.shortBill.create({
         data: {
           billId: bill.id,
-          summary: `ShortBill for ${name || 'Unknown'} with ${items.length} items`,
-          expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+          summary: `ShortBill for ${name || `${user?.firstName || 'Unknown'} ${user?.lastName || ''}`} with ${items.length} items`,
+          userName: `${user?.firstName || ''} ${user?.lastName || ''}`.trim(),
+          userPhone: user?.phone || phoneNumber || null,
+          total: totalAmount,
+          expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hour from now
         },
       });
     }
+
 
     return NextResponse.json({ success: true, bill, shortBill });
   } catch (error) {

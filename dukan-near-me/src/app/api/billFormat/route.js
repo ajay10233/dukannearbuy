@@ -7,28 +7,40 @@ export async function GET(req) {
     try {
         const session = await getServerSession(authOptions);
         if (!session || (session.user.role !== 'INSTITUTION' && session.user.role !== 'SHOP_OWNER')) {
-            return NextResponse.json({ error: 'Unauthorized: Only institutions can fetch bill formats' },{ status: 401 });
+            return NextResponse.json({ error: 'Unauthorized: Only institutions can fetch bill formats' }, { status: 401 });
         }
 
-        const billFormat = await prisma.billFormat.findUnique({  
+        const billFormat = await prisma.billFormat.findUnique({
             where: {
                 institutionId: session.user.id,
             },
+            include: {
+                institutionRelation: {
+                    select: {
+                        firmName: true,
+                        contactEmail: true,
+                        phone: true,
+                        shopAddress: true,
+                        city: true,
+                        state: true,
+                        zipCode: true,
+                        country: true,
+                    }
+                }
+            }
         });
-        
-        // firmname, address, number, email
-
 
         if (!billFormat) {
-            return NextResponse.json({ error: 'Bill format not found' },{ status: 404 });
+            return NextResponse.json({ error: 'Bill format not found' }, { status: 404 });
         }
 
         return new Response(JSON.stringify(billFormat), { status: 200 });
     } catch (error) {
         console.error("Error fetching bill formats:", error);
-        return NextResponse.json({ error: 'Internal Server Error' },{ status: 500 });
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
+
 
 
 export async function POST(req) {
