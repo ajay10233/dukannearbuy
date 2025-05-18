@@ -56,7 +56,6 @@ export default function ChatBox() {
 
   const getDisplayName = (partner) => {
     const user = partner?.otherUser || partner;
-
     if (!user) return "Unknown";
 
     const isInstitutionOrShop = user.role === "INSTITUTION" || user.role === "SHOP_OWNER";
@@ -407,21 +406,22 @@ export default function ChatBox() {
       if (!Array.isArray(prevConversations)) return [createNewConversation()];
 
       const selectedUserId = selectedPartner?.otherUser ? selectedPartner.otherUser.id : selectedPartner.id;
+      console.log("selectedUserId:asdfasdfasfasddfasd ", selectedPartner);
       const updatedConversation = {
         otherUser: {
-          id: selectedPartner.id,
-          name:
-            selectedPartner.role === "INSTITUTION" || selectedPartner.role === "SHOP_OWNER"
-              ? selectedPartner.firmName
-              : `${selectedPartner.firstName || ""} ${selectedPartner.lastName || ""}`.trim(),
-          profilePhoto: selectedPartner.profilePhoto || null,
-          firmName: selectedPartner.firmName || null,
-          role: selectedPartner.role,
+          id: selectedPartner?.otherUser ? selectedPartner?.otherUser.id : selectedPartner.id,
+          // name: getDisplayName(selectedPartner),
+          firstName: selectedPartner?.otherUser ? selectedPartner?.otherUser.firstName || null : selectedPartner?.firstName,
+          lastName: selectedPartner?.otherUser ? selectedPartner?.otherUser.lastName || null : selectedPartner?.lastName,
+          profilePhoto: selectedPartner?.otherUser ? selectedPartner?.otherUser.profilePhoto || selectedPartner?.profilePhoto : "",
+          firmName: getDisplayName(selectedPartner),
+          role: selectedPartner?.otherUser ? selectedPartner?.otherUser.role : selectedPartner.role,
         },
         lastMessage,
         updatedAt: timestamp,
         accepted: selectedPartner.accepted,
       };
+      console.log("updatedConversation: ", updatedConversation);
 
       // Filter out the existing conversation (if any)
       const filtered = prevConversations.filter((conv) => {
