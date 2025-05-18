@@ -1,7 +1,5 @@
-// scripts/cleanup.js
-
-import { PrismaClient } from '@prisma/client';
-import dotenv from 'dotenv';
+const dotenv = require('dotenv');
+const { PrismaClient } = require('@prisma/client');
 
 dotenv.config();
 
@@ -9,20 +7,31 @@ const prisma = new PrismaClient();
 
 async function cleanupExpired() {
   const now = new Date();
+  const timestamp = now.toISOString();
 
-  // Clean Token
-  await prisma.token.deleteMany({
-    where: { expiresAt: { lt: now } },
-  });
+  console.log(`🧹 Cleanup started at ${timestamp}`);
 
-  // Add similar deletes for other models...
+  try {
+    const deletedTokens = await prisma.token.deleteMany({
+      where: { expiresAt: { lt: now } },
+    });
 
-  console.log('Cleanup complete');
-  await prisma.$disconnect();
+    console.log(`✅ Deleted ${deletedTokens.count} expired tokens at ${timestamp}`);
+    
+    // You can add more models here, e.g.
+    // const deletedSessions = await prisma.session.deleteMany({ ... });
+    // console.log(`✅ Deleted ${deletedSessions.count} expired sessions at ${timestamp}`);
+
+    console.log('✅ Cleanup complete');
+  } catch (error) {
+    console.error(`❌ Cleanup failed at ${timestamp}:`, error);
+  } finally {
+    await prisma.$disconnect();
+  }
 }
 
 cleanupExpired().catch(async (e) => {
-  console.error(e);
+  console.error('❌ Unhandled cleanup error:', e);
   await prisma.$disconnect();
   process.exit(1);
 });
