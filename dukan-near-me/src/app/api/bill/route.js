@@ -231,7 +231,7 @@ export async function POST(req) {
           },
         });
 
-        if (dailyTokenCount >= 2) {
+        if (dailyTokenCount >= 300) {
           return NextResponse.json(
             { error: 'Free plan limit reached. You can only generate 300 tokens daily.' },
             { status: 403 }
