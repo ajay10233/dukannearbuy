@@ -24,7 +24,7 @@ export async function POST(req) {
     }
 
     // Bill count constraint for Free plan
-    const isFreePlan = institution.subscriptionPlan?.name === 'BASIC';
+    const isFreePlan = institution.subscriptionPlan==null ?true : institution.subscriptionPlan?.name === 'BASIC';
     if (isFreePlan) {
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
@@ -212,7 +212,9 @@ export async function POST(req) {
 
     let generatedToken = null;
     if (generationToken) {
+      console.log("generationToken",generationToken);
       if (isFreePlan) {
+        console.log("isFreePlan",isFreePlan);
         const startOfDay = new Date();
         startOfDay.setHours(0, 0, 0, 0);
 
@@ -229,14 +231,14 @@ export async function POST(req) {
           },
         });
 
-        if (dailyTokenCount >= 300) {
+        if (dailyTokenCount >= 2) {
           return NextResponse.json(
             { error: 'Free plan limit reached. You can only generate 300 tokens daily.' },
             { status: 403 }
           );
         }
       }
-      
+
       // Get the current highest token number for today
       const today = new Date();
       today.setHours(0, 0, 0, 0);
