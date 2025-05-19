@@ -130,7 +130,7 @@ export default function MyPlans() {
                           </>
                         )}
                       </span>
-                      {plan.status === "expired" && plan.type === "paid" && (
+                      {plan.status === "expired" && (
                         <button onClick={() => {
                           const target = plan.type === "paid" ? "#promotion" : "#subscription";
                           router.push(`/partnerHome${target}`);

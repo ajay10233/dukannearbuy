@@ -7,7 +7,7 @@ import Image from "next/image";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import Link from "next/link";
 import toast from "react-hot-toast";
-
+import { useSession } from "next-auth/react";
 
 const features = [
   {
@@ -30,6 +30,7 @@ const features = [
 export default function AboutUs() {
   const [showModal, setShowModal] = useState(false);
   const startX = useRef(null);
+  const { data: session } = useSession();
 
   const handleDelete = async () => {
     try {
@@ -247,11 +248,12 @@ export default function AboutUs() {
                   </Link>
                 </li>
 
-            
-                <li className="transition-all ease-in-out duration-500 cursor-pointer hover:text-blue-700 flex items-center gap-2" onClick={() => setShowModal(true)}>
-                    <RiDeleteBin6Line size={20} strokeWidth={1.5} />
-                    Delete my Account
+            {/* {session && ( */}
+              <li className="transition-all ease-in-out duration-500 cursor-pointer hover:text-blue-700 flex items-center gap-2" onClick={() => setShowModal(true)}>
+                <RiDeleteBin6Line size={20} strokeWidth={1.5} />
+                Delete my Account
               </li>
+            {/* )} */}
               <AnimatePresence>
                 {showModal && (
                   <motion.div

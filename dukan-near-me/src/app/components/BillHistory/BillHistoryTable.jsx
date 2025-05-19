@@ -87,7 +87,7 @@ export default function BillHistoryTable({setDates}) {
 
   return (
     <div className="flex flex-col gap-y-3 cursor-default w-full overflow-hidden h-full">
-      <div className="flex items-center text-sm capitalize text-slate-400 px-2">
+      <div className="flex items-center text-sm capitalize text-slate-500 px-2 py-3 bg-white/30 border border-gray-300 rounded-xl shadow-sm">
         <ul className="flex *:w-1/5 w-full justify-around whitespace-nowrap">
           <li className="justify-center md:flex hidden">Invoice ID</li>
 
@@ -146,7 +146,7 @@ export default function BillHistoryTable({setDates}) {
           </li>
 
           {/* Download */}
-          <li className="flex flex-col items-center justify-center relative cursor-pointer">
+          <li className="flex flex-col items-center justify-center relative">
             Download
           </li>
         </ul>
@@ -157,7 +157,7 @@ export default function BillHistoryTable({setDates}) {
           <div className="text-center text-gray-500 py-5">No results found</div>
         ) : (
           filteredData.map((bill, i) => (
-            <div className="flex items-center bg-white p-2 py-3 rounded-lg" key={i}>
+            <div className="flex items-center bg-white p-2 py-3 border border-gray-200 rounded-xl shadow-sm" key={i}>
               <ul className="flex items-center *:w-2/5  text-sm text-slate-500 w-full text-center justify-around whitespace-nowrap">
                 <li className="md:flex flex-col items-center hidden">{bill?.invoiceNumber}</li>
                 <li>{new Date(bill?.createdAt).toLocaleDateString()}</li>

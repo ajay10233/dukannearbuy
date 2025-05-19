@@ -30,7 +30,7 @@ export default function BillHistory() {
     <main className="flex flex-col items-center gap-y-6 px-3 md:px-5 bg-[#F0F0F0] h-screen">
         <div className="flex flex-col w-11/12 mt-20">
             <div className="flex justify-center py-3 text-slate-500">
-                <h1 className="font-semibold text-xl">Invoice</h1>
+                <h1 className="font-semibold text-xl capitalize">Bill history</h1>
             </div>
             <div className="flex flex-row gap-x-2 justify-between items-center">
                 <div className="flex flex-col gap-y-2 md:gap-y-4">

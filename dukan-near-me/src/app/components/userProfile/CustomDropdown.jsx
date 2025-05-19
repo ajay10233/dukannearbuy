@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Flame, Store, BadgeCheck, ChevronDown, ChevronUp, Gift, Package, HandCoins } from "lucide-react";
 
-export default function CustomDropdown() {
-  const [selectedOption, setSelectedOption] = useState("");
+export default function CustomDropdown({ promotionType, setPromotionType }) {
+  // const [selectedOption, setSelectedOption] = useState("");
   const [isOpen, setIsOpen] = useState(false); // State to toggle dropdown visibility
 
   const handleSelectChange = (value) => {
-    setSelectedOption(value);
+    // setSelectedOption(value);
+        setPromotionType(value);
+
     setIsOpen(false); // Close dropdown after selecting
   };
 
@@ -16,7 +18,7 @@ export default function CustomDropdown() {
         className="w-full border rounded px-3 py-2 text-left flex justify-between items-center cursor-pointer"
         onClick={() => setIsOpen(!isOpen)} // Toggle dropdown open/close
       >
-        <span>{selectedOption || "Select Promotion Type"}</span>
+        <span>{promotionType || "Select Promotion Type"}</span>
         <span>
           {isOpen ? (
             <ChevronUp color="#1b1d1d" size="20" /> // Show ChevronUp when open
@@ -29,7 +31,7 @@ export default function CustomDropdown() {
       {/* Conditionally render the dropdown */}
       {isOpen && (
         <div
-          className="absolute bg-white shadow-lg w-full border rounded mt-1 max-h-60 overflow-y-auto opacity-100 transition-all duration-300 ease-in-out"
+          className="z-50 absolute bg-white shadow-lg w-full border rounded mt-1 max-h-60 overflow-y-auto opacity-100 transition-all duration-300 ease-in-out"
         >
           <div
             className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"

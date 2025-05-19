@@ -18,6 +18,8 @@ export default function LoginForm() {
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false); // <- Loading state
   const [showModal, setShowModal] = useState(false);
+  const [modalShownOnce, setModalShownOnce] = useState(false);
+
 
   const {
     register,
@@ -40,6 +42,8 @@ export default function LoginForm() {
   };
 
   const onSubmit = async (data) => {
+    setModalShownOnce(false);
+
     if (data) {
       setIsLoading(true); // <- Set loading true
       const { email, password } = data;
@@ -63,7 +67,10 @@ export default function LoginForm() {
         } else if (res.error === "NOT_VERIFIED") {
           toast.error("You must verify your email first.", { id: toastId });
           // router.push(`/otp-verify/`);
-          setShowModal(true); 
+          if (!modalShownOnce) {
+            setShowModal(true);
+            setModalShownOnce(true);
+          }
         } else {
           toast.error(res.error || "Invalid credentials", { id: toastId });
         }

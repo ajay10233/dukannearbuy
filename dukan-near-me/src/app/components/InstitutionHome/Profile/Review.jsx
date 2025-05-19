@@ -60,7 +60,7 @@ export default function Review({ user }) {
     if (!comment.trim()) return;
 
     if (rating === 0) {
-      toast.error("Please give a star rating before submitting.");
+      toast.error("Please give star rating before submitting.");
       return;
     }
 
@@ -91,7 +91,10 @@ export default function Review({ user }) {
 
       setReviews(updated.data);
     } catch (err) {
-      toast.error("Error submitting review");
+      // toast.error("Error submitting review");
+      const msg =
+      err?.response?.data?.error || "Something went wrong while submitting the review.";
+      toast.error(msg); 
     }
   };
   
@@ -208,7 +211,10 @@ export default function Review({ user }) {
                   </div>
                   <div>
                     <p className="font-semibold text-sm md:text-[16px]">{review?.user?.firstName} {review?.user?.lastName}</p>
-                    <p className="text-sm text-gray-500">{new Date(review?.createdAt).toLocaleDateString()}</p>
+                    {/* <p className="text-sm text-gray-500">{new Date(review?.createdAt).toLocaleDateString()}</p> */}
+                    <p className="text-sm text-gray-500">
+                      {new Date( review?.updatedAt > review?.createdAt ? review?.updatedAt : review?.createdAt ).toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
 

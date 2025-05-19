@@ -20,31 +20,34 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  
+  const fetchUser = async () => {
+    try {
+      const res = await fetch('/api/users/me');
+      if (!res.ok) throw new Error('Failed to fetch user');
+      const data = await res.json();
+      console.log("data:", data);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch('/api/users/me');
-        if (!res.ok) throw new Error('Failed to fetch user');
-        const data = await res.json();
-        console.log("data:", data);
-        setUser(data);
-      } catch (error) {
-        toast.error('Failed to load user data');
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      setUser(data);
+    } catch (error) {
+      toast.error('Failed to load user data');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+};
 
-    fetchUser();
-  }, []);
+useEffect(() => {
+  fetchUser();
+}, []);
 
-  const handleSuccess = (updatedUser) => {
-    setUser(updatedUser);  
-    setIsEditing(false);    
-    toast.success('Profile updated successfully');
-  };
+const handleSuccess = async () => {
+  await fetchUser();
+  setIsEditing(false);
+  setOpen(false);          
+  toast.success('Profile updated successfully');
+};
+
 
   if (loading) return <p className="text-center py-20">Fetching user profile...</p>;
   if (!user) return <p className="text-center py-20 text-gray-700">No user data found.</p>;

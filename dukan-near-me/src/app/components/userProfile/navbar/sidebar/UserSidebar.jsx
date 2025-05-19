@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { HandCoins } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import LogoutButton from '@/app/components/LogoutButton';
+import { TfiAnnouncement } from "react-icons/tfi";
+
 
 export default function UserSidebar({ isOpen, onClose }) {
     const pathName = usePathname();
@@ -73,6 +75,7 @@ export default function UserSidebar({ isOpen, onClose }) {
                         <Link href="/notification"
                             className=" flex items-center gap-2 text-sm md:text-[16px] text-gray-700 hover:text-blue-700 transition duration-200">
                             <MessageSquareWarning size={20} strokeWidth={1.5} />
+                            {/* <TfiAnnouncement size={20} strokeWidth={1.5} /> */}
                                 Notification
                         </Link>
                         <Link href="/qr-code"

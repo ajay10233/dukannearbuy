@@ -63,7 +63,7 @@ export default function HeroSection() {
                 alt={img.details || `Promotion image ${index + 1}`}
                 layout="fill"
                 // objectFit="contain"
-                objectFit="cover"
+                objectFit="contain sm:cover"
                 className="transition-opacity duration-500"
                 priority
               />
