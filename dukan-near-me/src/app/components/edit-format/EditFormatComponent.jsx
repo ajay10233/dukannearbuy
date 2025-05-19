@@ -295,10 +295,10 @@ export default function EditFormatComponent() {
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col relative">
             <Navbar />
-            <main className="flex flex-col flex-1 gap-y-4">
+            <main className="flex flex-col flex-1 gap-y-2 md:gap-y-4">
 
                 <div className='p-4 relative flex justify-center items-center'>
-                    <div className="flex flex-col flex-1 bg-white p-3 md:p-6 gap-4 shadow-md w-full md:w-full md:max-w-5xl border border-black self-center mt-16">
+                    <div className="flex flex-col flex-1 bg-white p-3 md:p-6 gap-2 md:gap-4 shadow-md w-full md:w-full md:max-w-5xl border border-black self-center mt-16">
                     {/* <EditFormat /> */}
                     <div className="flex items-center justify-between mt-2 md:mt-6 p-2 md:p-4 border rounded-md border-gray-400 ">
                           <button
@@ -315,7 +315,7 @@ export default function EditFormatComponent() {
                     <div className="flex flex-wrap gap-2 md:gap-4 p-2 md:p-4 justify-evenly">
                         {/* Short Bill Toggle */}
                         <div className="flex items-center justify-between md:justify-evenly gap-2 w-full sm:w-auto">
-                            <span className="text-lg font-semibold text-gray-700 whitespace-nowrap">Short Bill Generation</span>
+                            <span className="text-[16px] md:text-lgtext-lg font-semibold text-gray-700 whitespace-nowrap">Short Bill Generation</span>
                             <label className="relative cursor-pointer">
                                 <input
                                     type="checkbox"
@@ -332,7 +332,7 @@ export default function EditFormatComponent() {
 
                         {/* Is Report Toggle */}
                         <div className="flex items-center justify-between md:justify-evenly gap-2 w-full sm:w-auto">
-                            <span className="text-lg font-semibold text-gray-700 whitespace-nowrap">Is Report</span>
+                            <span className="text-[16px] md:text-lg font-semibold text-gray-700 whitespace-nowrap">Is Report</span>
                             <label className="relative cursor-pointer">
                                 <input
                                     type="checkbox"
@@ -349,7 +349,7 @@ export default function EditFormatComponent() {
 
                         {/* Token generation toggle */}
                         <div className="flex items-center justify-between md:justify-evenly gap-2 w-full sm:w-auto">
-                            <span className="text-lg font-semibold text-gray-700 whitespace-nowrap">Token Generation</span>
+                            <span className="text-[16px] md:text-lg font-semibold text-gray-700 whitespace-nowrap">Token Generation</span>
                             <label className="relative cursor-pointer">
                                 <input
                                     type="checkbox"
@@ -366,10 +366,10 @@ export default function EditFormatComponent() {
                     </div>
 
                     {/* upload image */}
-                    <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-2 md:gap-6">
                         {/* Upload Section */}
                         <div className="flex justify-between items-center border border-gray-400 p-2 md:p-4 rounded-md">
-                            <span className="text-gray-700 font-semibold text-md">Upload Image or PDF</span>
+                            <span className="text-gray-700 font-semibold text-sm md:text-[16px]">Upload Image or PDF</span>
 
                             <input
                                 type="file"
@@ -382,7 +382,7 @@ export default function EditFormatComponent() {
                             <button
                                 type="button"
                                 onClick={() => document.getElementById('hiddenFileInput').click()}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-800 cursor-pointer transition-all ease-in-out duration-400"
+                                className="flex items-center text-sm md:text-[16px] gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-800 cursor-pointer transition-all ease-in-out duration-400"
                             >
                                 <Upload size={20} /> Upload
                             </button>
@@ -418,7 +418,7 @@ export default function EditFormatComponent() {
                         ref={billRef}
                     >
                         {/* Header Section */}
-                        <div className="flex justify-between items-center my-8">
+                        <div className="flex justify-between items-center my-4 md:my-8">
                             <h1 className="text-2xl font-bold text-center w-full">INVOICE</h1>
                             {/* <span
                                 onClick={() => setIsScanning(true)}
@@ -427,7 +427,7 @@ export default function EditFormatComponent() {
                                 <ScanLine size={20} strokeWidth={1.5} /> Scan
                             </span> */}
 
-                            <div className="flex items-center gap-2 print:hidden ml-auto">
+                            <div className="hidden md:flex items-center gap-2 print:hidden ml-auto">
                                 <input
                                     type="text"
                                     value={token}
@@ -450,15 +450,39 @@ export default function EditFormatComponent() {
                             </div>
                         </div>
 
+                        <div className="flex justify-between items-center my-4 md:my-8">
+                            <div className="flex md:hidden items-center gap-1 md:gap-2 print:hidden ml-auto">
+                                <input
+                                    type="text"
+                                    value={token}
+                                    onChange={(e) => setToken(e.target.value)}
+                                    placeholder="Enter Token No."
+                                    className="p-1.5 md:px-3 md:py-2 border w-30 sm:w-50 border-gray-300 transition-all duration-500 ease-in-out rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <button
+                                    onClick={handleFetch}
+                                    className="p-1.5 md:px-3 md:py-2 bg-blue-600 cursor-pointer text-white rounded-md hover:bg-blue-800 transition-all duration-500 ease-in-out"
+                                >
+                                    Fetch
+                                </button>
+                                <span
+                                    onClick={() => setIsScanning(true)}
+                                    className="flex items-center gap-2 p-1.5 md:px-3 md:py-2 bg-blue-600 cursor-pointer text-white rounded-md hover:bg-blue-800 transition-all duration-500 ease-in-out"
+                                >
+                                    <ScanLine size={20} strokeWidth={1.5} /> Scan
+                                </span>
+                            </div>
+                         </div>   
+
                         {/* Bill Information */}
-                        <div className="grid grid-cols-2 gap-4 border-b pb-2 mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2  gap-4 border-b pb-2 mb-4">
                             {/* <div className="p-2 border-r border-black">
                                 <h2 className="text-lg font-bold text-[#0D6A9C] capitalize">{user?.firmName}</h2>
                                 <p>{user?.address && `${user.address.houseNumber}, ${user.address?.buildingName ? user.address.buildingName + ', ' : ''}${user.address.street}, ${user.address.landmark}, ${user.address.city}, ${user.address.state} - ${user.address.zipCode}, ${user.address.country}`}</p>
                                 <p>Mobile: {user?.mobileNumber}</p>
                             </div> */} 
                             {formDetails ? (
-                                <div className="p-2 border-r border-black">
+                                <div className="p-2 pb-4 border-b md:border-r md:border-gray-400 print:border-b-0 print:border-r ">
                                     <h2 className="text-lg font-bold text-[#0D6A9C] capitalize">
                                         {formDetails?.firmName || "N/A"}
                                     </h2>
@@ -557,26 +581,26 @@ export default function EditFormatComponent() {
                         <div className="overflow-x-auto mb-4">
                             <table className="w-full border-collapse border text-left">
                                 <thead>
-                                    <tr className="bg-[#CFEBF9]">
-                                        <th className="border p-2">S.NO</th>
-                                        <th className="border p-2">
+                                    <tr className="text-xs md:text-sm print:text-sm bg-[#CFEBF9]">
+                                        <th className="border p-1 md:p-2 print:p-2">S.NO</th>
+                                        <th className="border p-1 md:p-2 print:p-2">
                                             {user?.role === 'INSTITUTION' ? 'CHIEF COMPLAINT' : 'PARTICULARS'}
                                         </th>
-                                        <th className="border p-2">
+                                        <th className="border p-1 md:p-2 print:p-2">
                                             {user?.role === 'INSTITUTION' ? 'TREATMENT' : 'QUANTITY'}
                                         </th>
-                                        <th className="border p-2">
+                                        <th className="border p-1 md:p-2 print:p-2">
                                             {user?.role === 'INSTITUTION' ? 'OTHERS' : 'RATE'}
                                         </th>
-                                        <th className="border p-2">AMOUNT</th>
+                                        <th className="border p-1 md:p-2 print:p-2">AMOUNT</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {items.map((item, index) => (
-                                        <tr key={index}>
-                                            <td className="border p-2 text-center">{index + 1}</td>
+                                        <tr key={index} className='text-xs md:text-sm print:text-sm'>
+                                            <td className="border p-1 md:p-2 text-center print:p-2">{index + 1}</td>
 
-                                            <td className="border p-2">
+                                            <td className="border p-1 md:p-2 print:p-2">
                                                 <input
                                                     type="text"
                                                     value={item.particulars}
@@ -585,7 +609,7 @@ export default function EditFormatComponent() {
                                                 />
                                             </td>
 
-                                            <td className="border p-2">
+                                            <td className="border p-1 md:p-2 print:p-2">
                                                 {user?.role === 'INSTITUTION' ? (
                                                     <input
                                                     type="text"
@@ -603,7 +627,7 @@ export default function EditFormatComponent() {
                                                     />
                                                 )}
                                             </td>
-                                            <td className="border p-2">
+                                            <td className="border p-1 md:p-2 print:p-2">
                                                 {user?.role === 'INSTITUTION' ? (
                                                     <input
                                                     type="text"
@@ -621,7 +645,7 @@ export default function EditFormatComponent() {
                                                     />
                                                 )}
                                             </td>
-                                            <td className="border p-2 text-center">
+                                            <td className="border p-1 md:p-2 text-center print:p-2">
                                                 {user?.role === 'INSTITUTION' ? (
                                                     <input
                                                     type="number"
@@ -637,20 +661,20 @@ export default function EditFormatComponent() {
                                         </tr>
                                     ))}
                                     <tr>
-                                        <td colSpan="4" className="border p-2 text-right font-bold">Items Subtotal</td>
-                                        <td className="border p-2 text-center font-bold">{itemsSubtotal.toFixed(2)}</td>
+                                        <td colSpan="4" className="text-xs md:text-sm print:text-sm border p-2 text-right font-bold">Items Subtotal</td>
+                                        <td className="text-xs md:text-sm print:text-sm border p-2 text-center font-bold">{itemsSubtotal.toFixed(2)}</td>
                                     </tr>
 
                                     {formDetails && formDetails?.cgst && formDetails?.sgst && (
                                         <>
-                                            <tr>
+                                            <tr className='text-xs md:text-sm print:text-sm'>
                                                 <td className="border p-2 text-center" rowSpan={2}></td>
                                                 <td className="border p-2 font-semibold" rowSpan={2}>Tax</td>
                                                 <td className="border p-2">CGST</td>
                                                 <td className="border p-2 text-center">{formDetails.cgst}%</td>
                                                 <td className="border p-2 text-center">{cgstAmount.toFixed(2)}</td>
                                             </tr>
-                                            <tr>
+                                            <tr className='text-xs md:text-sm print:text-sm'>
                                                 <td className="border p-2">SGST</td>
                                                 <td className="border p-2 text-center">{formDetails.sgst}%</td>
                                                 <td className="border p-2 text-center">{sgstAmount.toFixed(2)}</td>
@@ -671,21 +695,21 @@ export default function EditFormatComponent() {
                         </div> */}
 
                         {/* Total Amount */}
-                        <div className="text-right font-bold text-lg">Total Amount: ₹{totalAmount.toFixed(2)}</div>
+                        <div className="text-sm md:text-lg print:text-lg text-right font-bold">Total Amount: ₹{totalAmount.toFixed(2)}</div>
 
                         {/* proprietorSign */}
                         {/* {formDetails?.proprietorSign && ( */}
                         {formDetails?.proprietorSign && typeof formDetails.proprietorSign === 'string' && formDetails.proprietorSign.length > 0 && (
 
                             <div className="flex justify-end mt-4">
-                                <div className="border p-2 border-gray-400 max-w-[200px]">
-                                <Image
+                                <div className="p-2 w-full max-w-[100px]">
+                                <img
                                     src={formDetails?.proprietorSign || ''}
                                     alt="Proprietor Signature"
-                                    width={200}
+                                    width={100}
                                     height={100}
                                     className="object-contain"
-                                    priority
+                                    // priority
                                 />
                                 </div>
                             </div>
@@ -703,16 +727,16 @@ export default function EditFormatComponent() {
                             <button onClick={handleGenerateBill} disabled={isGenerating} className={`px-4 py-2 rounded-md cursor-pointer transition-all ease-in-out duration-400 print:hidden text-white ${isGenerating ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}>{isGenerating ? 'Generating...' : 'Generate Bill'}</button>
                         </div>
 
-                        <div className='w-full flex flex-col items-center justify-center gap-4 mt-10'>
+                        <div className='w-full flex flex-col items-center text-xs md:text-sm print:text-sm justify-center gap-4 mt-5'>
                             {formDetails?.terms && (
-                                <div className="w-full border p-4 border-gray-400">
+                                <div className="w-full border p-2 md:p-4 print:p-4 border-gray-400">
                                     <strong className="block font-semibold">Terms & Conditions: </strong>
                                     <p>{formDetails?.terms}</p>
                                 </div>
                             )}
 
                             {formDetails?.updates && (
-                                <div className="w-full border p-4 border-gray-400">
+                                <div className="w-full border p-2 md:p-4 print:p-4 border-gray-400">
                                     <strong className="block font-semibold">Updates / Offer Information:</strong>
                                     <p>{formDetails?.updates}</p>
                                 </div>
@@ -725,19 +749,13 @@ export default function EditFormatComponent() {
                             This bill is generated using <span className="font-semibold text-black">NearBuyDukan</span>
                         </div>
                         {/* Short Bill Display Section */}
+
                         {/* {shortBillDetails && (
                             <div className="mt-6 bg-gray-100 p-4 rounded-md">
                                 <h2 className="text-lg font-semibold">Short Bill Details</h2>
-                                <p><strong>Summary:</strong> {shortBillDetails.summary}</p>
-                                <p><strong>Expires At:</strong> {new Date(shortBillDetails.expiresAt).toLocaleString()}</p>
-                            </div>
-                        )} */}
-                        {shortBillDetails && (
-                            <div className="mt-6 bg-gray-100 p-4 rounded-md">
-                                <h2 className="text-lg font-semibold">Short Bill Details</h2>
-                                <p><strong>Invoice No:</strong> {invoiceNo}</p>
+                                <p><strong>Invoice No:</strong> {invoiceNo}</p> */}
                                 {/* <p><strong>Username:</strong> {username || 'N/A'}</p> */}
-                                <p><strong>Name:</strong> {username.firstName} {username.lastName}</p>
+                                {/* <p><strong>Name:</strong> {username.firstName} {username.lastName}</p>
                                 <p>  <strong>Phone:</strong> {user?.phone || phoneNumber || "N/A"}</p>
                                 <p><strong>Products:</strong></p>
                                 <ul className="list-inside list-decimal">
@@ -747,7 +765,69 @@ export default function EditFormatComponent() {
                                 </ul>
                                 <p><strong>Total Amount:</strong> ₹{totalAmount.toFixed(2)}</p>
                             </div>
+                        )} */}
+
+                        {shortBillDetails && (
+                            <div className="bg-gray-50/80 p-4 rounded-sm shadow-md text-sm text-slate-600 w-full mt-20">
+                                <h2 className="text-base font-semibold text-slate-700 mb-4 border-b pb-2">Short Bill Details</h2>
+
+                                {/* Bill Info Table */}
+                                <ul className="w-full border border-gray-300 rounded overflow-hidden text-sm">
+                                {/* Table Header */}
+                                <li className="flex bg-gray-100 text-xs md:text-sm font-semibold text-slate-700">
+                                    <span className="w-1/3 p-2 border-r border-gray-300 text-center">Invoice No</span>
+                                    <span className="w-1/3 p-2 border-r border-gray-300 text-center">User Name</span>
+                                    <span className="w-1/3 p-2 border-r border-gray-300 text-center">Phone</span>
+                                    {/* <span className="w-1/4 p-2 text-center">Total Amount</span> */}
+                                </li>
+
+                                {/* Table Data Row */}
+                                <li className="flex border-t text-xs md:text-sm border-gray-300 hover:bg-slate-50 transition">
+                                    <span className="w-1/3 p-2 border-r border-gray-200 text-center">{invoiceNo}</span>
+                                    <span className="w-1/3 p-2 border-r border-gray-200 text-center">{username?.firstName} {username?.lastName}</span>
+                                    <span className="w-1/3 p-2 border-r border-gray-200 text-center">{user?.phone || phoneNumber || "N/A"}</span>
+                                    {/* <span className="w-1/4 p-2 font-semibold text-center">₹{totalAmount.toFixed(2)}</span> */}
+                                </li>
+                                </ul>
+
+                                {/* Items Table */}
+                                <div className="mt-6">
+                                <h3 className="text-sm font-semibold md:text-sm text-slate-700 mb-2">Purchased Items</h3>
+
+                                <ul className="w-full border border-gray-300 text-xs md:text-sm rounded overflow-hidden">
+                                    {/* Header */}
+                                    <li className="flex bg-gray-100 font-semibold text-slate-700">
+                                    <span className="w-full p-2 text-center">
+                                        {user?.role === 'INSTITUTION'
+                                        ? 'Treatment - Others'
+                                        : user?.role === 'SHOP_OWNER'
+                                        ? 'Particulars (Qty)'
+                                        : 'Particulars | Qty'}
+                                    </span>
+                                    </li>
+
+                                    {/* Row */}
+                                    <li className="flex border-t border-gray-200 text-center hover:bg-slate-50">
+                                    <span className="w-full p-2">
+                                        {user?.role === 'INSTITUTION'
+                                        ? items.map((item) => `${item.treatment} - ${item.others || '-'}`).join(', ')
+                                        : user?.role === 'SHOP_OWNER'
+                                        ? items.map((item) => `${item.particulars}(${item.qty})`).join(', ')
+                                        : items.map((item) => `${item.particulars} | ${item.qty}`).join(', ')}
+                                    </span>
+                                    </li>
+
+                                    {/* Total */}
+                                    <li className="flex border-t border-gray-400 font-semibold text-slate-700 bg-sky-100">
+                                    <span className="w-1/2 p-2 border-r border-gray-300 text-center">Total</span>
+                                    <span className="w-1/2 p-2 text-center">₹{totalAmount.toFixed(2)}</span>
+                                    </li>
+                                </ul>
+                                </div>
+
+                            </div>
                         )}
+
 
                     </div>
 
