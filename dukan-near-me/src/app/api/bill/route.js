@@ -144,6 +144,7 @@ export async function POST(req) {
       invoiceNumber,
       otherCharges,
       generateShortBill = true,
+      generationToken = false,
     } = body;
 
     const parsedCharges = typeof otherCharges === 'string' ? parseFloat(otherCharges) : otherCharges;
@@ -155,8 +156,8 @@ export async function POST(req) {
       (sum, item) => sum + item.price * item.quantity,
       0
     ) + (parsedCharges || 0);
-    const billData =
-    {
+
+    const billData = {
       user: { connect: { id: userId } },
       institution: { connect: { id: institutionId } },
       name,
@@ -176,9 +177,11 @@ export async function POST(req) {
       },
       expiresAt: expiresAt,
     };
+
     if (tokenId) {
       billData.tokenNumber = { connect: { id: tokenId } };
     }
+
     const bill = await prisma.bill.create({
       data: billData,
       include: { items: true },
@@ -207,8 +210,46 @@ export async function POST(req) {
       });
     }
 
+    let generatedToken = null;
+    if (generationToken) {
+      // Get the current highest token number for today
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-    return NextResponse.json({ success: true, bill, shortBill });
+      const latestToken = await prisma.token.findFirst({
+        where: {
+          institutionId,
+          createdAt: {
+            gte: today,
+          },
+        },
+        orderBy: {
+          tokenNumber: 'desc',
+        },
+      });
+
+      const nextTokenNumber = (latestToken?.tokenNumber || 0) + 1;
+
+      generatedToken = await prisma.token.create({
+        data: {
+          user: { connect: { id: userId } },
+          institution: { connect: { id: institutionId } },
+          tokenNumber: nextTokenNumber,
+          name,
+          phoneNumber,
+        },
+      });
+    }
+
+    if (generatedToken){
+      await prisma.bill.update({
+        where: { id: bill.id },
+        data: { tokenNumber: { connect: { id: generatedToken.id } } },
+      });
+    }
+
+    return NextResponse.json({ success: true, bill, shortBill, token: generatedToken });
+
   } catch (error) {
     console.error('Bill Creation Error:', error);
     return NextResponse.json({ success: false, error: 'Failed to create bill' }, { status: 500 });
