@@ -186,6 +186,7 @@ export default function EditFormatComponent() {
                     remarks: '',
                     otherCharges: 0,
                     generateShortBill: shortBill,
+                    generationToken:token,
                 };
 
                 data = await axios.post('/api/bill', payload);
@@ -260,6 +261,7 @@ export default function EditFormatComponent() {
                 setUsername({ firstName: data.firstName || '' });
                 setAddress(data.address || '');
                 setMobile(data.mobile || '');
+                setUserId(data.id || '');
                 toast.success("Receiver details fetched successfully!");
             } else {
                 toast.error("No data found for this token.");

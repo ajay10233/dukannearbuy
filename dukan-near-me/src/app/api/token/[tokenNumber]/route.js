@@ -38,7 +38,7 @@ export async function GET(req, { params }) {
       user.state,
       user.country,
       user.zipCode,
-    ].filter(Boolean); // Remove null/undefined/empty parts
+    ].filter(Boolean);
 
     const fullAddress = addressParts.join(", ");
 
@@ -46,6 +46,7 @@ export async function GET(req, { params }) {
       firstName: user.firstName || '',
       mobile: user.mobileNumber || user.phone || '',
       address: fullAddress,
+      id: user.id,
     };
 
     return NextResponse.json(result, { status: 200 });

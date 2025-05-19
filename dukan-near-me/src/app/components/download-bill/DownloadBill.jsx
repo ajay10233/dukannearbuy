@@ -110,7 +110,7 @@ export default function DownloadBill({ params }) {
                   <td className="border p-2">
                     <input
                       type="text"
-                      readonly
+                      readOnly
                       tabIndex={-1}
                       value={item?.particulars}
                       onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
@@ -119,7 +119,7 @@ export default function DownloadBill({ params }) {
                   </td>
                   <td className="border p-2">
                     <input
-                      readonly
+                      readOnly
                       tabIndex={-1}
                       type="number"
                       value={item?.qty}
@@ -131,7 +131,7 @@ export default function DownloadBill({ params }) {
                     <input
                       type="number"
                       value={item?.rate}
-                      readonly
+                      readOnly
                       tabIndex={-1}
                       onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
                       className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
