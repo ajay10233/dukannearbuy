@@ -127,8 +127,9 @@ export default function ChatBox() {
 
     const handleReceiveMessage = (msg) => {
       console.log("Received message:", msg);
+
       if (
-        msg.receiverId === loggedInUser.id && 
+        msg.receiverId === loggedInUser.id &&
         msg.conversationId === selectedPartner?.conversationId
       ) {
         const selected_id = selectedPartner?.otherUser
@@ -145,8 +146,19 @@ export default function ChatBox() {
         } else {
           console.log("❌ Decryption failed or message is empty.");
         }
-      }else{
-        toast.success("You have a new message");
+      } else {
+        const sender = filteredConversations.find((c) => {
+          const targetId = c?.otherUser.id ?? c.id;
+          return targetId == msg.senderId;
+        });
+
+        console.log("Sender:", sender);
+
+        if (!sender) {
+          toast.success("You have a new message");
+        } else {
+          toast.success(`You have a new message from ${getDisplayName(sender)}`);
+        }
       }
     };
 
@@ -533,7 +545,7 @@ export default function ChatBox() {
       <div
         className={`${selectedPartner ? "hidden md:flex" : "flex"
           } flex-col gap-4 w-full md:w-[30%] bg-[#F5FAFC] p-4`}
-        style={{"height": "100svh"}}
+        style={{ "height": "100svh" }}
       >
         <div className="flex items-center gap-2">
           <button
@@ -724,7 +736,7 @@ export default function ChatBox() {
       </div>
 
       {/* Right Chat Box */}
-      <div className={`${selectedPartner ? "flex" : "hidden md:flex"} flex-col w-full md:w-[70%] bg-[#FAFAFA]`} style={{"height": "100svh"}} >
+      <div className={`${selectedPartner ? "flex" : "hidden md:flex"} flex-col w-full md:w-[70%] bg-[#FAFAFA]`} style={{ "height": "100svh" }} >
         {selectedPartner ? (
           <>
             {/* Chat Header */}
