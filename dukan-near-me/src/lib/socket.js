@@ -13,3 +13,4 @@ export const initiateSocket = () => {
 };
 
 export const getSocket = () => socket;
+  

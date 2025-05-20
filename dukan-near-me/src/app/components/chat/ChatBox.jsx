@@ -33,6 +33,7 @@ import CryptoJS from 'crypto-js';
 import { ChevronLeft } from "lucide-react";
 import axios from "axios";
 import { useUser } from "@/context/UserContext";
+import toast from "react-hot-toast";
 
 export default function ChatBox() {
   const searchParams = useSearchParams();
@@ -122,42 +123,44 @@ export default function ChatBox() {
   };
 
   useEffect(() => {
-    if (!session || socketRef.current) return;
-    socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, {
-      transports: ["websocket"],
-    });
+    if (!socket || !loggedInUser) return;
 
-    socketRef.current.on("connect", () => {
-      console.log(`✅ Connected with socket ID: ${socketRef.current.id}`);
-      socketRef.current.emit("register", session.user.id);
-    });
+    const handleReceiveMessage = (msg) => {
+      console.log("Received message:", msg);
+      if (
+        msg.receiverId === loggedInUser.id && 
+        msg.conversationId === selectedPartner?.conversationId
+      ) {
+        const selected_id = selectedPartner?.otherUser
+          ? selectedPartner.otherUser.id
+          : selectedPartner.id;
 
-    socketRef.current.on("receiveMessage", (msg) => {
-      if (msg.receiverId === session.user.id && msg.conversationId === selectedPartner?.conversationId) {
-        const selected_id = selectedPartner?.otherUser ? selectedPartner?.otherUser.id : selectedPartner.id;
-        console.log("sessing user id is: ", selected_id, session.user.id);
+        const secretKey = loggedInUser.id + selected_id;
 
-        const secretKey = session.user.id + selected_id;
-        console.log("sessing user id is: ", session.user.id);
-        console.log("Selected partner currently is: ", selectedPartner);
-        console.log("Key is: ", secretKey);
         const decryptedMessage = decryptMessage(msg.content, secretKey);
 
         if (decryptedMessage) {
-          console.log("Decrypted message:", decryptedMessage);
+          console.log("✅ Decrypted message:", decryptedMessage);
           setMessages((prev) => [...prev, { ...msg, content: decryptedMessage }]);
         } else {
-          console.log("Decryption failed or message is empty.");
+          console.log("❌ Decryption failed or message is empty.");
         }
+      }else{
+        toast.success("You have a new message");
       }
-    });
+    };
 
+    // Register user on socket connect
+    socket.emit("register", loggedInUser.id);
+    console.log(`✅ Socket connected: ${socket.id}`);
+
+    socket.on("receiveMessage", handleReceiveMessage);
 
     return () => {
-      socketRef.current.disconnect();
-      socketRef.current = null;
+      socket.off("receiveMessage", handleReceiveMessage);
     };
-  }, [session, selectedPartner]);
+  }, [socket, loggedInUser, selectedPartner, setMessages]);
+
 
   useEffect(() => {
     if (!session) return;
@@ -371,7 +374,7 @@ export default function ChatBox() {
     );
 
   const sendMessage = async () => {
-    if (!message.trim() || !socketRef.current || !selectedPartner) return;
+    if (!message.trim() || !socket || !selectedPartner) return;
 
     const timestamp = new Date().toISOString();
     const selected_id = selectedPartner?.otherUser ? selectedPartner.otherUser.id : selectedPartner.id;
@@ -458,7 +461,7 @@ export default function ChatBox() {
 
     console.log("msg data: ", msgData);
 
-    await socketRef.current.emit("sendMessage", msgData);
+    await socket.emit("sendMessage", msgData);
 
     setMessages((prev) =>
       Array.isArray(prev) ? [...prev, { ...msgData, content: decryptedMessage }] : [{ ...msgData, content: decryptedMessage }]
