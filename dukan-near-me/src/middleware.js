@@ -7,7 +7,7 @@ export async function middleware(req) {
   
   // Get session token using NextAuth
   // console.log("req.url: ", req.url);
-  if(req.url.includes("/login")) return NextResponse.next();
+  if(req.url.includes("/login") || req.url.includes("/dashboard")) return NextResponse.next();
   const token = await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
