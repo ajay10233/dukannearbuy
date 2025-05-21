@@ -63,7 +63,8 @@ export default function LoginForm() {
 
         if (res.status === 200) {
           toast.success("Login successfully!", { id: toastId });
-          router.push("/dashboard");
+          console.log(res);
+          router.push("/dashboard");  
         } else if (res.error === "NOT_VERIFIED") {
           toast.error("You must verify your email first.", { id: toastId });
           // router.push(`/otp-verify/`);
