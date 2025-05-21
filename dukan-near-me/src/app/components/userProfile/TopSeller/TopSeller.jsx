@@ -89,6 +89,7 @@ export default function TopSeller() {
     fetchCurrentLocation();
   }, []);
 
+  
   return (
     <div className="w-full flex flex-col items-center px-6 py-10">
       <div className="w-full max-w-[1300px] flex flex-col gap-8">
@@ -168,17 +169,17 @@ export default function TopSeller() {
                         </div>
 
                         {/* Badge */}
-                        {seller.notes && (
+                        {seller?.notes && (
                           <div
                             className={`absolute top-2 right-2 py-1 px-4 text-white text-sm rounded-lg animate-bounce
-                            ${seller.notes === 'On Sale' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
-                            ${seller.notes === 'New Shop opening' ? 'bg-gradient-to-br from-blue-500 via-green-500 to-teal-500' : ''}
-                            ${seller.notes === 'Festive Offer' ? 'bg-gradient-to-tl from-orange-500 via-yellow-500 to-red-500' : ''}
-                            ${seller.notes === 'New Product' ? 'bg-gradient-to-bl from-purple-500 via-pink-500 to-red-500' : ''}
-                            ${seller.notes === 'New Service' ? 'bg-gradient-to-tr from-pink-300 via-purple-500 to-blue-500' : ''}
-                            ${seller.notes === 'Exclusive Seller' ? 'bg-gradient-to-tr from-red-500 via-orange-500 to-yellow-500' : ''}
-                            ${seller.notes === 'Promotion' ? 'bg-gradient-to-tr from-indigo-400 via-purple-500 to-pink-500' : ''} 
-                            ${seller.notes === 'Reloacate' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
+                            ${seller?.notes === 'On Sale' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
+                            ${seller?.notes === 'New Shop opening' ? 'bg-gradient-to-br from-blue-500 via-green-500 to-teal-500' : ''}
+                            ${seller?.notes === 'Festive Offer' ? 'bg-gradient-to-tl from-orange-500 via-yellow-500 to-red-500' : ''}
+                            ${seller?.notes === 'New Product' ? 'bg-gradient-to-bl from-purple-500 via-pink-500 to-red-500' : ''}
+                            ${seller?.notes === 'New Service' ? 'bg-gradient-to-tr from-pink-300 via-purple-500 to-blue-500' : ''}
+                            ${seller?.notes === 'Exclusive Seller' ? 'bg-gradient-to-tr from-red-500 via-orange-500 to-yellow-500' : ''}
+                            ${seller?.notes === 'Promotion' ? 'bg-gradient-to-tr from-indigo-400 via-purple-500 to-pink-500' : ''} 
+                            ${seller?.notes === 'Reloacate' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
                           `}
                           >
                             {seller.notes}

@@ -53,13 +53,38 @@ export default function Footer() {
                 <h3 className="font-semibold text-lg md:text-xl pb-2.5">Account</h3>
                 <span onClick={handleAccountRedirect} className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">My Account</span>
                 <Link href="/getstarted" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Login / SignUp</Link>
-                <Link href="/favprofile" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">My Sellers</Link>
+                  {/* <Link href="/favprofile" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">My Sellers</Link> */}
+                {role === "USER" && (
+                    <Link href="/favprofile"
+                    className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400" >
+                        My Sellers
+                    </Link>
+                )}
+                {(role === "SHOP_OWNER" || role === "INSTITUTION") && (
+                    <Link href="/myplan"
+                        className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">
+                        My Plan
+                    </Link>
+                )}
+
             </div>
             <div className='gap-y-2 text-md md:text-center'>
                 <h3 className="font-semibold text-lg md:text-xl pb-2.5">Quick Link</h3>
                     <Link href="/aboutus#help" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Help</Link>
                     <Link href="/terms&condition#privacy-policy" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Privacy Policy</Link>
-                    <Link href="/terms&condition" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Terms Of Use</Link>
+                    {(role === "INSTITUTION" || role === "SHOP_OWNER") ? (
+                        <Link
+                            href="/terms&condition"
+                            className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">
+                            Terms and Condition
+                        </Link>
+                        ) : (
+                        <Link
+                            href="/terms&condition"
+                            className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">
+                            Terms Of Use
+                        </Link>
+                    )}
                     <Link href="mailto:contact@nearbuydukaan.com" className="block text-xs md:text-sm p-1 cursor-pointer transition-all ease-in-out duration-500 hover:text-teal-400">Contact</Link>
               </div>
             <div className='hidden md:block  grid-cols-1 sm:grid-cols-2 md:grid-cols-3 w-full max-w-5xl mx-auto text-center'>
