@@ -8,7 +8,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 
-export default function BillHistoryTable({setDates}) {
+export default function BillHistoryTable({ setDates }) {
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [showAmountSort, setShowAmountSort] = useState(false);
   const [fromDate, setFromDate] = useState('');
@@ -34,7 +34,7 @@ export default function BillHistoryTable({setDates}) {
 
         if (data.success) {
           setBillData(data.bills);
-          setFilteredData(data.bills); 
+          setFilteredData(data.bills);
         } else {
           console.error("Failed to fetch bills:", data.error);
         }
@@ -49,37 +49,51 @@ export default function BillHistoryTable({setDates}) {
   }, []);
 
   useEffect(() => {
-  if (fromDate && toDate) {
-    const from = new Date(fromDate);
-    const to = new Date(toDate);
-    const toDateEnd = new Date(to);
-    toDateEnd.setHours(23, 59, 59, 999);
+    if (fromDate && toDate) {
+      const from = new Date(fromDate);
+      const to = new Date(toDate);
+      const toDateEnd = new Date(to);
+      toDateEnd.setHours(23, 59, 59, 999);
 
-    const filtered = billData.filter((bill) => {
-      const billDate = new Date(bill.createdAt);
-      return billDate >= from && billDate <= toDateEnd;
-    });
+      const filtered = billData.filter((bill) => {
+        const billDate = new Date(bill.createdAt);
+        return billDate >= from && billDate <= toDateEnd;
+      });
 
-    setFilteredData(filtered);
-    setDates({ startDate: fromDate, endDate: toDate });
-  } else {
-    setFilteredData(billData);
-    setDates({ startDate: "", endDate: "" });
-  }
-}, [fromDate, toDate, billData]);
+      setFilteredData(filtered);
+      setDates({ startDate: fromDate, endDate: toDate });
+    } else {
+      setFilteredData(billData);
+      setDates({ startDate: "", endDate: "" });
+    }
+  }, [fromDate, toDate, billData]);
+
+  useEffect(() => {
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+
+    const formatDate = (date) => {
+      return date.toISOString().split('T')[0];
+    };
+
+    setFromDate(formatDate(today));
+    setToDate(formatDate(tomorrow));
+  }, []);
+
 
 
 
   const sortAmount = (order) => {
-  const sorted = [...filteredData].sort((a, b) => {
-    const aNum = parseFloat(a.totalAmount.toString().replace(/[^\d.]/g, ""));
-    const bNum = parseFloat(b.totalAmount.toString().replace(/[^\d.]/g, ""));
-    return order === "asc" ? aNum - bNum : bNum - aNum;
-  });
+    const sorted = [...filteredData].sort((a, b) => {
+      const aNum = parseFloat(a.totalAmount.toString().replace(/[^\d.]/g, ""));
+      const bNum = parseFloat(b.totalAmount.toString().replace(/[^\d.]/g, ""));
+      return order === "asc" ? aNum - bNum : bNum - aNum;
+    });
 
-  setFilteredData(sorted);
-  setShowAmountSort(false);
-};
+    setFilteredData(sorted);
+    setShowAmountSort(false);
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -115,34 +129,34 @@ export default function BillHistoryTable({setDates}) {
             <div
               className="flex items-center gap-x-1"
               onClick={() => setShowAmountSort(!showAmountSort)}>
-                Amount{" "}
-                  {showAmountSort ? (
-                    <ChevronUp
-                      size={16}
-                      className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-teal-700"
-                    />
-                  ) : (
-                    <ChevronDown
-                      size={16}
-                      className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-teal-700"
-                    />
-                  )}
+              Amount{" "}
+              {showAmountSort ? (
+                <ChevronUp
+                  size={16}
+                  className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-teal-700"
+                />
+              ) : (
+                <ChevronDown
+                  size={16}
+                  className="ml-1 w-4 h-4 cursor-pointer text-slate-500 hover:text-teal-700"
+                />
+              )}
             </div>
 
-                {showAmountSort && (
-                  <div className="absolute top-9 bg-white border border-gray-300 p-3 rounded-lg shadow-lg z-10 text-black w-40 space-y-1">
-                    <p
-                      onClick={() => sortAmount("asc")}
-                      className="hover:bg-gray-100 px-2 py-1 rounded cursor-pointer text-sm">
-                      Low to High
-                    </p>
-                    <p
-                      onClick={() => sortAmount("desc")}
-                      className="hover:bg-gray-100 px-2 py-1 rounded cursor-pointer text-sm">
-                      High to Low
-                    </p>
-                  </div>
-                )}
+            {showAmountSort && (
+              <div className="absolute top-9 bg-white border border-gray-300 p-3 rounded-lg shadow-lg z-10 text-black w-40 space-y-1">
+                <p
+                  onClick={() => sortAmount("asc")}
+                  className="hover:bg-gray-100 px-2 py-1 rounded cursor-pointer text-sm">
+                  Low to High
+                </p>
+                <p
+                  onClick={() => sortAmount("desc")}
+                  className="hover:bg-gray-100 px-2 py-1 rounded cursor-pointer text-sm">
+                  High to Low
+                </p>
+              </div>
+            )}
           </li>
 
           {/* Download */}
@@ -161,11 +175,11 @@ export default function BillHistoryTable({setDates}) {
               <ul className="flex items-center *:w-2/5  text-sm text-slate-500 w-full text-center justify-around whitespace-nowrap">
                 <li className="md:flex flex-col items-center hidden">{bill?.invoiceNumber}</li>
                 <li>{new Date(bill?.createdAt).toLocaleDateString()}</li>
-                <li>{bill?.user?.username || "N/A"}</li> 
+                <li>{bill?.user?.username || "N/A"}</li>
                 <li className="md:flex flex-col items-center hidden">{bill?.totalAmount}</li>
                 <li className="flex flex-col items-center justify-center relative">
                   <span className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
-                    <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff" onClick={() => handleDownload(bill?.id)}/>
+                    <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff" onClick={() => handleDownload(bill?.id)} />
                   </span>
                 </li>
               </ul>

@@ -29,7 +29,7 @@ export async function POST(req) {
       );
     }
 
-    const isFreePlan = institution.subscriptionPlan?.name === 'BASIC';
+    const isFreePlan = institution.subscriptionPlan==null ?true : institution.subscriptionPlan?.name === 'BASIC';
 
     if (isFreePlan) {
       const startOfDay = new Date();
