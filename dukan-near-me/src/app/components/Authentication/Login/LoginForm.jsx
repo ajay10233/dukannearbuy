@@ -1,5 +1,5 @@
 "use client";
-import { signIn, useSession } from "next-auth/react";
+import { getSession, signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -41,49 +41,59 @@ export default function LoginForm() {
     }
   };
 
-  const onSubmit = async (data) => {
-    setModalShownOnce(false);
+const onSubmit = async (data) => {
+  setModalShownOnce(false);
 
-    if (data) {
-      setIsLoading(true); // <- Set loading true
-      const { email, password } = data;
-      const toastId = toast.loading("Processing...");
+  if (!data) return;
 
-      try {
-        const ip = await getIpAddress();
-        const device = navigator.userAgent || "Unknown Device";
+  setIsLoading(true);
+  const { email, password } = data;
+  const toastId = toast.loading("Processing...");
 
-        const res = await signIn("credentials", {
-          redirect: false,
-          identifier: email,
-          password,
-          device,
-          ip,
-        });
+  try {
+    const ip = await getIpAddress();
+    const device = navigator.userAgent || "Unknown Device";
 
-        if (res.status === 200) {
-          toast.success("Login successfully!", { id: toastId });
-          console.log(res);
-          router.push("/dashboard");  
-        } else if (res.error === "NOT_VERIFIED") {
-          toast.error("You must verify your email first.", { id: toastId });
-          // router.push(`/otp-verify/`);
-          if (!modalShownOnce) {
-            setShowModal(true);
-            setModalShownOnce(true);
-          }
-        } else {
-          toast.error(res.error || "Invalid credentials", { id: toastId });
-        }
+    const res = await signIn("credentials", {
+      redirect: false,
+      identifier: email,
+      password,
+      device,
+      ip,
+    });
 
-      } catch (error) {
-        toast.error("Auth error", { id: toastId });
-        console.error(error);
-      } finally {
-        setIsLoading(false); // <- Reset loading
+    if (res.ok) {
+      toast.success("Login successfully!", { id: toastId });
+
+      const session = await getSession(); // Get full session with user info
+
+      // Role-based redirection
+      const role = session?.user?.role;
+      if (role === "USER") {
+        router.push("/userHomePage");
+      } else if (role === "INSTITUTION"|| role === "SHOP_OWNER") {
+        router.push("/partnerHome");
+      } else {
+        router.push("/dashboard"); // default for normal users
       }
+
+    } else if (res.error === "NOT_VERIFIED") {
+      toast.error("You must verify your email first.", { id: toastId });
+      if (!modalShownOnce) {
+        setShowModal(true);
+        setModalShownOnce(true);
+      }
+    } else {
+      toast.error(res.error || "Invalid credentials", { id: toastId });
     }
-  };
+
+  } catch (error) {
+    console.error("Auth error", error);
+    toast.error("Something went wrong during login", { id: toastId });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   useEffect(() => {
     if (session?.user?.role) {
@@ -228,9 +238,6 @@ export default function LoginForm() {
           </motion.div>
         )}
       </AnimatePresence>
-
-
-
     </form>
   );
 }
