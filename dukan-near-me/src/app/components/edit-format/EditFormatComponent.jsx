@@ -33,6 +33,7 @@ export default function EditFormatComponent() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [formDetails, setFormDetails] = useState(null);
     const [token, setToken] = useState('');
+    const [isTokenEnabled, setIsTokenEnabled] = useState(false);
 
 
     const handleFormDetailsChange = (updatedForm) => {
@@ -59,8 +60,8 @@ export default function EditFormatComponent() {
     };
 
     const handleTokenToggle = () => {
-        const newValue = !token;
-        setToken(newValue);
+        const newValue = !isTokenEnabled;
+        setIsTokenEnabled(newValue);
         toast.success(`Token ${newValue ? "Enabled" : "Disabled"}`);
     };
 
@@ -428,8 +429,8 @@ export default function EditFormatComponent() {
                             </span> */}
 
                             <div className="hidden md:flex items-center gap-2 print:hidden ml-auto">
-                                <input
-                                    type="text"
+                                <input 
+                                    type="number"
                                     value={token}
                                     onChange={(e) => setToken(e.target.value)}
                                     placeholder="Enter Token No."
@@ -453,7 +454,7 @@ export default function EditFormatComponent() {
                         <div className="flex justify-between items-center my-4 md:my-8">
                             <div className="flex md:hidden items-center gap-1 md:gap-2 print:hidden ml-auto">
                                 <input
-                                    type="text"
+                                    type="number"
                                     value={token}
                                     onChange={(e) => setToken(e.target.value)}
                                     placeholder="Enter Token No."
