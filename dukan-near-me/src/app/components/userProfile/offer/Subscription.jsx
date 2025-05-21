@@ -9,6 +9,8 @@ import { toast } from "react-hot-toast";
 export default function Subscription() {
   const [plans, setPlans] = useState([]);
   const [activePlan, setActivePlan] = useState("");
+  const [expiresAt, setExpiresAt] = useState(null);
+
   const router = useRouter(); // Initialize the router for navigation
 
   const handleClick = (planName, price) => {
@@ -35,7 +37,9 @@ export default function Subscription() {
       try {
         const res = await fetch("/api/users/me"); 
         const data = await res.json();
-        setActivePlan(data.subscriptionPlan?.name || "BASIC");
+        setActivePlan(data.subscriptionPlan?.name || "BASIC");                        
+        setExpiresAt(data.subscriptionPlan?.expiresAt || null);
+
       } catch (error) {
         console.error("Error fetching user plan:", error);
       }
@@ -44,6 +48,12 @@ export default function Subscription() {
     fetchPlans();
     fetchUserPlan();
   }, []);
+
+  const isPlanExpired = () => {
+    if (!expiresAt) return false;
+    return new Date(expiresAt) < new Date();
+  };
+
   
 
   return (
@@ -63,7 +73,8 @@ export default function Subscription() {
               key={plan.id}
               className={`w-[260px] h-[330px] md:w-[300px] md:h-[350px] rounded-xl p-4 gap-y-4 flex flex-col justify-between items-center transition-all duration-300 transform
                 ${
-                  activePlan === plan.name
+                    activePlan === plan.name && !isPlanExpired()
+                  // activePlan === plan.name
                     ? " text-gray-600 shadow-xl shadow-yellow-500/50 ring-2 ring-offset-2 ring-orange-300 bg-gradient-to-tr from-yellow-200 via-orange-200 to-pink-200 animate-premium-pop"
                     : plan.name === "BASIC"
                     ? "bg-gradient-to-tr from-white to-gray-300 border-2 hover:shadow-md hover:scale-105 border-yellow-400 hover:ring-2 hover:ring-yellow-300"
@@ -100,17 +111,17 @@ export default function Subscription() {
 
                 <button
                   onClick={() => handleClick(plan.name, plan.price)} // Pass plan.price here
-                  disabled={plan.price === 0 || activePlan === plan.name} 
+                  disabled={plan.price === 0 || activePlan === plan.name && !isPlanExpired()} 
                   className={`px-6 py-2 tracking-wide cursor-pointer rounded-full text-sm font-semibold transition
                     ${
                       plan.name === "BASIC"
                         ? "border border-yellow-500 text-yellow-500 bg-yellow-100"
                         : "border border-yellow-500 text-yellow-500 bg-yellow-100"
                     }
-                    ${activePlan === plan.name ? "ring-2 ring-yellow-300" : ""} 
+                    ${activePlan === plan.name && !isPlanExpired() ? "ring-2 ring-yellow-300" : ""} 
                     ${plan.price === 0 ? "cursor-not-allowed opacity-70" : ""}`} // Add opacity for free plan
                 >
-                    {activePlan === plan.name ? "Selected" : "Select"}
+                    {activePlan === plan.name && !isPlanExpired() ? "Selected" : "Select"}
                 </button>
               </div>
             </div>

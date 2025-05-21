@@ -6,8 +6,8 @@ import { Mail, ShieldCheck, CreditCard, User } from "lucide-react";
 const refundSections = [
   {
     id: "refund-policy",
-    icon: <CreditCard className="w-6 h-6 text-blue-600" />,
-    title: "Refund Policy",
+    // icon: <CreditCard className="w-6 h-6 text-blue-600" />,
+    // title: "Refund Policy",
     content: [
       {
         para: "At NearbuyDukaan we strive to provide the best possible service.",
@@ -110,12 +110,12 @@ const refundSections = [
 
 export default function RefundPolicy() {
   return (
-    <div className="flex flex-col gap-10 px-4 pt-10">
+    <div className="flex flex-col gap-10 px-4 pt-2">
       {refundSections.map((section) => (
         <div key={section.id}>
           <div className="flex items-center gap-2 mb-4 justify-center">
-            {section.icon}
-            <h2 className="text-2xl font-semibold md:text-3xl text-center">{section.title}</h2>
+            {/* {section.icon}
+            <h2 className="text-2xl font-semibold md:text-3xl text-center">{section.title}</h2> */}
           </div>
           <div className="flex flex-col gap-y-4">
             {section.content.map((item, idx) => (

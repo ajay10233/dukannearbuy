@@ -229,6 +229,18 @@ const termsSections = [
       },
     ],
   },
+
+  {
+      id: "refund-policy",
+      icon: <ShieldCheck className="w-6 h-6 text-blue-600" />,
+      title: "Refund Policy",
+      content: [
+        {
+          // heading: "Refund Policy",
+          text: <RefundPolicy />, 
+        },
+      ],
+    },
   
 ];
 

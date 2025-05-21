@@ -101,8 +101,8 @@ export default function BillHistoryTable({ setDates }) {
 
   return (
     <div className="flex flex-col gap-y-3 cursor-default w-full overflow-hidden h-full">
-      <div className="flex items-center text-sm capitalize text-slate-500 px-2 py-3 bg-white/30 border border-gray-300 rounded-xl shadow-sm">
-        <ul className="flex *:w-1/5 w-full justify-around whitespace-nowrap">
+      <div className="flex items-center text-sm capitalize text-slate-600 px-2 py-3 bg-white/30 border border-gray-300 rounded-xl shadow-sm">
+        <ul className="flex *:w-1/5 w-full justify-around whitespace-nowrap font-semibold">
           <li className="justify-center md:flex hidden">Invoice ID</li>
 
           {/* Billing Date Filter */}
@@ -144,15 +144,15 @@ export default function BillHistoryTable({ setDates }) {
             </div>
 
             {showAmountSort && (
-              <div className="absolute top-9 bg-white border border-gray-300 p-3 rounded-lg shadow-lg z-10 text-black w-40 space-y-1">
+              <div className="absolute top-9 bg-white border border-gray-300 p-3 font-normal rounded-lg shadow-lg z-10 text-gray-500 w-40 space-y-1">
                 <p
                   onClick={() => sortAmount("asc")}
-                  className="hover:bg-gray-100 px-2 py-1 rounded cursor-pointer text-sm">
+                  className="hover:bg-gray-100 transition-all ease-in-out duration-500 px-2 py-1 rounded cursor-pointer text-sm">
                   Low to High
                 </p>
                 <p
                   onClick={() => sortAmount("desc")}
-                  className="hover:bg-gray-100 px-2 py-1 rounded cursor-pointer text-sm">
+                  className="hover:bg-gray-100 px-2 transition-all ease-in-out duration-500 py-1 rounded cursor-pointer text-sm">
                   High to Low
                 </p>
               </div>
