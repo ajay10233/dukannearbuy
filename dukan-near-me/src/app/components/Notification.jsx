@@ -95,7 +95,7 @@ export default function Notification() {
 
                       {n.message.includes("completed")  ? (
                         <CheckCircle className="h-5 w-5 text-green-600" />
-                      ) : n.message.includes("started processing") ? (
+                      ) : n.message.includes("processing") ? (
                         <Loader className="h-5 w-5 text-yellow-600 animate-spin [animation-duration:2000ms]" />
                       ) : n.message.includes("generated") ? (
                         <RefreshCw className="h-5 w-5 text-blue-600 animate-spin [animation-duration:2000ms]" />
