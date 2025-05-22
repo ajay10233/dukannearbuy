@@ -65,11 +65,13 @@ export default function ChatBox() {
       return user.firmName || `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Unknown";
     }
 
-    if (user.firstName || user.lastName) {
-      return `${user.firstName || ""} ${user.lastName || ""}`.trim();
-    }
+    return user?.name || "Unknown";s
+    // console.log("user: ", user);
+    // if (user.firstName || user.lastName) {
+    //   return `${user.firstName || ""} ${user.lastName || ""}`.trim();
+    // }
 
-    return "Unknown";
+    // return "Unknown";
   };
 
   const encryptMessage = (message, secretKey) => {

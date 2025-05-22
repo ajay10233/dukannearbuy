@@ -68,6 +68,8 @@ export async function GET(req) {
       zipCode: true,
       country: true,
       shopAddress: true,
+      username:true,
+      hashtags:true,
       profilePhoto: true,
       latitude: true,
       longitude: true,
@@ -104,6 +106,7 @@ export async function GET(req) {
         street: true,
         buildingName: true,
         hashtags: true,
+        username:true,
       },
     })
 
