@@ -192,7 +192,7 @@ const filteredReports = reports.filter((report) => {
               }}
             />
             {showDateFilter && (
-              <div className="absolute top-6 bg-white w-60 text-slate-700 border border-gray-300 rounded-lg shadow-md p-2 flex flex-col">
+              <div className="absolute top-6 left-2 bg-white w-60 text-slate-700 border border-gray-300 rounded-lg shadow-md p-2 flex flex-col">
                 <label className="text-sm mb-2">From:</label>
                 <input
                   type="date"
