@@ -282,6 +282,7 @@ export default function SearchBar() {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setSuggestions([]);
         setResults([]);
+        setSearchQuery("");
       }
     };
 
@@ -356,7 +357,7 @@ export default function SearchBar() {
 
       {/* Results dropdown */}
       {!loading && results.length > 0 && (
-        <div className="w-full z-[1000] max-h-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 bg-black border border-gray-500 rounded-md absolute left-1/2 top-full mt-2 transform -translate-x-1/2">
+        <div className="w-full z-20 max-h-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 bg-black border border-gray-500 rounded-md absolute left-1/2 top-full mt-2 transform -translate-x-1/2">
           {/* Fixed tabs row */}
           <div className="flex border-b border-gray-600">
             {filterTabs.map((tab) => (
