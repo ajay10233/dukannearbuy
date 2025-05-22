@@ -256,7 +256,8 @@ export async function POST(req) {
       });
 
       const nextTokenNumber = (latestToken?.tokenNumber || 0) + 1;
-
+      const tokenExpiresAt = new Date();
+      tokenExpiresAt.setHours(24, 0, 0, 0);
       generatedToken = await prisma.token.create({
         data: {
           user: { connect: { id: userId } },
@@ -264,6 +265,7 @@ export async function POST(req) {
           tokenNumber: nextTokenNumber,
           name,
           phoneNumber,
+          expiresAt: tokenExpiresAt,
         },
       });
     }

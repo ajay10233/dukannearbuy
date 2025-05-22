@@ -63,9 +63,12 @@ async function cleanupExpired() {
     const expiredUsers = await prisma.user.findMany({
       where: {
         planExpiresAt: { lt: now },
-        subscriptionPlan: { isNot: null }, 
+        subscriptionPlan: {
+          isNot: null, // ✅ wrap it properly
+        },
       },
     });
+
 
     for (const user of expiredUsers) {
       await prisma.user.update({
