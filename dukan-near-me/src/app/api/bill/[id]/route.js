@@ -14,10 +14,13 @@ export async function GET(req, { params }) {
     const bill = await prisma.bill.findUnique({
       where: {
         id: billId,
-        institutionId: session.user.id,
+         OR: [
+      { institutionId: session.user.id },
+      { userId: session.user.id },
+    ],
       },
       include: {
-        items: true,
+        items: true,    
         user: true,
         institution: true,
       },

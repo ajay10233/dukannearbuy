@@ -70,7 +70,7 @@ const onSubmit = async (data) => {
       // Role-based redirection
       const role = session?.user?.role;
       if (role === "USER") {
-        router.push("/userHomePage");
+        router.push("/UserHomePage");
       } else if (role === "INSTITUTION"|| role === "SHOP_OWNER") {
         router.push("/partnerHome");
       } else {
