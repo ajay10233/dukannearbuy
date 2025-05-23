@@ -70,6 +70,8 @@ export async function GET() {
           durationInDays: user.subscriptionPlan.durationInDays,
           features: user.subscriptionPlan.features,
           maxUploadSizeMB: user.subscriptionPlan.maxUploadSizeMB,
+          expiresAt: user.subscriptionPlan.expiresAt,
+          createdAt: user.subscriptionPlan.createdAt,
         }
       : null,
     pastAddresses: user.pastAddresses.map((address) => ({
