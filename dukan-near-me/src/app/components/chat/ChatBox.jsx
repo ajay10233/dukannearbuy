@@ -542,12 +542,11 @@ export default function ChatBox() {
   };
 
   return (
-    <div className="flex h-screen bg-white font-[var(--font-plus-jakarta)]">
+    <div className="flex min-h-screen bg-white font-[var(--font-plus-jakarta)]">
       {/* Left Sidebar */}
       <div
         className={`${selectedPartner ? "hidden md:flex" : "flex"
-          } flex-col gap-4 w-full md:w-[30%] bg-[#F5FAFC] p-4`}
-        style={{ "height": "100svh" }}
+          } flex-col gap-4 w-full md:w-[30%] bg-[#F5FAFC] p-4`}      
       >
         <div className="flex items-center gap-2">
           <button
@@ -593,7 +592,7 @@ export default function ChatBox() {
         </div>
 
         {/* Conversations List */}
-        <div className="w-full">
+        <div className="w-full dialogScroll">
           {isFavorite.length > 0 ? (
             isFavorite.map((partner, index) => (
               <div
@@ -603,7 +602,7 @@ export default function ChatBox() {
                 <div className="flex items-center gap-2.5">
                   <div className="relative w-14 h-14">
                     <Image
-                      src="/chatUserSvg/userImage.svg"
+                      src="/default-img.png"
                       alt="seller image"
                       fill
                       className="rounded-md object-cover"
@@ -622,7 +621,7 @@ export default function ChatBox() {
                         partner.id && "font-medium"
                         }`}
                     >
-                      <span className="inline-flex items-center gap-1">
+                      <span className="inline-flex items-center gap-1 capitalize">
                         {partner.otherUser?.firmName || partner.otherUser?.name || "Unknown"}
                         {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" && (
                           <Crown size={16} fill="#f0d000" className="text-yellow-500" />
@@ -673,10 +672,10 @@ export default function ChatBox() {
                         partner?.otherUser
                           ? partner?.otherUser?.profilePhoto && partner?.otherUser?.profilePhoto !== "null"
                             ? partner?.otherUser?.profilePhoto
-                            : "/chatUserSvg/userImage.svg"
+                            : "/default-img.png"
                           : partner?.profilePhoto && partner?.profilePhoto !== "null"
                             ? partner?.profilePhoto
-                            : "/chatUserSvg/userImage.svg"
+                            : "/default-img.png"
                       }
                       alt="seller image"
                       fill
@@ -693,7 +692,7 @@ export default function ChatBox() {
                       //   e.preventDefault();
                       //   setSelectedPartner({ ...partner });
                       // }}
-                      className={`font-medium text-[var(--secondary-foreground)] ${selectedPartner?.id === partner.id && "font-medium"}`}>
+                      className={`font-medium text-[var(--secondary-foreground)] capitalize ${selectedPartner?.id === partner.id && "font-medium"}`}>
                       <span className="inline-flex items-center gap-1">
                         {getDisplayName(partner)}
                         {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" && (
@@ -738,7 +737,7 @@ export default function ChatBox() {
       </div>
 
       {/* Right Chat Box */}
-      <div className={`${selectedPartner ? "flex" : "hidden md:flex"} flex-col w-full md:w-[70%] bg-[#FAFAFA]`} style={{ "height": "100svh" }} >
+      <div className={`${selectedPartner ? "flex" : "hidden md:flex"} flex-col w-full md:w-[70%] bg-[#FAFAFA]`} >
         {selectedPartner ? (
           <>
             {/* Chat Header */}
@@ -753,8 +752,8 @@ export default function ChatBox() {
                 <div className="relative w-10 h-10">
                   <Image
                     src={selectedPartner?.otherUser ?
-                      selectedPartner?.otherUser?.profilePhoto && selectedPartner?.otherUser?.profilePhoto != "null" ? selectedPartner?.otherUser?.profilePhoto : "/chatUserSvg/userImage.svg"
-                      : selectedPartner?.profilePhoto && selectedPartner?.profilePhoto != "null" ? selectedPartner?.profilePhoto : "/chatUserSvg/userImage.svg"
+                      selectedPartner?.otherUser?.profilePhoto && selectedPartner?.otherUser?.profilePhoto != "null" ? selectedPartner?.otherUser?.profilePhoto : "/default-img.png"
+                      : selectedPartner?.profilePhoto && selectedPartner?.profilePhoto != "null" ? selectedPartner?.profilePhoto : "/default-img.png"
                     }
                     alt="seller image"
                     fill
@@ -763,7 +762,7 @@ export default function ChatBox() {
                   />
                 </div>
                 <div>
-                  <p className="text-[var(--chatText-color)] text-[16px] md:text-lg flex items-center gap-0 md:gap-2">
+                  <p className="text-[var(--chatText-color)] text-[16px] md:text-lg flex items-center gap-0 md:gap-2 capitalize">
                     {selectedPartner
                       &&
                       (
@@ -899,9 +898,9 @@ export default function ChatBox() {
                             ${msg.senderId === session.user.id
                               ? "rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl"
                               : "rounded-tl-2xl rounded-tr-2xl rounded-br-2xl"
-                            } flex items-center justify-between gap-1.5`}
+                            } max-w-[75%] break-words`}
                         >
-                          <div className="text-[#010101] opacity-85 font-normal text-sm flex items-center gap-2">
+                          <div className="text-[#010101] opacity-85 font-normal text-sm">
                             {msg.content.startsWith(
                               "https://www.google.com/maps"
                             ) ? (
