@@ -19,6 +19,8 @@ export default function TokenGeneration() {
   const { data: session } = useSession();
   const [userId, setUserId] = useState('');
   const [tokens, setTokens] = useState([]);
+  const [clickedTokens, setClickedTokens] = useState({});
+
   const institutionId = session?.user?.id;
   const router = useRouter();
 
@@ -78,7 +80,15 @@ export default function TokenGeneration() {
     }
   };
 
-  const handleStartProcessing = (tokenId,tokenNumber,userId) => {
+  const handleStartProcessing = (tokenId, tokenNumber, userId) => {
+    if (clickedTokens[tokenId]?.processing) return;
+
+    setClickedTokens((prev) => ({
+      ...prev,
+      [tokenId]: { ...prev[tokenId], processing: true },
+    }));
+
+
     socket?.emit('startProcessing', { institutionId, tokenId });
     let message = `Your token has been started processing`;
     if (tokenNumber){
@@ -87,7 +97,15 @@ export default function TokenGeneration() {
     socket?.emit("sendNotification",{toUserId:userId,message:message,fromUserId:session?.user?.id,status:"processing"});
   };
 
-  const handleComplete = (tokenId,tokenNumber,userId) => {
+  const handleComplete = (tokenId, tokenNumber, userId) => {
+    if (clickedTokens[tokenId]?.completed) return;
+
+    setClickedTokens((prev) => ({
+      ...prev,
+      [tokenId]: { ...prev[tokenId], completed: true },
+    }));
+    
+
     socket?.emit('completeToken', { institutionId, tokenId });
     let message = `Your token has been completed`;
     if (tokenNumber){
@@ -239,15 +257,19 @@ export default function TokenGeneration() {
                   {!token.completed && (
                     <>
                       <button
-                        onClick={() => handleStartProcessing(token.id,token?.tokenNumber,token?.userId)}
-                        className="bg-yellow-500 hover:bg-yellow-400 transition duration-300 ease-in-out p-1 md:px-2 md:py-1 rounded text-white cursor-pointer flex items-center justify-center gap-1">
+                        onClick={() => handleStartProcessing(token.id, token?.tokenNumber, token?.userId)}
+                        disabled={clickedTokens[token.id]?.processing}
+                        className={`bg-yellow-500 hover:bg-yellow-400 transition duration-300 ease-in-out p-1 md:px-2 md:py-1 rounded text-white cursor-pointer flex items-center justify-center gap-1 
+                          ${ clickedTokens[token.id]?.processing ? 'opacity-50 cursor-not-allowed' : ''} `}>
                         <Loader size={16} className="md:hidden" />
                         <span className="hidden md:inline">Set Processing</span>
                       </button>
 
                       <button
-                        onClick={() => handleComplete(token.id,token?.tokenNumber,token?.userId)}
-                        className="bg-green-500 hover:bg-green-400 transition duration-300 ease-in-out p-1 md:px-2 md:py-1 rounded text-white cursor-pointer flex items-center justify-center gap-1">
+                        onClick={() => handleComplete(token.id, token?.tokenNumber, token?.userId)}
+                        disabled={clickedTokens[token.id]?.completed}
+                        className={`bg-green-500 hover:bg-green-400 transition duration-300 ease-in-out p-1 md:px-2 md:py-1 rounded text-white cursor-pointer flex items-center justify-center gap-1
+                        ${ clickedTokens[token.id]?.completed ? 'opacity-50 cursor-not-allowed' : ''} `}>
                         <Check size={16} className="md:hidden" />
                         <span className="hidden md:inline">Complete</span>
                       </button>

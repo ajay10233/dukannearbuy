@@ -271,7 +271,7 @@ export default function About({ profileUpdated }) {
                   value="past-addresses"
                   className="rounded-md overflow-hidden w-full"
                 >
-                  <AccordionTrigger className="bg-white px-4 py-3 text-sm md:text-[16px] cursor-pointer hover:no-underline text-blue-700 font-semibold hover:bg-gray-100 rounded-t-md flex justify-between items-center">
+                  <AccordionTrigger className="bg-white px-4 py-3 text-sm cursor-pointer hover:no-underline text-blue-700 font-semibold hover:bg-gray-100 rounded-t-md flex justify-between items-center">
                     <span>Past Addresses</span>
                     {/* <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]:rotate-180" /> */}
                   </AccordionTrigger>

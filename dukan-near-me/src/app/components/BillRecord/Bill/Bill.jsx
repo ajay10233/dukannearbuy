@@ -173,7 +173,7 @@ export default function Bill() {
               }}
             />
             {showDateFilter && (
-              <div className="absolute top-6 bg-white w-60 text-slate-700 border border-gray-300 rounded-lg shadow-md p-2 flex flex-col">
+              <div className="absolute top-6 left-2 bg-white w-60 text-slate-700 border border-gray-300 rounded-lg shadow-md p-2 flex flex-col">
                 <label className="text-sm mb-2">From:</label>
                 <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="w-full mb-2 bg-white border text-slate-700 border-gray-300 rounded-lg shadow-md p-2 text-sm" />
                 <label className="text-sm mb-2">To:</label>

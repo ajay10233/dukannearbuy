@@ -64,6 +64,8 @@ const Review = () => {
         </div>
 
         <div className="relative">
+          {reviews.length > 0 ? (
+
           <Swiper
             modules={[SwiperNavigation, SwiperAutoplay]}
             spaceBetween={30}
@@ -74,8 +76,7 @@ const Review = () => {
               768: { slidesPerView: 2 },
               1024: { slidesPerView: 3 }
             }}
-            className="pb-12"
-          >
+            className="pb-12">
             
             {reviews.filter((review) => review.rating === 5)
               .map((review) => (
@@ -100,9 +101,7 @@ const Review = () => {
                           day: "numeric",
                         })}
                         </p>
-                        {/* <p className="text-sm text-gray-500">
-                          Reviewed: {review?.institution?.firmName}
-                        </p> */}
+
                         {review?.institution?.id && (
                           <Link href={`/partnerProfile/${review?.institution?.id}`} className="text-sm text-gray-500 font-semibold">
                             Reviewed: {review?.institution?.firmName}
@@ -116,12 +115,28 @@ const Review = () => {
                   </div>
 
                   <div className="mt-4">
-                    <p className="text-gray-700 text-base">"{review?.comment}"</p>
+                      <p className="text-gray-700 text-base hidden md:inline-block">
+                        "{review?.comment?.length > 35
+                          ? review.comment.slice(0, 35) + "..."
+                          : review?.comment
+                        }"
+                      </p>
+                      <p className="text-gray-700 text-base inline-block md:hidden">
+                        "{review?.comment?.length > 30
+                          ? review.comment.slice(0, 30) + "..."
+                          : review?.comment
+                        }"
+                      </p>
                   </div>
                 </div>
               </SwiperSlide>
             ))}
-          </Swiper>
+            </Swiper>
+          ) : (
+              <div className="text-center text-gray-400 text-lg py-20">
+                No top reviews available at the moment.
+              </div>
+            )}
         </div>
       </div>
     </div>

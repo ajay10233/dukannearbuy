@@ -122,7 +122,7 @@ export default function TopSeller() {
                   >
                     <Link href={`/partnerProfile/${seller?.user?.id}`} className="block cursor-pointer">
                       <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col justify-center relative">
-                        <div className="relative w-full h-52">
+                        <div className="relative w-full h-52 border-b border-gray-400">
                           <Image
                             src={seller?.user?.photos?.[0] || "/default-img.jpg"}
                             alt={seller?.user?.firmName || "Default Image"}

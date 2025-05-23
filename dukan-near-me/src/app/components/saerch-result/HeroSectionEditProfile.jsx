@@ -184,7 +184,11 @@ export default function HeroSectionEditProfile() {
 
   return (
     <div className={`w-full relative ${user.role === "INSTITUTION" ? "bg-gradient-to-tr from-white to-sky-100" : user.role === "SHOP_OWNER" ? "bg-gradient-to-tl from-lime-100 to-white" : ""}`}>
-      {user.paidPromotions?.[0]?.notes && (
+      
+      {/* {user.paidPromotions?.[0]?.notes && ( */}
+      {user.paidPromotions?.[0]?.notes &&
+        new Date(user.paidPromotions[0].expiresAt) > new Date() && (
+
         <div
           className={`absolute top-3 md:top-6 right-3 md:right-10 z-10 py-1 px-4 text-white text-sm rounded-lg animate-bounce rounded-tl-2xl rounded-bl-sm rounded-br-2xl rounded-tr-sm
             ${user.paidPromotions[0].notes === 'On Sale' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
@@ -193,12 +197,10 @@ export default function HeroSectionEditProfile() {
             ${user.paidPromotions[0].notes === 'New Product' ? 'bg-gradient-to-bl from-purple-500 via-pink-500 to-red-500' : ''}
             ${user.paidPromotions[0].notes === 'New Service' ? 'bg-gradient-to-tr from-pink-300 via-purple-500 to-blue-500' : ''}
             ${user.paidPromotions[0].notes === 'Exclusive Seller' ? 'bg-gradient-to-tr from-red-500 via-orange-500 to-yellow-500' : ''}
-            ${user.paidPromotions[0].notes === 'Promotion' ? 'bg-gradient-to-tr from-indigo-400 via-purple-500 to-pink-500' : ''}
-            ${user.paidPromotions[0].notes === 'Reloacate' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
-          `}
-        >
-          {user.paidPromotions[0].notes}
+          `}>
+            {user.paidPromotions[0].notes}
         </div>
+        
       )}
 
       <div className="w-full h-60 md:h-100 relative overflow-hidden shadow-inner">
@@ -283,7 +285,7 @@ export default function HeroSectionEditProfile() {
 
       <div className="flex w-full p-4 md:px-12 justify-between items-start">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl md:text-3xl pb-1 font-bold text-blue-600 flex items-center gap-2">
+          {/* <h1 className="text-2xl md:text-3xl pb-1 font-bold text-blue-600 flex items-center gap-2">
             {user.role === "INSTITUTION" ? (
               <>
                 <Plus size={30} strokeWidth={2.5} color="#ff0000" />
@@ -309,32 +311,43 @@ export default function HeroSectionEditProfile() {
                 )}
               </>
             ) : null}
+          </h1> */}
+          <h1 className="text-2xl md:text-3xl pb-1 font-bold text-blue-600 flex items-center gap-2">
+            {user.role === "INSTITUTION" ? (
+              <>
+                <Plus size={30} strokeWidth={2.5} color="#ff0000" />
+                {user.firmName || "Medical Institute"}
+
+                {user.subscriptionPlan?.name === "PREMIUM" &&
+                  new Date(user.subscriptionPlan?.expiresAt) > new Date() && (
+                    <Crown size={24} fill="#f0d000" className="text-yellow-500" />
+                )}
+
+                {user.subscriptionPlan?.name === "BUSINESS" &&
+                  new Date(user.subscriptionPlan?.expiresAt) > new Date() && (
+                    <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
+                )}
+              </>
+            ) : user.role === "SHOP_OWNER" ? (
+              <>
+                <Store size={30} strokeWidth={2.5} color="#1751c4" />
+                {user.firmName || "Shop Owner"}
+
+                {user.subscriptionPlan?.name === "PREMIUM" &&
+                  new Date(user.subscriptionPlan?.expiresAt) > new Date() && (
+                    <Crown size={24} fill="#f0d000" className="text-yellow-500" />
+                )}
+
+                {user.subscriptionPlan?.name === "BUSINESS" &&
+                  new Date(user.subscriptionPlan?.expiresAt) > new Date() && (
+                    <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
+                )}
+              </>
+            ) : null}
           </h1>
+
         </div>
       </div>
-
-      {/* Modal for image preview */}
-      {/* {isModalOpen && activeImage && !isDeleteModalOpen &&  (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center" onClick={() => setIsModalOpen(false)}>
-          <div className="relative max-w-4xl w-full px-4" onClick={(e) => e.stopPropagation()}>
-          <button
-            onClick={() => setIsModalOpen(false)}
-            className="absolute top-0 right-4 text-white cursor-pointer transition z-50">
-            <X size={24} />
-          </button>
-            <div className="relative w-full max-w-4xl h-90 flex items-center justify-center">
-              <Image
-                src={activeImage}
-                alt="Preview"
-                width={1000}
-                height={600}
-                objectFit="contain"
-                className="rounded shadow-lg"
-              />
-            </div>
-          </div>
-        </div>
-      )} */}
 
       {isModalOpen && activeImage && !isDeleteModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center" onClick={() => setIsModalOpen(false)}>

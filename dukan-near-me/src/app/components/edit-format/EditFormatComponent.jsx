@@ -135,6 +135,8 @@ export default function EditFormatComponent() {
             setIsGenerating(false);
             return;
         }
+        console.log('Generating bill with userId:', userId);
+
 
         if (!invoiceNo.trim()) {
             toast.error('Please enter an invoice number.');
@@ -148,7 +150,14 @@ export default function EditFormatComponent() {
                 params: { invoiceNumber: invoiceNo }
             });
 
-            const existingBills = checkResponse.data.bills.filter(bill => bill.invoiceNumber === invoiceNo);
+
+            const today = new Date().toISOString().slice(0, 10); 
+
+            const existingBills = checkResponse.data.bills.filter(bill => {
+                const billDate = new Date(bill.createdAt).toISOString().slice(0, 10);
+                return bill.invoiceNumber === invoiceNo && billDate === today;
+            });
+
 
             if (existingBills.length > 0) {
                 toast.error('A bill with this invoice number already exists.');
@@ -209,50 +218,50 @@ export default function EditFormatComponent() {
     }
     };
 
-
     useEffect(() => {
         fetchUserDetails();
     }, []);
 
+
     useEffect(() => {
-  const fetchFormatDetails = async () => {
-    try {
-      const response = await fetch('/api/billFormat');
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Split tax and extra text for internal handling
-        const [cgst, sgst] = data.taxPercentage?.split('+').map((val) => val.trim()) || [0, 0];
-        const [terms = '', updates = ''] = data.extraText?.split('\n') || ['', ''];
+        const fetchFormatDetails = async () => {
+            try {
+            const response = await fetch('/api/billFormat');
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Split tax and extra text for internal handling
+                const [cgst, sgst] = data.taxPercentage?.split('+').map((val) => val.trim()) || [0, 0];
+                const [terms = '', updates = ''] = data.extraText?.split('\n') || ['', ''];
 
-        const institution = data.institutionRelation || {};
+                const institution = data.institutionRelation || {};
 
-        setFormDetails({
-          firmName: institution.firmName || '',
-          address: institution.shopAddress || '',
-          contactNo: institution.phone || '',
-          gstNo: data.gstNumber || '',
-          email: institution.contactEmail || '',
-          cgst: parseFloat(cgst),
-          sgst: parseFloat(sgst),
-          proprietorSign: data.proprietorSign || null,
-          terms,
-          updates,
-        });
-      } else {
-        const error = await response.json();
-        toast.error(error?.error || 'Failed to fetch format');
-      }
-    } catch (err) {
-      console.error('Error fetching format details:', err);
-      toast.error('Error fetching format details');
-    }
-  };
+                setFormDetails({
+                firmName: institution.firmName || '',
+                address: institution.shopAddress || '',
+                contactNo: institution.phone || '',
+                gstNo: data.gstNumber || '',
+                email: institution.contactEmail || '',
+                cgst: parseFloat(cgst),
+                sgst: parseFloat(sgst),
+                proprietorSign: data.proprietorSign || null,
+                terms,
+                updates,
+                });
+            } else {
+                const error = await response.json();
+                toast.error(error?.error || 'Failed to fetch format');
+            }
+            } catch (err) {
+            console.error('Error fetching format details:', err);
+            toast.error('Error fetching format details');
+            }
+        };
 
-  fetchFormatDetails();
-}, []);
+        fetchFormatDetails();
+    }, []);
 
-    const handleFetch = async () => {
+    const handleFetchingToken = async () => {
         if (!token) return toast.error("Please enter a token number");
 
         try {
@@ -260,18 +269,35 @@ export default function EditFormatComponent() {
             const data = await response.json();
 
             if (response.ok && data) {
-                setUsername({ firstName: data.firstName || '' });
+                setUserId(data.id || '');
+                setUsername({ firstName: data.firstName || '', lastName: data.lastName || '' }); 
                 setAddress(data.address || '');
                 setMobile(data.mobile || '');
-                toast.success("Receiver details fetched successfully!");
+                // toast.success("Receiver details fetched successfully!");
             } else {
+                setUserId('');
+                setUsername({ firstName: '', lastName: '' });
+                setAddress('');
+                setMobile('');
                 toast.error("No data found for this token.");
             }
         } catch (err) {
             console.error("Error fetching data:", err);
+
+            setUserId('');
+            setUsername({ firstName: '', lastName: '' });
+            setAddress('');
+            setMobile('');
             toast.error("Something went wrong.");
         }
     };
+
+    useEffect(() => {
+        if (userId) {
+            toast.success("Receiver details fetched successfully");
+        }
+    }, [userId]);
+
 
 
     const handleFileChange = (e) => {
@@ -422,8 +448,8 @@ export default function EditFormatComponent() {
                         ref={billRef}
                     >
                         {/* Header Section */}
-                        <div className="relative flex items-center my-4 md:my-8">
-                            <h1 className="text-2xl font-bold text-center w-full md:absolute md:left-1/2 md:transform md:-translate-x-1/2">INVOICE</h1>
+                        <div className="relative flex justify-center items-center my-4 md:my-8">
+                            <h1 className="text-2xl font-bold text-center md:text-right md:w-3/5 md:mr-28">INVOICE</h1>
                             {/* <span
                                 onClick={() => setIsScanning(true)}
                                 className="flex items-center print:hidden gap-2 px-3 py-2 bg-blue-600 cursor-pointer text-white rounded-md hover:bg-blue-800 transition-all duration-500 ease-in-out"
@@ -445,7 +471,7 @@ export default function EditFormatComponent() {
                                             className="px-3 py-2 border border-gray-300 transition-all duration-500 ease-in-out rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
                                         <button
-                                            onClick={handleFetch}
+                                            onClick={handleFetchingToken}
                                             className="px-3 py-2 bg-blue-600 cursor-pointer text-white rounded-md hover:bg-blue-800 transition-all duration-500 ease-in-out"
                                         >
                                             Fetch
@@ -477,7 +503,7 @@ export default function EditFormatComponent() {
                                             className="p-1.5 md:px-3 md:py-2 border w-30 sm:w-50 border-gray-300 transition-all duration-500 ease-in-out rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
                                         <button
-                                            onClick={handleFetch}
+                                            onClick={handleFetchingToken}
                                             className="p-1.5 md:px-3 md:py-2 bg-blue-600 cursor-pointer text-white rounded-md hover:bg-blue-800 transition-all duration-500 ease-in-out"
                                         >
                                             Fetch
@@ -816,7 +842,6 @@ export default function EditFormatComponent() {
                                 </div>
                             </div>
                         )}
-
 
 
                     </div>
