@@ -540,13 +540,11 @@ export default function ChatBox() {
   };
 
   return (
-    <div className="flex h-screen bg-white font-[var(--font-plus-jakarta)]">
+    <div className="flex min-h-screen bg-white font-[var(--font-plus-jakarta)]">
       {/* Left Sidebar */}
       <div
         className={`${selectedPartner ? "hidden md:flex" : "flex"
-          } flex-col gap-4 w-full md:w-[30%] bg-[#F5FAFC] p-4`}
-        style={{ "height": "100svh" }}
-      >
+          } flex-col gap-4 w-full md:w-[30%] bg-[#F5FAFC] p-4`}      >
         <div className="flex items-center gap-2">
           <button
             className="p-2 cursor-pointer"
@@ -591,7 +589,7 @@ export default function ChatBox() {
         </div>
 
         {/* Conversations List */}
-        <div className="w-full">
+        <div className="w-full dialogScroll">
           {isFavorite.length > 0 ? (
             isFavorite.map((partner, index) => (
               <div
@@ -736,7 +734,7 @@ export default function ChatBox() {
       </div>
 
       {/* Right Chat Box */}
-      <div className={`${selectedPartner ? "flex" : "hidden md:flex"} flex-col w-full md:w-[70%] bg-[#FAFAFA]`} style={{ "height": "100svh" }} >
+      <div className={`${selectedPartner ? "flex" : "hidden md:flex"} flex-col w-full md:w-[70%] bg-[#FAFAFA]`} >
         {selectedPartner ? (
           <>
             {/* Chat Header */}
@@ -897,9 +895,9 @@ export default function ChatBox() {
                             ${msg.senderId === session.user.id
                               ? "rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl"
                               : "rounded-tl-2xl rounded-tr-2xl rounded-br-2xl"
-                            } flex items-center justify-between gap-1.5`}
+                            } max-w-[75%] break-words`}
                         >
-                          <div className="text-[#010101] opacity-85 font-normal text-sm flex items-center gap-2">
+                          <div className="text-[#010101] opacity-85 font-normal text-sm">
                             {msg.content.startsWith(
                               "https://www.google.com/maps"
                             ) ? (
@@ -909,7 +907,6 @@ export default function ChatBox() {
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-2 text-blue-600 font-medium hover:text-blue-800 transition duration-300"
                               >
-                                {/* className="w-5 h-5 text-red-500 animate-bounce" */}
 
                                 <div className="relative w-8 h-8">
                                   <Image
