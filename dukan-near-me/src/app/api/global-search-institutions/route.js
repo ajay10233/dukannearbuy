@@ -82,6 +82,7 @@ export async function GET(req) {
           durationInDays: true,
           features: true,
           image: true,
+          expiresAt: true,
         },
       },
       planActivatedAt: true,
