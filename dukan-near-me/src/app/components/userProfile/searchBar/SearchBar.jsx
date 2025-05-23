@@ -200,6 +200,16 @@ export default function SearchBar() {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("foryou");
 
+  const distanceOptions = [
+    { label: "Infinite", value: "infinite" },
+    { label: "5 km", value: "5" },
+    { label: "20 km", value: "20" },
+    { label: "50 km", value: "50" },
+    { label: "100 km", value: "100" },
+  ];
+
+  const [selectedDistance, setSelectedDistance] = useState("infinite");
+
   const router = useRouter();
   const searchRef = useRef();
 
@@ -211,6 +221,12 @@ export default function SearchBar() {
     { id: "tags", label: "Tags" },
   ];
 
+  useEffect(() => {
+  if (debouncedQuery.trim() !== "") {
+    handleSearch(debouncedQuery);
+  }
+  }, [selectedDistance]);
+  
   // Debounce input
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -298,15 +314,17 @@ export default function SearchBar() {
     if (activeTab === "foryou") {
       // For You shows all results matching search query
       return true;
+
     } else if (activeTab === "medical") {
       // Medical Facility: only INSTITUTION role
       return profile.role === "INSTITUTION";
+
     } else if (activeTab === "shop") {
       // Shop: only SHOP_OWNER role
       return profile.role === "SHOP_OWNER";
+
     } else if (activeTab === "tags") {
       // Tags: profile must have ALL tags matching the search query words
-      // Assuming profile.tags is an array of strings (adjust as per your data)
       if (!profile.hashtags || profile.hashtags.length === 0) return false;
 
       // split search query into lowercase words
@@ -358,8 +376,28 @@ export default function SearchBar() {
       {/* Results dropdown */}
       {!loading && results.length > 0 && (
         <div className="w-full z-20 max-h-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 bg-black border border-gray-500 rounded-md absolute left-1/2 top-full mt-2 transform -translate-x-1/2">
+          
           {/* Fixed tabs row */}
           <div className="flex border-b border-gray-600">
+
+            {/* distance range */}
+            {results.length > 0 && (
+              <div className="flex justify-start p-2">
+                <select
+                  value={selectedDistance}
+                  onChange={(e) => setSelectedDistance(e.target.value)}
+                  className="text-sm text-white bg-gray-800 border cursor-pointer border-gray-600 px-3 py-1 rounded-md"
+                >
+                  {distanceOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value} className="cursor-pointer">
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            
+            {/* tabs */}
             {filterTabs.map((tab) => (
               <button
                 key={tab.id}
@@ -367,7 +405,7 @@ export default function SearchBar() {
                 className={`flex-1 text-center text-gray-400 py-2 text-sm cursor-pointer transition-all duration-400 ease-in-out${
                   activeTab === tab.id
                     ? "bg-gray-700 text-white font-medium"
-                    : "text-gray-400 hover:bg-gray-700 hover:text-white"
+                    : "text-gray-400 hover:bg-gray-800 hover:text-white"
                 }`}
               >
                 {tab.label}
@@ -375,7 +413,7 @@ export default function SearchBar() {
             ))}
           </div>
 
-          {/* Results shown horizontally below tabs */}
+          {/* Results shown below tabs */}
           <ul className="flex flex-col gap-2 overflow-y-auto dialogScroll scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 p-3 max-h-[300px]">
             {filteredResults.length > 0 ? (
                 filteredResults.map((profile) => (
@@ -413,6 +451,11 @@ export default function SearchBar() {
                                 <p className="text-xs text-gray-200">
                                     {profile.city}, {profile.state} - {profile.zipCode}
                                 </p>
+                                <div className="flex flex-wrap text-xs text-gray-200 gap-1">
+                                  {profile.hashtags?.map((tag, i) => (
+                                    <span key={i} className="text-xs text-gray-400">#{tag}</span>
+                                  ))}
+                                </div>
                             </div>
                         </div>
                     </li>

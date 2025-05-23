@@ -251,7 +251,7 @@ export default function Review({ user }) {
                   </div>
                 </div>
               </div>
-              <p className="mt-2 text-gray-700 text-sm md:text-[15px]">{review.comment}</p>
+              <p className="mt-2 text-gray-700 text-sm md:text-[15px] break-words whitespace-pre-line">{review.comment}</p>
             </li>
           ))}
         </ul>

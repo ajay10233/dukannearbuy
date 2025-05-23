@@ -85,23 +85,28 @@ export default function Notification() {
                     className={`flex items-start gap-2.5 md:gap-4 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl p-2.5 md:p-4 shadow-sm transition-all duration-300 ${n.isRead ? "" : "bg-yellow-50"}`}
                   >
                     <div className="flex items-center justify-center rounded-full bg-gray-100 border p-2 shadow-inner">
-                      {/* {n.type === "success" ? (
-                        <CheckCircle className="h-5 w-5 text-green-600" />
-                      ) : n.type === "info" ? (
-                        <Bell className="h-5 w-5 text-blue-600" />
-                      ) : (
-                        <AlertCircle className="h-5 w-5 text-yellow-600" />
-                      )} */}
-
+{/*
                       {n.message.includes("completed")  ? (
                         <CheckCircle className="h-5 w-5 text-green-600" />
-                      ) : n.message.includes("processing") ? (
+                      ) : n.message.includes("started processing") ? (
                         <Loader className="h-5 w-5 text-yellow-600 animate-spin [animation-duration:2000ms]" />
                       ) : n.message.includes("generated") ? (
                         <RefreshCw className="h-5 w-5 text-blue-600 animate-spin [animation-duration:2000ms]" />
                       ) : (
                         <AlertCircle className="h-5 w-5 text-yellow-600" />
                       )}
+*/}
+                      
+                        {n.status === "completed" ? (
+                          <CheckCircle className="h-5 w-5 text-green-600" />
+                        ) : n.status === "processing" ? (
+                          <Loader className="h-5 w-5 text-yellow-600 animate-spin [animation-duration:2000ms]" />
+                        ) : n.status === "generated" ? (
+                          <RefreshCw className="h-5 w-5 text-blue-600 animate-spin [animation-duration:2000ms]" />
+                        ) : (
+                          <AlertCircle className="h-5 w-5 text-yellow-600" />
+                        )}
+                      
                     </div>
 
                     <div className="flex-1">

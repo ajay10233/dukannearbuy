@@ -245,7 +245,7 @@ export default function About({ profileUpdated }) {
                         {pastAddresses?.map((addr, i) => (
                           <div
                             key={addr.id}
-                            className="p-3 bg-white text-sm text-[16px]  rounded-md shadow-sm border border-blue-200 transition-all hover:shadow-md"
+                            className="p-3 bg-white text-sm rounded-md shadow-sm border border-blue-200 transition-all hover:shadow-md"
                           >
                             <p className="font-semibold text-blue-700">
                               #{i + 1} (Moved out:{" "}
