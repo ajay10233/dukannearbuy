@@ -135,11 +135,15 @@ export default function TopSeller() {
                           <div className="flex justify-between items-center">
                             <h3 className="text-lg font-semibold flex items-center gap-1">
                               {seller?.user?.firmName}
-                              {seller?.subscriptionPlan?.name === "PREMIUM" && (
-                                <Crown size={18} fill="#f0d000" className="text-yellow-500" />
+
+                              {seller?.subscriptionPlan?.name === "PREMIUM" &&
+                                new Date(seller?.subscriptionPlan?.expiresAt) > new Date() && (
+                                  <Crown size={18} fill="#f0d000" className="text-yellow-500" />
                               )}
-                              {seller?.subscriptionPlan?.name === "BUSINESS" && (
-                                <Crown size={18} fill="#AFAFAF" className="text-gray-400" />
+
+                              {seller?.subscriptionPlan?.name === "BUSINESS" &&
+                                new Date(seller?.subscriptionPlan?.expiresAt) > new Date() && (
+                                  <Crown size={18} fill="#AFAFAF" className="text-gray-400" />
                               )}
                             </h3>
                             <div className="flex items-center gap-1">
@@ -180,8 +184,7 @@ export default function TopSeller() {
                             ${seller?.notes === 'Exclusive Seller' ? 'bg-gradient-to-tr from-red-500 via-orange-500 to-yellow-500' : ''}
                             ${seller?.notes === 'Promotion' ? 'bg-gradient-to-tr from-indigo-400 via-purple-500 to-pink-500' : ''} 
                             ${seller?.notes === 'Reloacate' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
-                          `}
-                          >
+                          `}>
                             {seller.notes}
                           </div>
                         )}

@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import QRModal from "../modals/QRModal";
 import { useUser } from '@/context/UserContext';
 
-// const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { transports: ["websocket"] });
+// const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { transports: ["websocket"] });               
 
 export default function TokenGeneration() {
   const { socket  } = useUser();

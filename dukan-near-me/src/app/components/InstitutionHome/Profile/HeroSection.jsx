@@ -223,11 +223,14 @@ export default function HeroSection({id}) {
                 <Plus size={30} strokeWidth={2.5} color="#ff0000" />
                 {user.firmName || "Medical Institute"}
 
-                {user.subscriptionPlan?.name === "PREMIUM" && (
-                  <Crown size={24} fill="#f0d000" className="text-yellow-500" />
+                {user.subscriptionPlan?.name === "PREMIUM" &&
+                  new Date(user.subscriptionPlan?.expiresAt) > new Date() && (
+                    <Crown size={24} fill="#f0d000" className="text-yellow-500" />
                 )}
-                {user.subscriptionPlan?.name === "BUSINESS" && (
-                  <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
+
+                {user.subscriptionPlan?.name === "BUSINESS" &&
+                  new Date(user.subscriptionPlan?.expiresAt) > new Date() && (
+                    <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
                 )}
               </>
             ) : user.role === "SHOP_OWNER" ? (
@@ -235,11 +238,14 @@ export default function HeroSection({id}) {
                 <Store size={30} strokeWidth={2.5} color="#1751c4" />
                 {user.firmName || "Shop Owner"}
 
-                {user.subscriptionPlan?.name === "PREMIUM" && (
-                  <Crown size={24} fill="#f0d000" className="text-yellow-500" />
+                {user.subscriptionPlan?.name === "PREMIUM" &&
+                  new Date(user.subscriptionPlan?.expiresAt) > new Date() && (
+                    <Crown size={24} fill="#f0d000" className="text-yellow-500" />
                 )}
-                {user.subscriptionPlan?.name === "BUSINESS" && (
-                  <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
+
+                {user.subscriptionPlan?.name === "BUSINESS" &&
+                  new Date(user.subscriptionPlan?.expiresAt) > new Date() && (
+                    <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
                 )}
               </>
             ) : null}

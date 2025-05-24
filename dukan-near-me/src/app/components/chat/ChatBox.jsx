@@ -619,15 +619,18 @@ export default function ChatBox() {
                       className={`font-medium text-[var(--secondary-foreground)] 
                                                 ${selectedPartner?.id ===
                         partner.id && "font-medium"
-                        }`}
-                    >
+                        }`}>
                       <span className="inline-flex items-center gap-1 capitalize">
                         {partner.otherUser?.firmName || partner.otherUser?.name || "Unknown"}
-                        {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" && (
-                          <Crown size={16} fill="#f0d000" className="text-yellow-500" />
+
+                        {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" &&
+                          new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                            <Crown size={16} fill="#f0d000" className="text-yellow-500" />
                         )}
-                        {partner.otherUser?.subscriptionPlan?.name === "BUSINESS" && (
-                          <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
+
+                        {partner.otherUser?.subscriptionPlan?.name === "BUSINESS" &&
+                          new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                            <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
                         )}
                       </span>
                     </div>
@@ -695,11 +698,15 @@ export default function ChatBox() {
                       className={`font-medium text-[var(--secondary-foreground)] capitalize ${selectedPartner?.id === partner.id && "font-medium"}`}>
                       <span className="inline-flex items-center gap-1">
                         {getDisplayName(partner)}
-                        {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" && (
-                          <Crown size={16} fill="#f0d000" className="text-yellow-500" />
+
+                        {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" &&
+                          new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                            <Crown size={16} fill="#f0d000" className="text-yellow-500" />
                         )}
-                        {partner.otherUser?.subscriptionPlan?.name === "BUSINESS" && (
-                          <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
+
+                        {partner.otherUser?.subscriptionPlan?.name === "BUSINESS" &&
+                          new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                            <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
                         )}
                       </span>
                     </div>
@@ -783,12 +790,17 @@ export default function ChatBox() {
                           }
                           className="inline-flex items-center gap-0 md:gap-1">
                           {getDisplayName(selectedPartner)}
-                          {selectedPartner.otherUser?.subscriptionPlan?.name === "PREMIUM" && (
-                            <Crown size={18} fill="#f0d000" className="text-yellow-500" />
+                        
+                          {selectedPartner.otherUser?.subscriptionPlan?.name === "PREMIUM" &&
+                            new Date(selectedPartner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                              <Crown size={16} fill="#f0d000" className="text-yellow-500" />
                           )}
-                          {selectedPartner.otherUser?.subscriptionPlan?.name === "BUSINESS" && (
-                            <Crown size={18} fill="#AFAFAF" className="text-gray-400" />
-                          )}
+
+                          {selectedPartner.otherUser?.subscriptionPlan?.name === "BUSINESS" &&
+                            new Date(selectedPartner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                              <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
+                            )}
+                          
                         </Link>
                       )}
                   </p>
@@ -826,17 +838,20 @@ export default function ChatBox() {
             {/* Message Area */}
             <div className="flex-1 pt-2 pb-4 px-4 overflow-y-auto flex flex-col gap-3 h-[calc(100vh-40px)]">
               <div className="flex justify-center">
-                {loggedInUser?.subscriptionPlan?.name === "PREMIUM" ? (
-                  <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
-                    <LockKeyhole size={20} strokeWidth={1.5} />
-                    Messages are end-to-end encrypted.
-                  </span>
-                ) : (
-                  <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
-                    <LockKeyhole size={20} strokeWidth={1.5} />
-                    Chats will be automatically deleted after 48 hours of last
-                  </span>
-                )}
+
+                {loggedInUser?.subscriptionPlan?.name === "PREMIUM" &&
+                  new Date(loggedInUser?.subscriptionPlan?.expiresAt) > new Date() ? (
+                    <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
+                      <LockKeyhole size={20} strokeWidth={1.5} />
+                      Messages are end-to-end encrypted.
+                    </span>
+                    ) : (
+                    <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
+                      <LockKeyhole size={20} strokeWidth={1.5} />
+                      Chats will be automatically deleted after 48 hours of last
+                    </span>
+                )}  
+
               </div>
 
               {messages.length > 0 ? (
