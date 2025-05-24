@@ -1,4 +1,5 @@
 "use client";
+// add a downoload button as well
 
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -31,6 +32,45 @@ export default function DownloadBill({ params }) {
     fetchBill();
   }, [session])
 
+  // Add this function inside your component
+  const handleDownload = async () => {
+  if (!bill?.fileUrl) {
+    toast.error("No file to download");
+    return;
+  }
+
+  try {
+    const response = await fetch(bill.fileUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/pdf", // or the correct MIME type
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const blob = await response.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = `Invoice-${bill?.invoiceNumber || "bill"}.pdf`; // You could detect extension dynamically
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    // Clean up
+    window.URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error("Download error:", error);
+    toast.error("Failed to download the file");
+  }
+};
+
+
+
   const handlePrint = () => {
     window.print();
   };
@@ -48,7 +88,7 @@ export default function DownloadBill({ params }) {
         </div>
 
         {/* Bill Information */}
-         <div className="grid grid-cols-2 gap-4 border-b pb-2 mb-4">
+        <div className="grid grid-cols-2 gap-4 border-b pb-2 mb-4">
           <div className="p-2 border-r border-black">
             <h1 className="text-lg font-bold text-[#0D6A9C]">{bill?.institution?.firmName}</h1>
             <p>{`${bill?.institution.houseNumber}, ${bill?.institution.address?.buildingName ? bill?.institution.buildingName + ', ' : ''}${bill?.institution.street}, ${bill?.institution.landmark}, ${bill?.institution.city}, ${bill?.institution.state} - ${bill?.institution.zipCode}, ${bill?.institution.country}`}</p>
@@ -81,7 +121,7 @@ export default function DownloadBill({ params }) {
         {/* Invoice Details */}
         <div className="grid grid-cols-2 gap-4 border-b pb-2 mb-4 items-center">
           <div className="text-left">
-            <p className="text-sm text-gray-600">Invoice Number {bill?.invoiceNumber}</p>   
+            <p className="text-sm text-gray-600">Invoice Number {bill?.invoiceNumber}</p>
           </div>
           <div className="text-right">
             <p className="text-sm text-gray-600">Invoice Date</p>
@@ -91,66 +131,90 @@ export default function DownloadBill({ params }) {
 
         {/* Bill Items Table */}
         <div className="overflow-x-auto mb-4">
-          {bill?.items && 
+          {bill?.items &&
 
-          <table className="w-full border-collapse border text-left">
-            <thead>
-              <tr className="bg-[#CFEBF9]">
-                <th className="border p-2">S.NO</th>
-                <th className="border p-2">PARTICULARS</th>
-                <th className="border p-2">QUANTITY</th>
-                <th className="border p-2">RATE</th>
-                <th className="border p-2">AMOUNT</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bill?.items.map((item, index) => (
-                <tr key={index}>
-                  <td className="border p-2 text-center">{index + 1}</td>
-                  <td className="border p-2">
-                    <input
-                      type="text"
-                      readOnly
-                      tabIndex={-1}
-                      value={item?.particulars}
-                      onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
-                      className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
-                      />
-                  </td>
-                  <td className="border p-2">
-                    <input
-                      readOnly
-                      tabIndex={-1}
-                      type="number"
-                      value={item?.qty}
-                      onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
-                      className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
-                    />
-                  </td>
-                  <td className="border p-2">
-                    <input
-                      type="number"
-                      value={item?.rate}
-                      readOnly
-                      tabIndex={-1}
-                      onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
-                      className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
-                    />
-                  </td>
-                  <td className="border p-2 text-center">{item?.amount?.toFixed(2)}</td>
+            <table className="w-full border-collapse border text-left">
+              <thead>
+                <tr className="bg-[#CFEBF9]">
+                  <th className="border p-2">S.NO</th>
+                  <th className="border p-2">PARTICULARS</th>
+                  <th className="border p-2">QUANTITY</th>
+                  <th className="border p-2">RATE</th>
+                  <th className="border p-2">AMOUNT</th>
                 </tr>
-              ))}
-              <tr>
-                <td colSpan="4" className="border p-2 text-right font-bold">Items Subtotal</td>
-                <td className="border p-2 text-center font-bold">{bill?.totalAmount}</td>
-              </tr>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {bill?.items.map((item, index) => (
+                  <tr key={index}>
+                    <td className="border p-2 text-center">{index + 1}</td>
+                    <td className="border p-2">
+                      <input
+                        type="text"
+                        readOnly
+                        tabIndex={-1}
+                        value={item?.particulars}
+                        onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
+                        className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
+                      />
+                    </td>
+                    <td className="border p-2">
+                      <input
+                        readOnly
+                        tabIndex={-1}
+                        type="number"
+                        value={item?.qty}
+                        onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
+                        className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
+                      />
+                    </td>
+                    <td className="border p-2">
+                      <input
+                        type="number"
+                        value={item?.rate}
+                        readOnly
+                        tabIndex={-1}
+                        onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
+                        className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
+                      />
+                    </td>
+                    <td className="border p-2 text-center">{item?.amount?.toFixed(2)}</td>
+                  </tr>
+                ))}
+                <tr>
+                  <td colSpan="4" className="border p-2 text-right font-bold">Items Subtotal</td>
+                  <td className="border p-2 text-center font-bold">{bill?.totalAmount}</td>
+                </tr>
+              </tbody>
+            </table>
           }
         </div>
 
         {/* <div className="text-right font-bold text-lg">Total Amount: ₹{totalAmount.toFixed(2)}</div> */}
 
+        {/* File Preview */}
+        {bill?.fileUrl && (
+          <div className="mb-6">
+            <h2 className="text-lg font-bold mb-2">File Attachment</h2>
+            {bill?.fileType?.startsWith("image/") ? (
+              <img
+                src={bill.fileUrl}
+                alt="Attached Image"
+                className="w-full max-w-md mx-auto border rounded shadow"
+              />
+            ) : bill?.fileType === "application/pdf" ? (
+              <iframe
+                src={`https://docs.google.com/gview?url=${encodeURIComponent(bill.fileUrl)}&embedded=true`}
+                title="PDF Preview"
+                className="w-full h-96 border rounded"
+              />
+            ) : (
+              <p className="text-sm text-gray-500">Unsupported file format.</p>
+            )}
+          </div>
+        )}
+
+
+        {/* Action Buttons */}
         {/* Action Buttons */}
         <div className="flex space-x-4 mt-4">
           <button
@@ -159,7 +223,17 @@ export default function DownloadBill({ params }) {
           >
             Print
           </button>
+
+          {bill?.fileUrl && (
+            <button
+              onClick={handleDownload}
+              className="px-3 py-1 bg-green-600 text-white text-sm rounded cursor-pointer"
+            >
+              Download File
+            </button>
+          )}
         </div>
+
         <div className="text-right mt-10 text-xs text-gray-500 uppercase">
           This bill is generated using <span className="font-semibold text-black">NearBuyDukan</span>
         </div>

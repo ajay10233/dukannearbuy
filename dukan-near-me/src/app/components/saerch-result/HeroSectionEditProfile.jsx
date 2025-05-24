@@ -285,7 +285,7 @@ export default function HeroSectionEditProfile() {
 
       <div className="flex w-full p-4 md:px-12 justify-between items-start">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl md:text-3xl pb-1 font-bold text-blue-600 flex items-center gap-2">
+          {/* <h1 className="text-2xl md:text-3xl pb-1 font-bold text-blue-600 flex items-center gap-2">
             {user.role === "INSTITUTION" ? (
               <>
                 <Plus size={30} strokeWidth={2.5} color="#ff0000" />
@@ -311,32 +311,43 @@ export default function HeroSectionEditProfile() {
                 )}
               </>
             ) : null}
+          </h1> */}
+          <h1 className="text-2xl md:text-3xl pb-1 font-bold text-blue-600 flex items-center gap-2">
+            {user.role === "INSTITUTION" ? (
+              <>
+                <Plus size={30} strokeWidth={2.5} color="#ff0000" />
+                {user.firmName || "Medical Institute"}
+
+                {user.subscriptionPlan?.name === "PREMIUM" &&
+                  new Date(user.subscriptionPlan?.expiresAt) > new Date() && (
+                    <Crown size={24} fill="#f0d000" className="text-yellow-500" />
+                )}
+
+                {user.subscriptionPlan?.name === "BUSINESS" &&
+                  new Date(user.subscriptionPlan?.expiresAt) > new Date() && (
+                    <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
+                )}
+              </>
+            ) : user.role === "SHOP_OWNER" ? (
+              <>
+                <Store size={30} strokeWidth={2.5} color="#1751c4" />
+                {user.firmName || "Shop Owner"}
+
+                {user.subscriptionPlan?.name === "PREMIUM" &&
+                  new Date(user.subscriptionPlan?.expiresAt) > new Date() && (
+                    <Crown size={24} fill="#f0d000" className="text-yellow-500" />
+                )}
+
+                {user.subscriptionPlan?.name === "BUSINESS" &&
+                  new Date(user.subscriptionPlan?.expiresAt) > new Date() && (
+                    <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
+                )}
+              </>
+            ) : null}
           </h1>
+
         </div>
       </div>
-
-      {/* Modal for image preview */}
-      {/* {isModalOpen && activeImage && !isDeleteModalOpen &&  (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center" onClick={() => setIsModalOpen(false)}>
-          <div className="relative max-w-4xl w-full px-4" onClick={(e) => e.stopPropagation()}>
-          <button
-            onClick={() => setIsModalOpen(false)}
-            className="absolute top-0 right-4 text-white cursor-pointer transition z-50">
-            <X size={24} />
-          </button>
-            <div className="relative w-full max-w-4xl h-90 flex items-center justify-center">
-              <Image
-                src={activeImage}
-                alt="Preview"
-                width={1000}
-                height={600}
-                objectFit="contain"
-                className="rounded shadow-lg"
-              />
-            </div>
-          </div>
-        </div>
-      )} */}
 
       {isModalOpen && activeImage && !isDeleteModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center" onClick={() => setIsModalOpen(false)}>

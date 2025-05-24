@@ -2,17 +2,7 @@
 
 import Image from "next/image";
 import React from "react";
-import {
-  MoveLeft,
-  Search,
-  Heart,
-  Plus,
-  LockKeyhole,
-  SmilePlus,
-  MapPin,
-  SendHorizontal,
-  Crown,
-} from "lucide-react";
+import {MoveLeft, Search, Heart, Plus, LockKeyhole,SmilePlus, MapPin, SendHorizontal, Crown} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
@@ -20,14 +10,7 @@ import { io } from "socket.io-client";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import EmojiPicker from "emoji-picker-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import PaymentHistory from "./PaymentHistory";
 import CryptoJS from 'crypto-js';
 import { ChevronLeft } from "lucide-react";
@@ -45,8 +28,11 @@ export default function ChatBox() {
   const [filteredConversations, setFilteredConversations] = useState([]);
   const [selectedPartner, setSelectedPartner] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isFavorite, setIsFavorite] = useState(false);
+  // const [isFavorite, setIsFavorite] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [isMsgRequest, setIsMsgRequest] = useState(false); 
+  const [messageRequests, setMessageRequests] = useState([]);
+
   // const [loggedInUser, setLoggedInUser] = useState(null);
 
   const socketRef = useRef(null);
@@ -65,11 +51,13 @@ export default function ChatBox() {
       return user.firmName || `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Unknown";
     }
 
-    if (user.firstName || user.lastName) {
-      return `${user.firstName || ""} ${user.lastName || ""}`.trim();
-    }
+    return user?.name || "Unknown";s
+    // console.log("user: ", user);
+    // if (user.firstName || user.lastName) {
+    //   return `${user.firstName || ""} ${user.lastName || ""}`.trim();
+    // }
 
-    return "Unknown";
+    // return "Unknown";
   };
 
   const encryptMessage = (message, secretKey) => {
@@ -375,6 +363,28 @@ export default function ChatBox() {
     return () => clearTimeout(delayDebounce);
   }, [searchQuery]);
 
+    // Function to fetch message requests
+  useEffect(() => {
+  const fetchMessageRequests = async () => {
+    try {
+      const res = await fetch("/api/conversations/unread");
+      const data = await res.json();
+      console.log("Message requests response:", data);
+
+      if (res.ok) {
+        setMessageRequests(data.data || []);
+      } else {
+        console.error(data.message);
+      }
+    } catch (err) {
+      console.error("Error fetching message requests", err);
+    }
+  };
+
+  fetchMessageRequests();
+}, []);
+
+
   if (status === "loading")
     return <p className="text-center text-gray-500">Loading...</p>;
 
@@ -484,30 +494,30 @@ export default function ChatBox() {
   };
 
 
-  const handleLike = async () => {
-    if (!selectedPartner) return;
-    const otherUserId = selectedPartner.conversationId;
-    console.log("Selected partner:", selectedPartner);
+  // const handleLike = async () => {
+  //   if (!selectedPartner) return;
+  //   const otherUserId = selectedPartner.conversationId;
+  //   console.log("Selected partner:", selectedPartner);
 
-    try {
-      if (isFavorite) {
-        await fetch(`/api/favorites`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ institutionId: otherUserId }),
-        });
-      } else {
-        await fetch(`/api/favorites`, {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ institutionId: otherUserId }),
-        });
-      }
-      setIsFavorite(!isFavorite);
-    } catch (error) {
-      console.error("❌ Failed to toggle favorite:", error);
-    }
-  };
+  //   try {
+  //     if (isFavorite) {
+  //       await fetch(`/api/favorites`, {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ institutionId: otherUserId }),
+  //       });
+  //     } else {
+  //       await fetch(`/api/favorites`, {
+  //         method: "DELETE",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ institutionId: otherUserId }),
+  //       });
+  //     }
+  //     setIsFavorite(!isFavorite);
+  //   } catch (error) {
+  //     console.error("❌ Failed to toggle favorite:", error);
+  //   }
+  // };
 
 
   // Function to fetch the session data
@@ -528,7 +538,6 @@ export default function ChatBox() {
     }
   };
 
-
   const getTruncatedMessage = (message) => {
     const maxLength = 20;
 
@@ -544,7 +553,8 @@ export default function ChatBox() {
       {/* Left Sidebar */}
       <div
         className={`${selectedPartner ? "hidden md:flex" : "flex"
-          } flex-col gap-4 w-full md:w-[30%] bg-[#F5FAFC] p-4`}      >
+          } flex-col gap-4 w-full md:w-[30%] bg-[#F5FAFC] p-4`}      
+      >
         <div className="flex items-center gap-2">
           <button
             className="p-2 cursor-pointer"
@@ -569,166 +579,245 @@ export default function ChatBox() {
         {/* Toggle Tab */}
         <div className="flex items-center justify-center w-full">
           <button
-            className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tl-xl rounded-bl-xl transition-all duration-500 cursor-pointer ${!isFavorite
+            className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tl-xl rounded-bl-xl transition-all duration-500 cursor-pointer ${!isMsgRequest
               ? "bg-[var(--chart-2)] text-white font-semibold"
               : "bg-white text-[var(--withdarktext)] font-normal"
               }`}
-            onClick={() => setIsFavorite(false)}
+            onClick={() => setIsMsgRequest(false)}
           >
             Select a seller
           </button>
           <button
-            className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tr-xl rounded-br-xl transition-all duration-500 cursor-pointer ${isFavorite
+            className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tr-xl rounded-br-xl transition-all duration-500 cursor-pointer ${isMsgRequest
               ? "bg-[var(--chart-2)] text-white font-semibold"
               : "bg-white text-[var(--withdarktext)] font-normal"
               }`}
-            onClick={() => setIsFavorite(true)}
+            onClick={() => setIsMsgRequest(true)}
           >
             Message requests
           </button>
         </div>
 
         {/* Conversations List */}
-        <div className="w-full dialogScroll">
-          {isFavorite.length > 0 ? (
-            isFavorite.map((partner, index) => (
-              <div
-                key={partner.id || `partner-${index}`}
-                className="flex justify-between gap-2.5 py-2 border-b border-gray-200"
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className="relative w-14 h-14">
-                    <Image
-                      src="/chatUserSvg/userImage.svg"
-                      alt="seller image"
-                      fill
-                      className="rounded-md object-cover"
-                      priority
-                    />
-                  </div>
-                  <div className="flex flex-col justify-center gap-1 flex-grow">
-                    <div
-                      // href="#"
-                      // onClick={(e) => {
-                      //   e.preventDefault();
-                      //   setSelectedPartner({ ...partner });
-                      // }}
-                      className={`font-medium text-[var(--secondary-foreground)] 
-                                                ${selectedPartner?.id ===
-                        partner.id && "font-medium"
-                        }`}
-                    >
-                      <span className="inline-flex items-center gap-1">
-                        {partner.otherUser?.firmName || partner.otherUser?.name || "Unknown"}
-                        {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" && (
-                          <Crown size={16} fill="#f0d000" className="text-yellow-500" />
-                        )}
-                        {partner.otherUser?.subscriptionPlan?.name === "BUSINESS" && (
-                          <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
-                        )}
-                      </span>
-                    </div>
-                    <span className="text-gray-500 font-normal text-[12px]">
-                      {/* Last message here... */}
-                      {partner.lastMessageContent
-                        ? partner.lastMessageContent
-                        : "No messages yet"}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex flex-col items-end justify-center gap-1">
-                  <span className="text-[var(--chat-color)] text-sm">
-                    {/* Display the time */}
-                    {partner.lastMessageTimestamp
-                      ? new Date(
-                        partner.lastMessageTimestamp
-                      ).toLocaleTimeString()
-                      : " "}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    {/* <div className="w-5 h-5 flex items-center justify-center bg-[var(--chat-color)] text-white text-xs rounded-full"> */}
-                    {/* no. of unread messages */}
-                    {/* </div> */}
-                  </div>
-                </div>
-              </div>
-            ))(<p className="text-center text-gray-500">No favorites yet</p>)
-          ) : filteredConversations?.length > 0 ? (
-            filteredConversations.map((partner, index) => (
-              <div
-                onClick={() => {
-                  setSelectedPartner({ ...partner });
-                }}
-                key={partner.id || `partner-${index}`}
-                className="flex cursor-pointer justify-between gap-2.5 py-2 border-b border-gray-200"
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className="relative w-14 h-14">
-                    <Image
-                      src={
-                        partner?.otherUser
-                          ? partner?.otherUser?.profilePhoto && partner?.otherUser?.profilePhoto !== "null"
-                            ? partner?.otherUser?.profilePhoto
-                            : "/chatUserSvg/userImage.svg"
-                          : partner?.profilePhoto && partner?.profilePhoto !== "null"
-                            ? partner?.profilePhoto
-                            : "/chatUserSvg/userImage.svg"
-                      }
-                      alt="seller image"
-                      fill
-                      sizes="(max-width: 768px) 40px, (max-width: 1200px) 50px, 60px"
-                      className="rounded-md object-cover"
-                      priority
-                    />
+        <div className="w-full h-[530px] overflow-y-auto dialogScroll">
+          {isMsgRequest ? (
 
-                  </div>
-                  <div className="flex flex-col justify-center gap-1 flex-grow">
-                    <div
-                      // href="#"
-                      // onClick={(e) => {
-                      //   e.preventDefault();
-                      //   setSelectedPartner({ ...partner });
-                      // }}
-                      className={`font-medium text-[var(--secondary-foreground)] ${selectedPartner?.id === partner.id && "font-medium"}`}>
-                      <span className="inline-flex items-center gap-1">
-                        {getDisplayName(partner)}
-                        {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" && (
-                          <Crown size={16} fill="#f0d000" className="text-yellow-500" />
-                        )}
-                        {partner.otherUser?.subscriptionPlan?.name === "BUSINESS" && (
-                          <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
-                        )}
+            messageRequests.length > 0 ? (
+              messageRequests.map((partner, index) => (
+                // <div
+                //   key={partner.id || `partner-${index}`}
+                //   className="flex justify-between gap-2.5 py-2 border-b border-gray-200"
+                // >
+                //   <div className="flex items-center gap-2.5">
+                //     <div className="relative w-14 h-14">
+                //       <Image
+                //       src="/default-img.png"
+                //       alt="seller image"
+                //       fill
+                //       className="rounded-md object-cover"
+                //       priority
+                //     />
+                //   </div>
+                //   <div className="flex flex-col justify-center gap-1 flex-grow">
+                //     <div
+                //       // href="#"
+                //       // onClick={(e) => {
+                //       //   e.preventDefault();
+                //       //   setSelectedPartner({ ...partner });
+                //       // }}
+                //       className={`font-medium text-[var(--secondary-foreground)] 
+                //                                 ${selectedPartner?.id ===
+                //         partner.id && "font-medium"
+                //         }`}>
+                //       <span className="inline-flex items-center gap-1 capitalize">
+                //         {partner.otherUser?.firmName || partner.otherUser?.name || "Unknown"}
+
+                //         {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" &&
+                //           new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                //             <Crown size={16} fill="#f0d000" className="text-yellow-500" />
+                //         )}
+
+                //         {partner.otherUser?.subscriptionPlan?.name === "BUSINESS" &&
+                //           new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                //             <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
+                //         )}
+                //       </span>
+                //     </div>
+                //     <span className="text-gray-500 font-normal text-[12px]">
+                //       {/* Last message here... */}
+                //       {partner.lastMessageContent
+                //         ? partner.lastMessageContent
+                //         : "No messages yet"}
+                //     </span>
+                //   </div>
+                // </div>
+                // <div className="flex flex-col items-end justify-center gap-1">
+                //   <span className="text-[var(--chat-color)] text-sm">
+                //     {/* Display the time */}
+                //     {partner.lastMessageTimestamp
+                //       ? new Date(
+                //         partner.lastMessageTimestamp
+                //       ).toLocaleTimeString()
+                //       : " "}
+                //   </span>
+                //   <div className="flex items-center gap-2">
+                //     {/* <div className="w-5 h-5 flex items-center justify-center bg-[var(--chat-color)] text-white text-xs rounded-full"> */}
+                //     {/* no. of unread messages */}
+                //     {/* </div> */}
+                //   </div>
+                // </div>
+                // </div>
+                
+                 <div
+                  onClick={() => {
+                    setSelectedPartner({ ...partner });
+                  }}
+                  key={partner.conversationId || `msg-${index}`}
+                  className="flex cursor-pointer justify-between gap-2.5 py-2 border-b border-gray-200 mr-2"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="relative w-14 h-14">
+                      <Image
+                        src={
+                          partner?.otherUser
+                            ? partner?.otherUser?.profilePhoto && partner?.otherUser?.profilePhoto !== "null"
+                              ? partner?.otherUser?.profilePhoto
+                              : "/default-img.png"
+                              : partner?.profilePhoto && partner?.profilePhoto !== "null"
+                              ? partner?.profilePhoto
+                              : "/default-img.png"
+                        }
+                        alt="profile image"
+                        fill
+                        sizes="(max-width: 768px) 40px, (max-width: 1200px) 50px, 60px"
+                        className="rounded-md object-cover"
+                        priority
+                      />
+
+                    </div>
+                    <div className="flex flex-col justify-center gap-1 flex-grow">
+                      <div className={`font-medium text-[var(--secondary-foreground)] capitalize ${selectedPartner?.id === partner.id && "font-medium"}`}>
+                        <span className="inline-flex items-center gap-1">
+                          {getDisplayName(partner)}
+
+                          {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" &&
+                            new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                              <Crown size={16} fill="#f0d000" className="text-yellow-500" />
+                          )}
+
+                          {partner.otherUser?.subscriptionPlan?.name === "BUSINESS" &&
+                            new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                              <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
+                          )}
+                        </span>
+                      </div>
+                      <span className="text-gray-500 font-normal text-[12px]">
+                        {/* Last message here... */}
+                        {
+                          partner?.lastMessage?.content
+                            ? getTruncatedMessage(partner?.lastMessage?.content)
+                            : "No messages yet"
+                        }
                       </span>
                     </div>
-                    <span className="text-gray-500 font-normal text-[12px]">
-                      {/* Last message here... */}
-                      {/* {partner.lastMessage?.content
-                      ? partner.lastMessage.content.split(' ').slice(0, 20).join(' ') + (partner.lastMessage.content.split(' ').length > 20 ? '...' : '')
-                      : "No messages yet"
-                    } */}
-                      {
-                        partner?.lastMessage?.content
-                          ? getTruncatedMessage(partner?.lastMessage?.content)
-                          : "No messages yet"
-                      }
-                    </span>
+                  </div>
+                  <div className="flex flex-col items-end justify-center gap-1">
+                    {partner.lastMessage?.content && partner.lastMessage?.timestamp && (
+                      <span className="text-gray-500 text-xs">
+                        {new Date(partner.lastMessage.timestamp).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: true,
+                        }).toUpperCase()}
+                      </span>
+                    )}
                   </div>
                 </div>
-                <div className="flex flex-col items-end justify-center gap-1">
-                  {partner.lastMessage?.content && partner.lastMessage?.timestamp && (
-                    <span className="text-gray-500 text-sm">
-                      {new Date(partner.lastMessage.timestamp).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: true,
-                      }).toUpperCase()}
-                    </span>
-                  )}
+              ))
+            ) : (
+              <p className="text-center text-gray-500">No Message Request yet</p>)
+          ) : (
+            filteredConversations?.length > 0 ? (
+              filteredConversations.map((partner, index) => (
+                <div
+                  onClick={() => {
+                    setSelectedPartner({ ...partner });
+                  }}
+                  key={partner.id || `partner-${index}`}
+                  className="flex cursor-pointer justify-between gap-2.5 py-2 border-b border-gray-200 mr-2"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="relative w-14 h-14">
+                      <Image
+                        src={
+                          partner?.otherUser
+                            ? partner?.otherUser?.profilePhoto && partner?.otherUser?.profilePhoto !== "null"
+                              ? partner?.otherUser?.profilePhoto
+                              : "/default-img.png"
+                            : partner?.profilePhoto && partner?.profilePhoto !== "null"
+                              ? partner?.profilePhoto
+                              : "/default-img.png"
+                        }
+                        alt="seller image"
+                        fill
+                        sizes="(max-width: 768px) 40px, (max-width: 1200px) 50px, 60px"
+                        className="rounded-md object-cover"
+                        priority
+                      />
+
+                    </div>
+                    <div className="flex flex-col justify-center gap-1 flex-grow">
+                      <div
+                        // href="#"
+                        // onClick={(e) => {
+                        //   e.preventDefault();
+                        //   setSelectedPartner({ ...partner });
+                        // }}
+                        className={`font-medium text-[var(--secondary-foreground)] capitalize ${selectedPartner?.id === partner.id && "font-medium"}`}>
+                        <span className="inline-flex items-center gap-1">
+                          {getDisplayName(partner)}
+
+                          {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" &&
+                            new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                              <Crown size={16} fill="#f0d000" className="text-yellow-500" />
+                          )}
+
+                          {partner.otherUser?.subscriptionPlan?.name === "BUSINESS" &&
+                            new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                              <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
+                          )}
+                        </span>
+                      </div>
+                      <span className="text-gray-500 font-normal text-[12px]">
+                        {/* Last message here... */}
+                        {/* {partner.lastMessage?.content
+                        ? partner.lastMessage.content.split(' ').slice(0, 20).join(' ') + (partner.lastMessage.content.split(' ').length > 20 ? '...' : '')
+                        : "No messages yet"
+                      } */}
+                        {
+                          partner?.lastMessage?.content
+                            ? getTruncatedMessage(partner?.lastMessage?.content)
+                            : "No messages yet"
+                        }
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end justify-center gap-1">
+                    {partner.lastMessage?.content && partner.lastMessage?.timestamp && (
+                      <span className="text-gray-500 text-xs">
+                        {new Date(partner.lastMessage.timestamp).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: true,
+                        }).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))
+              ))
           ) : (
             <p className="text-center text-gray-500">No conversations found</p>
+          )
           )}
         </div>
       </div>
@@ -749,8 +838,8 @@ export default function ChatBox() {
                 <div className="relative w-10 h-10">
                   <Image
                     src={selectedPartner?.otherUser ?
-                      selectedPartner?.otherUser?.profilePhoto && selectedPartner?.otherUser?.profilePhoto != "null" ? selectedPartner?.otherUser?.profilePhoto : "/chatUserSvg/userImage.svg"
-                      : selectedPartner?.profilePhoto && selectedPartner?.profilePhoto != "null" ? selectedPartner?.profilePhoto : "/chatUserSvg/userImage.svg"
+                      selectedPartner?.otherUser?.profilePhoto && selectedPartner?.otherUser?.profilePhoto != "null" ? selectedPartner?.otherUser?.profilePhoto : "/default-img.png"
+                      : selectedPartner?.profilePhoto && selectedPartner?.profilePhoto != "null" ? selectedPartner?.profilePhoto : "/default-img.png"
                     }
                     alt="seller image"
                     fill
@@ -759,7 +848,7 @@ export default function ChatBox() {
                   />
                 </div>
                 <div>
-                  <p className="text-[var(--chatText-color)] text-[16px] md:text-lg flex items-center gap-0 md:gap-2">
+                  <p className="text-[var(--chatText-color)] text-[16px] md:text-lg flex items-center gap-0 md:gap-2 capitalize">
                     {selectedPartner
                       &&
                       (
@@ -780,12 +869,17 @@ export default function ChatBox() {
                           }
                           className="inline-flex items-center gap-0 md:gap-1">
                           {getDisplayName(selectedPartner)}
-                          {selectedPartner.otherUser?.subscriptionPlan?.name === "PREMIUM" && (
-                            <Crown size={18} fill="#f0d000" className="text-yellow-500" />
+                        
+                          {selectedPartner.otherUser?.subscriptionPlan?.name === "PREMIUM" &&
+                            new Date(selectedPartner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                              <Crown size={16} fill="#f0d000" className="text-yellow-500" />
                           )}
-                          {selectedPartner.otherUser?.subscriptionPlan?.name === "BUSINESS" && (
-                            <Crown size={18} fill="#AFAFAF" className="text-gray-400" />
-                          )}
+
+                          {selectedPartner.otherUser?.subscriptionPlan?.name === "BUSINESS" &&
+                            new Date(selectedPartner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                              <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
+                            )}
+                          
                         </Link>
                       )}
                   </p>
@@ -823,17 +917,20 @@ export default function ChatBox() {
             {/* Message Area */}
             <div className="flex-1 pt-2 pb-4 px-4 overflow-y-auto flex flex-col gap-3 h-[calc(100vh-40px)]">
               <div className="flex justify-center">
-                {loggedInUser?.subscriptionPlan?.name === "PREMIUM" ? (
-                  <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
-                    <LockKeyhole size={20} strokeWidth={1.5} />
-                    Messages are end-to-end encrypted.
-                  </span>
-                ) : (
-                  <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
-                    <LockKeyhole size={20} strokeWidth={1.5} />
-                    Chats will be automatically deleted after 48 hours of last
-                  </span>
-                )}
+
+                {loggedInUser?.subscriptionPlan?.name === "PREMIUM" &&
+                  new Date(loggedInUser?.subscriptionPlan?.expiresAt) > new Date() ? (
+                    <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
+                      <LockKeyhole size={20} strokeWidth={1.5} />
+                      Messages are end-to-end encrypted.
+                    </span>
+                    ) : (
+                    <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
+                      <LockKeyhole size={20} strokeWidth={1.5} />
+                      Chats will be automatically deleted after 48 hours of last
+                    </span>
+                )}  
+
               </div>
 
               {messages.length > 0 ? (
@@ -897,44 +994,47 @@ export default function ChatBox() {
                               : "rounded-tl-2xl rounded-tr-2xl rounded-br-2xl"
                             } max-w-[75%] break-words`}
                         >
-                          <div className="text-[#010101] opacity-85 font-normal text-sm">
-                            {msg.content.startsWith(
-                              "https://www.google.com/maps"
-                            ) ? (
-                              <a
-                                href={msg.content}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-2 text-blue-600 font-medium hover:text-blue-800 transition duration-300"
-                              >
+                          <div className="flex justify-between items-end gap-2">
 
-                                <div className="relative w-8 h-8">
-                                  <Image
-                                    src="/nearbuydukan-Logo/Logo.svg"
-                                    alt="nearbuydukan"
-                                    fill
-                                    sizes="35px"
-                                    priority
-                                  />
-                                </div>
-                                <span className="underline text-red-500">
-                                  Live Location
-                                </span>
-                              </a>
-                            ) : (
-                              msg.content
+                            <div className="text-[#010101] opacity-85 font-normal text-sm">
+                              {msg.content.startsWith(
+                                "https://www.google.com/maps"
+                              ) ? (
+                                <a
+                                  href={msg.content}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-2 text-blue-600 font-medium hover:text-blue-800 transition duration-300"
+                                >
+
+                                  <div className="relative w-8 h-8">
+                                    <Image
+                                      src="/nearbuydukan-Logo/Logo.svg"
+                                      alt="nearbuydukan"
+                                      fill
+                                      sizes="35px"
+                                      priority
+                                    />
+                                  </div>
+                                  <span className="underline text-red-500">
+                                    Live Location
+                                  </span>
+                                </a>
+                              ) : (
+                                msg.content
+                              )}
+                            </div>
+
+                            {msg.timestamp && (
+                              <span className="text-xs text-[#0B3048] opacity-70 block text-right whitespace-nowrap">
+                                {new Intl.DateTimeFormat("en-US", {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: true,
+                                }).format(new Date(msg.timestamp))}
+                              </span>
                             )}
                           </div>
-
-                          {msg.timestamp && (
-                            <span className="text-xs text-[#0B3048] opacity-70 block text-right">
-                              {new Intl.DateTimeFormat("en-US", {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                              }).format(new Date(msg.timestamp))}
-                            </span>
-                          )}
                         </div>
                       </div>
                     </div>
@@ -1034,6 +1134,7 @@ export default function ChatBox() {
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
+                        e.preventDefault();
                         sendMessage();
                       }
                     }}

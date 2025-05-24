@@ -270,15 +270,24 @@ export default function EditFormatComponent() {
 
             if (response.ok && data) {
                 setUserId(data.id || '');
-                setUsername({ firstName: data.firstName || '' });
+                setUsername({ firstName: data.firstName || '', lastName: data.lastName || '' }); 
                 setAddress(data.address || '');
                 setMobile(data.mobile || '');
                 // toast.success("Receiver details fetched successfully!");
             } else {
+                setUserId('');
+                setUsername({ firstName: '', lastName: '' });
+                setAddress('');
+                setMobile('');
                 toast.error("No data found for this token.");
             }
         } catch (err) {
             console.error("Error fetching data:", err);
+
+            setUserId('');
+            setUsername({ firstName: '', lastName: '' });
+            setAddress('');
+            setMobile('');
             toast.error("Something went wrong.");
         }
     };
@@ -833,7 +842,6 @@ export default function EditFormatComponent() {
                                 </div>
                             </div>
                         )}
-
 
 
                     </div>

@@ -48,40 +48,23 @@ export default function BillHistoryTable({ setDates }) {
     fetchBillData();
   }, []);
 
-  useEffect(() => {
-    if (fromDate && toDate) {
-      const from = new Date(fromDate);
-      const to = new Date(toDate);
-      const toDateEnd = new Date(to);
-      toDateEnd.setHours(23, 59, 59, 999);
+ useEffect(() => {
+  if (fromDate && toDate) {
+    const from = new Date(fromDate);
+    const to = new Date(toDate); // No need to set hours now
 
-      const filtered = billData.filter((bill) => {
-        const billDate = new Date(bill.createdAt);
-        return billDate >= from && billDate <= toDateEnd;
-      });
+    const filtered = billData.filter((bill) => {
+      const billDate = new Date(bill.createdAt);
+      return billDate >= from && billDate <= to;
+    });
 
-      setFilteredData(filtered);
-      setDates({ startDate: fromDate, endDate: toDate });
-    } else {
-      setFilteredData(billData);
-      setDates({ startDate: "", endDate: "" });
-    }
-  }, [fromDate, toDate, billData]);
-
-  useEffect(() => {
-    const today = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(today.getDate() + 1);
-
-    const formatDate = (date) => {
-      return date.toISOString().split('T')[0];
-    };
-
-    setFromDate(formatDate(today));
-    setToDate(formatDate(tomorrow));
-  }, []);
-
-
+    setFilteredData(filtered);
+    setDates({ startDate: fromDate, endDate: toDate });
+  } else {
+    setFilteredData(billData);
+    setDates({ startDate: "", endDate: "" });
+  }
+}, [fromDate, toDate, billData]);
 
 
   const sortAmount = (order) => {

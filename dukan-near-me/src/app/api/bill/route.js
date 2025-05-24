@@ -95,11 +95,15 @@ export async function POST(req) {
 
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
-
+      let type = "auto";
+      if(file.type === 'application/pdf') {
+        type="raw";
+      }
+      console.log("type", type)
       const uploadResult = await new Promise((resolve, reject) => {
         cloudinary.uploader.upload_stream(
           {
-            resource_type: 'auto',
+            resource_type: 'raw',
             folder: 'bills',
           },
           (err, result) => {
