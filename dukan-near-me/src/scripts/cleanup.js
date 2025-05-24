@@ -92,6 +92,7 @@ async function cleanupExpired() {
     const expiredConversations = await prisma.conversation.findMany({
       where: {
         expiresAt: { lt: now },
+        accepted: true,
       },
     });
 
