@@ -97,11 +97,11 @@ export default function Notification() {
                       )}
 */}
                       
-                        {n.status === "completed" ? (
+                        {n.type === "completed" ? (
                           <CheckCircle className="h-5 w-5 text-green-600" />
-                        ) : n.status === "processing" ? (
+                        ) : n.type === "processing" ? (
                           <Loader className="h-5 w-5 text-yellow-600 animate-spin [animation-duration:2000ms]" />
-                        ) : n.status === "generated" ? (
+                        ) : n.type === "generated" ? (
                           <RefreshCw className="h-5 w-5 text-blue-600 animate-spin [animation-duration:2000ms]" />
                         ) : (
                           <AlertCircle className="h-5 w-5 text-yellow-600" />

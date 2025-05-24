@@ -441,10 +441,14 @@ export default function SearchBar() {
                             <div className="flex flex-col">
                                 <p className="text-sm font-medium text-gray-200 flex items-center gap-1">
                                     {profile?.firmName || profile?.firstName}
-                                    {profile?.subscriptionPlan?.name === "PREMIUM" && (
+                          
+                                    {profile?.subscriptionPlan?.name === "PREMIUM" &&
+                                      new Date(profile?.subscriptionPlan?.expiresAt) > new Date() && (
                                         <Crown size={16} fill="#f0d000" className="text-yellow-500" />
                                     )}
-                                    {profile?.subscriptionPlan?.name === "BUSINESS" && (
+
+                                    {profile?.subscriptionPlan?.name === "BUSINESS" &&
+                                      new Date(profile?.subscriptionPlan?.expiresAt) > new Date() && (
                                         <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
                                     )}
                                 </p>
