@@ -155,15 +155,22 @@ export default function HeroSectionEditProfile() {
     }
   };  
 
-  const handleSetPrimary = async(index) => {
+  const handleSetPrimary = async (index) => {
+    const image_url = images[index];
+    
     const rotated = [...images.slice(index), ...images.slice(0, index)];
     setImages(rotated);
     try {
-      let image_url = images[index];
+      // let image_url = images[index];
       const result = await axios.put("/api/institutions/primary-image", { url:image_url });
       if (result.status === 200) {
         toast.success("Primary image updated!");
-      }else{
+
+        setProfile((prev) => ({
+        ...prev,
+        profilePhoto: image_url,
+        }));
+      } else {
         toast.error("Failed to update primary image.");
       }
 
@@ -312,6 +319,7 @@ export default function HeroSectionEditProfile() {
               </>
             ) : null}
           </h1> */}
+
           <h1 className="text-2xl md:text-3xl pb-1 font-bold text-blue-600 flex items-center gap-2">
             {user.role === "INSTITUTION" ? (
               <>

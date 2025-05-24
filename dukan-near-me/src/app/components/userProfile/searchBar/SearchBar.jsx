@@ -201,14 +201,14 @@ export default function SearchBar() {
   const [activeTab, setActiveTab] = useState("foryou");
 
   const distanceOptions = [
-    { label: "Infinite", value: "infinite" },
+    { label: "All", value: "All" },
     { label: "5 km", value: "5" },
     { label: "20 km", value: "20" },
     { label: "50 km", value: "50" },
     { label: "100 km", value: "100" },
   ];
 
-  const [selectedDistance, setSelectedDistance] = useState("infinite");
+  const [selectedDistance, setSelectedDistance] = useState("All");
 
   const router = useRouter();
   const searchRef = useRef();
