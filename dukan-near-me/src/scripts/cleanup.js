@@ -24,13 +24,16 @@ async function cleanupExpired() {
     console.log(`✅ Deleted ${deletedResetTokens.count} expired password reset tokens`);
 
     // 🛑 Messages: Only delete if the related conversation is accepted
+    // OR if the message expired more than 7 days ago
+
     const expiredMessages = await prisma.message.findMany({
       where: {
-        expiresAt: { lt: now },
-        conversation: { is: {} },  // <-- relation exists
+        expiresAt: { lt: now },   // message expired
+        conversation: { is: {} }, // relation exists
       },
       select: {
         id: true,
+        expiresAt: true,
         conversation: {
           select: {
             accepted: true,
@@ -39,16 +42,18 @@ async function cleanupExpired() {
       },
     });
 
-
-
     let deletedMessageCount = 0;
     for (const message of expiredMessages) {
-      if (message.conversation?.accepted) {
+      const messageExpiredAt = new Date(message.expiresAt);
+      const isExpiredMoreThan7DaysAgo = (now - messageExpiredAt) > (7 * 24 * 60 * 60 * 1000);
+
+      // Delete message if conversation is accepted OR expired > 7 days ago
+      if (message.conversation?.accepted || isExpiredMoreThan7DaysAgo) {
         await prisma.message.delete({ where: { id: message.id } });
         deletedMessageCount++;
       }
     }
-    console.log(`✅ Deleted ${deletedMessageCount} expired messages from accepted conversations`);
+    console.log(`✅ Deleted ${deletedMessageCount} expired messages from accepted conversations or expired >7 days ago`);
 
     // Delete expired shortbills
     const deletedshortBill = await prisma.shortBill.deleteMany({
