@@ -92,8 +92,7 @@ export default function Review({ user }) {
       setReviews(updated.data);
     } catch (err) {
       // toast.error("Error submitting review");
-      const msg =
-      err?.response?.data?.error || "Something went wrong while submitting the review.";
+      const msg = err?.response?.data?.error || "Something went wrong while submitting the review.";
       toast.error(msg);
     }
   };

@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -246,7 +247,7 @@ const itemsSubtotal = items.reduce((acc, item) => acc + (item.total || 0), 0);
                         {user?.role === 'INSTITUTION' ? (
                             <input
                                 type="text"
-                                value={item.others || item.rate || ''}
+                                value={item.others || item.price || ''}
                                 readOnly
                                 tabIndex={-1}
                                 onChange={(e) => handleItemChange(index, 'others', e.target.value)}
@@ -256,7 +257,7 @@ const itemsSubtotal = items.reduce((acc, item) => acc + (item.total || 0), 0);
                             <input
                                 readOnly
                                 type="number" tabIndex={-1}
-                                value={item?.rate || ''}
+                                value={item?.price || '' }
                                 onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
                                 className="w-full border-none outline-none"
                             />
@@ -330,14 +331,16 @@ const itemsSubtotal = items.reduce((acc, item) => acc + (item.total || 0), 0);
 
         {/* File Preview */}
         {bill?.fileUrl && (
-          <div className="mb-6">
+          <div className="mb-3">
             <h2 className="text-lg font-bold mb-2">File Attachment</h2>
             {bill?.fileType?.startsWith("image/") ? (
-              <img
-                src={bill.fileUrl}
-                alt="Attached Image"
-                className="w-full max-w-md mx-auto border rounded shadow"
-              />
+              <div className="relative w-40 h-40">
+                  <Image
+                    src={bill.fileUrl}
+                    alt="Attached Image" fill 
+                    className="w-40 h-40 max-w-md mx-auto border rounded shadow" priority
+                  />
+              </div>
             ) : bill?.fileType === "application/pdf" ? (
               <iframe
                 src={`https://docs.google.com/gview?url=${encodeURIComponent(bill.fileUrl)}&embedded=true`}
@@ -363,30 +366,30 @@ const itemsSubtotal = items.reduce((acc, item) => acc + (item.total || 0), 0);
           {bill?.fileUrl && (
             <button
               onClick={handleDownload}
-              className="px-3 py-1 bg-green-600 text-white text-sm rounded cursor-pointer"
+              className="px-3 py-1 bg-green-600 print:hidden text-white text-sm rounded cursor-pointer"
             >
               Download File
             </button>
           )}
         </div>
 
-        <div className='w-full flex flex-col items-center text-xs md:text-sm print:text-sm justify-center gap-2 mt-5'>
+        <div className='w-full flex flex-col items-center text-xs md:text-sm print:text-sm justify-center gap-2 mt-3'>
           {formDetails?.terms && (
-            <div className="w-full p-2 md:p-4 print:p-4">
+            <div className="w-full p-2 md:p-3 print:p-2">
               <strong className="block font-semibold">Terms & Conditions: </strong>
               <p>{formDetails?.terms}</p>
             </div>
           )}
 
           {formDetails?.updates && (
-            <div className="w-full p-2 md:p-4 print:p-4">
+            <div className="w-full p-2 md:p-3 print:p-2">
               <strong className="block font-semibold">Updates / Offer Information:</strong>
               <p>{formDetails?.updates}</p>
             </div>
           )}
         </div>
 
-        <div className="text-right mt-10 text-xs text-gray-500 uppercase">
+        <div className="text-right mt-5 text-xs text-gray-500 uppercase">
           This bill is generated using <span className="font-semibold text-black">NearBuyDukan</span>
         </div>
       </div>
