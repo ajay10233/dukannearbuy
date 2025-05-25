@@ -32,8 +32,23 @@ function getClosestMatch(word, options) {
   return minDistance <= 2 ? bestMatch : null
 }
 
+function getBoundingBox(lat, lon, radiusInKm) {
+  const latR = radiusInKm / 111.32
+  const lonR = radiusInKm / (111.32 * Math.cos(lat * (Math.PI / 180)))
+  return {
+    minLat: lat - latR,
+    maxLat: lat + latR,
+    minLon: lon - lonR,
+    maxLon: lon + lonR,
+  }
+}
+
 export async function GET(req) {
-  const { search } = Object.fromEntries(new URL(req.url).searchParams)
+  const params = new URL(req.url).searchParams
+  const search = params.get('search')
+  const lat = parseFloat(params.get('latitude'))
+  const lon = parseFloat(params.get('longitude'))
+  const rangeParam = params.get('range')
 
   if (!search) {
     return NextResponse.json({ message: 'Search query is required' }, { status: 400 })
@@ -53,12 +68,26 @@ export async function GET(req) {
     { houseNumber: { contains: word, mode: 'insensitive' } },
     { street: { contains: word, mode: 'insensitive' } },
     { buildingName: { contains: word, mode: 'insensitive' } },
+    { username: { contains: word, mode: 'insensitive' } }, // <-- added username filter
   ])
+
+  let locationFilter = {}
+  const useRange = rangeParam !== 'all' && !isNaN(lat) && !isNaN(lon) && !isNaN(parseFloat(rangeParam))
+
+  if (useRange) {
+    const range = parseFloat(rangeParam)
+    const box = getBoundingBox(lat, lon, range)
+    locationFilter = {
+      latitude: { gte: box.minLat, lte: box.maxLat },
+      longitude: { gte: box.minLon, lte: box.maxLon },
+    }
+  }
 
   const results = await prisma.user.findMany({
     where: {
       role: { in: ['INSTITUTION', 'SHOP_OWNER'] },
       OR: conditions,
+      ...locationFilter,
     },
     select: {
       id: true,
@@ -68,8 +97,8 @@ export async function GET(req) {
       zipCode: true,
       country: true,
       shopAddress: true,
-      username:true,
-      hashtags:true,
+      username: true,
+      hashtags: true,
       profilePhoto: true,
       latitude: true,
       longitude: true,
@@ -106,7 +135,7 @@ export async function GET(req) {
         street: true,
         buildingName: true,
         hashtags: true,
-        username:true,
+        username: true,
       },
     })
 
@@ -123,6 +152,7 @@ export async function GET(req) {
         item.houseNumber,
         item.street,
         item.buildingName,
+        item.username,
         ...(item.hashtags || []),
       ]
       fields.forEach((f) => {
@@ -140,3 +170,4 @@ export async function GET(req) {
 
   return NextResponse.json({ results, suggestions })
 }
+

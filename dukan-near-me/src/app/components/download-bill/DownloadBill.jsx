@@ -34,40 +34,55 @@ export default function DownloadBill({ params }) {
 
   // Add this function inside your component
   const handleDownload = async () => {
-  if (!bill?.fileUrl) {
-    toast.error("No file to download");
-    return;
-  }
-
-  try {
-    const response = await fetch(bill.fileUrl, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/pdf", // or the correct MIME type
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
+    if (!bill?.fileUrl) {
+      toast.error("No file to download");
+      return;
     }
 
-    const blob = await response.blob();
-    const blobUrl = window.URL.createObjectURL(blob);
+    try {
+      const response = await fetch(bill.fileUrl, {
+        method: "GET",
+      });
 
-    const link = document.createElement("a");
-    link.href = blobUrl;
-    link.download = `Invoice-${bill?.invoiceNumber || "bill"}.pdf`; // You could detect extension dynamically
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
 
-    // Clean up
-    window.URL.revokeObjectURL(blobUrl);
-  } catch (error) {
-    console.error("Download error:", error);
-    toast.error("Failed to download the file");
-  }
-};
+      const contentType = response.headers.get("Content-Type");
+
+      // Map of MIME types to file extensions
+      const mimeMap = {
+        "application/pdf": "pdf",
+        "image/jpeg": "jpg",
+        "image/png": "png",
+        "application/msword": "doc",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+        "application/vnd.ms-excel": "xls",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
+        "text/plain": "txt",
+        "application/zip": "zip",
+      };
+
+      const extension = mimeMap[contentType] || "file";
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `Invoice-${bill?.invoiceNumber || "bill"}.${extension}`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      // Clean up
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error("Failed to download the file");
+    }
+  };
+
 
 
 
@@ -152,7 +167,7 @@ export default function DownloadBill({ params }) {
                         type="text"
                         readOnly
                         tabIndex={-1}
-                        value={item?.particulars}
+                        value={item?.name}
                         onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
                         className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
                       />
@@ -162,7 +177,7 @@ export default function DownloadBill({ params }) {
                         readOnly
                         tabIndex={-1}
                         type="number"
-                        value={item?.qty}
+                        value={item?.quantity}
                         onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
                         className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
                       />
@@ -170,14 +185,14 @@ export default function DownloadBill({ params }) {
                     <td className="border p-2">
                       <input
                         type="number"
-                        value={item?.rate}
+                        value={item?.price}
                         readOnly
                         tabIndex={-1}
                         onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
                         className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
                       />
                     </td>
-                    <td className="border p-2 text-center">{item?.amount?.toFixed(2)}</td>
+                    <td className="border p-2 text-center">{item?.total?.toFixed(2)}</td>
                   </tr>
                 ))}
                 <tr>

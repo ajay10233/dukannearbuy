@@ -179,6 +179,7 @@ export default function EditFormatComponent() {
                 formData.append('file', file);
                 formData.append('generateShortBill', shortBill);
                 formData.append('report', isReport);
+                formData.append('generationToken', tokenEnabled);
 
                 data = await axios.post('/api/bill', formData, {
                     headers: {
@@ -199,6 +200,7 @@ export default function EditFormatComponent() {
                     remarks: '',
                     otherCharges: 0,
                     generateShortBill: shortBill,
+                    generationToken:tokenEnabled,
                 };
 
                 data = await axios.post('/api/bill', payload);

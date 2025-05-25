@@ -380,6 +380,7 @@ model Review {
   user           User     @relation("UserReviewGiven", fields: [userId], references: [id])
   institution    User     @relation("UserReviewReceived", fields: [institutionId], references: [id])
   abuseReports AbusiveComment[] @relation("ReviewAbuseReports")
+  expiresAt      DateTime?
   // @@unique([userId, institutionId]) // Optional: prevent duplicate reviews per user
   @@map("reviews")
 }

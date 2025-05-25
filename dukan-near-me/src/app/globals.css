@@ -139,6 +139,7 @@ body {
     @apply bg-background text-foreground;
   }
 } */
+ 
 .dialogScroll::-webkit-scrollbar-button {
   display: none; /* Hide top and bottom buttons */
   background: transparent;
