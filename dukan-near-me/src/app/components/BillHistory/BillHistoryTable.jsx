@@ -149,7 +149,7 @@ export default function BillHistoryTable({ setDates }) {
         </ul>
       </div>
 
-      <div className="flex flex-col gap-y-4 overflow-y-scroll dialogScroll h-screen">
+      <div className="flex flex-col gap-y-2 md:gap-y-4 overflow-y-scroll dialogScroll h-screen">
         {filteredData.length === 0 ? (
           <div className="text-center text-gray-500 py-5">No results found</div>
         ) : (

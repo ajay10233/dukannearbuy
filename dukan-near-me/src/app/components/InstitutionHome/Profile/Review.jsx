@@ -66,7 +66,7 @@ export default function Review({ user }) {
 
     try {
       if (editingId) {
-        // Update review 
+        // Update review
         await axios.put("/api/reviews", {
           commentId: editingId,
           rating,
@@ -94,7 +94,7 @@ export default function Review({ user }) {
       // toast.error("Error submitting review");
       const msg =
       err?.response?.data?.error || "Something went wrong while submitting the review.";
-      toast.error(msg); 
+      toast.error(msg);
     }
   };
   
@@ -108,7 +108,7 @@ export default function Review({ user }) {
   const confirmReport = (reviewId) => {
     setSelectedReviewId(reviewId);
     setShowReportModal(true);
-  };  
+  };
 
   const handleReport = async (reviewId) => {
     try {
@@ -194,8 +194,8 @@ export default function Review({ user }) {
       </>
     )}
 
-      {/* Display Reviews */}
-      <div className="flex flex-col gap-y-2 md:gap-y-4">
+    {/* Display Reviews */}
+    <div className="flex flex-col gap-y-2 md:gap-y-4">
       <h3 className="text-2xl font-semibold mb-2 text-gray-800">Reviews</h3>
         {reviews.length > 0 ? (
         // <div className="flex flex-col gap-y-2 md:gap-y-4">
@@ -259,9 +259,9 @@ export default function Review({ user }) {
         ) : (
           <p className="text-gray-500 text-center my-4">No reviews yet.</p>
           )}
-        </div>
+    </div>
         
-        {showReportModal && (
+      {showReportModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 ">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
               <h2 className="text-lg font-semibold mb-4">Report Review</h2>
@@ -282,9 +282,11 @@ export default function Review({ user }) {
               </div>
             </div>
           </div>
-        )}
+    )}
 
       </div>
     </div>
-    );
-  }
+  );
+}
+
+

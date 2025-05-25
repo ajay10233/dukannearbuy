@@ -44,12 +44,12 @@ export default function BillHistory() {
                 </div>
             </div>
         </div>
-        <div className="flex justify-center w-11/12 overflow-hidden">
+        <div className="flex justify-center w-11/12 h-[410px] overflow-hidden">
             <BillHistoryTable setDates={setDates}/>
           </div>
-          <div className="absolute bottom-1 right-4 w-17 h-17 md:w-32 md:h-32">
+          {/* <div className="absolute bottom-1 right-4 w-17 h-17 md:w-32 md:h-32">
                   <Image src="/nearbuydukan - watermark.png" alt="Watermark" fill sizes="120" className="object-contain w-17 h-17 md:w-32 md:h-32" priority />
-            </div>
+            </div> */}
     </main>
   )
 }
