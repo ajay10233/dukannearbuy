@@ -16,6 +16,7 @@ import {
   Check,
   ChevronDown,
   Pencil,
+  MoveLeft,
 } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -143,9 +144,14 @@ export default function About({ profileUpdated }) {
     <div className="flex flex-col items-start w-full bg-white overflow-x-hidden">
       
       <Navbar />
-      <div className="mt-14 w-full">
-
-      <HeroSectionEditProfile />
+        <div className="mt-14 w-full">
+          <div className="px-4 py-2">
+            <Link href="/partnerHome"
+              className="flex items-center gap-2 text-blue-600 rounded-md transition ease-in-out duration-400 hover:text-blue-700">
+                <MoveLeft size={20} strokeWidth={1.5} /> Back
+            </Link>
+          </div>
+        <HeroSectionEditProfile />
       </div>
 
       <div className="flex w-full p-2 md:px-8 md:py-2 justify-between items-start">
@@ -154,7 +160,7 @@ export default function About({ profileUpdated }) {
           <div className="flex items-center gap-2">
             <button
               onClick={() => router.push("/institution-edit-profile")}
-              className="flex items-center text-blue-600 hover:text-blue-800 cursor-pointer text-sm font-medium transition"
+              className="flex items-center text-blue-600 hover:text-blue-800 cursor-pointer text-sm font-medium transition ease-in-out duration-400"
             >
               <Pencil size={16} className="mr-1" />
               Edit Profile
@@ -173,7 +179,7 @@ export default function About({ profileUpdated }) {
                   {userData?.mobileNumber ? (
                     <a
                       href={`tel:${userData.mobileNumber}`}
-                      className="hover:text-gray-600 transition ease-in-out hover:not-first:underline"
+                      className="hover:text-gray-600 transition ease-in-out duration-400 hover:not-first:underline"
                     >
                       {userData.mobileNumber}
                     </a>
@@ -183,7 +189,7 @@ export default function About({ profileUpdated }) {
                 </div>
                 <div className="text-md text-gray-700 flex items-center gap-2">
                   <Mail size={20} strokeWidth={1.5} color="#1751c4" />
-                  <span className="hover:text-gray-600 flex gap-x-1.5 transition ease-in-out">
+                  <span className="hover:text-gray-600 flex gap-x-1.5 transition ease-in-out duration-400">
                     {userData?.contactEmail || "N/A"}
                     <button onClick={handleCopyEmail} title="Copy Email">
                       {copiedEmail ? (
