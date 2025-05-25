@@ -472,9 +472,9 @@ export default function ChatBox() {
       // const res = await fetch("/api/users/me");
       // const data = await res.json();
       const data = loggedInUser;
-      if (data?.role === "USER") {
+      if (data?.role == "USER") {
         router.push("/UserHomePage");
-      } else if (data?.role === "INSTITUTION" || data?.role === "SHOP_OWNER") {
+      } else if (data?.role == "INSTITUTION" || data?.role == "SHOP_OWNER") {
         router.push("/partnerHome");
       } else {
         console.error("Unknown role or not logged in.");

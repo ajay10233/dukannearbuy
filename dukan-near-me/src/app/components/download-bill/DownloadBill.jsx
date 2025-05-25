@@ -53,22 +53,7 @@ export default function DownloadBill({ params }) {
         throw new Error("Network response was not ok");
       }
 
-      const contentType = response.headers.get("Content-Type");
-
-      // Map of MIME types to file extensions
-      const mimeMap = {
-        "application/pdf": "pdf",
-        "image/jpeg": "jpg",
-        "image/png": "png",
-        "application/msword": "doc",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
-        "application/vnd.ms-excel": "xls",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
-        "text/plain": "txt",
-        "application/zip": "zip",
-      };
-
-      const extension = mimeMap[contentType] || "file";
+      const extension = bill?.fileType.startsWith("image/") ? bill?.fileType.split("/")[1] : "pdf";
 
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
