@@ -45,6 +45,10 @@ export async function GET(req) {
           shopCloseTime: true,
           shopOpenDays: true,
           role: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          email: true,
         },
       });
 
@@ -64,6 +68,10 @@ export async function GET(req) {
           profilePhoto: true,
           hashtags: true,
           role: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          email: true,
         },
       });
 
@@ -101,6 +109,10 @@ export async function GET(req) {
           shopCloseTime: true,
           shopOpenDays: true,
           role: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          email: true,
         },
       });
 

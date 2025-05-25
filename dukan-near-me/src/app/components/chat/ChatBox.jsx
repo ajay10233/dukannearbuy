@@ -50,6 +50,10 @@ export default function ChatBox() {
       return user.firmName || `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Unknown";
     }
 
+    if(user?.firstName || user?.lastName){
+      return `${user.firstName || ""} ${user.lastName || ""}`.trim();
+    }
+
     return user?.name || "Unknown"; s
   };
 
