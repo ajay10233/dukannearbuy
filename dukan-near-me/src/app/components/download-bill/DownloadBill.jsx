@@ -278,7 +278,6 @@ const itemsSubtotal = items.reduce((acc, item) => acc + (item.total || 0), 0);
                         )}
                     </td>
 
-
                         <td className="border p-1 md:p-2 text-center print:p-2">
                             {user?.role === 'INSTITUTION' ? (
                                 <input
