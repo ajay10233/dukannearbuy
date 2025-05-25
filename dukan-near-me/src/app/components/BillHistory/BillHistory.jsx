@@ -40,7 +40,7 @@ export default function BillHistory() {
                     <p className="text-xs text-slate-600 uppercase">Download  your all time payment history</p>
                 </div>
                 <div className="flex flex-col">
-                    <button onClick={handleDownload} className="flex justify-center items-center gap-x-2 md:gap-x-3 bg-teal-600 transition-all duration-500 ease-in-out hover:bg-teal-700 text-white py-3 w-30 md:w-40 rounded-xl text-sm font-semibold cursor-pointer">Download <Download size={19} strokeWidth={2.5}/></button>
+                    <button onClick={handleDownload} className="flex justify-center items-center gap-x-2 md:gap-x-3 bg-teal-600 transition-all duration-500 ease-in-out hover:bg-teal-700 text-white p-2 md:py-3 w-30 md:w-40 rounded-xl text-sm font-semibold cursor-pointer">Download Excel <span className="relative w-5 h-5"><Download size={20} strokeWidth={2.5}/></span></button>
                 </div>
             </div>
         </div>

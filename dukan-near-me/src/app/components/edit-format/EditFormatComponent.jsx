@@ -151,11 +151,11 @@ export default function EditFormatComponent() {
             });
 
 
-            const today = new Date().toISOString().slice(0, 10); 
+            // const today = new Date().toISOString().slice(0, 10); 
 
             const existingBills = checkResponse.data.bills.filter(bill => {
-                const billDate = new Date(bill.createdAt).toISOString().slice(0, 10);
-                return bill.invoiceNumber === invoiceNo && billDate === today;
+                // const billDate = new Date(bill.createdAt).toISOString().slice(0, 10);
+                return bill.invoiceNumber === invoiceNo;
             });
 
 
@@ -676,6 +676,7 @@ export default function EditFormatComponent() {
                                                     />
                                                 )}
                                             </td>
+
                                             <td className="border p-1 md:p-2 print:p-2">
                                                 {user?.role === 'INSTITUTION' ? (
                                                     <input
@@ -704,7 +705,7 @@ export default function EditFormatComponent() {
                                                     className="w-full border-none outline-none text-center"
                                                     />
                                                 ) : (
-                                                    item.amount.toFixed(2)
+                                                    item?.amount?.toFixed(2)
                                                 )}
                                             </td>
                                         </tr>
