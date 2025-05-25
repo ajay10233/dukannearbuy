@@ -27,11 +27,19 @@ async function cleanupExpired() {
     const expiredMessages = await prisma.message.findMany({
       where: {
         expiresAt: { lt: now },
+        conversation: { is: {} },  // <-- relation exists
       },
-      include: {
-        conversation: true,
+      select: {
+        id: true,
+        conversation: {
+          select: {
+            accepted: true,
+          },
+        },
       },
     });
+
+
 
     let deletedMessageCount = 0;
     for (const message of expiredMessages) {
@@ -88,26 +96,26 @@ async function cleanupExpired() {
       console.log(`⏭️ Skipped expired review deletion (only ${totalReviewCount} total reviews)`);
     }
 
-    // ✅ Delete expired conversations only if accepted OR expired 7+ days ago
-    const expiredConversations = await prisma.conversation.findMany({
-      where: {
-        expiresAt: { lt: now },
-        accepted: true,
-      },
-    });
+    // // ✅ Delete expired conversations only if accepted OR expired 7+ days ago
+    // const expiredConversations = await prisma.conversation.findMany({
+    //   where: {
+    //     expiresAt: { lt: now },
+    //     accepted: true,
+    //   },
+    // });
 
-    let deletedConversationCount = 0;
-    for (const convo of expiredConversations) {
-      const createdAt = new Date(convo.createdAt);
-      const isOlderThan7Days = (now - createdAt) > (7 * 24 * 60 * 60 * 1000);
+    // let deletedConversationCount = 0;
+    // for (const convo of expiredConversations) {
+    //   const createdAt = new Date(convo.createdAt);
+    //   const isOlderThan7Days = (now - createdAt) > (7 * 24 * 60 * 60 * 1000);
 
-      if (convo.accepted || isOlderThan7Days) {
-        await prisma.conversation.delete({ where: { id: convo.id } });
-        deletedConversationCount++;
-      }
-    }
+    //   if (convo.accepted || isOlderThan7Days) {
+    //     await prisma.conversation.delete({ where: { id: convo.id } });
+    //     deletedConversationCount++;
+    //   }
+    // }
 
-    console.log(`✅ Deleted ${deletedConversationCount} expired conversations (respecting acceptance & 7-day delay)`);
+    // console.log(`✅ Deleted ${deletedConversationCount} expired conversations (respecting acceptance & 7-day delay)`);
 
     // ✅ Downgrade users with expired plans
     const expiredUsers = await prisma.user.findMany({
