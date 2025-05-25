@@ -32,11 +32,16 @@ export async function GET(req) {
     return NextResponse.json({ error: 'Latitude and longitude are required' }, { status: 400 });
   }
 
-  // Step 1: Get distinct paid user IDs from PaidProfile
+  // Step 1: Get distinct paid user IDs from PaidProfile with notes
   const paidProfiles = await prisma.paidProfile.findMany({
-    select: { userId: true },
+    select: { userId: true, notes: true },
     distinct: ['userId']
   });
+
+  const paidUserNotesMap = new Map(
+    paidProfiles.map(p => [p.userId, p.notes])
+  );
+
   const paidUserIds = paidProfiles.map(p => p.userId);
 
   // Step 2: Get paid users
@@ -77,7 +82,7 @@ export async function GET(req) {
     }])
   );
 
-  // Step 5: Enrich paid users
+  // Step 5: Enrich paid users with distance, rating, and notes
   const enrichedPaid = paidUsers
     .map(user => {
       const distance = calculateDistance(userLat, userLng, user.latitude, user.longitude);
@@ -85,6 +90,7 @@ export async function GET(req) {
         averageRating: 0,
         reviewCount: 0,
       };
+      const notes = paidUserNotesMap.get(user.id) || null;
 
       return {
         user,
@@ -92,6 +98,7 @@ export async function GET(req) {
         averageRating: ratingInfo.averageRating,
         reviewCount: ratingInfo.reviewCount,
         isPaid: true,
+        notes,
       };
     })
     .filter(p => p.distance <= radiusKm)
