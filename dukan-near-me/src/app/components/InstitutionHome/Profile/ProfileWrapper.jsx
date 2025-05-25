@@ -4,10 +4,11 @@ import React, { useState, useEffect } from "react";
 import EditProfile from "./EditProfile";
 import toast from "react-hot-toast";
 import { FaEdit } from "react-icons/fa";
-import { Share2, X, Heart } from "lucide-react";
+import { Share2, X, Heart, MoveLeft } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 export default function ProfileWrapper({ children, images, setImages }) {
   const [showModal, setShowModal] = useState(false);
@@ -199,13 +200,19 @@ export default function ProfileWrapper({ children, images, setImages }) {
 
   return (
     <>
-      <div className="w-full px-4 pb-2 md:px-8 pt-14 flex justify-end flex-end">
+      <div className="w-full px-4 pb-2 md:px-8 pt-14 flex justify-between items-center py-2 flex-end">
         {/* <button
           onClick={handleEditClick}
           className="flex items-center cursor-pointer text-blue-600 hover:text-blue-700 transition"
         >
           <FaEdit size={20} strokeWidth={1.5} />
         </button> */}
+        <div className="py-2">
+            <Link href="/UserHomePage"
+              className="flex items-center gap-2 text-blue-600 rounded-md transition ease-in-out duration-400 hover:text-blue-700">
+                <MoveLeft size={20} strokeWidth={1.5} /> Back
+            </Link>
+        </div>
 
         <div className="flex items-end gap-x-8">
           <button

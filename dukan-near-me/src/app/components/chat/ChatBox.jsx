@@ -54,7 +54,7 @@ export default function ChatBox() {
       return `${user.firstName || ""} ${user.lastName || ""}`.trim();
     }
 
-    return user?.name || "Unknown"; s
+    return user?.name || "Unknown"; 
   };
 
   const encryptMessage = (message, secretKey) => {
@@ -499,7 +499,7 @@ export default function ChatBox() {
       {/* Left Sidebar */}
       <div
         className={`${selectedPartner ? "hidden md:flex" : "flex"
-          } flex-col gap-4 w-full md:w-[30%] bg-[#F5FAFC] p-4`}
+          } flex-col gap-2 sm:gap-4 w-full md:w-[30%] bg-[#F5FAFC] p-4`}
       >
         <div className="flex items-center gap-2">
           <button
@@ -545,7 +545,7 @@ export default function ChatBox() {
         </div>
 
         {/* Conversations List */}
-        <div className="w-full h-[530px] overflow-y-auto dialogScroll">
+        <div className="w-full h-[540px] md:h-[560px] overflow-y-auto dialogScroll">
           {isMsgRequest ? (
 
             messageRequests.length > 0 ? (
@@ -1022,7 +1022,18 @@ export default function ChatBox() {
           </>
         ) : (
           <div className="flex flex-col justify-center items-center flex-1">
-            <p className="text-gray-500">Select a conversation to start chatting</p>
+              {/* <p className="text-gray-500">Select a conversation to start chatting</p> */}
+              
+            <div className="relative w-17 h-17 md:w-80 md:h-80">
+                <Image
+                    src="/nearbuydukan - watermark.png"
+                    alt="Watermark"
+                    fill sizes="120"
+                    className="object-contain w-17 h-17 md:w-80 md:h-80"
+                    priority
+                />
+            </div>
+              
           </div>
         )}
       </div>
