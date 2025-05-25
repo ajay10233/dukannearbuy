@@ -149,7 +149,7 @@ export default function BillHistoryTable({ setDates }) {
         </ul>
       </div>
 
-      <div className="flex flex-col gap-y-4 overflow-y-scroll dialogScroll h-screen">
+      <div className="flex flex-col gap-y-2 md:gap-y-4 overflow-y-scroll dialogScroll h-screen">
         {filteredData.length === 0 ? (
           <div className="text-center text-gray-500 py-5">No results found</div>
         ) : (
@@ -161,7 +161,7 @@ export default function BillHistoryTable({ setDates }) {
                 <li>{bill?.user?.username || "N/A"}</li>
                 <li className="md:flex flex-col items-center hidden">{bill?.totalAmount}</li>
                 <li className="flex flex-col items-center justify-center relative">
-                  <span className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
+                  <span className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out'>
                     <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff" onClick={() => handleDownload(bill?.id)} />
                   </span>
                 </li>

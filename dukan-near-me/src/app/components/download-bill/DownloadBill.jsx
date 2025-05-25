@@ -1,5 +1,4 @@
 "use client";
-// add a downoload button as well
 
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -11,6 +10,11 @@ export default function DownloadBill({ params }) {
   const { data: session } = useSession();
   const [bill, setBill] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [items, setItems] = useState([{ particulars: '', qty: 0, rate: 0, amount: 0 }]);
+
+  const [formDetails, setFormDetails] = useState(null);
+
 
   const fetchBill = async () => {
     try {
@@ -20,6 +24,7 @@ export default function DownloadBill({ params }) {
       }
       const data = res.data;
       setBill(data.bill);
+      setItems(data.bill.items);
       console.log(data.bill);
     } catch (error) {
       toast.error("Failed to fetch bill");
@@ -83,8 +88,58 @@ export default function DownloadBill({ params }) {
     }
   };
 
+    // Fetch form/bill format details
+  useEffect(() => {
+    const fetchFormatDetails = async () => {
+      try {
+        const res = await fetch('/api/billFormat');
+        if (res.ok) {
+          const data = await res.json();
+          setFormDetails({
+            firmName: data.institutionRelation?.firmName || '',
+            address: data.institutionRelation?.shopAddress || '',
+            contactNo: data.institutionRelation?.phone || '',
+            gstNo: data.gstNumber || '',
+            email: data.institutionRelation?.contactEmail || '',
+            cgst: parseFloat((data.taxPercentage?.split('+')[0]) || 0),
+            sgst: parseFloat((data.taxPercentage?.split('+')[1]) || 0),
+            proprietorSign: data.proprietorSign || '',
+            terms: data.extraText?.split('\n')[0] || '',
+            updates: data.extraText?.split('\n')[1] || '',
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching format details:", error);
+      }
+    };
 
+    fetchFormatDetails();
+  }, []);
+  
 
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+            try {
+                const { data } = await axios.get('/api/users/me');
+                console.log(data);
+                setUser(data);
+            } catch (error) {
+                console.error('Failed to fetch user details:', error);
+            }
+        };
+
+  fetchUserDetails();
+}, [])
+
+const itemsSubtotal = items.reduce((acc, item) => acc + (item.total || 0), 0);
+
+    const cgstPercent = formDetails?.cgst || 0;
+    const sgstPercent = formDetails?.sgst || 0;
+
+    const cgstAmount = (itemsSubtotal * cgstPercent) / 100;
+    const sgstAmount = (itemsSubtotal * sgstPercent) / 100;
+
+    const totalAmount = itemsSubtotal + cgstAmount + sgstAmount;
 
   const handlePrint = () => {
     window.print();
@@ -98,14 +153,14 @@ export default function DownloadBill({ params }) {
 
     <div className="p-4 relative">
       <div className="max-w-5xl mx-auto p-4 bg-white shadow-md border text-sm text-black" >
-        <div className="flex justify-between items-center my-8">
+        <div className="flex justify-between items-center my-4 md:my-8">
           <h1 className="text-2xl font-bold text-center w-full uppercase">Invoice</h1>
         </div>
 
         {/* Bill Information */}
-        <div className="grid grid-cols-2 gap-4 border-b pb-2 mb-4">
-          <div className="p-2 border-r border-black">
-            <h1 className="text-lg font-bold text-[#0D6A9C]">{bill?.institution?.firmName}</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2  gap-4 border-b pb-2 mb-4">
+          <div className="p-2 pb-4 border-b md:border-r md:border-gray-400 print:border-b-0 print:border-r ">
+            <h1 className="text-lg font-bold text-[#0D6A9C] capitalize">{bill?.institution?.firmName}</h1>
             <p>{`${bill?.institution.houseNumber}, ${bill?.institution.address?.buildingName ? bill?.institution.buildingName + ', ' : ''}${bill?.institution.street}, ${bill?.institution.landmark}, ${bill?.institution.city}, ${bill?.institution.state} - ${bill?.institution.zipCode}, ${bill?.institution.country}`}</p>
             <p>Mobile: {bill?.institution?.mobileNumber}</p>
           </div>
@@ -114,21 +169,21 @@ export default function DownloadBill({ params }) {
             <div className="flex flex-col mb-1">
               <p className="flex items-start">
                 Name:&nbsp;
-                <span className="text-sm text-gray-700">
+                <span className="w-full text-sm text-gray-600 capitalize outline-none">
                   {bill?.user?.firstName || 'N/A'} {bill?.user?.lastName || ''}
                 </span>
               </p>
               <p className="flex items-start">
                 <span className="font-medium">Address:&nbsp;</span>
                 {bill?.user ? (
-                  <span className="text-sm text-gray-700">
+                  <span className="w-full text-sm text-gray-600 outline-none">
                     {bill?.user?.houseNumber}, {bill?.user?.street}, {bill?.user?.buildingName}, {bill?.user?.city}, {bill?.user?.state}, {bill?.user?.zipCode}
                   </span>
                 ) : (
                   <span className="text-sm text-gray-500">N/A</span>
                 )}
               </p>
-              <p>Phone: <span className="text-sm text-gray-700">{bill?.user?.mobileNumber || 'N/A'}</span></p>
+              <p>Phone: <span className="w-full text-sm text-gray-600 outline-none">{bill?.user?.mobileNumber || 'N/A'}</span></p>
             </div>
           </div>
         </div>
@@ -136,7 +191,7 @@ export default function DownloadBill({ params }) {
         {/* Invoice Details */}
         <div className="grid grid-cols-2 gap-4 border-b pb-2 mb-4 items-center">
           <div className="text-left">
-            <p className="text-sm text-gray-600">Invoice Number {bill?.invoiceNumber}</p>
+            <p className="text-sm text-gray-600">Invoice Number <span className="font-bold outline-none">{bill?.invoiceNumber}</span></p>
           </div>
           <div className="text-right">
             <p className="text-sm text-gray-600">Invoice Date</p>
@@ -150,61 +205,143 @@ export default function DownloadBill({ params }) {
 
             <table className="w-full border-collapse border text-left">
               <thead>
-                <tr className="bg-[#CFEBF9]">
-                  <th className="border p-2">S.NO</th>
-                  <th className="border p-2">PARTICULARS</th>
-                  <th className="border p-2">QUANTITY</th>
-                  <th className="border p-2">RATE</th>
-                  <th className="border p-2">AMOUNT</th>
+                <tr className="text-xs md:text-sm print:text-sm bg-[#CFEBF9]">
+                  <th className="border p-1 md:p-2 print:p-2">S.NO</th>
+                  <th className="border p-1 md:p-2 print:p-2">
+                      {user?.role === 'INSTITUTION' ? 'CHIEF COMPLAINT' : 'PARTICULARS'}
+                  </th>
+                  <th className="border p-1 md:p-2 print:p-2">
+                      {user?.role === 'INSTITUTION' ? 'TREATMENT' : 'QUANTITY'}
+                  </th>
+                  <th className="border p-1 md:p-2 print:p-2">
+                      {user?.role === 'INSTITUTION' ? 'OTHERS' : 'RATE'}
+                  </th>
+                  <th className="border p-1 md:p-2 print:p-2">AMOUNT</th>
                 </tr>
               </thead>
               <tbody>
                 {bill?.items.map((item, index) => (
-                  <tr key={index}>
-                    <td className="border p-2 text-center">{index + 1}</td>
-                    <td className="border p-2">
+                  <tr key={index} className='text-xs md:text-sm print:text-sm'>
+                    <td className="border p-1 md:p-2 text-center print:p-2">{index + 1}</td>
+                    <td className="border p-1 md:p-2 print:p-2">
                       <input
                         type="text"
                         readOnly
                         tabIndex={-1}
-                        value={item?.name}
+  value={item?.name || ''}
                         onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
-                        className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
+                        className="w-full border-none outline-none"
                       />
                     </td>
-                    <td className="border p-2">
-                      <input
-                        readOnly
-                        tabIndex={-1}
-                        type="number"
-                        value={item?.quantity}
-                        onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
-                        className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
-                      />
+                    <td className="border p-1 md:p-2 print:p-2">
+                      {user?.role === 'INSTITUTION' ? (
+                        <input
+                          type="text"
+                          readOnly
+                          tabIndex={-1}
+                          value={item?.treatment || ''}
+                          onChange={(e) => handleItemChange(index, 'treatment', e.target.value)}
+                          className="w-full border-none outline-none"
+                                />
+
+                            ) : ( 
+                                    
+                                <input
+                                    readOnly
+                                    tabIndex={-1}
+                                    type="number"
+                                    value={item?.quantity ?? ''} 
+                                    onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
+                                    className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
+                                    />
+                            )}
                     </td>
-                    <td className="border p-2">
-                      <input
-                        type="number"
-                        value={item?.price}
-                        readOnly
-                        tabIndex={-1}
-                        onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
-                        className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
-                      />
+
+                    <td className="border p-1 md:p-2 print:p-2">
+                        {user?.role === 'INSTITUTION' ? (
+                            <input
+                                type="text"
+                                value={item.others || item.rate || ''}
+                                readOnly
+                                tabIndex={-1}
+                                onChange={(e) => handleItemChange(index, 'others', e.target.value)}
+                                className="w-full border-none outline-none"
+                            />
+                        ) : (
+                            <input
+                                readOnly
+                                type="number" tabIndex={-1}
+                                value={item?.rate || ''}
+                                onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
+                                className="w-full border-none outline-none"
+                            />
+                        )}
                     </td>
-                    <td className="border p-2 text-center">{item?.total?.toFixed(2)}</td>
+
+                        <td className="border p-1 md:p-2 text-center print:p-2">
+                            {user?.role === 'INSTITUTION' ? (
+                                <input
+                                    type="number"
+                                    readOnly
+                                    min="0"
+                                    tabIndex={-1}
+                                    value={item.amount || ''}
+                                    onChange={(e) => handleItemChange(index, 'amount', e.target.value)}
+                                    className="w-full border-none outline-none text-center"
+                                />
+                            ) : (
+                                item?.total?.toFixed(2)
+                            )}
+                        </td>
                   </tr>
                 ))}
                 <tr>
-                  <td colSpan="4" className="border p-2 text-right font-bold">Items Subtotal</td>
-                  <td className="border p-2 text-center font-bold">{bill?.totalAmount}</td>
+                  <td colSpan="4" className="text-xs md:text-sm print:text-sm border p-2 text-right font-bold">Items Subtotal</td>
+                  <td className="text-xs md:text-sm print:text-sm border p-2 text-center font-bold">{bill?.totalAmount}</td>
                 </tr>
+
+                {formDetails && formDetails?.cgst && formDetails?.sgst && (
+                  <>
+                    <tr className='text-xs md:text-sm print:text-sm'>
+                      <td className="border p-2 text-center" rowSpan={2}></td>
+                      <td className="border p-2 font-semibold" rowSpan={2}>Tax</td>
+                      <td className="border p-2">CGST</td>
+                      <td className="border p-2 text-center">{formDetails.cgst}%</td>
+                      <td className="border p-2 text-center">{cgstAmount.toFixed(2)}</td>
+                    </tr>
+                    <tr className='text-xs md:text-sm print:text-sm'>
+                      <td className="border p-2">SGST</td>
+                      <td className="border p-2 text-center">{formDetails.sgst}%</td>
+                      <td className="border p-2 text-center">{sgstAmount.toFixed(2)}</td>
+                    </tr>
+                  </>
+                )}
+
               </tbody>
             </table>
           }
         </div>
 
-        {/* <div className="text-right font-bold text-lg">Total Amount: ₹{totalAmount.toFixed(2)}</div> */}
+        {/* Total Amount */}
+        <div className="text-sm md:text-lg print:text-lg text-right font-bold">Total Amount: ₹{totalAmount.toFixed(2)}</div>
+          {/* proprietorSign */}
+        
+            {/* {formDetails?.proprietorSign && ( */}
+            {formDetails?.proprietorSign && typeof formDetails.proprietorSign === 'string' && formDetails.proprietorSign.length > 0 && (
+
+              <div className="flex justify-end mt-4">
+                <div className="p-2 w-full max-w-[100px]">
+                  <img
+                    src={formDetails?.proprietorSign || ''}
+                    alt="Proprietor Signature"
+                    width={100}
+                    height={100}
+                    className="object-contain"
+                    // priority
+                  />
+                </div>
+              </div>
+            )}
 
         {/* File Preview */}
         {bill?.fileUrl && (
@@ -230,11 +367,10 @@ export default function DownloadBill({ params }) {
 
 
         {/* Action Buttons */}
-        {/* Action Buttons */}
         <div className="flex space-x-4 mt-4">
           <button
             onClick={handlePrint}
-            className="px-3 py-1 bg-[#3f51b5] text-white text-sm rounded"
+            className="px-3 py-1 bg-indigo-500 cursor-pointer transition-all ease-in-out duration-400 hover:bg-indigo-600 print:hidden text-white text-sm rounded"
           >
             Print
           </button>
@@ -246,6 +382,22 @@ export default function DownloadBill({ params }) {
             >
               Download File
             </button>
+          )}
+        </div>
+
+        <div className='w-full flex flex-col items-center text-xs md:text-sm print:text-sm justify-center gap-2 mt-5'>
+          {formDetails?.terms && (
+            <div className="w-full p-2 md:p-4 print:p-4">
+              <strong className="block font-semibold">Terms & Conditions: </strong>
+              <p>{formDetails?.terms}</p>
+            </div>
+          )}
+
+          {formDetails?.updates && (
+            <div className="w-full p-2 md:p-4 print:p-4">
+              <strong className="block font-semibold">Updates / Offer Information:</strong>
+              <p>{formDetails?.updates}</p>
+            </div>
           )}
         </div>
 

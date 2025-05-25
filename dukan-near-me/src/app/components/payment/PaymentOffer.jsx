@@ -106,7 +106,7 @@ export default function PaymentOffer() {
               value={coupon}
               onChange={(e) => setCoupon(e.target.value.toUpperCase())}
               placeholder="Enter coupon code"
-              className="flex-1 border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 uppercase"
+              className="flex-1 border text-sm w-[180px] md:w-full rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 uppercase"
               />
 
               <button

@@ -182,18 +182,18 @@ export default function PaymentHistory({receiverId}) {
                           type="number"
                           value={editedPayment.amount}
                           onChange={(e) => updateEditedField("amount", parseFloat(e.target.value))}
-                          className="border rounded px-1 py-0.5 w-2/3"
+                          className="border rounded text-[10px] md:text-sm px-1 py-0.5 w-2/3"
                         />
                       ) : (
                         <>₹{payment.amount}</>
                       )}
                     </li>
-                    <li className="flex justify-center items-center gap-x-2">
+                    <li className="flex justify-center items-center">
                       {isEditing ? (
                         <select
                           value={editedPayment.status}
                           onChange={(e) => updateEditedField("status", e.target.value)}
-                          className="border rounded px-1 py-0.5"
+                          className="border rounded text-[10px] md:text-sm px-1 py-0.5"
                         >
                           <option value="PENDING">PENDING</option>
                           <option value="COMPLETED">COMPLETED</option>
@@ -203,18 +203,18 @@ export default function PaymentHistory({receiverId}) {
                         <span
                           className={`${
                             payment.status === "PENDING"
-                              ? `bg-yellow-100 text-yellow-400 text-xs md:text-sm`
+                              ? `bg-yellow-100 text-yellow-400 text-[10px] md:text-sm`
                               : payment.status === "CONFLICT"
-                              ? `bg-red-100 text-red-400 text-xs md:text-sm`
-                              : `bg-green-100 text-green-400 text-xs md:text-sm`
-                          } rounded-full block w-3/4 p-0.5`}
+                              ? `bg-red-100 text-red-400 text-[10px] md:text-sm`
+                              : `bg-green-100 text-green-400 text-[10px] md:text-sm`
+                          } rounded-full block w-3/4 px-1.5 md:p-0.5`}
                         >
                           {payment.status}
                         </span>
                       )}
                     </li>
                   </ul>
-                  <div className="flex items-center gap-x-1 md:gap-x-2 ml-4">
+                  <div className="flex flex-col items-center gap-y-1 md:flex-row md:items-center md:gap-x-2 ml-2">
                     {isEditing ? (
                       <>
                         <button onClick={handleSaveEdit} className="transition-all ease-in-out duration-400 cursor-pointer">

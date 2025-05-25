@@ -201,14 +201,14 @@ export default function SearchBar() {
   const [activeTab, setActiveTab] = useState("foryou");
 
   const distanceOptions = [
-    { label: "Infinite", value: "infinite" },
+    { label: "All", value: "All" },
     { label: "5 km", value: "5" },
     { label: "20 km", value: "20" },
     { label: "50 km", value: "50" },
     { label: "100 km", value: "100" },
   ];
 
-  const [selectedDistance, setSelectedDistance] = useState("infinite");
+  const [selectedDistance, setSelectedDistance] = useState("All");
 
   const router = useRouter();
   const searchRef = useRef();
@@ -263,8 +263,8 @@ export default function SearchBar() {
       // Sort results to show those starting with query first
       const sortedResults = data.results.sort((a, b) => {
         const q = query.toLowerCase();
-        const aName = (a.firmName || a.firstName).toLowerCase();
-        const bName = (b.firmName || b.firstName).toLowerCase();
+        const aName = (a.firmName || a.firstName || "").toLowerCase();
+        const bName = (b.firmName || b.firstName || "").toLowerCase();
 
         const aStarts = aName.startsWith(q);
         const bStarts = bName.startsWith(q);
@@ -402,10 +402,10 @@ export default function SearchBar() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 text-center text-gray-400 py-2 text-sm cursor-pointer transition-all duration-400 ease-in-out${
+                className={`flex-1 text-center text-gray-400 py-2 text-sm cursor-pointer transition-all duration-400 ease-in-out ${
                   activeTab === tab.id
-                    ? "bg-gray-700 text-white font-medium"
-                    : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                    ? "bg-white text-gray-800 font-semibold border border-gray-300 shadow"
+                    : "text-gray-400 hover:bg-gray-800 hover:text-white border-transparent"
                 }`}
               >
                 {tab.label}

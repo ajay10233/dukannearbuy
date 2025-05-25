@@ -423,7 +423,7 @@ export default function About({ profileUpdated }) {
                   <div className="grid grid-cols-2 gap-2 md:gap-4 text-sm text-gray-700">
                     {userData.address.houseNumber && (
                       <div>
-                        <p className="font-semibold text-gray-600">House Number</p>
+                        <p className="font-semibold text-gray-600">Shop Number</p>
                         <p>{userData.address.houseNumber}</p>
                       </div>
                     )}
