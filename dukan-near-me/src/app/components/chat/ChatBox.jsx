@@ -404,8 +404,10 @@ export default function ChatBox() {
 
     // Helper function to update conversations array
     function updateConversationsArray(prevConversations) {
-      if (!Array.isArray(prevConversations)) return [createNewConversation()];
-
+      if (!Array.isArray(prevConversations)) {
+        console.log("New converasation being created");
+        return [createNewConversation()];
+      }
       const selectedUserId = selectedPartner?.otherUser ? selectedPartner.otherUser.id : selectedPartner.id;
       console.log("selectedUserId:asdfasdfasfasddfasd ", selectedPartner);
       const updatedConversation = {
@@ -420,7 +422,7 @@ export default function ChatBox() {
         },
         lastMessage,
         updatedAt: timestamp,
-        accepted: selectedPartner.accepted,
+        accepted: selectedPartner?.role=="USER"?false:selectedPartner.accepted,
       };
       console.log("updatedConversation: ", updatedConversation);
 

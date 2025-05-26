@@ -79,7 +79,7 @@ export default function DownloadBill({ params }) {
   useEffect(() => {
     const fetchFormatDetails = async () => {
       try {
-        const res = await fetch('/api/billFormat');
+        const res = await fetch('/api/billFormat/');
         if (res.ok) {
           const data = await res.json();
           setFormDetails({
