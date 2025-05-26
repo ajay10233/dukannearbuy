@@ -175,7 +175,7 @@ export default function TopSeller() {
                         {/* Badge */}
                         {seller?.notes && (
                           <div
-                            className={`absolute top-2 right-2 py-1 px-4 text-white text-sm rounded-lg animate-bounce
+                            className={`absolute top-2 right-2 py-1 px-4 text-white text-sm rounded-lg animate-bounce rounded-tl-2xl rounded-bl-sm rounded-br-2xl rounded-tr-sm
                             ${seller?.notes === 'On Sale' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
                             ${seller?.notes === 'New Shop opening' ? 'bg-gradient-to-br from-blue-500 via-green-500 to-teal-500' : ''}
                             ${seller?.notes === 'Festive Offer' ? 'bg-gradient-to-tl from-orange-500 via-yellow-500 to-red-500' : ''}

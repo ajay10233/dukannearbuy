@@ -33,6 +33,7 @@ export default function DownloadBill({ params }) {
       setLoading(false);
     }
   }
+  
   useEffect(() => {
     if (!params.id) return;
     fetchBill();

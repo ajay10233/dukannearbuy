@@ -821,7 +821,7 @@ export default function EditFormatComponent() {
                                             {items.map((item, i) => `${item.particulars}(${item.qty})`).join(', ')}
                                         </p>
                                     </div>
-                                ) : (
+                                ) : user?.role === 'INSTITUTION' ? (
                                     <div className="mb-2 text-xs text-slate-700">
                                         <div className="mb-1">
                                             <span className="font-semibold">Treatment: </span>
@@ -832,6 +832,8 @@ export default function EditFormatComponent() {
                                             {items.map(item => item.others).join(', ')}
                                         </div>
                                     </div>
+                                ) : (
+                                    <div className="text-xs text-slate-500 italic">No details available for this role.</div>
                                 )}
 
                                 {/* Row 3 */}
