@@ -44,56 +44,53 @@ export default function Bill() {
     fetchBills();
   }, []);
 
-  
-  const toggleFavorite = async (billId, isCurrentlyFav) => {
-    try {
-      const method = isCurrentlyFav ? 'DELETE' : 'POST';
-  
+
+    
+const toggleFavorite = async (billId, isCurrentlyFav) => {
+  try {
+    if (isCurrentlyFav) {
+      const favorite = favorites.find(item => item.billId === billId);
+      if (!favorite) return;
+
       const res = await fetch('/api/favorite-bills', {
-        method,
+        method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-        billId,
-        userId: session?.user?.id, 
-      }),
+          favoriteBillId: favorite.id,
+        }),
       });
-  
+
       if (res.ok) {
-        setFavorites((prev) => {
-          if (method === 'POST') {
-            return [...prev, { billId }];
-          } else {
-            return prev.filter(item => item.billId !== billId);
-          }
-        });
+        setFavorites((prev) => prev.filter(item => item.billId !== billId));
       } else {
-        console.error("Toggle failed");
+        console.error("Unfavorite failed");
       }
-    } catch (error) {
-      console.error("Toggle error:", error);
+    } else {
+      const res = await fetch('/api/favorite-bills', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          billId,
+          userId: session?.user?.id,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setFavorites((prev) => [...prev, data.favorite]);
+      } else {
+        console.error("Favorite failed");
+      }
     }
-  };
-    
+  } catch (error) {
+    console.error("Toggle error:", error);
+  }
+};
 
-
-//   const filteredBills = bills.filter((bill) => {
-//   const matchesSearch = bill.institution?.firmName.toLowerCase().includes(search.toLowerCase());
-
-//   const isDateValid =
-//     (!dateFrom || new Date(bill.createdAt) >= new Date(dateFrom)) &&
-//     (!dateTo || new Date(bill.createdAt) <= new Date(dateTo));
-
-//   const isTypeValid = !typeFilter || bill.type === typeFilter;
-
-//   const isFavValid =
-//     favoriteFilter === null ||
-//     (favoriteFilter === true && bill.favorited) ||
-//     (favoriteFilter === false && !bill.favorited);
-
-//   return matchesSearch && isDateValid && isTypeValid && isFavValid;
-// });
 
   const filteredBills = bills.filter((bill) => {
   const firmName = bill.institution?.firmName || bill.institution?.firmName || '';

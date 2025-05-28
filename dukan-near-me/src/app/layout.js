@@ -36,7 +36,7 @@ const roboto = Roboto({
 
 export const metadata = {
   title: "NearBuyDukan",
-  description: "Connecting Buyers and Sellers",
+  description: "Find nearest shops and medical institutes with best ratings",
   icons: {
     icon: '/favicon.ico',
   },

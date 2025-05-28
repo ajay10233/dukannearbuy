@@ -3,6 +3,8 @@
 import { Heart, Calendar, ArrowDownToLine, MoreVertical } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
+
 
 export default function Report() {
   const [reports, setReports] = useState([]);
@@ -18,6 +20,7 @@ export default function Report() {
   const [selectedAction, setSelectedAction] = useState(''); 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [favorites, setFavorites] = useState([]);
+    const { data: session } = useSession();
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -38,66 +41,47 @@ export default function Report() {
   
     fetchReports();
   }, []);  
-
-  const toggleFavorite = async (billId, isCurrentlyFav) => {
-    try {
-      const method = isCurrentlyFav ? 'DELETE' : 'POST';
   
+
+const toggleFavorite = async (billId, isCurrentlyFav) => {
+  try {
+    if (isCurrentlyFav) {
+      // Delete favorite
       const res = await fetch('/api/favorite-bills', {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        // body: JSON.stringify({ billId }),
-        body: JSON.stringify({
-        billId,
-        userId: session?.user?.id, 
-      }),
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ billId, userId: session?.user?.id }),
       });
-  
       if (res.ok) {
-        setFavorites((prev) => {
-          if (method === 'POST') {
-            return [...prev, { billId }];
-          } else {
-            return prev.filter(item => item.billId !== billId);
-          }
-        });
-      } else {
-        console.error("Toggle failed");
+        setFavorites(prev => prev.filter(item => item.billId !== billId));
       }
-    } catch (error) {
-      console.error("Toggle error:", error);
-    }
-  };
+    } else {
+      // Add favorite
+      const res = await fetch('/api/favorite-bills', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ billId, userId: session?.user?.id }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.message === "Already favorited") {
 
-  // const toggleFavorite = (id) => {
-  //   const updated = reports.map((report) => {
-  //     if (report.id === id) {
-  //       const isNowFav = !report.favorited;
-  //       const expiry = isNowFav ? new Date(Date.now() + 24 * 60 * 60 * 1000) : null;
-  //       return {
-  //         ...report,
-  //         favorited: isNowFav,
-  //         expiry: expiry?.toISOString() || null,
-  //       };
-  //     }
-  //     return report;
-  //   });
-  
-  //   setReports(updated);
-  
-  //   const saveToStorage = {};
-  //   updated.forEach((report) => {
-  //     if (report.expiry) {
-  //       saveToStorage[report.id] = {
-  //         expiry: report.expiry,
-  //       };
-  //     }
-  //   });
-  
-  //   localStorage.setItem('favReports', JSON.stringify(saveToStorage));
-  // };  
+          setFavorites(prev => {
+            if (!prev.some(fav => fav.billId === billId)) {
+              return [...prev, { billId, id: data.favorite.id }];
+            }
+            return prev;
+          });
+        } else {
+          setFavorites(prev => [...prev, { billId, id: data.favorite.id }]);
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Toggle error:", error);
+  }
+};
+
 
 const filteredReports = reports.filter((report) => {
   const isFavorite = favoriteFilter === null || 
