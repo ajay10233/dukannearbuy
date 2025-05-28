@@ -68,7 +68,7 @@ export async function GET(req) {
     { houseNumber: { contains: word, mode: 'insensitive' } },
     { street: { contains: word, mode: 'insensitive' } },
     { buildingName: { contains: word, mode: 'insensitive' } },
-    { username: { contains: word, mode: 'insensitive' } }, // <-- added username filter
+    { username: { contains: word, mode: 'insensitive' } },
   ])
 
   let locationFilter = {}

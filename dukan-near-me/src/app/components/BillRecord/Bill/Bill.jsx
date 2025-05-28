@@ -251,7 +251,7 @@ export default function Bill() {
                 </li>
                 <li className='hidden md:block'>₹{bill?.totalAmount}</li>
                 <li className="flex justify-center items-center">
-                  <Link href={`download-bill/${bill.id}`} className='hidden md:flex text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out'>
+                  <Link href={`download-bill/${bill.id}?institutionId=${bill.institution.id}`} className='hidden md:flex text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out'>
                       <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>
                     </Link>
                     {/* Show icon based on selected dropdown option */}
@@ -259,7 +259,7 @@ export default function Bill() {
                     {selectedAction === 'favorite' ? (
                       <Heart size={20} strokeWidth={1.5} stroke="red" fill={(favorites || []).some(fav => fav.billId === bill.id) ? 'red' : 'transparent'}  className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110" onClick={() => toggleFavorite(bill.id, favorites.some(fav => fav.billId === bill.id))} />
                     ) : selectedAction === 'download' ? (
-                          <Link href={`download-bill/${bill.id}`} className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
+                          <Link href={`download-bill/${bill.id}?institutionId=${bill.institution.id}`} className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
                           <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>
                       </Link>
                     ) : null}

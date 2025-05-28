@@ -7,7 +7,8 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-export default function DownloadBill({ params }) {
+export default function DownloadBill({ params, searchParams }) {
+  const institutionId = searchParams?.institutionId;
   const { data: session } = useSession();
   const [bill, setBill] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -74,11 +75,15 @@ export default function DownloadBill({ params }) {
     }
   };
 
-    // Fetch form/bill format details
+  // Fetch form/bill format details
   useEffect(() => {
     const fetchFormatDetails = async () => {
       try {
-        const res = await fetch('/api/billFormat/');
+        const endpoint = institutionId
+          ? `/api/billFormat?institutionId=${institutionId}`
+          : `/api/billFormat/`;
+
+        const res = await axios.get(endpoint);
         if (res.ok) {
           const data = await res.json();
           setFormDetails({
@@ -101,31 +106,31 @@ export default function DownloadBill({ params }) {
 
     fetchFormatDetails();
   }, []);
-  
+
 
   useEffect(() => {
     const fetchUserDetails = async () => {
-            try {
-                const { data } = await axios.get('/api/users/me');
-                console.log(data);
-                setUser(data);
-            } catch (error) {
-                console.error('Failed to fetch user details:', error);
-            }
-        };
+      try {
+        const { data } = await axios.get('/api/users/me');
+        console.log(data);
+        setUser(data);
+      } catch (error) {
+        console.error('Failed to fetch user details:', error);
+      }
+    };
 
-  fetchUserDetails();
-}, [])
+    fetchUserDetails();
+  }, [])
 
-const itemsSubtotal = items.reduce((acc, item) => acc + (item.total || 0), 0);
+  const itemsSubtotal = items.reduce((acc, item) => acc + (item.total || 0), 0);
 
-    const cgstPercent = formDetails?.cgst || 0;
-    const sgstPercent = formDetails?.sgst || 0;
+  const cgstPercent = formDetails?.cgst || 0;
+  const sgstPercent = formDetails?.sgst || 0;
 
-    const cgstAmount = (itemsSubtotal * cgstPercent) / 100;
-    const sgstAmount = (itemsSubtotal * sgstPercent) / 100;
+  const cgstAmount = (itemsSubtotal * cgstPercent) / 100;
+  const sgstAmount = (itemsSubtotal * sgstPercent) / 100;
 
-    const totalAmount = itemsSubtotal + cgstAmount + sgstAmount;
+  const totalAmount = itemsSubtotal + cgstAmount + sgstAmount;
 
   const handlePrint = () => {
     window.print();
@@ -194,13 +199,13 @@ const itemsSubtotal = items.reduce((acc, item) => acc + (item.total || 0), 0);
                 <tr className="text-xs md:text-sm print:text-sm bg-[#CFEBF9]">
                   <th className="border p-1 md:p-2 print:p-2">S.NO</th>
                   <th className="border p-1 md:p-2 print:p-2">
-                      {user?.role === 'INSTITUTION' ? 'CHIEF COMPLAINT' : 'PARTICULARS'}
+                    {user?.role === 'INSTITUTION' ? 'CHIEF COMPLAINT' : 'PARTICULARS'}
                   </th>
                   <th className="border p-1 md:p-2 print:p-2">
-                      {user?.role === 'INSTITUTION' ? 'TREATMENT' : 'QUANTITY'}
+                    {user?.role === 'INSTITUTION' ? 'TREATMENT' : 'QUANTITY'}
                   </th>
                   <th className="border p-1 md:p-2 print:p-2">
-                      {user?.role === 'INSTITUTION' ? 'OTHERS' : 'RATE'}
+                    {user?.role === 'INSTITUTION' ? 'OTHERS' : 'RATE'}
                   </th>
                   <th className="border p-1 md:p-2 print:p-2">AMOUNT</th>
                 </tr>
@@ -214,7 +219,7 @@ const itemsSubtotal = items.reduce((acc, item) => acc + (item.total || 0), 0);
                         type="text"
                         readOnly
                         tabIndex={-1}
-  value={item?.name || ''}
+                        value={item?.name || ''}
                         onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
                         className="w-full border-none outline-none"
                       />
@@ -228,57 +233,57 @@ const itemsSubtotal = items.reduce((acc, item) => acc + (item.total || 0), 0);
                           value={item?.treatment || ''}
                           onChange={(e) => handleItemChange(index, 'treatment', e.target.value)}
                           className="w-full border-none outline-none"
-                                />
+                        />
 
-                            ) : ( 
-                                    
-                                <input
-                                    readOnly
-                                    tabIndex={-1}
-                                    type="number"
-                                    value={item?.quantity ?? ''} 
-                                    onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
-                                    className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
-                                    />
-                            )}
+                      ) : (
+
+                        <input
+                          readOnly
+                          tabIndex={-1}
+                          type="number"
+                          value={item?.quantity ?? ''}
+                          onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
+                          className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
+                        />
+                      )}
                     </td>
 
                     <td className="border p-1 md:p-2 print:p-2">
-                        {user?.role === 'INSTITUTION' ? (
-                            <input
-                                type="text"
-                                value={item.others || item.price || ''}
-                                readOnly
-                                tabIndex={-1}
-                                onChange={(e) => handleItemChange(index, 'others', e.target.value)}
-                                className="w-full border-none outline-none"
-                            />
-                        ) : (
-                            <input
-                                readOnly
-                                type="number" tabIndex={-1}
-                                value={item?.price || '' }
-                                onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
-                                className="w-full border-none outline-none"
-                            />
-                        )}
+                      {user?.role === 'INSTITUTION' ? (
+                        <input
+                          type="text"
+                          value={item.others || item.price || ''}
+                          readOnly
+                          tabIndex={-1}
+                          onChange={(e) => handleItemChange(index, 'others', e.target.value)}
+                          className="w-full border-none outline-none"
+                        />
+                      ) : (
+                        <input
+                          readOnly
+                          type="number" tabIndex={-1}
+                          value={item?.price || ''}
+                          onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
+                          className="w-full border-none outline-none"
+                        />
+                      )}
                     </td>
 
-                        <td className="border p-1 md:p-2 text-center print:p-2">
-                            {user?.role === 'INSTITUTION' ? (
-                                <input
-                                    type="number"
-                                    readOnly
-                                    min="0"
-                                    tabIndex={-1}
-                                    value={item.amount || ''}
-                                    onChange={(e) => handleItemChange(index, 'amount', e.target.value)}
-                                    className="w-full border-none outline-none text-center"
-                                />
-                            ) : (
-                                item?.total?.toFixed(2)
-                            )}
-                        </td>
+                    <td className="border p-1 md:p-2 text-center print:p-2">
+                      {user?.role === 'INSTITUTION' ? (
+                        <input
+                          type="number"
+                          readOnly
+                          min="0"
+                          tabIndex={-1}
+                          value={item.amount || ''}
+                          onChange={(e) => handleItemChange(index, 'amount', e.target.value)}
+                          className="w-full border-none outline-none text-center"
+                        />
+                      ) : (
+                        item?.total?.toFixed(2)
+                      )}
+                    </td>
                   </tr>
                 ))}
                 <tr>
@@ -310,24 +315,24 @@ const itemsSubtotal = items.reduce((acc, item) => acc + (item.total || 0), 0);
 
         {/* Total Amount */}
         <div className="text-sm md:text-lg print:text-lg text-right font-bold">Total Amount: ₹{totalAmount.toFixed(2)}</div>
-          {/* proprietorSign */}
-        
-            {/* {formDetails?.proprietorSign && ( */}
-            {formDetails?.proprietorSign && typeof formDetails.proprietorSign === 'string' && formDetails.proprietorSign.length > 0 && (
+        {/* proprietorSign */}
 
-              <div className="flex justify-end mt-4">
-                <div className="p-2 w-full max-w-[100px]">
-                  <img
-                    src={formDetails?.proprietorSign || ''}
-                    alt="Proprietor Signature"
-                    width={100}
-                    height={100}
-                    className="object-contain"
-                    // priority
-                  />
-                </div>
-              </div>
-            )}
+        {/* {formDetails?.proprietorSign && ( */}
+        {formDetails?.proprietorSign && typeof formDetails.proprietorSign === 'string' && formDetails.proprietorSign.length > 0 && (
+
+          <div className="flex justify-end mt-4">
+            <div className="p-2 w-full max-w-[100px]">
+              <img
+                src={formDetails?.proprietorSign || ''}
+                alt="Proprietor Signature"
+                width={100}
+                height={100}
+                className="object-contain"
+              // priority
+              />
+            </div>
+          </div>
+        )}
 
         {/* File Preview */}
         {bill?.fileUrl && (
@@ -335,11 +340,11 @@ const itemsSubtotal = items.reduce((acc, item) => acc + (item.total || 0), 0);
             <h2 className="text-lg font-bold mb-2">File Attachment</h2>
             {bill?.fileType?.startsWith("image/") ? (
               <div className="relative w-40 h-40">
-                  <Image
-                    src={bill.fileUrl}
-                    alt="Attached Image" fill 
-                    className="w-40 h-40 max-w-md mx-auto border rounded shadow" priority
-                  />
+                <Image
+                  src={bill.fileUrl}
+                  alt="Attached Image" fill
+                  className="w-40 h-40 max-w-md mx-auto border rounded shadow" priority
+                />
               </div>
             ) : bill?.fileType === "application/pdf" ? (
               <iframe

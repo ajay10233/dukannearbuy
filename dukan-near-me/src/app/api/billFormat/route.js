@@ -12,9 +12,17 @@ export async function GET(req) {
             return NextResponse.json({ error: 'Unauthorized: Only institutions can fetch bill formats' }, { status: 401 });
         }
 
+        let institutionId = session.user.id;
+        const { searchParams } = new URL(req.url);
+        const searchQuery = searchParams.get('institutionId') || "";
+
+        if (searchQuery) {
+            institutionId = searchQuery;
+        }
+
         const billFormat = await prisma.billFormat.findUnique({
             where: {
-                institutionId: session.user.id,
+                institutionId: institutionId,
             },
             include: {
                 institutionRelation: {
@@ -42,7 +50,6 @@ export async function GET(req) {
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
-
 
 
 export async function POST(req) {
