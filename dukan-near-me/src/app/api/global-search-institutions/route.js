@@ -71,8 +71,8 @@ export async function GET(req) {
     { username: { contains: word, mode: 'insensitive' } },
   ])
 
-  let locationFilter = {}
   const useRange = rangeParam !== 'all' && !isNaN(lat) && !isNaN(lon) && !isNaN(parseFloat(rangeParam))
+  let locationFilter = {}
 
   if (useRange) {
     const range = parseFloat(rangeParam)
@@ -86,8 +86,10 @@ export async function GET(req) {
   const results = await prisma.user.findMany({
     where: {
       role: { in: ['INSTITUTION', 'SHOP_OWNER'] },
-      OR: conditions,
-      ...locationFilter,
+      AND: [
+        { OR: conditions },
+        ...(useRange ? [locationFilter] : []),
+      ],
     },
     select: {
       id: true,
@@ -170,4 +172,3 @@ export async function GET(req) {
 
   return NextResponse.json({ results, suggestions })
 }
-
