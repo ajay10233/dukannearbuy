@@ -5,13 +5,13 @@ export default function RolesCard() {
   const profiles = [
     {
       icon: <UsersRound size={50} strokeWidth={1.3}/>,
-      name: "Customers",
+      name: "Customer",
       desc: "I want to buy the products",
       role: "USER",
     },
     {
       icon: <Stethoscope size={50} strokeWidth={1.3}/>,
-      name: "Medical institutes",
+      name: "Medical institute",
       desc: "Need a medical help",
       role: "INSTITUTION",
     },

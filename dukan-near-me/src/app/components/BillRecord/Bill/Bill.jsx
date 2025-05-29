@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSession } from "next-auth/react";
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 export default function Bill() {
   const [bills, setBills] = useState([]);
@@ -44,31 +45,93 @@ export default function Bill() {
     fetchBills();
   }, []);
 
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (!session?.user?.id) return;
+      try {
+        const res = await axios.get(`/api/favorite-bills?userId=${session.user.id}`);
+        setFavorites(res.data); 
+      } catch (err) {
+        console.error("Failed to fetch favorites", err);
+      }
+    };
 
+    fetchFavorites();
+  }, [session]);
+  
+  const isFavorited = (billId) => {
+    return favorites.some(fav => fav.billId === billId);
+  };
     
-const toggleFavorite = async (billId, isCurrentlyFav) => {
-  try {
-    if (isCurrentlyFav) {
-      const favorite = favorites.find(item => item.billId === billId);
-      if (!favorite) return;
+// const toggleFavorite = async (billId, isCurrentlyFav) => {
+//   try {
+//     if (isCurrentlyFav) {
+//       const favorite = favorites.find(item => item.billId === billId);
+//       if (!favorite) return;
 
-      const res = await fetch('/api/favorite-bills', {
+//       const res = await fetch('/api/favorite-bills', {
+//         method: 'DELETE',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({
+//           favoriteBillId: favorite.id,
+//         }),
+//       });
+
+//       if (res.ok) {
+//         setFavorites((prev) => prev.filter(item => item.billId !== billId));
+//       } else {
+//         console.error("Unfavorite failed");
+//       }
+//     } else {
+//       const res = await fetch('/api/favorite-bills', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({
+//           billId,
+//           userId: session?.user?.id,
+//         }),
+//       });
+
+//       if (res.ok) {
+//         const data = await res.json();
+//         setFavorites((prev) => [...prev, data.favorite]);
+//       } else {
+//         console.error("Favorite failed");
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Toggle error:", error);
+//   }
+// };
+
+  const toggleFavorite = async (billId) => {
+  const favorite = favorites.find(fav => fav.billId === billId);
+
+  if (favorite) {
+    // Unfavorite
+    try {
+      const res = await fetch(`/api/favorite-bills?favoriteBillId=${favorite.id}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          favoriteBillId: favorite.id,
-        }),
       });
 
       if (res.ok) {
-        setFavorites((prev) => prev.filter(item => item.billId !== billId));
+        setFavorites(prev => prev.filter(fav => fav.billId !== billId));
+        toast.success("Removed from favorites");
       } else {
-        console.error("Unfavorite failed");
+        toast.error("Failed to remove favorite");
       }
-    } else {
-      const res = await fetch('/api/favorite-bills', {
+    } catch (err) {
+      console.error("Error not favoriting:", err);
+      toast.error("An error occurred");
+    }
+  } else {
+    // Favorite
+    try {
+      const res = await fetch(`/api/favorite-bills`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -81,15 +144,17 @@ const toggleFavorite = async (billId, isCurrentlyFav) => {
 
       if (res.ok) {
         const data = await res.json();
-        setFavorites((prev) => [...prev, data.favorite]);
+        setFavorites(prev => [...prev, data]);
+        toast.success("Added to favorites");
       } else {
-        console.error("Favorite failed");
+        toast.error("Failed to favorite");
       }
+    } catch (err) {
+      console.error("Error favoriting:", err);
+      toast.error("An error occurred");
     }
-  } catch (error) {
-    console.error("Toggle error:", error);
   }
-};
+  };
 
 
   const filteredBills = bills.filter((bill) => {
@@ -231,9 +296,11 @@ const toggleFavorite = async (billId, isCurrentlyFav) => {
                       size={20}
                       strokeWidth={1.5}
                       stroke="red"
-                      fill={(favorites || []).some(fav => fav.billId === bill.id) ? 'red' : 'transparent'}
+                      fill={isFavorited(bill.id) ? "#ec0909" : "none"}
+
+                      // fill={(favorites || []).some(fav => fav.billId === bill.id) ? 'red' : 'transparent'}
                       className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110"
-                      // onClick={() => removeFromFavorites(bill.id)}
+                      onClick={() => toggleFavorite(bill.id)}
                     />
                   </button>
                 </li>
@@ -254,7 +321,7 @@ const toggleFavorite = async (billId, isCurrentlyFav) => {
                     {/* Show icon based on selected dropdown option */}
                     <span className='md:hidden flex justify-center items-center'>
                     {selectedAction === 'favorite' ? (
-                      <Heart size={20} strokeWidth={1.5} stroke="red" fill={(favorites || []).some(fav => fav.billId === bill.id) ? 'red' : 'transparent'}  className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110" onClick={() => toggleFavorite(bill.id, favorites.some(fav => fav.billId === bill.id))} />
+                      <Heart size={20} strokeWidth={1.5} stroke="red" fill={isFavorited(bill.id) ? "#ec0909" : "none"}  className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110" onClick={() => toggleFavorite(bill.id)} />
                     ) : selectedAction === 'download' ? (
                           <Link href={`download-bill/${bill.id}?institutionId=${bill.institution.id}`} className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
                           <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>

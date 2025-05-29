@@ -250,7 +250,7 @@ export default function EditProfilePage() {
           {/* Detailed Address Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="font-medium text-gray-700">House Number</label>
+              <label className="font-medium text-gray-700">Shop Number</label>
               <input
                 name="houseNumber"
                 value={form?.address?.houseNumber || ""}

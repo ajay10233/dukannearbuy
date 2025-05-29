@@ -22,7 +22,7 @@ export default function DownloadBill({ params, searchParams }) {
     try {
       const res = await axios.get(`/api/bill/${params.id}`);
       if (!res?.data.success) {
-        return toast.error(res.data.error || "Failed to fetch billasdfas");
+        return toast.error(res.data.error || "Failed to fetch bill");
       }
       const data = res.data;
       setBill(data.bill);
@@ -85,8 +85,10 @@ export default function DownloadBill({ params, searchParams }) {
           : `/api/billFormat/`;
 
         const res = await axios.get(endpoint);
-        if (res.ok) {
-          const data = await res.json();
+        // if (res.ok) {
+          //   const data = await res.json();
+        const data = res.data;
+
           setFormDetails({
             firmName: data.institutionRelation?.firmName || '',
             address: data.institutionRelation?.shopAddress || '',
@@ -99,7 +101,8 @@ export default function DownloadBill({ params, searchParams }) {
             terms: data.extraText?.split('\n')[0] || '',
             updates: data.extraText?.split('\n')[1] || '',
           });
-        }
+
+        // }
       } catch (error) {
         console.error("Error fetching format details:", error);
       }
@@ -155,6 +158,16 @@ export default function DownloadBill({ params, searchParams }) {
             <h1 className="text-lg font-bold text-[#0D6A9C] capitalize">{bill?.institution?.firmName}</h1>
             <p>{`${bill?.institution.houseNumber}, ${bill?.institution.address?.buildingName ? bill?.institution.buildingName + ', ' : ''}${bill?.institution.street}, ${bill?.institution.landmark}, ${bill?.institution.city}, ${bill?.institution.state} - ${bill?.institution.zipCode}, ${bill?.institution.country}`}</p>
             <p>Mobile: {bill?.institution?.mobileNumber}</p>
+            {formDetails?.email ? (
+                <p>Email: <span className='text-gray-600'>{formDetails?.email}</span></p>
+                ) : (
+                <p>Email: N/A</p>
+            )}
+            {formDetails?.gstNo ? (
+                <p>GST No: <span className='text-gray-600'>{formDetails?.gstNo}</span> </p>
+                    ) : (
+                <p>GST No: N/A</p>
+            )}
           </div>
           <div className="p-2">
             <h2 className="font-bold mb-1">RECEIVER DETAILS</h2>
@@ -169,7 +182,9 @@ export default function DownloadBill({ params, searchParams }) {
                 <span className="font-medium">Address:&nbsp;</span>
                 {bill?.user ? (
                   <span className="w-full text-sm text-gray-600 outline-none">
-                    {bill?.user?.houseNumber}, {bill?.user?.street}, {bill?.user?.buildingName}, {bill?.user?.city}, {bill?.user?.state}, {bill?.user?.zipCode}
+                    {(bill?.user?.houseNumber || bill?.user?.street || bill?.user?.buildingName || bill?.user?.city || bill?.user?.state || bill?.user?.zipCode)
+                      ? `${bill?.user?.houseNumber}, ${bill?.user?.street}, ${bill?.user?.buildingName}, ${bill?.user?.city}, ${bill?.user?.state}, ${bill?.user?.zipCode}`
+                      : "N/A"}
                   </span>
                 ) : (
                   <span className="text-sm text-gray-500">N/A</span>

@@ -2,8 +2,10 @@
 
 import { Heart, Calendar, ArrowDownToLine, MoreVertical } from 'lucide-react';
 import Link from 'next/link';
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import toast from 'react-hot-toast';
 
 
 export default function Report() {
@@ -41,47 +43,111 @@ export default function Report() {
   
     fetchReports();
   }, []);  
-  
 
-const toggleFavorite = async (billId, isCurrentlyFav) => {
-  try {
-    if (isCurrentlyFav) {
-      // Delete favorite
-      const res = await fetch('/api/favorite-bills', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ billId, userId: session?.user?.id }),
-      });
-      if (res.ok) {
-        setFavorites(prev => prev.filter(item => item.billId !== billId));
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (!session?.user?.id) return;
+      try {
+        const res = await axios.get(`/api/favorite-bills?userId=${session.user.id}`);
+        setFavorites(res.data); 
+      } catch (err) {
+        console.error("Failed to fetch favorites", err);
       }
-    } else {
-      // Add favorite
-      const res = await fetch('/api/favorite-bills', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ billId, userId: session?.user?.id }),
+    };
+
+    fetchFavorites();
+  }, [session]);
+
+  const isFavorited = (billId) => {
+    return favorites.some(fav => fav.billId === billId);
+  };
+  
+// const toggleFavorite = async (billId, isCurrentlyFav) => {
+//   try {
+//     if (isCurrentlyFav) {
+//       // Delete favorite
+//       const res = await fetch('/api/favorite-bills', {
+//         method: 'DELETE',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ billId, userId: session?.user?.id }),
+//       });
+//       if (res.ok) {
+//         setFavorites(prev => prev.filter(item => item.billId !== billId));
+//       }
+//     } else {
+//       // Add favorite
+//       const res = await fetch('/api/favorite-bills', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ billId, userId: session?.user?.id }),
+//       });
+//       if (res.ok) {
+//         const data = await res.json();
+//         if (data.message === "Already favorited") {
+
+//           setFavorites(prev => {
+//             if (!prev.some(fav => fav.billId === billId)) {
+//               return [...prev, { billId, id: data.favorite.id }];
+//             }
+//             return prev;
+//           });
+//         } else {
+//           setFavorites(prev => [...prev, { billId, id: data.favorite.id }]);
+//         }
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Toggle error:", error);
+//   }
+// };
+
+   const toggleFavorite = async (billId) => {
+  const favorite = favorites.find(fav => fav.billId === billId);
+
+  if (favorite) {
+    // Unfavorite
+    try {
+      const res = await fetch(`/api/favorite-bills?favoriteBillId=${favorite.id}`, {
+        method: 'DELETE',
       });
+
+      if (res.ok) {
+        setFavorites(prev => prev.filter(fav => fav.billId !== billId));
+        toast.success("Removed from favorites");
+      } else {
+        toast.error("Failed to remove favorite");
+      }
+    } catch (err) {
+      console.error("Error not favoriting:", err);
+      toast.error("An error occurred");
+    }
+  } else {
+    // Favorite
+    try {
+      const res = await fetch(`/api/favorite-bills`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          billId,
+          userId: session?.user?.id,
+        }),
+      });
+
       if (res.ok) {
         const data = await res.json();
-        if (data.message === "Already favorited") {
-
-          setFavorites(prev => {
-            if (!prev.some(fav => fav.billId === billId)) {
-              return [...prev, { billId, id: data.favorite.id }];
-            }
-            return prev;
-          });
-        } else {
-          setFavorites(prev => [...prev, { billId, id: data.favorite.id }]);
-        }
+        setFavorites(prev => [...prev, data]);
+        toast.success("Added to favorites");
+      } else {
+        toast.error("Failed to favorite");
       }
+    } catch (err) {
+      console.error("Error favoriting:", err);
+      toast.error("An error occurred");
     }
-  } catch (error) {
-    console.error("Toggle error:", error);
   }
-};
-
+  };
 
 const filteredReports = reports.filter((report) => {
   const isFavorite = favoriteFilter === null || 
@@ -164,7 +230,7 @@ const filteredReports = reports.filter((report) => {
               </div>
             )}
           </li>
-          <li className="hidden md:flex justify-center items-center">ID</li>
+          <li className="hidden md:flex justify-center items-center">Invoice No.</li>
 
           <li className="flex justify-center items-center relative">
             Date
@@ -238,8 +304,10 @@ const filteredReports = reports.filter((report) => {
                       size={20}
                       strokeWidth={1.5}
                       stroke="red"
-                      fill={favorites.some(fav => fav.billId === report.id) ? 'red' : 'transparent'}
+                      fill={isFavorited(report.id) ? "#ec0909" : "none"}
+                      // fill={favorites.some(fav => fav.billId === report.id) ? 'red' : 'transparent'}
                       className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110"
+                      onClick={() => toggleFavorite(report.id)}
                     />
                   </button>
                 </li>
