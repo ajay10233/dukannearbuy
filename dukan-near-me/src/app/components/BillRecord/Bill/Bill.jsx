@@ -172,8 +172,9 @@ export default function Bill() {
 
   const isFavValid =
     favoriteFilter === null ||
-    (favoriteFilter === true && bill.favorited) ||
-    (favoriteFilter === false && !bill.favorited);
+    (favoriteFilter === true && isFavorited(bill.id)) ||
+    (favoriteFilter === false && !isFavorited(bill.id));
+
 
   return matchesSearch && isDateValid && isRoleValid && isFavValid;
 });

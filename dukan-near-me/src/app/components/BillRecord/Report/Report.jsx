@@ -205,7 +205,7 @@ const filteredReports = reports.filter((report) => {
                     type="radio"
                     checked={favoriteFilter === null}
                     onChange={() => setFavoriteFilter(null)}
-                    className="mr-1"
+                    className="mr-1 cursor-pointer"
                   />
                   All
                 </label>
@@ -214,7 +214,7 @@ const filteredReports = reports.filter((report) => {
                     type="radio"
                     checked={favoriteFilter === true}
                     onChange={() => setFavoriteFilter(true)}
-                    className="mr-1"
+                    className="mr-1 cursor-pointer"
                   />
                   Favourites
                 </label>
@@ -223,7 +223,7 @@ const filteredReports = reports.filter((report) => {
                     type="radio"
                     checked={favoriteFilter === false}
                     onChange={() => setFavoriteFilter(false)}
-                    className="mr-1"
+                    className="mr-1 cursor-pointer"
                   />
                   Others
                 </label>
@@ -279,12 +279,12 @@ const filteredReports = reports.filter((report) => {
             <div className={`absolute top-6 right-0 bg-white w-32 text-sm border ${isDropdownOpen ? 'block' : 'hidden'} md:hidden border-gray-300 rounded-md shadow-md p-2`}>
               <button
                 onClick={() => handleDropdownChange('favorite')}
-                className="w-full text-left p-2 hover:bg-gray-100">
+                className="w-full text-left p-2 transition-all duration-300 ease-in-out hover:bg-gray-100 cursor-pointer">
                 Favorite
               </button>
               <button
                 onClick={() => handleDropdownChange('download')}
-                className="w-full text-left p-2 hover:bg-gray-100">
+                className="w-full text-left p-2 transition-all duration-300 ease-in-out hover:bg-gray-100 cursor-pointer">
                 Download
               </button>
             </div>
@@ -326,7 +326,7 @@ const filteredReports = reports.filter((report) => {
                   {/* Show icon based on selected dropdown option */}
                   <span className='md:hidden flex justify-center items-center'>
                   {selectedAction === 'favorite' ? (
-                    <Heart size={20} strokeWidth={1.5} stroke="red"  fill={favorites.some(fav => fav.billId === report.id) ? 'red' : 'transparent'} className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110" onClick={() => toggleFavorite(report.id, favorites.some(fav => fav.billId === bill.id))} />
+                    <Heart size={20} strokeWidth={1.5} stroke="red" fill={isFavorited(report.id) ? "#ec0909" : "none"} className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110" onClick={() => toggleFavorite(report.id)} />
                   ) : selectedAction === 'download' ? (
                         <Link href={`download-bill/${report.id}`} className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
                         <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>

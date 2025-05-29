@@ -126,6 +126,26 @@ export default function DownloadBill({ params, searchParams }) {
     fetchUserDetails();
   }, [])
 
+  const handleItemChange = (index, key, value) => {
+    const newItems = [...items];
+    
+    if (key === 'qty' || key === 'rate') {
+        newItems[index][key] = parseFloat(value) || 0;
+        // For shop_owner, update amount automatically
+        if (user?.role !== 'INSTITUTION') {
+        newItems[index].amount = newItems[index].qty * newItems[index].rate;
+        }
+    } else if (key === 'amount') {
+        // For institution, allow manual amount input
+        newItems[index][key] = parseFloat(value) || 0;
+    } else {
+        newItems[index][key] = value;
+    }
+    
+    setItems(newItems);
+  };
+
+
   const itemsSubtotal = items.reduce((acc, item) => acc + (item.total || 0), 0);
 
   const cgstPercent = formDetails?.cgst || 0;
@@ -215,13 +235,13 @@ export default function DownloadBill({ params, searchParams }) {
                 <tr className="text-xs md:text-sm print:text-sm bg-[#CFEBF9]">
                   <th className="border p-1 md:p-2 print:p-2">S.NO</th>
                   <th className="border p-1 md:p-2 print:p-2">
-                    {user?.role === 'INSTITUTION' ? 'CHIEF COMPLAINT' : 'PARTICULARS'}
+                    {bill?.institution?.role === 'INSTITUTION' ? 'CHIEF COMPLAINT' : 'PARTICULARS'}
                   </th>
                   <th className="border p-1 md:p-2 print:p-2">
-                    {user?.role === 'INSTITUTION' ? 'TREATMENT' : 'QUANTITY'}
+                    {bill?.institution?.role === 'INSTITUTION' ? 'TREATMENT' : 'QUANTITY'}
                   </th>
                   <th className="border p-1 md:p-2 print:p-2">
-                    {user?.role === 'INSTITUTION' ? 'OTHERS' : 'RATE'}
+                    {bill?.institution?.role === 'INSTITUTION' ? 'OTHERS' : 'RATE'}
                   </th>
                   <th className="border p-1 md:p-2 print:p-2">AMOUNT</th>
                 </tr>
