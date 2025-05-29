@@ -175,7 +175,7 @@ export default function HeroSectionEditProfile() {
       }
 
     } catch (error) {
-      toast.error("Failed to update primary image.");
+      // toast.error("Failed to update primary image.");
     }
     console.log(images[index]);
     // toast.success("Primary image updated!");
@@ -249,7 +249,7 @@ export default function HeroSectionEditProfile() {
                         e.stopPropagation(); 
                         handleSetPrimary(index);
                       }}
-                      className="absolute bottom-2 left-2 cursor-pointer bg-white/80 hover:bg-white rounded-full p-1 shadow group-hover:opacity-100 opacity-0 transition"
+                      className="absolute bottom-2 left-2 cursor-pointer bg-white/80 hover:bg-white rounded-full p-1 shadow "
                       title="Set as Primary Image"
                     >
                       <RefreshCcwDot size={20} color="#000000" strokeWidth={1.5} />
