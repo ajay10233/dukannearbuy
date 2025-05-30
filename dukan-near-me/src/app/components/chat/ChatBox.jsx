@@ -81,7 +81,7 @@ export default function ChatBox() {
         },
         (error) => {
           console.error("Error getting location:", error);
-          alert("Unable to fetch location. Please enable GPS.");
+          toast.error("Unable to fetch location. Please enable GPS.");
           return null;
         }
       );

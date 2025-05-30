@@ -102,51 +102,51 @@ export default function Report() {
 // };
 
    const toggleFavorite = async (billId) => {
-  const favorite = favorites.find(fav => fav.billId === billId);
+      const favorite = favorites.find(fav => fav.billId === billId);
 
-  if (favorite) {
-    // Unfavorite
-    try {
-      const res = await fetch(`/api/favorite-bills?favoriteBillId=${favorite.id}`, {
-        method: 'DELETE',
-      });
+        if (favorite) {
+          // Unfavorite
+          try {
+            const res = await fetch(`/api/favorite-bills?favoriteBillId=${favorite.id}`, {
+              method: 'DELETE',
+            });
 
-      if (res.ok) {
-        setFavorites(prev => prev.filter(fav => fav.billId !== billId));
-        toast.success("Removed from favorites");
-      } else {
-        toast.error("Failed to remove favorite");
-      }
-    } catch (err) {
-      console.error("Error not favoriting:", err);
-      toast.error("An error occurred");
-    }
-  } else {
-    // Favorite
-    try {
-      const res = await fetch(`/api/favorite-bills`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          billId,
-          userId: session?.user?.id,
-        }),
-      });
+            if (res.ok) {
+              setFavorites(prev => prev.filter(fav => fav.billId !== billId));
+              toast.success("Removed from favorites");
+            } else {
+              toast.error("Failed to remove favorite");
+            }
+          } catch (err) {
+            console.error("Error not favoriting:", err);
+            toast.error("An error occurred");
+          }
+        } else {
+          // Favorite
+          try {
+            const res = await fetch(`/api/favorite-bills`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                billId,
+                userId: session?.user?.id,
+              }),
+            });
 
-      if (res.ok) {
-        const data = await res.json();
-        setFavorites(prev => [...prev, data]);
-        toast.success("Added to favorites");
-      } else {
-        toast.error("Failed to favorite");
-      }
-    } catch (err) {
-      console.error("Error favoriting:", err);
-      toast.error("An error occurred");
-    }
-  }
+            if (res.ok) {
+              const data = await res.json();
+              setFavorites(prev => [...prev, data]);
+              toast.success("Added to favorites");
+            } else {
+              toast.error("Failed to favorite");
+            }
+          } catch (err) {
+            console.error("Error favoriting:", err);
+            toast.error("An error occurred");
+          }
+        }
   };
 
 const filteredReports = reports.filter((report) => {
@@ -299,7 +299,7 @@ const filteredReports = reports.filter((report) => {
             <div key={report.id} className="bg-white md-2 p-2 md:p-4 rounded-xl shadow-sm flex items-center w-full">
               <ul className="flex items-center text-sm text-slate-600 w-full justify-between *:w-1/5 text-center">
                 <li className='hidden md:block'>
-                  <button onClick={() => toggleFavorite(report.id, favorites.some(fav => fav.billId === report.id))}>
+                  <button>
                     <Heart
                       size={20}
                       strokeWidth={1.5}

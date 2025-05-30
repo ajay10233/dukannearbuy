@@ -12,6 +12,8 @@ import Navbar from "@/app/components/userProfile/navbar/Navbar";
 
 export default function Review({ user }) {
     const { institutionId } = useParams();
+    console.log("institutionId:", institutionId);
+
     const { data: session } = useSession();
     const [comment, setComment] = useState("");
     const [rating, setRating] = useState(0);
@@ -21,6 +23,8 @@ export default function Review({ user }) {
     const [showReportModal, setShowReportModal] = useState(false);
     const [selectedReviewId, setSelectedReviewId] = useState(null);
     const [sortOption, setSortOption] = useState("all");
+    const [showForm, setShowForm] = useState(false);
+
 
     const router = useRouter();
     const pathname = usePathname();
@@ -29,15 +33,16 @@ export default function Review({ user }) {
     useEffect(() => {
         if (!session?.user) return;
 
-        const role = session?.user?.role;
+        // const role = session?.user?.role;
 
-        if (role === "USER" && !institutionId) return;
+        // if (role === "USER" && !institutionId) return;
 
         const fetchReviews = async () => {
             try {
             // For USER role, fetch by institutionId from URL param
             // For SHOP_OWNER or INSTITUTION role, fetch by session.user.id
-            const idToUse = role === "USER" ? institutionId : session.user.id;
+            const idToUse = institutionId || session?.user?.id;
+            if (!idToUse) return;  
 
             const res = await axios.get(`/api/reviews?institutionId=${idToUse}`);
             setReviews(res.data);
@@ -78,9 +83,10 @@ export default function Review({ user }) {
         toast.success("Review submitted!");
       }
 
-      setComment("");
-      setRating(0);
-      setEditingId(null);
+        setComment("");
+        setRating(0);
+        setEditingId(null);
+        setShowForm(false);
 
       const updated = await axios.get(`/api/reviews?institutionId=${institutionId}`);
 
@@ -97,9 +103,10 @@ export default function Review({ user }) {
     setComment(review.comment);
     setEditingId(review.id);
     setShowOptions(null);
+    setShowForm(true);
 
-    // Redirect to /partnerProfile/[institutionId]#edit-review
-    router.push(`/partnerProfile/${institutionId}#edit-review`);
+    // router.push(`/partnerProfile/${institutionId}#edit-review`);
+
   };
 
 
@@ -137,6 +144,64 @@ return (
         <div className="flex justify-center items-center py-4 md:py-6 w-full">
             <div className="w-full sm:w-[80%] md:w-300 max-h-200 mt-16 mx-4 lg:mx-0 overflow-hidden border border-gray-300 rounded-lg shadow-md bg-gray-100 transition-all duration-300 hover:shadow-lg px-4 py-3 md:px-8 md:py-6">
 
+                {/* review form */}
+                {session?.user?.role === "USER" && showForm && (
+                    <div className="edit-review mb-4">
+                        <h2 className="text-2xl font-semibold pb-0 md:pb-2 text-gray-800">
+                        {!editingId && !showForm ? "Edit Review" : "Write a Review"}
+                        </h2>
+
+                        <form onSubmit={handleSubmit} className="flex flex-col gap-y-2 md:gap-y-4">
+                        {/* Star Rating */}
+                        <div className="flex items-center gap-x-2">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                                type="button"
+                                key={star}
+                                onClick={() => setRating(star)}
+                                className="transform transition-transform hover:scale-110"
+                            >
+                                <Star
+                                className={`w-6 h-6 cursor-pointer transition-colors duration-200 ${star <= rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
+                                />
+                            </button>
+                            ))}
+                        </div>
+
+                        {/* Comment Input */}
+                        <textarea
+                            className="w-full p-3 border resize-none bg-gray-50 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200"
+                            rows="4"
+                            placeholder="Write your feedback..."
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                        ></textarea>
+
+                        <div>
+                            <button
+                            type="submit"
+                            className="px-2 md:px-5 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-400"
+                            >
+                            {editingId ? "Update Review" : "Post Review"}
+                            </button>
+                            {editingId && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                setComment("");
+                                setRating(0);
+                                setEditingId(null);
+                                setShowForm(false); 
+                                }}
+                                className="ml-4 px-2 md:px-5 py-2 cursor-pointer border rounded-lg border-gray-400 bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors duration-400 ease-in-out"
+                            >
+                                Cancel Edit
+                            </button>
+                            )}
+                        </div>
+                        </form>
+                    </div>
+                )}
                 
                 {/* Reviews Header */}
                 <div className="flex justify-between items-center mb-3">
@@ -202,22 +267,22 @@ return (
                                             </button>
 
                                             {showOptions === review.id && (
-                                            <div className="absolute right-0 mt-2 w-28 bg-white border cursor-pointer border-gray-200 rounded shadow-md z-10">
-                                                {session?.user?.id === review?.userId && (
-                                                <button
+                                                <div className="absolute right-0 mt-2 w-28 bg-white border cursor-pointer border-gray-200 rounded shadow-md z-10">
+                                                    {session?.user?.id === review?.userId && (
+                                                    <button
+                                                        className="block w-full text-left px-4 py-2 text-sm transition-all ease-in-out duration-400 cursor-pointer hover:bg-gray-100"
+                                                        onClick={() => handleEdit(review)}
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    )}
+                                                    <button
                                                     className="block w-full text-left px-4 py-2 text-sm transition-all ease-in-out duration-400 cursor-pointer hover:bg-gray-100"
-                                                    onClick={() => handleEdit(review)}
-                                                >
-                                                    Edit
-                                                </button>
-                                                )}
-                                                <button
-                                                className="block w-full text-left px-4 py-2 text-sm transition-all ease-in-out duration-400 cursor-pointer hover:bg-gray-100"
-                                                onClick={() => confirmReport(review.id)}
-                                                >
-                                                Report
-                                                </button>
-                                            </div>
+                                                    onClick={() => confirmReport(review.id)}
+                                                    >
+                                                    Report
+                                                    </button>
+                                                </div>
                                             )}
                                         </div>
                                     </div>

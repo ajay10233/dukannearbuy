@@ -385,7 +385,7 @@ export default function EditProfilePage() {
               value={form?.hashtags || ""}
               onChange={handleChange}
               placeholder="Comma separated (e.g. doctor, clinic)"
-              className="border p-2 rounded w-full"
+              className="border p-2 rounded w-full lowercase"
               required
             />
             {errors?.hashtags && <span className="text-sm text-red-500">{errors.hashtags}</span>}

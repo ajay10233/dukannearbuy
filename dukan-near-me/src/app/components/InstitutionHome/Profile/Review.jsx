@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { EllipsisVertical, MoveRight, Star } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -37,18 +37,19 @@ export default function Review({ user }) {
   //   }
   // }, [session]);
 
+  
+
     useEffect(() => {
       if (!session?.user) return;
 
-      const role = session?.user?.role;
+      // const role = session?.user?.role;
 
-      if (role === "USER" && !institutionId) return;
+      // if (role === "USER" && !institutionId) return;
 
       const fetchReviews = async () => {
         try {
-          // For USER role, fetch by institutionId from URL param
-          // For SHOP_OWNER or INSTITUTION role, fetch by session.user.id
-          const idToUse = role === "USER" ? institutionId : session.user.id;
+          const idToUse = institutionId || session?.user?.id;
+          if (!idToUse) return;
 
           const res = await axios.get(`/api/reviews?institutionId=${idToUse}`);
           setReviews(res.data);
@@ -110,6 +111,12 @@ export default function Review({ user }) {
     setComment(review.comment);
     setEditingId(review.id);
     setShowOptions(null);
+
+    const el = document.getElementById("edit-review");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
   };
 
   const confirmReport = (reviewId) => {
@@ -145,7 +152,7 @@ export default function Review({ user }) {
     <div className="w-80 sm:w-3/4 px-4 py-3 md:px-8 md:py-6 flex flex-col gap-y-4 border border-gray-300 rounded-lg shadow-md bg-white transition-all duration-300 hover:shadow-lg">
 
     {session?.user?.role === "USER" && (
-      <div className="edit-review">
+      <div id="edit-review">
         <h2 className="text-2xl font-semibold pb-0 md:pb-2 text-gray-800">
           {editingId ? "Edit Review" : "Write a Review"}
         </h2>
@@ -169,7 +176,7 @@ export default function Review({ user }) {
 
           {/* Comment Input */}
           <textarea
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200"
+            className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200"
             rows="4"
             placeholder="Write your feedback..."
             value={comment}
@@ -246,7 +253,7 @@ export default function Review({ user }) {
 
                     {showOptions === review.id && (
                       <div className="absolute right-0 mt-2 w-28 bg-white border border-gray-200 rounded shadow-md z-10">
-                        {session?.user?.id === review?.user?.id && (
+                        {session?.user?.id === review?.userId && (
                           <button
                             className="block w-full text-left px-4 cursor-pointer py-2 text-sm transition-all ease-in-out duration-400 hover:bg-gray-100"
                             onClick={() => handleEdit(review)}
@@ -277,7 +284,7 @@ export default function Review({ user }) {
 
     {reviews.length > 3 && (
       <div className="text-right mt-3">
-        <Link href={`/all-reviews/${institutionId}`}
+        <Link href={`/all-reviews/${institutionId || session?.user?.id}`}
           className="group inline-flex items-center gap-2 text-blue-600 cursor-pointer transition-all ease-in-out duration-400 hover:text-blue-700 hover:underline text-sm">
               View All Reviews <MoveRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
         </Link>
@@ -312,316 +319,3 @@ export default function Review({ user }) {
 }
 
 
-
-
-
-
-// "use client";
-
-// import { useState, useEffect } from "react";
-// import axios from "axios";
-// import toast from "react-hot-toast";
-// import { EllipsisVertical, Star } from "lucide-react";
-// import { useParams } from "next/navigation";
-// import { useSession } from "next-auth/react";
-// import Image from "next/image";
-// import { Swiper, SwiperSlide } from "swiper/react";
-// import { Autoplay, Pagination, Navigation } from "swiper/modules";
-// import "swiper/css";
-// // import "swiper/css/pagination";
-// import "swiper/css/navigation";
-
-
-// export default function Review({ user }) {
-//   const { institutionId } = useParams();
-//   const { data: session } = useSession();
-//   const [comment, setComment] = useState("");
-//   const [rating, setRating] = useState(0);
-//   const [reviews, setReviews] = useState([]);
-//   const [editingId, setEditingId] = useState(null);
-//   const [showOptions, setShowOptions] = useState(null);
-//   const [showReportModal, setShowReportModal] = useState(false);
-//   const [selectedReviewId, setSelectedReviewId] = useState(null);
-
-//   useEffect(() => {
-//     if (session || session?.user) {
-//       const role = session?.user?.role;
-
-//       const fetchReviews = async () => {
-//         try {
-//           const idToUse = role === "USER" ? institutionId : session?.user?.id;
-//           const res = await axios.get(`/api/reviews?institutionId=${idToUse}`);
-//           setReviews(res.data);
-//         } catch {
-//           toast.error("Failed to fetch reviews");
-//         }
-//       };
-
-//       fetchReviews();
-//     }
-//   }, [session, institutionId]);
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     if (!comment.trim()) return;
-
-//     if (rating === 0) {
-//       toast.error("Please give star rating before submitting.");
-//       return;
-//     }
-
-//     try {
-//       if (editingId) {
-//         // Update review
-//         await axios.put("/api/reviews", {
-//           commentId: editingId,
-//           rating,
-//           comment,
-//         });
-//         toast.success("Review updated!");
-//       } else {
-//         // New review
-//         await axios.post("/api/reviews", {
-//           institutionId,
-//           rating,
-//           comment,
-//         });
-//         toast.success("Review submitted!");
-//       }
-
-//       setComment("");
-//       setRating(0);
-//       setEditingId(null);
-
-//       const updated = await axios.get(`/api/reviews?institutionId=${institutionId}`);
-//       setReviews(updated.data);
-//     } catch (err) {
-//         // toast.error("Error submitting review");
-//       const msg = err?.response?.data?.error || "Something went wrong while submitting the review.";
-//       toast.error(msg);
-//     }
-//   };
-
-//   const handleEdit = (review) => {
-//     setRating(review.rating);
-//     setComment(review.comment);
-//     setEditingId(review.id);
-//     setShowOptions(null);
-//   };
-
-//   const confirmReport = (reviewId) => {
-//     setSelectedReviewId(reviewId);
-//     setShowReportModal(true);
-//   };
-
-//   const handleReport = async () => {
-//     try {
-//       await axios.post("/api/reviews/report", {
-//         reviewId: selectedReviewId,
-//         reason: "Inappropriate or abusive content",
-//         reportedBy: session?.user?.id,
-//       });
-//       toast.success("Report submitted!");
-//     } catch (error) {
-//       toast.error("Failed to report review");
-//     } finally {
-//       setShowReportModal(false);
-//       setSelectedReviewId(null);
-//       setShowOptions(null);
-//     }
-//   };
-
-//   const handleShowOptions = (reviewId) => {
-//     setShowOptions((prev) => (prev === reviewId ? null : reviewId));
-//   };
-
-//   return (
-//     <div className="flex justify-center items-center py-4 md:py-6 w-full">
-//       <div className="w-75 sm:w-3/4 px-4 py-3 md:px-8 md:py-6 border border-gray-300 rounded-lg shadow-md bg-white transition-all duration-300 hover:shadow-lg">
-
-//         {session?.user?.role === "USER" && (
-//           <>
-//             <h2 className="text-2xl font-semibold pb-0 md:pb-2 text-gray-800">
-//               {editingId ? "Edit Review" : "Write a Review"}
-//             </h2>
-
-//             <form onSubmit={handleSubmit} className="flex flex-col gap-y-2 md:gap-y-4">
-//               {/* Star Rating */}
-//               <div className="flex items-center gap-2">
-//                 {[1, 2, 3, 4, 5].map((star) => (
-//                   <button
-//                     key={star}
-//                     type="button"
-//                     onClick={() => setRating(star)}
-//                     className="transform transition-transform cursor-pointer hover:scale-110"
-//                   >
-//                     <Star
-//                       className={`w-6 h-6 cursor-pointer-pointer transition-colors duration-200 ${
-//                         star <= rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
-//                       }`}
-//                     />
-//                   </button>
-//                 ))}
-//               </div>
-
-//               {/* Comment Input */}
-//               <textarea
-//                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-400 ease-in-out resize-none"
-//                 rows="4"
-//                 placeholder="Write your feedback..."
-//                 value={comment}
-//                 onChange={(e) => setComment(e.target.value)}
-//               ></textarea>
-
-//               <div className="flex items-center gap-4">
-//                 <button
-//                   type="submit"
-//                   className="px-6 py-2 bg-blue-600 text-white rounded-lg cursor-pointer ease-in-out duration-400 hover:bg-blue-700 transition"
-//                 >
-//                   {editingId ? "Update Review" : "Post Review"}
-//                 </button>
-//                 {editingId && (
-//                   <button
-//                     type="button"
-//                     onClick={() => {
-//                       setComment("");
-//                       setRating(0);
-//                       setEditingId(null);
-//                     }}
-//                     className="px-6 py-2 border border-gray-400 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 transition"
-//                   >
-//                     Cancel Edit
-//                   </button>
-//                 )}
-//               </div>
-//             </form>
-//           </>
-//         )}
-
-//         <h3 className="text-2xl font-semibold text-gray-800 my-4">Reviews</h3>
-
-//         {reviews.length > 0 ? (
-//           <Swiper
-//                 modules={[Autoplay, Pagination, Navigation]}
-//                 spaceBetween={20}
-//             // slidesPerView={2}
-//                 breakpoints={{
-//                     0: {
-//                       slidesPerView: 1,
-//                     },
-//                     768: {
-//                       slidesPerView: 2,
-//                     },
-//                 }}
-//                 autoplay={{ delay: 4000, disableOnInteraction: false }}
-//                 // pagination={{ clickable: true }}
-//                 navigation
-//                 loop={true}
-//                 className="rounded-lg"
-//                 >
-
-//             {reviews.map((review) => (
-//               <SwiperSlide key={review.id}>
-//                 <div className="p-2.5 md:p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-//                   <div className="flex items-center justify-between mb-4">
-//                     <div className="flex items-center gap-4">
-//                       <div className="w-8 md:w-12 h-8 md:h-12 relative rounded-full overflow-hidden border border-gray-300">
-//                         <Image
-//                           src={review?.user?.profilePhoto || "/default-img.jpg"}
-//                           alt="User Profile"
-//                           fill
-//                           className="w-12 h-12 rounded-full"
-//                           priority
-//                         />
-//                       </div>
-//                       <div>
-//                         <p className="font-semibold text-sm md:text-[16px] text-gray-800">
-//                           {review?.user?.firstName} {review?.user?.lastName}
-//                         </p>
-//                         <p className="text-sm text-gray-500">
-//                           {new Date(
-//                             review?.updatedAt > review?.createdAt
-//                               ? review?.updatedAt
-//                               : review?.createdAt
-//                           ).toLocaleDateString()}
-//                         </p>
-//                       </div>
-//                     </div>
-
-//                 {/* Right side: Rating */}
-//                 <div className="flex items-center gap-y-1 md:gap-x-2">
-
-//                     <div className="flex ">
-//                         {[...Array(Math.floor(review?.rating))].map((_, idx) => (
-//                         <Star
-//                             key={idx}
-//                             className="w-3 h-3 md:w-5 md:h-5 fill-yellow-400 text-yellow-400"
-//                         />
-//                         ))}
-//                     </div>
-
-//                     <div className="relative">
-//                         <button
-//                             onClick={() => handleShowOptions(review.id)}
-//                             className="cursor-pointer"
-//                             aria-label="Options"
-//                         >
-//                             <EllipsisVertical className="w-5 h-5 text-gray-500" />
-//                         </button>
-
-//                       {showOptions === review.id && (
-//                         <div className="absolute top-1 right-1 mt-0.5 w-28 bg-white border border-gray-200 rounded shadow-md z-10">
-//                             {session?.user?.id === review?.userId && (
-//                                 <button
-//                                 className="block w-full text-left px-4 cursor-pointer py-2 text-sm transition-all ease-in-out duration-400 hover:bg-gray-100"
-//                                 onClick={() => handleEdit(review)}
-//                                 >
-//                                     Edit
-//                                 </button>
-//                             )}
-//                                 <button
-//                                     className="block w-full text-left px-4 cursor-pointer py-2 text-sm transition-all ease-in-out duration-400 hover:bg-gray-100"
-//                                     onClick={() => confirmReport(review.id)}
-//                                 >
-//                                     Report
-//                                 </button>
-//                         </div>
-//                       )}
-//                     </div>
-//                 </div>
-//                 </div>
-
-//                   <p className="mt-2 text-gray-700 text-sm md:text-[15px] break-words whitespace-pre-line">{review.comment}</p>
-//                 </div>
-//               </SwiperSlide>
-//             ))}
-//           </Swiper>
-//         ) : (
-//           <p className="text-gray-500 text-center my-4">No reviews yet.</p>
-//         )}
-
-//         {showReportModal && (
-//           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-//             <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-//               <h2 className="text-lg font-semibold mb-4">Report Review</h2>
-//               <p className="mb-4">Are you sure you want to report this review?</p>
-//               <div className="flex justify-end gap-4">
-//                 <button
-//                   onClick={() => setShowReportModal(false)}
-//                   className="px-4 py-2 border rounded bg-gray-100 cursor-pointer transition-all ease-in-out duration-400 hover:bg-gray-200">
-//                   Cancel
-//                 </button>
-//                 <button
-//                   onClick={handleReport}
-//                   className="px-4 py-2 bg-red-600 text-white rounded cursor-pointer transition-all ease-in-out duration-400 hover:bg-red-700"
-//                 >
-//                   Report
-//                 </button>
-//               </div>
-//             </div>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
