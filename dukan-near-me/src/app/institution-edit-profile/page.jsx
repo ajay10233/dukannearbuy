@@ -54,13 +54,31 @@ export default function EditProfilePage() {
         [name]: value,
       },
     }));
-  } else if (e.target.type === 'file') {
+  }
+   
+    // File input
+  else if (e.target.type === 'file') {
     const file = e.target.files?.[0];
     setForm((prev) => ({
       ...prev,
       [name]: file
     }));
-  } else {
+  }
+    
+     // Hashtags field
+  else if (name === "hashtags") {
+    const tags = value
+      .split(/[ ,]+/)               
+      .filter(Boolean)              
+      .map((tag) => tag.toLowerCase());
+
+    setForm((prev) => ({
+      ...prev,
+      hashtags: tags,
+    }));
+  }
+  
+  else {
     setForm((prev) => ({
       ...prev,
       [name]: value,

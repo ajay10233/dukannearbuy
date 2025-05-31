@@ -141,8 +141,8 @@ export default function Review({ user }) {
 return (
     <>  
         <Navbar />    
-        <div className="flex justify-center items-center py-4 md:py-6 w-full">
-            <div className="w-full sm:w-[80%] md:w-300 max-h-200 mt-16 mx-4 lg:mx-0 overflow-hidden border border-gray-300 rounded-lg shadow-md bg-gray-100 transition-all duration-300 hover:shadow-lg px-4 py-3 md:px-8 md:py-6">
+        <div className="min-h-screen flex flex-col justify-center items-center py-4 md:py-6 w-full px-4">
+            <div className="flex-1 w-full sm:w-[90%] md:max-w-4xl max-h-[90vh] mt-16 mx-4 md:mx-0 overflow-hidden border border-gray-300 rounded-lg shadow-md bg-gray-100 transition-all duration-300 hover:shadow-lg px-4 py-3 md:px-8 md:py-6">
 
                 {/* review form */}
                 {session?.user?.role === "USER" && showForm && (
@@ -218,7 +218,7 @@ return (
                 </div>
 
             {/* Reviews List Scrollable */}
-                <div className="overflow-y-auto dialogScroll pr-1 max-h-125 sm:max-h-150" >
+                <div className="overflow-y-auto dialogScroll pr-1 max-h-[80vh] sm:max-h-[70vh]" >
                     {reviews.length > 0 ? (
                         <ul className="flex flex-col gap-3">
                             {/* {reviews
@@ -226,8 +226,12 @@ return (
                                     
                             {[...reviews]
                                 .sort((a, b) => {
-                                    if (sortOption === "latest") return new Date(b.createdAt) - new Date(a.createdAt);
-                                    if (sortOption === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+                                    if (sortOption === "latest")
+                                return new Date(b.updatedAt > b.createdAt ? b.updatedAt : b.createdAt) - new Date(a.updatedAt > a.createdAt ? a.updatedAt : a.createdAt);
+
+                                if (sortOption === "oldest")
+                                return new Date(a.updatedAt > a.createdAt ? a.updatedAt : a.createdAt) - new Date(b.updatedAt > b.createdAt ? b.updatedAt : b.createdAt);
+
                                     if (sortOption === "highest") return b.rating - a.rating;
                                     if (sortOption === "lowest") return a.rating - b.rating;
                                     return 0;

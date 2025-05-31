@@ -268,7 +268,7 @@ export default function SearchBar() {
                       </p>
                       <div className="flex flex-wrap text-xs text-gray-200 gap-1">
                         {profile.hashtags?.map((tag, i) => (
-                          <span key={i} className="text-xs text-gray-400">#{tag}</span>
+                          <span key={i} className="text-xs text-gray-400 lowercase">#{tag}</span>
                         ))}
                       </div>
                     </div>
