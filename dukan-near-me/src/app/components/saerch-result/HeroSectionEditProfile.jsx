@@ -53,79 +53,164 @@ export default function HeroSectionEditProfile() {
     if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
+  const fetchUserData = async () => {
+  try {
+    const res = await fetch(`/api/users/me`);
+    if (!res.ok) {
+      throw new Error("Failed to fetch user data.");
+    }
+    const data = await res.json();
+    setUser(data);
+
+    if (data.photos && data.photos.length) {
+      setImages(data.photos);
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error(error.message || "Error fetching user data");
+  }
+};
+
+useEffect(() => {
+  fetchUserData();
+}, []);
+
+
 
   // Fetch logged-in user details from the API
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const res = await fetch(`/api/users/me`);
-        if (!res.ok) {
-          throw new Error("Failed to fetch user data.");
-        }
-        const data = await res.json();
-        setUser(data);
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     try {
+  //       const res = await fetch(`/api/users/me`);
+  //       if (!res.ok) {
+  //         throw new Error("Failed to fetch user data.");
+  //       }
+  //       const data = await res.json();
+  //       setUser(data);
 
-        // Set the fetched photos to the images state
-        if (data.photos && data.photos.length) {
-          setImages(data.photos); // Use photos from the API
-        }
-      } catch (error) {
-        console.error(error);
-        toast.error(error.message || "Error fetching user data");
-      }
-    };
+  //       // Set the fetched photos to the images state
+  //       if (data.photos && data.photos.length) {
+  //         setImages(data.photos); // Use photos from the API
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //       toast.error(error.message || "Error fetching user data");
+  //     }
+  //   };
 
-    fetchUserData();
-  }, []);
+  //   fetchUserData();
+  // }, []);
+
+  // const handleImageChange = async (e) => {
+  //   const files = Array.from(e.target.files);
+  //   if (!files.length) return;
+
+  //   const remainingSlots = 10 - imageCount;
+  //   const filesToUpload = files.slice(0, remainingSlots);
+
+  //   setIsUploading(true);
+
+  //   for (const file of filesToUpload) {
+  //     if (file.size > 20 * 1024 * 1024) { // 20MB limit
+  //       toast.error(`File ${file.name} is too large (max 20MB).`);
+  //       continue;
+  //     }
+
+  //     const base64String = await new Promise((resolve, reject) => {
+  //       const reader = new FileReader();
+  //       reader.onloadend = () => resolve(reader.result);
+  //       reader.onerror = () => reject("Failed to read file.");
+  //       reader.readAsDataURL(file);
+  //     });
+
+  //     // Upload image to the backend
+  //     try {
+  //       const res = await fetch("/api/institutions/upload-photo/", {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${localStorage.getItem("authToken")}`, // Ensure the token is in the header
+  //         },
+  //         body: JSON.stringify({ images: [base64String] }),
+  //       });
+
+  //       if (!res.ok) {
+  //         throw new Error("Failed to upload image.");
+  //       }
+
+  //       const data = await res.json();
+  //       setImages((prev) => [...prev, ...data.urls]); // Add the image URL to the images state
+  //       setImageCount((prev) => prev + 1);
+  //       toast.success(`Uploaded ${file.name}`);
+  //     } catch (error) {
+  //       toast.error("Error uploading image: " + error.message);
+  //     }
+  //   }
+
+  //   setIsUploading(false);
+  // };
 
   const handleImageChange = async (e) => {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
 
-    const remainingSlots = 10 - imageCount;
-    const filesToUpload = files.slice(0, remainingSlots);
+  const remainingSlots = 10 - imageCount;
+  const filesToUpload = files.slice(0, remainingSlots);
 
-    setIsUploading(true);
+  setIsUploading(true);
 
-    for (const file of filesToUpload) {
-      if (file.size > 20 * 1024 * 1024) { // 20MB limit
-        toast.error(`File ${file.name} is too large (max 20MB).`);
-        continue;
-      }
+  const uploadedUrls = [];
 
-      const base64String = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror = () => reject("Failed to read file.");
-        reader.readAsDataURL(file);
-      });
-
-      // Upload image to the backend
-      try {
-        const res = await fetch("/api/institutions/upload-photo/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`, // Ensure the token is in the header
-          },
-          body: JSON.stringify({ images: [base64String] }),
-        });
-
-        if (!res.ok) {
-          throw new Error("Failed to upload image.");
-        }
-
-        const data = await res.json();
-        setImages((prev) => [...prev, ...data.urls]); // Add the image URL to the images state
-        setImageCount((prev) => prev + 1);
-        toast.success(`Uploaded ${file.name}`);
-      } catch (error) {
-        toast.error("Error uploading image: " + error.message);
-      }
+  for (const file of filesToUpload) {
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error(`File ${file.name} is too large (max 20MB).`);
+      continue;
     }
 
-    setIsUploading(false);
-  };
+    const base64String = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = () => reject("Failed to read file.");
+      reader.readAsDataURL(file);
+    });
+
+    try {
+      const res = await fetch("/api/institutions/upload-photo/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+        body: JSON.stringify({ images: [base64String] }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to upload image.");
+      }
+
+      const data = await res.json();
+      uploadedUrls.push(...data.urls); 
+
+      setImages((prev) => [...prev, ...data.urls]);
+      setImageCount((prev) => prev + 1);
+      toast.success(`Uploaded ${file.name}`);
+    } catch (error) {
+      toast.error("Error uploading image: " + error.message);
+    }
+  }
+
+  //  Set the first uploaded image as primary if no previous images
+  setImages((prev) => {
+  const newImages = [...prev, ...uploadedUrls];
+  if (uploadedUrls.length > 0) {
+    handleSetPrimary(newImages.length - uploadedUrls.length); // index of first new image
+  }
+  return newImages;
+});
+
+
+  setIsUploading(false);
+};
 
   const handleDeleteImage = async () => {
     if (!activeImage) return;
@@ -165,8 +250,9 @@ export default function HeroSectionEditProfile() {
       const result = await axios.put("/api/institutions/primary-image", { url:image_url });
       if (result.status === 200) {
         toast.success("Primary image updated!");
+        await fetchUserData(); 
 
-        setProfile((prev) => ({
+        setUser((prev) => ({
         ...prev,
         profilePhoto: image_url,
         }));

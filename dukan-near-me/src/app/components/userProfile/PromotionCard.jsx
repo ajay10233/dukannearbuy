@@ -82,7 +82,6 @@ export default function PromotionCard() {
     router.push(`/payment?amount=${discountedCost}`);
   };
   
-
   
   return (
     <section className="w-full flex flex-col items-center py-10 px-4 gap-y-10" id="promotion">

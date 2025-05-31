@@ -15,13 +15,14 @@ export default function PaymentOffer() {
   const [discountAmount, setDiscountAmount] = useState(0);
   const [plan, setPlan] = useState(null); 
 
-
-  const params = useParams();
-  const planId = params.planId;
-
-
+  // const searchParams = useSearchParams();
+  // const priceParam = searchParams.get("amount");
   // const price = planId ? parseInt(planId) : 999;
   // const finalPrice = discountApplied ? price - discountAmount : price;
+
+    const params = useParams();
+    const planId = params.planId;
+
 
     useEffect(() => {
     if (!planId) return;
@@ -103,7 +104,7 @@ export default function PaymentOffer() {
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="text-lg font-semibold text-gray-700">Selected Offer</h3>
-                <p className="text-sm text-gray-600">Premium Promotion Package</p>
+                <p className="text-sm text-gray-600 capitalize">{plan.name} Subscription</p>
               </div>
               <div className="text-right">
                 {discountApplied ? (

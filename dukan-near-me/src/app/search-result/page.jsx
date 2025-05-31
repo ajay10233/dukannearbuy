@@ -603,7 +603,7 @@ export default function About({ profileUpdated }) {
                 {userData.shopAddress && (
                   <div>
                     <p className="font-semibold text-gray-600">
-                      {userData?.role === "INSTITUTION" ? "Medical Institute Address" : "Shop Address"}
+                      {userData?.role === "INSTITUTION" ? "Address" : "Shop Address"}
                     </p>
                     <p>{userData.shopAddress}</p>
                   </div>
