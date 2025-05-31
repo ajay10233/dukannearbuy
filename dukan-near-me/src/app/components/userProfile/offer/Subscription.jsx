@@ -52,10 +52,11 @@ export default function Subscription() {
     fetchUserPlan();
   }, []);
 
-  const handleClick = (planName, price) => {
+  const handleClick = (planId, planName, price) => {
     if (price === 0) return;
     setActivePlan(planName);
-    router.push(`/payment?plan=${planName}&amount=${price}`);
+    // router.push(`/payment?plan=${planName}&amount=${price}`);
+    router.push(`/payment/${planId}`);
     toast.success(`You have selected the ${planName} plan!`);
   };
 
@@ -118,7 +119,7 @@ export default function Subscription() {
                           </div>
 
                           <button
-                              onClick={() => handleClick(plan.name, plan.price)}
+                              onClick={() => handleClick(plan.id, plan.name, plan.price)}
                               disabled={isDisabled}
                               className={`px-6 py-2 tracking-wide cursor-pointer rounded-full text-sm font-semibold transition
                               ${

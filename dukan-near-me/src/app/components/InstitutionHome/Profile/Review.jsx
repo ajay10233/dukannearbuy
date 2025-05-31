@@ -228,7 +228,7 @@ export default function Review({ user }) {
                 {/* Left side: Profile photo, Name */}
                 <div className="flex items-center gap-1.5 md:gap-3">
                   <div className="w-8 md:w-12 h-8 md:h-12 relative">
-                    <Image src={review?.user?.profilePhoto || "/default-img.jpg"} alt="User Profile" fill className="w-12 h-12 rounded-full" priority />
+                    <Image src={review?.user?.profilePhoto || "/default-img.jpg"} alt="User Profile" fill sizes="(min-width: 768px) 3rem, 2rem" className="w-12 h-12 rounded-full" priority />
                   </div>
                   <div>
                     <p className="font-semibold text-sm md:text-[16px]">{review?.user?.firstName} {review?.user?.lastName}</p>
