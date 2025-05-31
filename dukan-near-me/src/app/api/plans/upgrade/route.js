@@ -1,66 +1,93 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import prisma from "@/lib/prisma";
-// import { stripe } from "@/lib/stripe"; // Uncomment when using Stripe
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { prisma } from "@/utils/db";
+import { addDays } from "date-fns";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
   if (!session) return new Response("Unauthorized", { status: 401 });
 
-  const { couponId } = await req.json();
+  const { couponId, planId } = await req.json();
+  // if(!couponId || !planId) return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  var coupon=null;
+  if(couponId){
+    coupon = await prisma.coupon.findUnique({
+      where: { id: couponId },
+    });
+    if (!coupon) {
+      return NextResponse.json({ error: "Invalid coupon" }, { status: 400 });
+    }
+  }
 
-  const coupon = await prisma.coupon.findUnique({
-    where: { id: couponId },
+
+  const plan = await prisma.plan.findUnique({
+    where: { id: planId },
   });
 
-  if (!coupon) {
-    return Response.json({ error: "Invalid coupon" }, { status: 400 });
+  if (!plan) {
+    return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
   }
 
-  const originalPrice = 999;
-  const discount = Math.round((originalPrice * coupon.discountPercentage) / 100);
-  const finalPrice = originalPrice - discount;
+  const originalPrice = plan.price;
+  var finalPrice = originalPrice;
+  if(coupon!=null){
+    const discount = Math.round((originalPrice * coupon.discountPercentage) / 100);
+    finalPrice = originalPrice - discount;
+  }
 
   if (finalPrice <= 0) {
-    // 100% OFF: Directly upgrade
-    console.log("Upgrading the user to PREMIUM plan");
-    // await prisma.user.update({
-    //   where: { email: session.user.email },
-    //   data: {
-    //     plan: "PREMIUM",
-    //     planActivatedAt: new Date(),
-    //     couponUsedId: coupon.id,
-    //   },
-    // });
+    // Directly upgrade user
+    const planDurationInDays = plan.durationInDays || 30; 
+    const now = new Date();
 
-    return Response.json({ upgraded: true });
+    await prisma.user.update({
+      where: { email: session.user.email },
+      data: {
+        subscriptionPlanId: plan.id,
+        planActivatedAt: now,
+        planExpiresAt: addDays(now, planDurationInDays),
+      },
+    });
+
+    return NextResponse.json({ upgraded: true });
   }
 
-  // 💳 Future Stripe Payment Flow
-  // const stripeSession = await stripe.checkout.sessions.create({
-  //   payment_method_types: ["card"],
-  //   line_items: [
-  //     {
-  //       price_data: {
-  //         currency: "inr",
-  //         product_data: {
-  //           name: "Premium Plan",
-  //         },
-  //         unit_amount: finalPrice * 100,
-  //       },
-  //       quantity: 1,
-  //     },
-  //   ],
-  //   mode: "payment",
-  //   success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard?success=true`,
-  //   cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard?canceled=true`,
-  //   metadata: {
-  //     userEmail: session.user.email,
-  //     couponId: coupon.id,
-  //   },
+  // Otherwise: return price info to proceed with payment
+  // return NextResponse.json({
+  //   upgraded: false,
+  //   finalPrice,
+  //   planName: plan.name,
+  //   planId: plan.id,
+  //   couponId: coupon.id,
   // });
 
-  // return Response.json({ stripeUrl: stripeSession.url });
 
-  return Response.json({ error: "Non-zero price but Stripe not configured" }, { status: 501 });
+// 💳 Future Stripe Payment Flow
+// const stripeSession = await stripe.checkout.sessions.create({
+//   payment_method_types: ["card"],
+//   line_items: [
+//     {
+//       price_data: {
+//         currency: "inr",
+//         product_data: {
+//           name: "Premium Plan",
+//         },
+//         unit_amount: finalPrice * 100,
+//       },
+//       quantity: 1,
+//     },
+//   ],
+//   mode: "payment",
+//   success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard?success=true`,
+//   cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard?canceled=true`,
+//   metadata: {
+//     userEmail: session.user.email,
+//     couponId: coupon.id,
+//   },
+// });
+
+// return NextResponse.json({ stripeUrl: stripeSession.url });
+
+  return NextResponse.json({ error: "Some error occurred please contact support" }, { status: 501 });
 }
