@@ -144,25 +144,19 @@ export default function SearchBar() {
   // Filter results based on activeTab logic:
   const filteredResults = results.filter((profile) => {
     if (activeTab === "foryou") {
-      // For You shows all results matching search query
       return true;
 
     } else if (activeTab === "medical") {
-      // Medical Facility: only INSTITUTION role
       return profile.role === "INSTITUTION";
 
     } else if (activeTab === "shop") {
-      // Shop: only SHOP_OWNER role
       return profile.role === "SHOP_OWNER";
 
     } else if (activeTab === "tags") {
-      // Tags: profile must have ALL tags matching the search query words
       if (!profile.hashtags || profile.hashtags.length === 0) return false;
 
-      // split search query into lowercase words
       const searchTags = debouncedQuery.toLowerCase().split(/\s+/).filter(Boolean);
 
-      // Check if all searchTags exist in profile.tags
       return searchTags.some((tag) =>
         profile.hashtags.some((pTag) => pTag.toLowerCase().includes(tag))
       );
@@ -177,7 +171,7 @@ export default function SearchBar() {
     >
       <form
         onSubmit={(e) => e.preventDefault()}
-        className="flex items-center border border-gray-500 rounded-md shadow-gray-400 gap-2 overflow-hidden"
+        className="flex items-center border border-gray-500 hover:border-gray-400 transition-all ease-in-out duration-400 rounded-md  shadow-gray-400 gap-2 overflow-hidden"
       >
         <input
           type="text"
@@ -274,7 +268,7 @@ export default function SearchBar() {
                       </p>
                       <div className="flex flex-wrap text-xs text-gray-200 gap-1">
                         {profile.hashtags?.map((tag, i) => (
-                          <span key={i} className="text-xs text-gray-400">#{tag}</span>
+                          <span key={i} className="text-xs text-gray-400 lowercase">#{tag}</span>
                         ))}
                       </div>
                     </div>

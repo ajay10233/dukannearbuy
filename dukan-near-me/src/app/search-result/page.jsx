@@ -325,7 +325,7 @@ export default function About({ profileUpdated }) {
                 userData.hashtags.map((tag, i) => (
                   <span
                     key={i}
-                    className="inline-block px-1.5 md:px-3 py-1 text-sm bg-gradient-to-tl from-blue-300 via-blue-500 to-blue-600 text-white rounded-2xl"
+                    className="inline-block px-1.5 md:px-3 py-1 lowercase text-sm bg-gradient-to-tl from-blue-300 via-blue-500 to-blue-600 text-white rounded-2xl"
                   >
                     #{tag.trim()}
                   </span>
@@ -429,7 +429,7 @@ export default function About({ profileUpdated }) {
                   <div className="grid grid-cols-2 gap-2 md:gap-4 text-sm text-gray-700">
                     {userData.address.houseNumber && (
                       <div>
-                        <p className="font-semibold text-gray-600">Shop Number</p>
+                        <p className="font-semibold text-gray-600">{userData.role === "INSTITUTION" ? "Building Number" : "Shop Number"}</p>
                         <p>{userData.address.houseNumber}</p>
                       </div>
                     )}
@@ -597,12 +597,14 @@ export default function About({ profileUpdated }) {
           {(userData?.firmName || userData?.shopAddress) && (
             <div>
               <h2 className="text-[16px] md:text-xl font-bold text-blue-700 ">
-                Shop Information
+                {userData?.role === "INSTITUTION" ? "Medical Institute Information" : "Shop Information"}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 text-sm text-gray-700 ml-4">
                 {userData.shopAddress && (
                   <div>
-                    <p className="font-semibold text-gray-600">Shop Address</p>
+                    <p className="font-semibold text-gray-600">
+                      {userData?.role === "INSTITUTION" ? "Medical Institute Address" : "Shop Address"}
+                    </p>
                     <p>{userData.shopAddress}</p>
                   </div>
                 )}
@@ -622,7 +624,7 @@ export default function About({ profileUpdated }) {
             userData?.shopOpenDays?.length > 0) && (
             <div>
               <h2 className="text-[16px] md:text-xl  font-bold text-blue-700 mb-4">
-                Shop Timings
+                {userData?.role === "INSTITUTION" ? "Medical Institute Timings" : "Shop Timings"}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 text-sm text-gray-700 ml-4">
                 {userData.shopOpenTime && (
@@ -678,7 +680,7 @@ export default function About({ profileUpdated }) {
                 {userData.hashtags.map((tag, index) => (
                   <span
                     key={index}
-                    className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium"
+                    className="bg-blue-100 text-blue-700 lowercase px-3 py-1 rounded-full text-xs font-medium"
                   >
                     #{tag}
                   </span>

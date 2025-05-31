@@ -5,7 +5,8 @@ import { toast } from 'react-hot-toast';
 
 export default function ChangeAddress({ currentAddress, onSave }) {
   const [form, setForm] = useState({
-    houseNumber: '',
+    // houseNumber: '',
+    buildingNumber: '',
     street: '',
     buildingName: '',
     landmark: '',

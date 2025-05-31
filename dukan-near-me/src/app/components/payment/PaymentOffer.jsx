@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 export default function PaymentOffer() {
   const [coupon, setCoupon] = useState("");
@@ -13,11 +13,45 @@ export default function PaymentOffer() {
   const [shake, setShake] = useState(false);
   const [showSuccessAnim, setShowSuccessAnim] = useState(false);
   const [discountAmount, setDiscountAmount] = useState(0);
+  const [plan, setPlan] = useState(null); 
 
-  const searchParams = useSearchParams();
-  const priceParam = searchParams.get("amount");
-  const price = priceParam ? parseInt(priceParam) : 999; 
+
+  const params = useParams();
+  const planId = params.planId;
+
+
+  // const price = planId ? parseInt(planId) : 999;
+  // const finalPrice = discountApplied ? price - discountAmount : price;
+
+    useEffect(() => {
+    if (!planId) return;
+
+    fetch(`/api/plans`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch plan");
+        return res.json();
+      })
+      .then((data) => {
+        const foundPlan = data.find(p => p.id === planId);
+      if (foundPlan) {
+        setPlan(foundPlan);
+      } else {
+        toast.error('Plan not found');
+      }
+    })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Could not load plan details.");
+      });
+  }, [planId]);
+
+  if (!plan) {
+    return <div>Loading plan details...</div>;
+  }
+
+  const price = plan.price;
   const finalPrice = discountApplied ? price - discountAmount : price;
+
 
   const handleApplyCoupon = async () => {
     if (!coupon.trim()) {
@@ -85,7 +119,7 @@ export default function PaymentOffer() {
                     </motion.p>
                   </>
                 ) : (
-                  <p className="text-indigo-600 font-semibold text-lg">₹{price}</p>
+                  <div className="text-indigo-600 font-semibold text-lg">₹{price}</div>
                 )}
               </div>
             </div>

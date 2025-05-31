@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react'
-import PaymentOffer from '../components/payment/PaymentOffer'
+import PaymentOffer from '../../components/payment/PaymentOffer'
 
 export default function page() {
   return (

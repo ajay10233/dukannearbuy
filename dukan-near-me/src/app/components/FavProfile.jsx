@@ -8,10 +8,12 @@ import Image from 'next/image';
 
 export default function FavProfile() {
   const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(false);
   const { data: session } = useSession();
 
   useEffect(() => {
     const fetchFavorites = async () => {
+      setLoading(true);
       try {
         const res = await fetch('/api/favorites');
         const data = await res.json();
@@ -21,6 +23,8 @@ export default function FavProfile() {
         }
       } catch (error) {
         console.error("Error fetching favorites:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -53,7 +57,7 @@ export default function FavProfile() {
       </div>
 
       {/* Header Section */}
-      <div className="flex text-sm text-slate-700 font-medium pr-0 md:pr-8 relative z-10 whitespace-nowrap px-2">
+      <div className="flex text-sm text-slate-700 font-semibold pr-0 md:pr-8 relative z-10 whitespace-nowrap px-2">
         <ul className="flex w-full *:w-2/5  md:*:w-1/5 justify-between relative">
           <li className="hidden md:flex justify-center items-center">S.No</li>
           <li className="flex justify-center items-center">Firm Name</li>
@@ -65,8 +69,10 @@ export default function FavProfile() {
 
       {/* Scrollable List */}
       {/* <div className="flex flex-col gap-3 h-[60vh] overflow-y-scroll dialogScroll pr-0 md:pr-2"> */}
-      <div className="flex flex-col gap-3 h-[60vh]  dialogScroll pr-0 md:pr-2">
-        {favorites.length === 0 ? (
+      <div className="flex flex-col gap-3 h-[60vh] dialogScroll pr-0 md:pr-2">
+        {loading ? (
+          <div className="text-center text-gray-500 mt-4">Loading favorites...</div>
+        ) : favorites.length === 0 ? (
           <div className="text-center text-gray-500 mt-4">No favorites found</div>
         ) : (
           favorites.map((fav, index) => {
@@ -80,7 +86,7 @@ export default function FavProfile() {
             
                 <li className="flex w-2/5 md:w-1/5 justify-center items-center">
                   <div className="flex items-center gap-1 md:gap-3">
-                    <div className="relative w-8 h-8 md:w-10 md:h-10">
+                    <div className="relative w-8 h-8 md:w-10 md:h-10 flex-shrink-0">
                       <Image
                           // src={institution?.photos?.[0] || "/default-img.jpg"}
                           src={institution?.photos?.length > 0 ? institution.photos[0] : institution?.profilePhoto && institution.profilePhoto !== "null" ? institution.profilePhoto : '/default-img.jpg'}
@@ -90,7 +96,7 @@ export default function FavProfile() {
                       />
                     </div>
                     <Link href={`/partnerProfile/${fav.institutionId}`} className="text-blue-600 cursor-pointer text-xs md:text-sm font-semibold">
-                      {institution?.firmName || 'Institution Name'}
+                      {institution?.firmName || 'N/A'}
                     </Link>
                   </div>
                 </li>

@@ -175,7 +175,7 @@ export default function HeroSectionEditProfile() {
       }
 
     } catch (error) {
-      toast.error("Failed to update primary image.");
+      // toast.error("Failed to update primary image.");
     }
     console.log(images[index]);
     // toast.success("Primary image updated!");
@@ -224,7 +224,7 @@ export default function HeroSectionEditProfile() {
             <X size={24} />
           </button>
         )}
-        {(images.length > 0 || user.profilePhoto) ? (
+        {images.length > 0 ? (
           <div className="h-full" ref={emblaRef}>
             <div className="flex h-full cursor-pointer">
               {(images.length > 0 && images.map((img, index) => (
@@ -249,7 +249,7 @@ export default function HeroSectionEditProfile() {
                         e.stopPropagation(); 
                         handleSetPrimary(index);
                       }}
-                      className="absolute bottom-2 left-2 cursor-pointer bg-white/80 hover:bg-white rounded-full p-1 shadow group-hover:opacity-100 opacity-0 transition"
+                      className="absolute bottom-2 left-2 cursor-pointer bg-white/80 hover:bg-white rounded-full p-1 shadow "
                       title="Set as Primary Image"
                     >
                       <RefreshCcwDot size={20} color="#000000" strokeWidth={1.5} />
@@ -259,11 +259,11 @@ export default function HeroSectionEditProfile() {
               )))}
             </div>
           </div>
-        ) :  !isUploading && (
-          <p className="text-gray-500 flex items-center justify-center h-full">
+        ) :  !isUploading ? (
+          <div className="text-gray-500 flex items-center justify-center h-full">
             Upload Images here...
-          </p>
-        )}
+          </div>
+        ) : null}
 
         {(user.role === "INSTITUTION" || user.role === "SHOP_OWNER") && imageCount < 10 && (
           <div className="absolute bottom-2 right-2 z-10">

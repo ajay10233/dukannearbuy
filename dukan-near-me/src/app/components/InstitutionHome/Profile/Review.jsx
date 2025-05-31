@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { EllipsisVertical, Star } from "lucide-react";
-import { useParams } from "next/navigation";
+import { EllipsisVertical, MoveRight, Star } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
+
 
 export default function Review({ user }) {
     const { institutionId } = useParams();
@@ -18,6 +20,7 @@ export default function Review({ user }) {
     const [showOptions, setShowOptions] = useState(null);
     const [showReportModal, setShowReportModal] = useState(false);
     const [selectedReviewId, setSelectedReviewId] = useState(null);
+  
 
   // useEffect(() => {
   //   if (session || session?.user) {
@@ -33,27 +36,31 @@ export default function Review({ user }) {
   //       .catch(() => toast.error("Failed to fetch reviews"));
   //   }
   // }, [session]);
+
   
-  useEffect(() => {
-  if (session || session?.user) {
-    const role = session?.user?.role;
 
-    const fetchReviews = async () => {
-      try {
-        const idToUse =
-          role === "USER" ? institutionId : session?.user?.id;
+    useEffect(() => {
+      if (!session?.user) return;
 
-        const res = await axios.get(`/api/reviews?institutionId=${idToUse}`);
-        setReviews(res.data);
-      } catch {
-        toast.error("Failed to fetch reviews");
-      }
-    };
+      // const role = session?.user?.role;
 
-    fetchReviews();
-  }
-}, [session, institutionId]);
+      // if (role === "USER" && !institutionId) return;
 
+      const fetchReviews = async () => {
+        try {
+          const idToUse = institutionId || session?.user?.id;
+          if (!idToUse) return;
+
+          const res = await axios.get(`/api/reviews?institutionId=${idToUse}`);
+          setReviews(res.data);
+        } catch {
+          toast.error("Failed to fetch reviews");
+        }
+      };
+
+      fetchReviews();
+    }, [session, institutionId]);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -91,6 +98,8 @@ export default function Review({ user }) {
 
       setReviews(updated.data);
     } catch (err) {
+        console.log(err.response); // for debugging
+
       // toast.error("Error submitting review");
       const msg = err?.response?.data?.error || "Something went wrong while submitting the review.";
       toast.error(msg);
@@ -102,6 +111,12 @@ export default function Review({ user }) {
     setComment(review.comment);
     setEditingId(review.id);
     setShowOptions(null);
+
+    const el = document.getElementById("edit-review");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
   };
 
   const confirmReport = (reviewId) => {
@@ -134,10 +149,10 @@ export default function Review({ user }) {
   
   return (
   <div className="flex justify-center items-center py-4 md:py-6 w-full">
-    <div className="w-75 sm:w-3/4 px-4 py-3 md:px-8 md:py-6 flex flex-col gap-y-4 border border-gray-300 rounded-lg shadow-md bg-white transition-all duration-300 hover:shadow-lg">
+    <div className="w-80 sm:w-3/4 px-4 py-3 md:px-8 md:py-6 flex flex-col gap-y-4 border border-gray-300 rounded-lg shadow-md bg-white transition-all duration-300 hover:shadow-lg">
 
     {session?.user?.role === "USER" && (
-      <>
+      <div id="edit-review">
         <h2 className="text-2xl font-semibold pb-0 md:pb-2 text-gray-800">
           {editingId ? "Edit Review" : "Write a Review"}
         </h2>
@@ -161,7 +176,7 @@ export default function Review({ user }) {
 
           {/* Comment Input */}
           <textarea
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200"
+            className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200"
             rows="4"
             placeholder="Write your feedback..."
             value={comment}
@@ -190,7 +205,7 @@ export default function Review({ user }) {
             )}
           </div>
         </form>
-      </>
+      </div>
     )}
 
     {/* Display Reviews */}
@@ -200,13 +215,20 @@ export default function Review({ user }) {
         // <div className="flex flex-col gap-y-2 md:gap-y-4">
         //   <h3 className="text-2xl font-semibold mb-2 text-gray-800">Reviews</h3>
         <ul className="flex flex-col gap-y-1.5 md:gap-y-3">
-          {reviews.map((review, i) => (
+          {/* {reviews.map((review, i) => ( */}
+              
+          {reviews
+            // .filter((r) => r.rating === 5)
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, 3)
+            .map((review, i) => (  
+              
             <li key={i} className="p-2.5 md:p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
               <div className="flex items-center justify-between">
                 {/* Left side: Profile photo, Name */}
                 <div className="flex items-center gap-1.5 md:gap-3">
                   <div className="w-8 md:w-12 h-8 md:h-12 relative">
-                    <Image src={review?.user?.profilePhoto || "/default-img.jpg"} alt="User Profile" fill className="w-12 h-12 rounded-full" priority />
+                    <Image src={review?.user?.profilePhoto || "/default-img.jpg"} alt="User Profile" fill sizes="(min-width: 768px) 3rem, 2rem" className="w-12 h-12 rounded-full" priority />
                   </div>
                   <div>
                     <p className="font-semibold text-sm md:text-[16px]">{review?.user?.firstName} {review?.user?.lastName}</p>
@@ -259,12 +281,21 @@ export default function Review({ user }) {
           <p className="text-gray-500 text-center my-4">No reviews yet.</p>
           )}
     </div>
-        
-      {showReportModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 ">
-            <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-              <h2 className="text-lg font-semibold mb-4">Report Review</h2>
-              <p className="mb-4">Are you sure you want to report this review?</p>
+
+    {reviews.length > 3 && (
+      <div className="text-right mt-3">
+        <Link href={`/all-reviews/${institutionId || session?.user?.id}`}
+          className="group inline-flex items-center gap-2 text-blue-600 cursor-pointer transition-all ease-in-out duration-400 hover:text-blue-700 hover:underline text-sm">
+              View All Reviews <MoveRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+        </Link>
+      </div>
+    )}
+
+    {showReportModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 ">
+        <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+          <h2 className="text-lg font-semibold mb-4">Report Review</h2>
+          <p className="mb-4">Are you sure you want to report this review?</p>
               <div className="flex justify-end gap-2">
                 <button
                   onClick={() => setShowReportModal(false)}
@@ -281,9 +312,8 @@ export default function Review({ user }) {
               </div>
             </div>
           </div>
-    )}
-
-      </div>
+        )}
+    </div>
     </div>
   );
 }

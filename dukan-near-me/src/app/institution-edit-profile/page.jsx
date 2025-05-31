@@ -54,13 +54,31 @@ export default function EditProfilePage() {
         [name]: value,
       },
     }));
-  } else if (e.target.type === 'file') {
+  }
+   
+    // File input
+  else if (e.target.type === 'file') {
     const file = e.target.files?.[0];
     setForm((prev) => ({
       ...prev,
       [name]: file
     }));
-  } else {
+  }
+    
+     // Hashtags field
+  else if (name === "hashtags") {
+    const tags = value
+      .split(/[ ,]+/)               
+      .filter(Boolean)              
+      .map((tag) => tag.toLowerCase());
+
+    setForm((prev) => ({
+      ...prev,
+      hashtags: tags,
+    }));
+  }
+  
+  else {
     setForm((prev) => ({
       ...prev,
       [name]: value,
@@ -250,7 +268,7 @@ export default function EditProfilePage() {
           {/* Detailed Address Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="font-medium text-gray-700">House Number</label>
+              <label className="font-medium text-gray-700">Shop Number</label>
               <input
                 name="houseNumber"
                 value={form?.address?.houseNumber || ""}
@@ -385,7 +403,7 @@ export default function EditProfilePage() {
               value={form?.hashtags || ""}
               onChange={handleChange}
               placeholder="Comma separated (e.g. doctor, clinic)"
-              className="border p-2 rounded w-full"
+              className="border p-2 rounded w-full lowercase"
               required
             />
             {errors?.hashtags && <span className="text-sm text-red-500">{errors.hashtags}</span>}

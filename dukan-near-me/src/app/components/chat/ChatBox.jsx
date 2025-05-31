@@ -81,7 +81,7 @@ export default function ChatBox() {
         },
         (error) => {
           console.error("Error getting location:", error);
-          alert("Unable to fetch location. Please enable GPS.");
+          toast.error("Unable to fetch location. Please enable GPS.");
           return null;
         }
       );
@@ -542,9 +542,9 @@ export default function ChatBox() {
         </div>
 
         {/* Toggle Tab */}
-        <div className="flex items-center justify-center w-full">
+        <div className="flex items-stretch justify-center w-full">
           <button
-            className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tl-xl rounded-bl-xl transition-all duration-500 cursor-pointer ${!isMsgRequest
+            className={`w-1/2 flex items-center justify-center text-center py-3 px-4 gap-2.5 rounded-tl-xl rounded-bl-xl transition-all duration-500 cursor-pointer ${!isMsgRequest
               ? "bg-[var(--chart-2)] text-white font-semibold"
               : "bg-white text-[var(--withdarktext)] font-normal"
               }`}
@@ -553,7 +553,7 @@ export default function ChatBox() {
             Select a seller
           </button>
           <button
-            className={`w-1/2 flex items-center justify-center py-3 px-4 gap-2.5 rounded-tr-xl rounded-br-xl transition-all duration-500 cursor-pointer ${isMsgRequest
+            className={`w-1/2 flex items-center justify-center text-center py-3 px-4 gap-2.5 rounded-tr-xl rounded-br-xl transition-all duration-500 cursor-pointer ${isMsgRequest
               ? "bg-[var(--chart-2)] text-white font-semibold"
               : "bg-white text-[var(--withdarktext)] font-normal"
               }`}
@@ -564,7 +564,7 @@ export default function ChatBox() {
         </div>
 
         {/* Conversations List */}
-        <div className="w-full h-[540px] md:h-[560px] overflow-y-auto dialogScroll">
+        <div className="mt-4 h-[calc(100vh-200px)]  overflow-y-auto dialogScroll">
           {isMsgRequest ? (
 
             messageRequests.length > 0 ? (

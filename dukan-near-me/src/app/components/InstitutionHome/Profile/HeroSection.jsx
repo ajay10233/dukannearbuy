@@ -7,7 +7,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { Plus, RefreshCcwDot, Store, Crown, X, ChevronLeft, ChevronRight } from "lucide-react";
 import ProfileWrapper from "./ProfileWrapper";
 
-export default function HeroSection({id}) {
+export default function  HeroSection({id}) {
   const [user, setUser] = useState(null);  // Store user data
   const [images, setImages] = useState([]);
   const [imageCount, setImageCount] = useState(0);

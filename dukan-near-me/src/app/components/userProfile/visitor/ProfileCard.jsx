@@ -7,9 +7,9 @@ export default function ProfileCard({ user }) {
   return (
     <div className="relative bg-gradient-to-tl from-[#e7f0ec] via-[#aabec2] to-[#005d6e] rounded-lg p-6 w-full h-50 md:h-110 md:max-w-xs flex flex-col items-center gap-4 shadow-md">
       <div className="w-32 h-32 rounded-full relative bg-gray-300 shadow-lg flex items-center justify-center">
-        {user?.image ? (
+        {user?.profilePhoto ? (
           <Image
-            src={user.image}
+            src={user?.profilePhoto}
             alt="Profile"
             fill
             sizes={32}

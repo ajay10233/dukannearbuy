@@ -9,7 +9,7 @@ import { toast } from "react-hot-toast";
 export default function Subscription() {
   const [plans, setPlans] = useState([]);
   const [activePlan, setActivePlan] = useState("");
-  const [subscriptionExpired, setSubscriptionExpired] = useState(false); // New state to track expiration
+  const [subscriptionExpired, setSubscriptionExpired] = useState(false); 
   const router = useRouter();
 
   useEffect(() => {
@@ -32,29 +32,31 @@ export default function Subscription() {
         setActivePlan(data.subscriptionPlan?.name || "BASIC");
 
         // Check if subscription expired
+        let expired = true;
         if (data.subscriptionPlan?.expiresAt) {
           const expiryDate = new Date(data.subscriptionPlan.expiresAt);
           const now = new Date();
+          expired = expiryDate < now;
 
-          // expired if expiryDate is before now
-          setSubscriptionExpired(expiryDate < now);
-        } else {
-          // If no subscription plan, consider expired or false
-          setSubscriptionExpired(true);
-        }
-      } catch (error) {
-        console.error("Error fetching user plan:", error);
-      }
-    };
+        } 
+
+        // If expired, select BASIC, else user's plan
+        setActivePlan(expired ? "BASIC" : data.subscriptionPlan?.name || "BASIC");
+
+        } catch (error) {
+    console.error("Error fetching user plan:", error);
+  }
+};
 
     fetchPlans();
     fetchUserPlan();
   }, []);
 
-  const handleClick = (planName, price) => {
+  const handleClick = (planId, planName, price) => {
     if (price === 0) return;
     setActivePlan(planName);
-    router.push(`/payment?plan=${planName}&amount=${price}`);
+    // router.push(`/payment?plan=${planName}&amount=${price}`);
+    router.push(`/payment/${planId}`);
     toast.success(`You have selected the ${planName} plan!`);
   };
 
@@ -70,9 +72,11 @@ export default function Subscription() {
 
             <div className="w-full flex flex-wrap justify-center md:justify-around gap-8">
                 {plans.map((plan) => {
-                    const isActive = activePlan === plan.name;
+                    const isActive = subscriptionExpired ? plan.name === "BASIC" : activePlan === plan.name;
+                  
                     // Show "Select" instead of "Selected" if plan is active but expired
                     const buttonText = isActive && !subscriptionExpired ? "Selected" : "Select";
+                  
                     // Disable button only for free plans, but allow selection on expired active plans
                     const isDisabled = plan.price === 0 || (isActive && !subscriptionExpired);
 
@@ -101,34 +105,34 @@ export default function Subscription() {
                         <h3 className="text-2xl font-bold mt-0 md:mt-4">{plan.name}</h3>
 
                         <ul className="gap-y-4 text-gray-600 text-sm text-left w-full px-2">
-                        {plan.features.map((feature, i) => (
-                            <li key={i} className="flex items-center p-0.5 gap-2">
-                            <Check strokeWidth={1.5} color="#2FAB73" /> {feature}
-                            </li>
-                        ))}
+                          {plan.features.map((feature, i) => (
+                              <li key={i} className="flex items-center p-0.5 gap-2">
+                              <Check strokeWidth={1.5} color="#2FAB73" /> {feature}
+                              </li>
+                          ))}
                         </ul>
 
                         <div className="flex flex-col items-center justify-center">
-                        <div className="text-xl font-bold p-2">
-                            {plan.price === 0 ? "Free" : `₹${plan.price}`}
-                            {plan.price !== 0 && <span className="text-sm text-gray-500"> / mo</span>}
-                        </div>
+                          <div className="text-xl font-bold p-2">
+                              {plan.price === 0 ? "Free" : `₹${plan.price}`}
+                              {plan.price !== 0 && <span className="text-sm text-gray-500"> / mo</span>}
+                          </div>
 
-                        <button
-                            onClick={() => handleClick(plan.name, plan.price)}
-                            disabled={isDisabled}
-                            className={`px-6 py-2 tracking-wide cursor-pointer rounded-full text-sm font-semibold transition
-                            ${
-                                plan.name === "BASIC"
-                                ? "border border-yellow-500 text-yellow-500 bg-yellow-100"
-                                : "border border-yellow-500 text-yellow-500 bg-yellow-100"
-                            }
-                            ${isActive && !subscriptionExpired ? "ring-2 ring-yellow-300" : ""}
-                            ${plan.price === 0 ? "cursor-not-allowed opacity-70" : ""}
-                            `}
-                        >
-                            {buttonText}
-                        </button>
+                          <button
+                              onClick={() => handleClick(plan.id, plan.name, plan.price)}
+                              disabled={isDisabled}
+                              className={`px-6 py-2 tracking-wide cursor-pointer rounded-full text-sm font-semibold transition
+                              ${
+                                  plan.name === "BASIC"
+                                  ? "border border-yellow-500 text-yellow-500 bg-yellow-100"
+                                  : "border border-yellow-500 text-yellow-500 bg-yellow-100"
+                              }
+                              ${isActive && !subscriptionExpired ? "ring-2 ring-yellow-300" : ""}
+                              ${plan.price === 0 ? "cursor-not-allowed opacity-70" : ""}
+                              `}
+                          >
+                              {buttonText}
+                          </button>
                         </div>
                     </div>
                     );

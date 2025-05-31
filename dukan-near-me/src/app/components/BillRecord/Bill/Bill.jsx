@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSession } from "next-auth/react";
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 export default function Bill() {
   const [bills, setBills] = useState([]);
@@ -44,56 +45,117 @@ export default function Bill() {
     fetchBills();
   }, []);
 
-  
-  const toggleFavorite = async (billId, isCurrentlyFav) => {
-    try {
-      const method = isCurrentlyFav ? 'DELETE' : 'POST';
-  
-      const res = await fetch('/api/favorite-bills', {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-        billId,
-        userId: session?.user?.id, 
-      }),
-      });
-  
-      if (res.ok) {
-        setFavorites((prev) => {
-          if (method === 'POST') {
-            return [...prev, { billId }];
-          } else {
-            return prev.filter(item => item.billId !== billId);
-          }
-        });
-      } else {
-        console.error("Toggle failed");
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (!session?.user?.id) return;
+      try {
+        const res = await axios.get(`/api/favorite-bills?userId=${session.user.id}`);
+        setFavorites(res.data); 
+      } catch (err) {
+        console.error("Failed to fetch favorites", err);
       }
-    } catch (error) {
-      console.error("Toggle error:", error);
-    }
+    };
+
+    fetchFavorites();
+  }, [session]);
+  
+  const isFavorited = (billId) => {
+    return favorites.some(fav => fav.billId === billId);
   };
     
+// const toggleFavorite = async (billId, isCurrentlyFav) => {
+//   try {
+//     if (isCurrentlyFav) {
+//       const favorite = favorites.find(item => item.billId === billId);
+//       if (!favorite) return;
 
+//       const res = await fetch('/api/favorite-bills', {
+//         method: 'DELETE',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({
+//           favoriteBillId: favorite.id,
+//         }),
+//       });
 
-//   const filteredBills = bills.filter((bill) => {
-//   const matchesSearch = bill.institution?.firmName.toLowerCase().includes(search.toLowerCase());
+//       if (res.ok) {
+//         setFavorites((prev) => prev.filter(item => item.billId !== billId));
+//       } else {
+//         console.error("Unfavorite failed");
+//       }
+//     } else {
+//       const res = await fetch('/api/favorite-bills', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({
+//           billId,
+//           userId: session?.user?.id,
+//         }),
+//       });
 
-//   const isDateValid =
-//     (!dateFrom || new Date(bill.createdAt) >= new Date(dateFrom)) &&
-//     (!dateTo || new Date(bill.createdAt) <= new Date(dateTo));
+//       if (res.ok) {
+//         const data = await res.json();
+//         setFavorites((prev) => [...prev, data.favorite]);
+//       } else {
+//         console.error("Favorite failed");
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Toggle error:", error);
+//   }
+// };
 
-//   const isTypeValid = !typeFilter || bill.type === typeFilter;
+  const toggleFavorite = async (billId) => {
+    const favorite = favorites.find(fav => fav.billId === billId);
 
-//   const isFavValid =
-//     favoriteFilter === null ||
-//     (favoriteFilter === true && bill.favorited) ||
-//     (favoriteFilter === false && !bill.favorited);
+      if (favorite) {
+        // Unfavorite
+        try {
+          const res = await fetch(`/api/favorite-bills?favoriteBillId=${favorite.id}`, {
+            method: 'DELETE',
+          });
 
-//   return matchesSearch && isDateValid && isTypeValid && isFavValid;
-// });
+          if (res.ok) {
+            setFavorites(prev => prev.filter(fav => fav.billId !== billId));
+            toast.success("Removed from favorites");
+          } else {
+            toast.error("Failed to remove favorite");
+          }
+        } catch (err) {
+          console.error("Error not favoriting:", err);
+          toast.error("An error occurred");
+        }
+      } else {
+        // Favorite
+        try {
+          const res = await fetch(`/api/favorite-bills`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              billId,
+              userId: session?.user?.id,
+            }),
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            setFavorites(prev => [...prev, data]);
+            toast.success("Added to favorites");
+          } else {
+            toast.error("Failed to favorite");
+          }
+        } catch (err) {
+          console.error("Error favoriting:", err);
+          toast.error("An error occurred");
+        }
+      }
+  };
+
 
   const filteredBills = bills.filter((bill) => {
   const firmName = bill.institution?.firmName || bill.institution?.firmName || '';
@@ -110,8 +172,9 @@ export default function Bill() {
 
   const isFavValid =
     favoriteFilter === null ||
-    (favoriteFilter === true && bill.favorited) ||
-    (favoriteFilter === false && !bill.favorited);
+    (favoriteFilter === true && isFavorited(bill.id)) ||
+    (favoriteFilter === false && !isFavorited(bill.id));
+
 
   return matchesSearch && isDateValid && isRoleValid && isFavValid;
 });
@@ -203,8 +266,8 @@ export default function Bill() {
             {showTypeFilter && (
               <div className="absolute top-6 w-40 bg-white border border-gray-300 rounded-lg shadow-md p-2 text-sm flex flex-col gap-1 z-10">
                 <button className='cursor-pointer transition-all ease-in-out duration-400 hover:bg-gray-100' onClick={() => { setRoleFilter(''); setShowTypeFilter(false); }}>All</button>
-                <button className='cursor-pointer transition-all ease-in-out duration-400 hover:bg-gray-100' onClick={() => { setRoleFilter('Institution'); setShowTypeFilter(false); }}>Institution</button>
-                <button className='cursor-pointer transition-all ease-in-out duration-400 hover:bg-gray-100' onClick={() => { setRoleFilter('Shop Owner'); setShowTypeFilter(false); }}>Shop Owner</button>
+                <button className='cursor-pointer transition-all ease-in-out duration-400 hover:bg-gray-100' onClick={() => { setRoleFilter('Institution'); setShowTypeFilter(false); }}>Medical Institute</button>
+                <button className='cursor-pointer transition-all ease-in-out duration-400 hover:bg-gray-100' onClick={() => { setRoleFilter('Shop Owner'); setShowTypeFilter(false); }}>Shop</button>
               </div>
             )}
 
@@ -229,14 +292,16 @@ export default function Bill() {
             <div key={bill.id} className="bg-white p-2 md:p-4 rounded-xl shadow-sm flex items-center w-full">
               <ul className="flex items-center text-sm text-slate-600 w-full justify-between *:w-1/5 text-center">
                 <li className='hidden md:block'>
-                  <button onClick={() => toggleFavorite(bill.id, favorites.some(fav => fav.billId === bill.id))}>
+                  <button>
                   <Heart
                       size={20}
                       strokeWidth={1.5}
                       stroke="red"
-                      fill={(favorites || []).some(fav => fav.billId === bill.id) ? 'red' : 'transparent'}
+                      fill={isFavorited(bill.id) ? "#ec0909" : "none"}
+
+                      // fill={(favorites || []).some(fav => fav.billId === bill.id) ? 'red' : 'transparent'}
                       className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110"
-                      // onClick={() => removeFromFavorites(bill.id)}
+                      onClick={() => toggleFavorite(bill.id)}
                     />
                   </button>
                 </li>
@@ -257,7 +322,7 @@ export default function Bill() {
                     {/* Show icon based on selected dropdown option */}
                     <span className='md:hidden flex justify-center items-center'>
                     {selectedAction === 'favorite' ? (
-                      <Heart size={20} strokeWidth={1.5} stroke="red" fill={(favorites || []).some(fav => fav.billId === bill.id) ? 'red' : 'transparent'}  className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110" onClick={() => toggleFavorite(bill.id, favorites.some(fav => fav.billId === bill.id))} />
+                      <Heart size={20} strokeWidth={1.5} stroke="red" fill={isFavorited(bill.id) ? "#ec0909" : "none"}  className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110" onClick={() => toggleFavorite(bill.id)} />
                     ) : selectedAction === 'download' ? (
                           <Link href={`download-bill/${bill.id}?institutionId=${bill.institution.id}`} className='className="text-white bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition-all duration-500 ease-in-out"'>
                           <ArrowDownToLine size={17} strokeWidth={2.5} color="#fff"/>

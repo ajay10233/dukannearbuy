@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import ProfileCard from './ProfileCard';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
 
 export default function Profile() {
   const [user, setUser] = useState(null);

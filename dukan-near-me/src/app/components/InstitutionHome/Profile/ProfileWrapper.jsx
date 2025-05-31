@@ -208,10 +208,25 @@ export default function ProfileWrapper({ children, images, setImages }) {
           <FaEdit size={20} strokeWidth={1.5} />
         </button> */}
         <div className="py-2">
-            <Link href="/UserHomePage"
+            {/* <Link href="/UserHomePage"
               className="flex items-center gap-2 text-blue-600 rounded-md transition ease-in-out duration-400 hover:text-blue-700">
                 <MoveLeft size={20} strokeWidth={1.5} /> Back
+            </Link> */}
+          {user?.role && (
+            <Link
+              href={
+                user.role === "USER"
+                  ? "/UserHomePage"
+                  : user.role === "SHOP_OWNER" || user.role === "INSTITUTION"
+                  ? "/partnerHome"
+                  : "/login"
+              }
+              className="flex items-center gap-2 text-blue-600 rounded-md transition ease-in-out duration-400 hover:text-blue-700"
+            >
+              <MoveLeft size={20} strokeWidth={1.5} /> Back
             </Link>
+          )}
+
         </div>
 
         <div className="flex items-end gap-x-8">

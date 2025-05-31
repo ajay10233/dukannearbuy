@@ -17,6 +17,7 @@ export default function MyPlans() {
         if (!response.ok) throw new Error("Failed to fetch user data");
 
         const data = await response.json();
+        console.log("User data from API:", data);
 
         const userPlans = [];
 
@@ -162,7 +163,7 @@ export default function MyPlans() {
           <Image
             src="/nearbuydukan - watermark.png"
             alt="Watermark"
-            fill
+            fill sizes="(max-width: 768px) 100px, (min-width: 769px) 150px"
             className="object-contain w-17 h-17 md:w-32 md:h-32"
             priority
           />

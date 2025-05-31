@@ -543,7 +543,7 @@ export default function About({ profileUpdated }) {
                 {userData.hashtags.map((tag, index) => (
                   <span
                     key={index}
-                    className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium"
+                    className="bg-blue-100 lowercase text-blue-700 px-3 py-1 rounded-full text-xs font-medium"
                   >
                     #{tag}
                   </span>
