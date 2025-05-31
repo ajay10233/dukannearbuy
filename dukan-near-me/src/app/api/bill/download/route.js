@@ -12,6 +12,7 @@ export async function POST(req) {
     }
 
     const { startDate, endDate } = await req.json();
+
     const bills = await prisma.bill.findMany({
       where: {
         institutionId: session.user.id,
@@ -29,31 +30,79 @@ export async function POST(req) {
       }
     })
 
-    // Generate Excel
     const workbook = new ExcelJS.Workbook()
-    const sheet = workbook.addWorksheet('Bills')
+    const sheet = workbook.addWorksheet('Bills with Items')
 
     sheet.columns = [
-      { header: 'Invoice #', key: 'invoiceNumber', width: 15 },
-      { header: 'Date', key: 'createdAt', width: 20 },
-      { header: 'User Name', key: 'userName', width: 25 },
-      { header: 'Phone', key: 'phoneNumber', width: 15 },
-      { header: 'Amount', key: 'totalAmount', width: 10 },
-      { header: 'Payment Status', key: 'paymentStatus', width: 15 },
-      { header: 'Remarks', key: 'remarks', width: 25 },
+      { header: 'Invoice #', width: 15 },
+      { header: 'Date', width: 20 },
+      { header: 'User Name', width: 25 },
+      { header: 'Phone', width: 15 },
+      { header: 'Remarks', width: 25 },
+      { header: 'Total Amount', width: 15 },
+      { header: 'Item Name', width: 25 },
+      { header: 'Item Price', width: 12 },
+      { header: 'Quantity', width: 10 },
+      { header: 'Item Total', width: 12 }
     ]
 
+
+    let currentRowIndex = 2
     bills.forEach(bill => {
-      sheet.addRow({
-        invoiceNumber: bill.invoiceNumber || '',
-        createdAt: bill.createdAt.toISOString().split('T')[0],
-        userName: bill.user ? `${bill.user.firstName || ''} ${bill.user.lastName || ''}` : '',
-        phoneNumber: bill.phoneNumber || bill.user?.phone || '',
-        totalAmount: bill.totalAmount || 0,
-        paymentStatus: bill.paymentStatus || '',
-        remarks: bill.remarks || '',
-      })
+      const itemCount = bill.items.length || 1
+      const userName = bill.user ? `${bill.user.firstName || ''} ${bill.user.lastName || ''}` : ''
+      const phone = bill.phoneNumber || bill.user?.phone || ''
+      const invoiceDate = bill.createdAt
+
+      if (bill.items.length === 0) {
+        const rowValues = [
+          bill.invoiceNumber || '',
+          invoiceDate,
+          userName,
+          phone,
+          bill.remarks || '',
+          bill.totalAmount || 0,
+          '', '', '', ''
+        ]
+        const row = sheet.addRow(rowValues)
+        formatTypes(row)
+        addBorderToRow(row)
+        currentRowIndex++
+      } else {
+        bill.items.forEach((item, i) => {
+          const rowValues = [
+            i === 0 ? bill.invoiceNumber || '' : '',
+            i === 0 ? invoiceDate : '',
+            i === 0 ? userName : '',
+            i === 0 ? phone : '',
+            i === 0 ? bill.remarks || '' : '',
+            i === 0 ? bill.totalAmount || 0 : '',
+            item.name,
+            item.price,
+            item.quantity || 1,
+            item.total || (item.price * (item.quantity || 1))
+          ]
+          const row = sheet.addRow(rowValues)
+          formatTypes(row)
+          addBorderToRow(row)
+          currentRowIndex++
+        })
+
+        // Merge common fields across item rows
+        const start = currentRowIndex - itemCount
+        const end = currentRowIndex - 1
+        if (itemCount > 1) {
+          ['A', 'B', 'C', 'D', 'E', 'F'].forEach(col => {
+            sheet.mergeCells(`${col}${start}:${col}${end}`)
+            sheet.getCell(`${col}${start}`).alignment = { vertical: 'middle', horizontal: 'left' }
+          })
+        }
+      }
     })
+
+    // Style header
+    sheet.getRow(1).font = { bold: true }
+    addBorderToRow(sheet.getRow(1))
 
     const buffer = await workbook.xlsx.writeBuffer()
 
@@ -67,4 +116,26 @@ export async function POST(req) {
     console.error('Download Bills Error:', error)
     return NextResponse.json({ error: 'Failed to generate Excel' }, { status: 500 })
   }
+}
+
+// Add border to all cells in a row
+function addBorderToRow(row) {
+  row.eachCell(cell => {
+    cell.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' }
+    }
+  })
+}
+
+
+
+function formatTypes(row) {
+  row.getCell(2).numFmt = 'yyyy-mm-dd' // Date
+  row.getCell(6).numFmt = '0.00'       // totalAmount
+  row.getCell(8).numFmt = '0.00'       // item price
+  row.getCell(9).numFmt = '0'          // quantity
+  row.getCell(10).numFmt = '0.00'      // item total
 }
