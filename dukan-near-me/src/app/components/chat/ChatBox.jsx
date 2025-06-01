@@ -50,11 +50,11 @@ export default function ChatBox() {
       return user.firmName || `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Unknown";
     }
 
-    if(user?.firstName || user?.lastName){
+    if (user?.firstName || user?.lastName) {
       return `${user.firstName || ""} ${user.lastName || ""}`.trim();
     }
 
-    return user?.name || "Unknown"; 
+    return user?.name || "Unknown";
   };
 
   const encryptMessage = (message, secretKey) => {
@@ -349,7 +349,22 @@ export default function ChatBox() {
         console.log("Message requests response:", data);
 
         if (res.ok) {
-          setMessageRequests(data.data || []);
+          const decryptedRequests = data?.data?.map((conversation) => {
+            const lastMessage = conversation.lastMessage;
+            if (lastMessage) {
+              const isSentByCurrentUser = lastMessage.senderId === session.user.id;
+              const secretKey = isSentByCurrentUser
+                ? conversation.otherUser.id + session.user.id
+                : session.user.id + conversation.otherUser.id;
+
+              // Decrypt last message content
+              lastMessage.content = decryptMessage(lastMessage.content, secretKey);
+            }
+
+            return conversation;
+          });
+
+          setMessageRequests(decryptedRequests || []);
         } else {
           console.error(data.message);
         }
@@ -360,6 +375,7 @@ export default function ChatBox() {
 
     fetchMessageRequests();
   }, []);
+
 
 
   if (status === "loading")
@@ -399,7 +415,7 @@ export default function ChatBox() {
       receiverId: selectedPartner?.otherUser ? selectedPartner.otherUser.id : selectedPartner.id,
       content: encryptedMessage,
       timestamp,
-      accepted: selectedPartner?.accepted,
+      accepted: selectedPartner?.role == "USER" ? false : selectedPartner.accepted,
     };
 
     // Helper function to update conversations array
@@ -422,7 +438,7 @@ export default function ChatBox() {
         },
         lastMessage,
         updatedAt: timestamp,
-        accepted: selectedPartner?.role=="USER"?false:selectedPartner.accepted,
+        accepted: selectedPartner?.role == "USER" ? false : selectedPartner.accepted,
       };
       console.log("updatedConversation: ", updatedConversation);
 
@@ -450,14 +466,15 @@ export default function ChatBox() {
         },
         lastMessage,
         updatedAt: timestamp,
-        accepted: selectedPartner?.role=="USER"?false:selectedPartner.accepted,
+        accepted: selectedPartner?.role == "USER" ? false : selectedPartner.accepted,
       };
     }
 
-    // Update both conversations and filtered conversations states
     setConversations(updateConversationsArray);
     setFilteredConversations(updateConversationsArray);
-    
+
+    // return;
+
     await socket.emit("sendMessage", msgData);
 
     setMessages((prev) =>
@@ -1024,18 +1041,18 @@ export default function ChatBox() {
           </>
         ) : (
           <div className="flex flex-col justify-center items-center flex-1">
-              {/* <p className="text-gray-500">Select a conversation to start chatting</p> */}
-              
+            {/* <p className="text-gray-500">Select a conversation to start chatting</p> */}
+
             <div className="relative w-17 h-17 md:w-80 md:h-80">
-                <Image
-                    src="/nearbuydukan - watermark.png"
-                    alt="Watermark"
-                    fill sizes="120"
-                    className="object-contain w-17 h-17 md:w-80 md:h-80"
-                    priority
-                />
+              <Image
+                src="/nearbuydukan - watermark.png"
+                alt="Watermark"
+                fill sizes="120"
+                className="object-contain w-17 h-17 md:w-80 md:h-80"
+                priority
+              />
             </div>
-              
+
           </div>
         )}
       </div>

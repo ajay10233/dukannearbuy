@@ -53,8 +53,6 @@ export default function OTPVerification() {
   };
 
 
-
-
   const handleChange = (e, index) => {
     const value = e.target.value.replace(/\D/g, '');
     const newOtp = [...otp];
@@ -163,7 +161,7 @@ export default function OTPVerification() {
             <button
               onClick={handleSubmit}
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white py-2 rounded-lg font-semibold shadow-md hover:opacity-90 transition"
+              className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white py-2 rounded-lg font-semibold shadow-md hover:opacity-90 transition-all ease-in-out duration-400 cursor-pointer"
             >
               {isLoading ? 'Verifying...' : 'Verify OTP'}
             </button>

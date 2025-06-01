@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
 import { useParams, useSearchParams } from "next/navigation";
+import LogoLoader from "../LogoLoader";
 
 export default function PaymentOffer() {
   const [coupon, setCoupon] = useState("");
@@ -13,10 +14,10 @@ export default function PaymentOffer() {
   const [shake, setShake] = useState(false);
   const [showSuccessAnim, setShowSuccessAnim] = useState(false);
   const [discountAmount, setDiscountAmount] = useState(0);
-  const [plan, setPlan] = useState(null); 
+  const [plan, setPlan] = useState(null);
+  const [selectedCoupon, setSelectedCoupon] = useState(null);
 
-  // const searchParams = useSearchParams();
-  // const priceParam = searchParams.get("amount");
+
   // const price = planId ? parseInt(planId) : 999;
   // const finalPrice = discountApplied ? price - discountAmount : price;
 
@@ -24,30 +25,37 @@ export default function PaymentOffer() {
     const planId = params.planId;
 
 
-    useEffect(() => {
+  useEffect(() => {
     if (!planId) return;
 
-    fetch(`/api/plans`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch plan");
-        return res.json();
-      })
-      .then((data) => {
-        const foundPlan = data.find(p => p.id === planId);
-      if (foundPlan) {
-        setPlan(foundPlan);
-      } else {
-        toast.error('Plan not found');
-      }
+    fetch(`/api/plans/${planId}`, { method: "GET" }).then((res) => {
+      if (!res.ok) throw new Error("Failed to fetch plan");
+      return res.json();
+    }).then((data) => {
+      console.log("_+________________________",data);
+      setPlan(data);
     })
-      .catch((error) => {
-        console.error(error);
-        toast.error("Could not load plan details.");
-      });
+
+      // .then((res) => {
+      //   if (!res.ok) throw new Error("Failed to fetch plan");
+      //   return res.json();
+      // })
+      // .then((data) => {
+      //   const foundPlan = data.find(p => p.id === planId);
+      //   if (foundPlan) {
+      //     setPlan(foundPlan);
+      //   } else {
+      //     toast.error('Plan not found');
+      //   }
+      // })
+      // .catch((error) => {
+      //   console.error(error);
+      //   toast.error("Could not load plan details.");
+      // });
   }, [planId]);
 
   if (!plan) {
-    return <div>Loading plan details...</div>;
+    return <LogoLoader content={"Loading plan details..."}/>;
   }
 
   const price = plan.price;
@@ -62,9 +70,7 @@ export default function PaymentOffer() {
 
     try {
       const response = await fetch("/api/coupons", { method: "GET" });
-      if (!response.ok) {
-        throw new Error("Failed to fetch coupons");
-      }
+      if (!response.ok) throw new Error("Failed to fetch coupons");
 
       const coupons = await response.json();
 
@@ -73,6 +79,7 @@ export default function PaymentOffer() {
       );
 
       if (matchedCoupon) {
+        setSelectedCoupon(matchedCoupon); // 🔥 Save full coupon object
         setDiscountApplied(true);
         setInvalidCoupon(false);
         setDiscountAmount(Math.round((price * matchedCoupon.discountPercentage) / 100));
@@ -94,6 +101,31 @@ export default function PaymentOffer() {
     }
   };
 
+
+  const handleCheckout = async (couponId=null) => {
+    try {
+      const res = await fetch("/api/plans/upgrade/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ couponId, planId }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Something went wrong");
+
+      if (data.upgraded) {
+        toast.success(`Successfully upgraded to ${plan?.name} 🎉`);
+        window.location.href = "/";
+      } else if (data.stripeUrl) {
+        window.location.href = data.stripeUrl; // ⚡ Future Stripe redirection
+      }
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-teal-100 flex items-center justify-center p-4 relative">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-10 space-y-6">
@@ -104,7 +136,7 @@ export default function PaymentOffer() {
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="text-lg font-semibold text-gray-700">Selected Offer</h3>
-                <p className="text-sm text-gray-600 capitalize">{plan.name} Subscription</p>
+                <p className="text-sm text-gray-600">{plan?.name+" Plan" || ""}</p>
               </div>
               <div className="text-right">
                 {discountApplied ? (
@@ -136,12 +168,12 @@ export default function PaymentOffer() {
               className="flex items-center gap-2"
             >
               <input
-              id="coupon"
-              type="text"
-              value={coupon}
-              onChange={(e) => setCoupon(e.target.value.toUpperCase())}
-              placeholder="Enter coupon code"
-              className="flex-1 border text-sm w-[180px] md:w-full rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 uppercase"
+                id="coupon"
+                type="text"
+                value={coupon}
+                onChange={(e) => setCoupon(e.target.value.toUpperCase())}
+                placeholder="Enter coupon code"
+                className="flex-1 border text-sm w-[180px] md:w-full rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 uppercase"
               />
 
               <button
@@ -173,9 +205,18 @@ export default function PaymentOffer() {
             </div>
           </div>
 
-          <button className="w-full cursor-pointer mt-4 bg-gradient-to-r from-indigo-500 to-teal-500 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg hover:from-indigo-600 hover:to-teal-600 transition-all">
-            Proceed to Pay
+         
+          <button
+            onClick={() => handleCheckout(selectedCoupon?.id)}
+            className={`w-full cursor-pointer mt-4 ${finalPrice === 0
+              ? "bg-green-500 hover:bg-green-600"
+              : "bg-indigo-500 hover:bg-indigo-600"
+              } text-white font-semibold py-3 rounded-xl shadow-md transition-all`}
+          >
+            {finalPrice === 0 ? "Upgrade Now for Free" : "Proceed to Pay"}
           </button>
+      
+
         </div>
 
         <p className="text-xs text-gray-400 text-center">Secured by Stripe Payments</p>

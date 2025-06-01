@@ -3,18 +3,19 @@ import { prisma } from "@/utils/db";
 
 export const GET = async (request) => {
   try {
+
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search")?.trim();
 
     let users;
 
     if (search) {
+      console.log("search is: ",search);
       users = await prisma.user.findMany({
         where: {
-          role: "USER",
           username: {
-            contains: search,
-            mode: "insensitive",
+            equals: search,
+            // mode: "insensitive",
           },
         },
       });

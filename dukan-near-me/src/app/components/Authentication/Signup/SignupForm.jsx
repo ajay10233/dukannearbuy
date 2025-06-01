@@ -121,8 +121,8 @@ export default function SignupForm() {
         >
             Create an account
         </button>
-        <span className="text-gray-600 text-sm">- or -</span>
-        <p className="text-gray-600 text-md">Already have an account? <Link href='/login' className="text-gray-800 font-semibold">Login</Link></p>
+        <span className="text-gray-700 md:text-gray-600 text-sm">- or -</span>
+        <p className="text-gray-700 md:text-gray-600 text-md">Already have an account? <Link href='/login' className="text-blue-800 md:text-gray-800 font-semibold">Login</Link></p>
       </div>
     </form>
   );

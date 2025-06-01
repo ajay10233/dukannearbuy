@@ -227,8 +227,8 @@ export default function SearchBar() {
           {/* Results shown below tabs */}
           <ul className="flex flex-col gap-2 overflow-y-auto dialogScroll scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 p-3 max-h-[300px]">
             {filteredResults.length > 0 ? (
-              filteredResults.map((profile) => (
-                <li key={profile.id}
+              filteredResults.map((profile, i) => (
+                <li key={profile.id || i}
                   onClick={() => handleRedirect(profile)}
                   className="py-1 px-3 md:py-2 md:px-5 hover:bg-gray-900 transition-colors duration-300 cursor-pointer">
                   <div className="flex items-center gap-4">

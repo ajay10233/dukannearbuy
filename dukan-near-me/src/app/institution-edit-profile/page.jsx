@@ -44,29 +44,29 @@ export default function EditProfilePage() {
   
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday"];
 
-//    const checkUsernameAvailability = async (username) => {
-//   if (!username) {
-//     setUsernameAvailable(true);
-//     return;
-//   }
+   const checkUsernameAvailability = async (username) => {
+  if (!username) {
+    setUsernameAvailable(true);
+    return;
+  }
 
-//   setCheckingUsername(true);
-//   try {
-//     const res = await fetch(`/api/users/?search=${encodeURIComponent(username)}`);
-//     const data = await res.json();
+  setCheckingUsername(true);
+  try {
+    const res = await fetch(`/api/users/?search=${encodeURIComponent(username)}`);
+    const data = await res.json();
 
-//     const otherUsersWithUsername = data.data?.filter(u =>
-//       u.id !== form.id && u.username?.toLowerCase() === username.toLowerCase()
-//     ) || [];
+    const otherUsersWithUsername = data.data?.filter(u =>
+      u.id !== form.id && u.username?.toLowerCase() === username.toLowerCase()
+    ) || [];
 
-//     setUsernameAvailable(otherUsersWithUsername.length === 0);
-//   } catch (error) {
-//     console.error("Error checking username:", error);
-//     setUsernameAvailable(true); // Assume available if error
-//   }
+    setUsernameAvailable(otherUsersWithUsername.length === 0);
+  } catch (error) {
+    console.error("Error checking username:", error);
+    setUsernameAvailable(true); // Assume available if error
+  }
 
-//   setCheckingUsername(false);
-// };
+  setCheckingUsername(false);
+};
 
  
   const handleChange = (e) => {
@@ -183,14 +183,14 @@ export default function EditProfilePage() {
     fetchProfileData();
   }, []);
 
-//   useEffect(() => {
-//   if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
-//   debounceTimeout.current = setTimeout(() => {
-//     checkUsernameAvailability(form.username?.trim().toLowerCase());
-//   }, 1000);
+  useEffect(() => {
+  if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+  debounceTimeout.current = setTimeout(() => {
+    checkUsernameAvailability(form.username?.trim().toLowerCase());
+  }, 1000);
 
-//   return () => clearTimeout(debounceTimeout.current);
-// }, [form.username]);
+  return () => clearTimeout(debounceTimeout.current);
+}, [form.username]);
 
 
   const handleSubmit = async (e) => {
@@ -299,9 +299,9 @@ export default function EditProfilePage() {
               value={form?.username || ''}
               onChange={handleChange}
               placeholder="Type your User Id"
-              // className={`p-2 border rounded w-full transition ${
-              //   !usernameAvailable ? 'border-red-500' : ''
-              // }`}  autoComplete="off"
+              className={`p-2 border rounded w-full transition ${
+                !usernameAvailable ? 'border-red-500' : ''
+              }`}  autoComplete="off"
               required
             />
 

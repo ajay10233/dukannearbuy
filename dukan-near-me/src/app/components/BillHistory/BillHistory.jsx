@@ -8,18 +8,45 @@ import { useState } from "react";
 import axios from "axios";
 
 export default function BillHistory() {
-  const [dates,setDates] = useState({"startDate": "", "endDate": ""});
+  const [dates, setDates] = useState({ "startDate": "", "endDate": "" });
+  
+  const getFormattedDate = (date) => {
+    return date.toISOString().split("T")[0];
+  };
+
   const handleDownload = async () => {
+    // if (!dates.startDate || !dates.endDate) {
+    //   alert("Please select both start and end dates.");
+    //   return;
+    // }
+
+    let { startDate, endDate } = dates;
+
+    if (!startDate || !endDate) {
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+
+      startDate = getFormattedDate(yesterday);
+      endDate = getFormattedDate(tomorrow);
+      setDates({ startDate, endDate });
+    }
+
     try {
-      const res = await axios.post('/api/bill/download', dates, {
-        responseType: 'blob'  // Important to get file
-      })
+      const res = await axios.post('/api/bill/download',
+        { startDate, endDate },
+        {
+          responseType: 'blob'  // Important to get file
+        }
+      )
 
       const blob = new Blob([res.data], { type: res.headers['content-type'] })
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `Bills_${dates.startDate}_to_${dates.endDate}.xlsx`
+      a.download = `Bills_${startDate}_to_${endDate}.xlsx`
       a.click()
       window.URL.revokeObjectURL(url)
     } catch (err) {
