@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useSession } from "next-auth/react";
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import LogoLoader from '../../LogoLoader';
 
 export default function Bill() {
   const [bills, setBills] = useState([]);
@@ -62,51 +63,6 @@ export default function Bill() {
   const isFavorited = (billId) => {
     return favorites.some(fav => fav.billId === billId);
   };
-    
-// const toggleFavorite = async (billId, isCurrentlyFav) => {
-//   try {
-//     if (isCurrentlyFav) {
-//       const favorite = favorites.find(item => item.billId === billId);
-//       if (!favorite) return;
-
-//       const res = await fetch('/api/favorite-bills', {
-//         method: 'DELETE',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({
-//           favoriteBillId: favorite.id,
-//         }),
-//       });
-
-//       if (res.ok) {
-//         setFavorites((prev) => prev.filter(item => item.billId !== billId));
-//       } else {
-//         console.error("Unfavorite failed");
-//       }
-//     } else {
-//       const res = await fetch('/api/favorite-bills', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({
-//           billId,
-//           userId: session?.user?.id,
-//         }),
-//       });
-
-//       if (res.ok) {
-//         const data = await res.json();
-//         setFavorites((prev) => [...prev, data.favorite]);
-//       } else {
-//         console.error("Favorite failed");
-//       }
-//     }
-//   } catch (error) {
-//     console.error("Toggle error:", error);
-//   }
-// };
 
   const toggleFavorite = async (billId) => {
     const favorite = favorites.find(fav => fav.billId === billId);
@@ -185,7 +141,9 @@ export default function Bill() {
     setIsDropdownOpen(false); 
   };
 
-  if (loading) return <div className="p-4 text-center text-slate-600">Loading bills...</div>;
+  if (loading) {
+    return <LogoLoader content={"Loading bills..."} />
+  }
   if (error) return <div className="p-4 text-center text-red-500">{error}</div>;
 
   return (

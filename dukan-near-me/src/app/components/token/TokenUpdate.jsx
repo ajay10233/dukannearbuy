@@ -7,6 +7,7 @@ import Link from "next/link";
 import io from "socket.io-client";
 import { useParams } from "next/navigation";
 import { useRouter } from 'next/navigation';
+import LogoLoader from "../LogoLoader";
 
 
 const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { transports: ["websocket"] });;
@@ -17,6 +18,9 @@ export default function TokenUpdate() {
     const [completedTokens, setCompletedTokens] = useState([]);
     const [selectedToken, setSelectedToken] = useState(null);
     const [role, setRole] = useState(null);
+    const [loading, setLoading] = useState(true); 
+
+
     const router = useRouter();
 
     const handleRedirection = async () => {
@@ -46,6 +50,8 @@ export default function TokenUpdate() {
         socket.emit("getCurrentProcessingTokens", institutionId, (tokens) => {
             console.log("🔄 Initially fetched processing tokens:", tokens);
             setCurrentTokens(tokens || []);
+
+            setLoading(false); 
         });
 
         // 2. Handle newly updated processing token
@@ -78,6 +84,8 @@ export default function TokenUpdate() {
             socket.off("completedTokensUpdated");
         };
     }, [institutionId]);
+
+    if (loading) return <LogoLoader content="Fetching your token details..." />;
 
 
     return (

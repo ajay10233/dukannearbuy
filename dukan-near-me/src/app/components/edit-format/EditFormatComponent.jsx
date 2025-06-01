@@ -9,6 +9,7 @@ import Navbar from "@/app/components/InstitutionHome/navbar/Navbar";
 // import EditFormat from "@/app/components/bill-format/EditFormat";
 import EditFormatModal from "../../components/bill-format/EditFormatModal";
 import { FaEdit } from "react-icons/fa";
+import LogoLoader from '../LogoLoader';
 
 
 export default function EditFormatComponent() {
@@ -35,6 +36,7 @@ export default function EditFormatComponent() {
     const [tokenEnabled, setTokenEnabled] = useState(false); // for toggle switch
     const [token, setToken] = useState(''); // for token input value
 
+    const [loading, setLoading] = useState(true);
 
 
     const handleFormDetailsChange = (updatedForm) => {
@@ -228,7 +230,8 @@ export default function EditFormatComponent() {
     useEffect(() => {
         const fetchFormatDetails = async () => {
             try {
-            const response = await fetch('/api/billFormat');
+                setLoading(true);
+                const response = await fetch('/api/billFormat');
             if (response.ok) {
                 const data = await response.json();
                 
@@ -257,6 +260,8 @@ export default function EditFormatComponent() {
             } catch (err) {
             console.error('Error fetching format details:', err);
             toast.error('Error fetching format details');
+            } finally {
+                setLoading(false); // hide loader
             }
         };
 
@@ -322,6 +327,10 @@ export default function EditFormatComponent() {
     const sgstAmount = (itemsSubtotal * sgstPercent) / 100;
 
     const totalAmount = itemsSubtotal + cgstAmount + sgstAmount;
+
+    if (loading || !formDetails) {
+        return <LogoLoader content={"Loading bill format..."} />;
+    }
 
 
     return (

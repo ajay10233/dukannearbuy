@@ -3,6 +3,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import LogoLoader from "./LogoLoader";
 
 export default function LogoutButton() {
   const router = useRouter();
@@ -72,6 +73,7 @@ export default function LogoutButton() {
           </svg>
           Logging out...
         </>
+        // <LogoLoader content={"Logging out..."} />
       ) : (
         "Logout"
       )}

@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import useEmblaCarousel from "embla-carousel-react";
 import { Plus, RefreshCcwDot, Store, Crown, X, ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "axios";
+import LogoLoader from "../LogoLoader";
 
 
 export default function HeroSectionEditProfile() {
@@ -201,9 +202,7 @@ export default function HeroSectionEditProfile() {
 
   if (!user) {
     return (
-      <div className="text-center">
-        <p>Loading user data...</p>
-      </div>
+      <LogoLoader content={"fetching profile images..."} />
     );
   }
 

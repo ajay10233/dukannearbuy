@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useBoolToggle } from "react-haiku";
 import { Eye, EyeClosed } from "lucide-react";
 import Link from "next/link";
+import LogoLoader from "../../LogoLoader";
 
 export default function SignupForm() {
   const {
@@ -27,10 +28,13 @@ export default function SignupForm() {
 
   const searchParams = useSearchParams();
   const role = searchParams.get("role");
+  const [isLoading, setIsLoading] = useState(false);
+
   
 
   const onSubmit = async (data) => {
     if (data) {
+      setIsLoading(true);
         const toastId = toast.loading("Processing...");
         data["role"] = role;
         try {
@@ -49,7 +53,9 @@ export default function SignupForm() {
             } else {
                 toast.error("API error!", { id: toastId });
             }
-        } 
+        } finally {
+            setIsLoading(false);
+        }
     }
   };
 
@@ -117,9 +123,16 @@ export default function SignupForm() {
       <div className="flex flex-col gap-y-3 items-center w-full">
         <button
             type="submit"
-            className="bg-blue-600 py-3 w-full text-white rounded-full font-bold cursor-pointer"
-        >
-            Create an account
+            disabled={isLoading}
+            className={`py-3 w-full text-white rounded-full font-bold cursor-pointer ${
+              isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600"
+            }`}
+          >
+           {isLoading ? (
+            <LogoLoader content={"Signing up..."} />
+          ) : (
+            "Create an account"
+          )}
         </button>
         <span className="text-gray-700 md:text-gray-600 text-sm">- or -</span>
         <p className="text-gray-700 md:text-gray-600 text-md">Already have an account? <Link href='/login' className="text-blue-800 md:text-gray-800 font-semibold">Login</Link></p>

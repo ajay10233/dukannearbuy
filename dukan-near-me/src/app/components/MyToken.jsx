@@ -5,20 +5,34 @@ import Image from "next/image";
 import Link from "next/link";
 import { Info } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import LogoLoader from "./LogoLoader";
 
 
 export default function MyToken() {
   const [tokens, setTokens] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     const fetchTokens = async () => {
-      const res = await fetch("/api/token");
-      const data = await res.json();
-      setTokens(data);
+       try {
+          const res = await fetch("/api/token");
+          const data = await res.json();
+          setTokens(data);
+      } catch (error) {
+          console.error("Error fetching tokens:", error);
+      } finally {
+        setLoading(false); // Done loading
+      }
     };
+
     fetchTokens();
   }, []);
+
+  if (loading) {
+    return <LogoLoader content={"Fetching assigned tokens..."} />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-tr from-white via-slate-100 to-slate-200 p-3 md:p-6 relative">
@@ -51,7 +65,7 @@ export default function MyToken() {
               </tr>
             ) : ( 
               tokens.map((token) => (
-                <tr key={token.id} className="hover:bg-slate-100 *:w-2/5  transition duration-200 flex flex-row items-center justify-evenly">
+                <tr key={token.id} className="hover:bg-gray-50 *:w-2/5  transition duration-200 flex flex-row items-center justify-evenly">
                   <td className="p-3 md:px-6 md:py-4 font-semibold text-blue-700">{token.tokenNumber}</td>
                   <td className="p-3 md:px-6 md:py-4 hidden md:table-cell">
                     <Link href={`/partnerProfile/${token.institutionId}`}>

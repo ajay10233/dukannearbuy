@@ -10,6 +10,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import QRModal from "../modals/QRModal";
 import { useUser } from '@/context/UserContext';
+import LogoLoader from "../LogoLoader";
 
 // const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { transports: ["websocket"] });               
 
@@ -20,6 +21,8 @@ export default function TokenGeneration() {
   const [userId, setUserId] = useState('');
   const [tokens, setTokens] = useState([]);
   const [clickedTokens, setClickedTokens] = useState({});
+  const [loading, setLoading] = useState(true);
+
 
   const institutionId = session?.user?.id;
   const router = useRouter();
@@ -52,9 +55,17 @@ export default function TokenGeneration() {
 
   const fetchTokens = async () => {
     if (!institutionId) return;
-    const res = await axios.get(`/api/token/list?institutionId=${institutionId}`);
-    setTokens(res.data);
-  };
+    setLoading(true); 
+    try {
+      const res = await axios.get(`/api/token/list?institutionId=${institutionId}`);
+      setTokens(res.data);
+    } catch (err) {
+      console.error("Failed to fetch tokens:", err);
+    } finally {
+      setLoading(false); 
+    }
+};
+
 
   const handleCreateToken = async (generatedId = null) => {
     let userid = userId;
@@ -161,6 +172,10 @@ export default function TokenGeneration() {
     toast.success(`Generating token for ${user.username}`);
     handleCreateToken(user.id);
   };
+
+  if (loading) {
+    return <LogoLoader content={"Loading token data, just a moment..."} />;
+  }
 
   return (
     <section className="flex flex-col items-center h-[calc(100vh-50px)] justify-start px-8 pb-8 pt-16 gap-y-4 bg-white">

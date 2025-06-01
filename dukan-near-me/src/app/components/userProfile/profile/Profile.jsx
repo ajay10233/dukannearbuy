@@ -14,6 +14,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import Image from 'next/image';
+import LogoLoader from '../../LogoLoader';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -49,7 +50,9 @@ const handleSuccess = async () => {
 };
 
 
-  if (loading) return <p className="text-center py-20">Fetching user profile...</p>;
+  if (loading) {
+    return <LogoLoader content={"Fetching profile..."} />;
+  }
   if (!user) return <p className="text-center py-20 text-gray-700">No user data found.</p>;
 
   return (

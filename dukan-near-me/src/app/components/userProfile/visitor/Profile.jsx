@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import ProfileCard from './ProfileCard';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
+import LogoLoader from '../../LogoLoader';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -29,7 +30,10 @@ export default function Profile() {
     fetchUser();
   }, [params.userId]);
 
-  if (loading) return <p className="text-center py-20">Fetching profile...</p>;
+  if (loading) {
+        return <LogoLoader content={"Fetching user profile..."} />;
+    }
+
   if (!user) return <p className="text-center py-20 text-gray-700">No user data found.</p>;
 
   return (

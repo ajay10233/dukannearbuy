@@ -16,7 +16,7 @@ export default function BillHistory() {
 
   const handleDownload = async () => {
     // if (!dates.startDate || !dates.endDate) {
-    //   alert("Please select both start and end dates.");
+    //   toast.error("Please select both start and end dates.");
     //   return;
     // }
 

@@ -70,6 +70,7 @@ const Review = () => {
             modules={[SwiperNavigation, SwiperAutoplay]}
             spaceBetween={30}
             slidesPerView={1}
+            // centeredSlides={reviews.length < 3} // will center the slides in the container
             autoplay={{ delay: 3000, disableOnInteraction: false }}
             breakpoints={{
               640: { slidesPerView: 1 },

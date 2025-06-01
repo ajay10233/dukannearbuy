@@ -11,6 +11,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import LogoLoader from "../../LogoLoader";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -179,10 +180,12 @@ const onSubmit = async (data) => {
             }`}
         >
           {isLoading ? (
-            <span className="flex justify-center items-center gap-2">
-              <Loader2 className="animate-spin" size={18} />
-              Logging in...
-            </span>
+            // <span className="flex justify-center items-center gap-2">
+            //   <Loader2 className="animate-spin" size={18} />
+            //   Logging in...
+            // </span>
+            <LogoLoader content={"Logging in..."} />
+
           ) : (
             "Login"
           )}

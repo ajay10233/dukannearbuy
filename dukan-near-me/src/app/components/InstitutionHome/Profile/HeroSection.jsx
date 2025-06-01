@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import useEmblaCarousel from "embla-carousel-react";
 import { Plus, RefreshCcwDot, Store, Crown, X, ChevronLeft, ChevronRight } from "lucide-react";
 import ProfileWrapper from "./ProfileWrapper";
+import LogoLoader from "../../LogoLoader";
 
 export default function  HeroSection({id}) {
   const [user, setUser] = useState(null);  // Store user data
@@ -123,9 +124,7 @@ export default function  HeroSection({id}) {
 
   if (!user) {
     return (
-      <div className="text-center">
-        <p>Loading user data...</p>
-      </div>
+      <LogoLoader content={"fetching profile images..."} />
     );
   }
 
