@@ -62,7 +62,7 @@ export default function EditFormatComponent() {
 
     const handleTokenToggle = () => {
         const newValue = !tokenEnabled;
-          console.log('Token toggle:', newValue);
+        console.log('Token toggle:', newValue);
 
         setTokenEnabled(newValue);
         toast.success(`Token ${newValue ? "Enabled" : "Disabled"}`);
@@ -79,22 +79,22 @@ export default function EditFormatComponent() {
     };
 
     const handleItemChange = (index, key, value) => {
-    const newItems = [...items];
-    
-    if (key === 'qty' || key === 'rate') {
-        newItems[index][key] = parseFloat(value) || 0;
-        // For shop_owner, update amount automatically
-        if (user?.role !== 'INSTITUTION') {
-        newItems[index].amount = newItems[index].qty * newItems[index].rate;
+        const newItems = [...items];
+
+        if (key === 'qty' || key === 'rate') {
+            newItems[index][key] = parseFloat(value) || 0;
+            // For shop_owner, update amount automatically
+            if (user?.role !== 'INSTITUTION') {
+                newItems[index].amount = newItems[index].qty * newItems[index].rate;
+            }
+        } else if (key === 'amount') {
+            // For institution, allow manual amount input
+            newItems[index][key] = parseFloat(value) || 0;
+        } else {
+            newItems[index][key] = value;
         }
-    } else if (key === 'amount') {
-        // For institution, allow manual amount input
-        newItems[index][key] = parseFloat(value) || 0;
-    } else {
-        newItems[index][key] = value;
-    }
-    
-    setItems(newItems);
+
+        setItems(newItems);
     };
 
 
@@ -102,19 +102,19 @@ export default function EditFormatComponent() {
     // const totalAmount = itemsSubtotal;
 
     const addItemRow = () => {
-    setItems([...items, { particulars: '', qty: 0, rate: 0, amount: 0 }]);
-  };
+        setItems([...items, { particulars: '', qty: 0, rate: 0, amount: 0 }]);
+    };
 
     const handleScanSuccess = (userData) => {
         setUserId(userData.userId);
         setUsername(userData.username);
         const formattedAddress = `${userData.address.houseNumber}, ${userData.address.buildingName}, ${userData.address.street}, ${userData.address.city}, ${userData.address.state} - ${userData.address.zipCode}`;
 
-        setAddress(formattedAddress); 
+        setAddress(formattedAddress);
 
         setMobile(userData.mobile);
         toast.success('User details fetched successfully!');
-        setIsScanning(false); 
+        setIsScanning(false);
     };
 
     const handlePrint = () => {
@@ -127,9 +127,9 @@ export default function EditFormatComponent() {
     };
 
     const handleGenerateBill = async () => {
-        if (isGenerating) return; 
+        if (isGenerating) return;
         setIsGenerating(true);
-        
+
         if (!userId) {
             toast.error('Please scan a user QR code first.');
             setIsGenerating(false);
@@ -200,7 +200,7 @@ export default function EditFormatComponent() {
                     remarks: '',
                     otherCharges: 0,
                     generateShortBill: shortBill,
-                    generationToken:tokenEnabled,
+                    generationToken: tokenEnabled,
                 };
 
                 data = await axios.post('/api/bill', payload);
@@ -215,9 +215,9 @@ export default function EditFormatComponent() {
         } catch (error) {
             console.error('Error generating bill:', error);
             toast.error(error.response?.data?.error || 'Error generating bill');
-        }   finally {
-        setIsGenerating(false); 
-    }
+        } finally {
+            setIsGenerating(false);
+        }
     };
 
     useEffect(() => {
@@ -228,35 +228,35 @@ export default function EditFormatComponent() {
     useEffect(() => {
         const fetchFormatDetails = async () => {
             try {
-            const response = await fetch('/api/billFormat');
-            if (response.ok) {
-                const data = await response.json();
-                
-                // Split tax and extra text for internal handling
-                const [cgst, sgst] = data.taxPercentage?.split('+').map((val) => val.trim()) || [0, 0];
-                const [terms = '', updates = ''] = data.extraText?.split('\n') || ['', ''];
+                const response = await fetch('/api/billFormat');
+                if (response.ok) {
+                    const data = await response.json();
 
-                const institution = data.institutionRelation || {};
+                    // Split tax and extra text for internal handling
+                    const [cgst, sgst] = data.taxPercentage?.split('+').map((val) => val.trim()) || [0, 0];
+                    const [terms = '', updates = ''] = data.extraText?.split('\n') || ['', ''];
 
-                setFormDetails({
-                firmName: institution.firmName || '',
-                address: institution.shopAddress || '',
-                contactNo: institution.phone || '',
-                gstNo: data.gstNumber || '',
-                email: institution.contactEmail || '',
-                cgst: parseFloat(cgst),
-                sgst: parseFloat(sgst),
-                proprietorSign: data.proprietorSign || null,
-                terms,
-                updates,
-                });
-            } else {
-                const error = await response.json();
-                toast.error(error?.error || 'Failed to fetch format');
-            }
+                    const institution = data.institutionRelation || {};
+
+                    setFormDetails({
+                        firmName: institution.firmName || '',
+                        address: institution.shopAddress || '',
+                        contactNo: institution.phone || '',
+                        gstNo: data.gstNumber || '',
+                        email: institution.contactEmail || '',
+                        cgst: parseFloat(cgst),
+                        sgst: parseFloat(sgst),
+                        proprietorSign: data.proprietorSign || null,
+                        terms,
+                        updates,
+                    });
+                } else {
+                    const error = await response.json();
+                    toast.error(error?.error || 'Failed to fetch format');
+                }
             } catch (err) {
-            console.error('Error fetching format details:', err);
-            toast.error('Error fetching format details');
+                console.error('Error fetching format details:', err);
+                toast.error('Error fetching format details');
             }
         };
 
@@ -272,7 +272,7 @@ export default function EditFormatComponent() {
 
             if (response.ok && data) {
                 setUserId(data.id || '');
-                setUsername({ firstName: data.firstName || '', lastName: data.lastName || '' }); 
+                setUsername({ firstName: data.firstName || '', lastName: data.lastName || '' });
                 setAddress(data.address || '');
                 setMobile(data.mobile || '');
                 // toast.success("Receiver details fetched successfully!");
@@ -331,116 +331,116 @@ export default function EditFormatComponent() {
 
                 <div className='p-4 relative flex justify-center items-center'>
                     <div className="flex flex-col flex-1 bg-white p-3 md:p-6 gap-2 md:gap-4 shadow-md w-full md:w-full md:max-w-5xl border border-black self-center mt-16">
-                    {/* <EditFormat /> */}
-                    <div className="flex items-center justify-between mt-2 md:mt-6 p-2 md:p-4 border rounded-md border-gray-400 ">
-                          <button
-                            onClick={() => setIsOpen(true)}
-                            className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 text-sm md:text-[16px] bg-blue-600 cursor-pointer text-white rounded transition-all duration-500 ease-in-out hover:bg-blue-800 hover:font-medium"
-                          >
-                            <FaEdit size={20} strokeWidth={1.5} color="#fff" /> Edit Format
-                          </button>
-                          <span className="text-gray-700 font-semibold text-sm md:text-[16px]">Save your details</span>
-                    
-                          {isOpen && <EditFormatModal closeModal={() => setIsOpen(false)} user={user} formDetails={formDetails} onFormDetailsChange={handleFormDetailsChange}  />}
-                    </div>
-                    {/* toggles */}
-                    <div className="flex flex-wrap gap-2 md:gap-4 p-2 md:p-4 justify-evenly">
-                        {/* Short Bill Toggle */}
-                        <div className="flex items-center justify-between md:justify-evenly gap-2 w-full sm:w-auto">
-                            <span className="text-[16px] md:text-lg font-semibold text-gray-700 whitespace-nowrap">Short Bill Generation</span>
-                            <label className="relative cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    className="sr-only peer"
-                                    checked={shortBill}
-                                    onChange={handleShortBillToggle}
-                                />
-                                <div className="relative h-6.5 md:h-9 w-14 md:w-22 rounded-full bg-gradient-to-r from-gray-600 to-gray-700 shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)] transition-all duration-500 after:absolute after:left-1 after:top-0.5 after:h-5 after:w-5 md:after:h-8 md:after:w-8 after:rounded-full after:bg-gradient-to-br after:from-gray-100 after:to-gray-300 after:shadow-[2px_2px_8px_rgba(0,0,0,0.3)] after:transition-all after:duration-500 peer-checked:bg-gradient-to-r peer-checked:from-teal-600 peer-checked:to-blue-600 peer-checked:after:translate-x-7 md:peer-checked:after:translate-x-12 peer-checked:after:from-white peer-checked:after:to-gray-100 hover:after:scale-95 active:after:scale-90">
-                                    <span className="absolute inset-1 rounded-full bg-gradient-to-tr from-white/20 via-transparent to-transparent"></span>
-                                    <span className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-500 peer-checked:animate-glow peer-checked:opacity-100 [box-shadow:0_0_15px_rgba(167,139,250,0.5)]"></span>
-                                </div>
-                            </label>
-                        </div>
-
-                        {/* Is Report Toggle */}
-                        <div className="flex items-center justify-between md:justify-evenly gap-2 w-full sm:w-auto">
-                            <span className="text-[16px] md:text-lg font-semibold text-gray-700 whitespace-nowrap">Is Report</span>
-                            <label className="relative cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    className="sr-only peer"
-                                    checked={isReport}
-                                    onChange={handleIsReportToggle}
-                                />
-                                <div className="relative h-6.5 md:h-9 w-14 md:w-22 rounded-full bg-gradient-to-r from-gray-600 to-gray-700 shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)] transition-all duration-500 after:absolute after:left-1 after:top-0.5 after:h-5 after:w-5 md:after:h-8 md:after:w-8 after:rounded-full after:bg-gradient-to-br after:from-gray-100 after:to-gray-300 after:shadow-[2px_2px_8px_rgba(0,0,0,0.3)] after:transition-all after:duration-500 peer-checked:bg-gradient-to-r peer-checked:from-teal-600 peer-checked:to-blue-600 peer-checked:after:translate-x-7 md:peer-checked:after:translate-x-12 peer-checked:after:from-white peer-checked:after:to-gray-100 hover:after:scale-95 active:after:scale-90">
-                                    <span className="absolute inset-1 rounded-full bg-gradient-to-tr from-white/20 via-transparent to-transparent"></span>
-                                    <span className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-500 peer-checked:animate-glow peer-checked:opacity-100 [box-shadow:0_0_15px_rgba(167,139,250,0.5)]"></span>
-                                </div>
-                            </label>
-                        </div>
-
-                        {/* Token generation toggle */}
-                        <div className="flex items-center justify-between md:justify-evenly gap-2 w-full sm:w-auto">
-                            <span className="text-[16px] md:text-lg font-semibold text-gray-700 whitespace-nowrap">Token Generation</span>
-                            <label className="relative cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    className="sr-only peer"
-                                    checked={tokenEnabled}
-                                    onChange={handleTokenToggle}
-                                />
-                                <div className="relative h-6.5 md:h-9 w-14 md:w-22 rounded-full bg-gradient-to-r from-gray-600 to-gray-700 shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)] transition-all duration-500 after:absolute after:left-1 after:top-0.5 after:h-5 after:w-5 md:after:h-8 md:after:w-8 after:rounded-full after:bg-gradient-to-br after:from-gray-100 after:to-gray-300 after:shadow-[2px_2px_8px_rgba(0,0,0,0.3)] after:transition-all after:duration-500 peer-checked:bg-gradient-to-r peer-checked:from-teal-600 peer-checked:to-blue-600 peer-checked:after:translate-x-7 md:peer-checked:after:translate-x-12 peer-checked:after:from-white peer-checked:after:to-gray-100 hover:after:scale-95 active:after:scale-90">
-                                    <span className="absolute inset-1 rounded-full bg-gradient-to-tr from-white/20 via-transparent to-transparent"></span>
-                                    <span className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-500 peer-checked:animate-glow peer-checked:opacity-100 [box-shadow:0_0_15px_rgba(167,139,250,0.5)]"></span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
-                    {/* upload image */}
-                    <div className="flex flex-col gap-2 md:gap-6">
-                        {/* Upload Section */}
-                        <div className="flex justify-between items-center border border-gray-400 p-2 md:p-4 rounded-md">
-                            <span className="text-gray-700 font-semibold text-sm md:text-[16px]">Upload Image or PDF</span>
-
-                            <input
-                                type="file"
-                                id="hiddenFileInput"
-                                accept="application/pdf,image/*"
-                                onChange={handleFileChange}
-                                className="hidden"
-                            />
-
+                        {/* <EditFormat /> */}
+                        <div className="flex items-center justify-between mt-2 md:mt-6 p-2 md:p-4 border rounded-md border-gray-400 ">
                             <button
-                                type="button"
-                                onClick={() => document.getElementById('hiddenFileInput').click()}
-                                className="flex items-center text-sm md:text-[16px] gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-800 cursor-pointer transition-all ease-in-out duration-400"
+                                onClick={() => setIsOpen(true)}
+                                className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 text-sm md:text-[16px] bg-blue-600 cursor-pointer text-white rounded transition-all duration-500 ease-in-out hover:bg-blue-800 hover:font-medium"
                             >
-                                <Upload size={20} /> Upload
+                                <FaEdit size={20} strokeWidth={1.5} color="#fff" /> Edit Format
                             </button>
+                            <span className="text-gray-700 font-semibold text-sm md:text-[16px]">Save your details</span>
+
+                            {isOpen && <EditFormatModal closeModal={() => setIsOpen(false)} user={user} formDetails={formDetails} onFormDetailsChange={handleFormDetailsChange} />}
+                        </div>
+                        {/* toggles */}
+                        <div className="flex flex-wrap gap-2 md:gap-4 p-2 md:p-4 justify-evenly">
+                            {/* Short Bill Toggle */}
+                            <div className="flex items-center justify-between md:justify-evenly gap-2 w-full sm:w-auto">
+                                <span className="text-[16px] md:text-lg font-semibold text-gray-700 whitespace-nowrap">Short Bill Generation</span>
+                                <label className="relative cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only peer"
+                                        checked={shortBill}
+                                        onChange={handleShortBillToggle}
+                                    />
+                                    <div className="relative h-6.5 md:h-9 w-14 md:w-22 rounded-full bg-gradient-to-r from-gray-600 to-gray-700 shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)] transition-all duration-500 after:absolute after:left-1 after:top-0.5 after:h-5 after:w-5 md:after:h-8 md:after:w-8 after:rounded-full after:bg-gradient-to-br after:from-gray-100 after:to-gray-300 after:shadow-[2px_2px_8px_rgba(0,0,0,0.3)] after:transition-all after:duration-500 peer-checked:bg-gradient-to-r peer-checked:from-teal-600 peer-checked:to-blue-600 peer-checked:after:translate-x-7 md:peer-checked:after:translate-x-12 peer-checked:after:from-white peer-checked:after:to-gray-100 hover:after:scale-95 active:after:scale-90">
+                                        <span className="absolute inset-1 rounded-full bg-gradient-to-tr from-white/20 via-transparent to-transparent"></span>
+                                        <span className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-500 peer-checked:animate-glow peer-checked:opacity-100 [box-shadow:0_0_15px_rgba(167,139,250,0.5)]"></span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            {/* Is Report Toggle */}
+                            <div className="flex items-center justify-between md:justify-evenly gap-2 w-full sm:w-auto">
+                                <span className="text-[16px] md:text-lg font-semibold text-gray-700 whitespace-nowrap">Is Report</span>
+                                <label className="relative cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only peer"
+                                        checked={isReport}
+                                        onChange={handleIsReportToggle}
+                                    />
+                                    <div className="relative h-6.5 md:h-9 w-14 md:w-22 rounded-full bg-gradient-to-r from-gray-600 to-gray-700 shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)] transition-all duration-500 after:absolute after:left-1 after:top-0.5 after:h-5 after:w-5 md:after:h-8 md:after:w-8 after:rounded-full after:bg-gradient-to-br after:from-gray-100 after:to-gray-300 after:shadow-[2px_2px_8px_rgba(0,0,0,0.3)] after:transition-all after:duration-500 peer-checked:bg-gradient-to-r peer-checked:from-teal-600 peer-checked:to-blue-600 peer-checked:after:translate-x-7 md:peer-checked:after:translate-x-12 peer-checked:after:from-white peer-checked:after:to-gray-100 hover:after:scale-95 active:after:scale-90">
+                                        <span className="absolute inset-1 rounded-full bg-gradient-to-tr from-white/20 via-transparent to-transparent"></span>
+                                        <span className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-500 peer-checked:animate-glow peer-checked:opacity-100 [box-shadow:0_0_15px_rgba(167,139,250,0.5)]"></span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            {/* Token generation toggle */}
+                            <div className="flex items-center justify-between md:justify-evenly gap-2 w-full sm:w-auto">
+                                <span className="text-[16px] md:text-lg font-semibold text-gray-700 whitespace-nowrap">Token Generation</span>
+                                <label className="relative cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only peer"
+                                        checked={tokenEnabled}
+                                        onChange={handleTokenToggle}
+                                    />
+                                    <div className="relative h-6.5 md:h-9 w-14 md:w-22 rounded-full bg-gradient-to-r from-gray-600 to-gray-700 shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)] transition-all duration-500 after:absolute after:left-1 after:top-0.5 after:h-5 after:w-5 md:after:h-8 md:after:w-8 after:rounded-full after:bg-gradient-to-br after:from-gray-100 after:to-gray-300 after:shadow-[2px_2px_8px_rgba(0,0,0,0.3)] after:transition-all after:duration-500 peer-checked:bg-gradient-to-r peer-checked:from-teal-600 peer-checked:to-blue-600 peer-checked:after:translate-x-7 md:peer-checked:after:translate-x-12 peer-checked:after:from-white peer-checked:after:to-gray-100 hover:after:scale-95 active:after:scale-90">
+                                        <span className="absolute inset-1 rounded-full bg-gradient-to-tr from-white/20 via-transparent to-transparent"></span>
+                                        <span className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-500 peer-checked:animate-glow peer-checked:opacity-100 [box-shadow:0_0_15px_rgba(167,139,250,0.5)]"></span>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
 
-                        {/* Preview */}
-                        {file && (
-                            <div className="flex items-start gap-4 border p-3 rounded-md bg-gray-50">
-                                {previewUrl ? (
-                                    <Image
-                                        src={previewUrl}
-                                        alt="Preview"
-                                        width={100}
-                                        height={100}
-                                        className="rounded object-cover"
-                                    />
-                                ) : (
-                                    <p className="text-sm text-gray-500">📄 {file.name}</p>
-                                )}
+                        {/* upload image */}
+                        <div className="flex flex-col gap-2 md:gap-6">
+                            {/* Upload Section */}
+                            <div className="flex justify-between items-center border border-gray-400 p-2 md:p-4 rounded-md">
+                                <span className="text-gray-700 font-semibold text-sm md:text-[16px]">Upload Image or PDF</span>
+
+                                <input
+                                    type="file"
+                                    id="hiddenFileInput"
+                                    accept="application/pdf,image/*"
+                                    onChange={handleFileChange}
+                                    className="hidden"
+                                />
+
+                                <button
+                                    type="button"
+                                    onClick={() => document.getElementById('hiddenFileInput').click()}
+                                    className="flex items-center text-sm md:text-[16px] gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-800 cursor-pointer transition-all ease-in-out duration-400"
+                                >
+                                    <Upload size={20} /> Upload
+                                </button>
                             </div>
-                        )}
+
+                            {/* Preview */}
+                            {file && (
+                                <div className="flex items-start gap-4 border p-3 rounded-md bg-gray-50">
+                                    {previewUrl ? (
+                                        <Image
+                                            src={previewUrl}
+                                            alt="Preview"
+                                            width={100}
+                                            height={100}
+                                            className="rounded object-cover"
+                                        />
+                                    ) : (
+                                        <p className="text-sm text-gray-500">📄 {file.name}</p>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* <UploadPdfImage /> */}
+
                     </div>
-
-                    {/* <UploadPdfImage /> */}
-
-                </div>
                 </div>
                 {/* Create bill */}
 
@@ -460,7 +460,7 @@ export default function EditFormatComponent() {
                             </span> */}
 
                             <div className="hidden md:flex items-center gap-2 print:hidden ml-auto">
-                                
+
                                 {!tokenEnabled && (
 
                                     <>
@@ -479,7 +479,7 @@ export default function EditFormatComponent() {
                                             Fetch
                                         </button>
                                     </>
-                                    
+
                                 )}
                                 <span
                                     onClick={() => setIsScanning(true)}
@@ -493,8 +493,8 @@ export default function EditFormatComponent() {
                         <div className="flex justify-between items-center my-4 md:my-8">
                             <div className="flex md:hidden items-center gap-1 md:gap-2 print:hidden ml-auto">
 
-                                {!tokenEnabled && ( 
-                                
+                                {!tokenEnabled && (
+
                                     <>
                                         <input
                                             type="number"
@@ -519,7 +519,7 @@ export default function EditFormatComponent() {
                                     <ScanLine size={20} strokeWidth={1.5} /> Scan
                                 </span>
                             </div>
-                         </div>   
+                        </div>
 
                         {/* Bill Information */}
                         <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2  gap-4 border-b pb-2 mb-4">
@@ -527,7 +527,7 @@ export default function EditFormatComponent() {
                                 <h2 className="text-lg font-bold text-[#0D6A9C] capitalize">{user?.firmName}</h2>
                                 <p>{user?.address && `${user.address.houseNumber}, ${user.address?.buildingName ? user.address.buildingName + ', ' : ''}${user.address.street}, ${user.address.landmark}, ${user.address.city}, ${user.address.state} - ${user.address.zipCode}, ${user.address.country}`}</p>
                                 <p>Mobile: {user?.mobileNumber}</p>
-                            </div> */} 
+                            </div> */}
                             {formDetails ? (
                                 <div className="p-2 pb-4 border-b md:border-r md:border-gray-400 print:border-b-0 print:border-r ">
                                     <h2 className="text-lg font-bold text-[#0D6A9C] capitalize">
@@ -548,7 +548,7 @@ export default function EditFormatComponent() {
                                         <p>GST No: N/A</p>
                                     )}
                                 </div>
-                                ) : (
+                            ) : (
                                 <div className="p-2 border-r border-black">
                                     <h2 className="text-lg font-bold text-[#0D6A9C] capitalize">Firm Name: N/A</h2>
                                     <p>Address: N/A</p>
@@ -567,7 +567,7 @@ export default function EditFormatComponent() {
                                         <input
                                             id="receiver-name"
                                             type="text"
-                                            value={username.firstName || ''} 
+                                            value={username.firstName || ''}
                                             onChange={(e) => setUsername({ ...username, firstName: e.target.value })}
                                             className="w-full text-sm text-gray-600 capitalize outline-none"
                                             placeholder="Enter Name"
@@ -589,7 +589,7 @@ export default function EditFormatComponent() {
                                             value={address}
                                             onChange={(e) => setAddress(e.target.value)}
                                             className="w-full text-sm text-gray-600 outline-none"
-                                            placeholder="Enter Address"/>
+                                            placeholder="Enter Address" />
                                     </div>
                                     <div className="flex items-start">
                                         <label htmlFor="receiver-phone" className="font-medium mr-1">Phone:</label>
@@ -643,7 +643,7 @@ export default function EditFormatComponent() {
                                         </th>
                                         <th className="border p-1 md:p-2 print:p-2">AMOUNT</th>
                                     </tr>
-                                </thead>
+                                </thead>    
                                 <tbody>
                                     {items.map((item, index) => (
                                         <tr key={index} className='text-xs md:text-sm print:text-sm'>
@@ -661,18 +661,18 @@ export default function EditFormatComponent() {
                                             <td className="border p-1 md:p-2 print:p-2">
                                                 {user?.role === 'INSTITUTION' ? (
                                                     <input
-                                                    type="text"
-                                                    value={item.treatment || item.qty || ''}
-                                                    onChange={(e) => handleItemChange(index, 'treatment', e.target.value)}
-                                                    className="w-full border-none outline-none"
+                                                        type="text"
+                                                        value={item.treatment || item.qty || ''}
+                                                        onChange={(e) => handleItemChange(index, 'treatment', e.target.value)}
+                                                        className="w-full border-none outline-none"
                                                     />
                                                 ) : (
                                                     <input
-                                                    type="number"
-                                                    min="0"
-                                                    value={item.qty}
-                                                    onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
-                                                    className="w-full border-none outline-none"
+                                                        type="number"
+                                                        min="0"
+                                                        value={item.qty}
+                                                        onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
+                                                        className="w-full border-none outline-none"
                                                     />
                                                 )}
                                             </td>
@@ -680,29 +680,29 @@ export default function EditFormatComponent() {
                                             <td className="border p-1 md:p-2 print:p-2">
                                                 {user?.role === 'INSTITUTION' ? (
                                                     <input
-                                                    type="text"
-                                                    value={item.others || item.rate || ''}
-                                                    onChange={(e) => handleItemChange(index, 'others', e.target.value)}
-                                                    className="w-full border-none outline-none"
+                                                        type="text"
+                                                        value={item.others || item.rate || ''}
+                                                        onChange={(e) => handleItemChange(index, 'others', e.target.value)}
+                                                        className="w-full border-none outline-none"
                                                     />
                                                 ) : (
                                                     <input
-                                                    type="number"
-                                                    min="0"
-                                                    value={item.rate}
-                                                    onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
-                                                    className="w-full border-none outline-none"
+                                                        type="number"
+                                                        min="0"
+                                                        value={item.rate}
+                                                        onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
+                                                        className="w-full border-none outline-none"
                                                     />
                                                 )}
                                             </td>
                                             <td className="border p-1 md:p-2 text-center print:p-2">
                                                 {user?.role === 'INSTITUTION' ? (
                                                     <input
-                                                    type="number"
-                                                    min="0"
-                                                    value={item.amount || ''}
-                                                    onChange={(e) => handleItemChange(index, 'amount', e.target.value)}
-                                                    className="w-full border-none outline-none text-center"
+                                                        type="number"
+                                                        min="0"
+                                                        value={item.amount || ''}
+                                                        onChange={(e) => handleItemChange(index, 'amount', e.target.value)}
+                                                        className="w-full border-none outline-none text-center"
                                                     />
                                                 ) : (
                                                     item?.amount?.toFixed(2)
@@ -753,14 +753,14 @@ export default function EditFormatComponent() {
 
                             <div className="flex justify-end mt-4">
                                 <div className="p-2 w-full max-w-[100px]">
-                                <img
-                                    src={formDetails?.proprietorSign || ''}
-                                    alt="Proprietor Signature"
-                                    width={100}
-                                    height={100}
-                                    className="object-contain"
+                                    <img
+                                        src={formDetails?.proprietorSign || ''}
+                                        alt="Proprietor Signature"
+                                        width={100}
+                                        height={100}
+                                        className="object-contain"
                                     // priority
-                                />
+                                    />
                                 </div>
                             </div>
                         )}

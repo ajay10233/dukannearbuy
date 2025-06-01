@@ -24,7 +24,7 @@ export async function POST(req) {
     }
 
     // Bill count constraint for Free plan
-    const isFreePlan = institution.subscriptionPlan==null ?true : institution.subscriptionPlan?.name === 'BASIC';
+    const isFreePlan = institution.subscriptionPlan == null ? true : institution.subscriptionPlan?.name === 'BASIC';
     if (isFreePlan) {
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
@@ -96,8 +96,8 @@ export async function POST(req) {
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
       let type = "auto";
-      if(file.type === 'application/pdf') {
-        type="raw";
+      if (file.type === 'application/pdf') {
+        type = "raw";
       }
       console.log("type", type)
       const uploadResult = await new Promise((resolve, reject) => {
@@ -149,6 +149,7 @@ export async function POST(req) {
       otherCharges,
       generateShortBill = true,
       generationToken = false,
+      notes = [],
     } = body;
 
     const parsedCharges = typeof otherCharges === 'string' ? parseFloat(otherCharges) : otherCharges;
@@ -156,10 +157,8 @@ export async function POST(req) {
       return NextResponse.json({ success: false, error: 'Invalid otherCharges' }, { status: 400 });
     }
 
-    const totalAmount = items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    ) + (parsedCharges || 0);
+    const itemTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const totalAmount = itemTotal + (parsedCharges || 0);
 
     const billData = {
       user: { connect: { id: userId } },
@@ -171,24 +170,38 @@ export async function POST(req) {
       remarks,
       invoiceNumber,
       otherCharges: parsedCharges,
-      items: {
+      expiresAt: expiresAt,
+    };
+
+    if (Array.isArray(notes) && notes.length > 0) {
+      billData.notes = {
+        create: notes.map((note) => ({
+          chief_complaint: note.chief_complaint || null,
+          treatment: note.treatment || null,
+          others: note.others || null,
+        })),
+      };
+    } else {
+      billData.items = {
         create: items.map((item) => ({
           name: item.name,
           price: item.price,
           quantity: item.quantity,
           total: item.price * item.quantity,
         })),
-      },
-      expiresAt: expiresAt,
-    };
-
+      };
+    }
+    
     if (tokenId) {
       billData.tokenNumber = { connect: { id: tokenId } };
     }
-
+    // Create bill
     const bill = await prisma.bill.create({
       data: billData,
-      include: { items: true },
+      include: {
+        items: true,
+        notes: true,
+      },
     });
 
     let shortBill = null;
@@ -216,9 +229,9 @@ export async function POST(req) {
 
     let generatedToken = null;
     if (generationToken) {
-      console.log("generationToken",generationToken);
+      console.log("generationToken", generationToken);
       if (isFreePlan) {
-        console.log("isFreePlan",isFreePlan);
+        console.log("isFreePlan", isFreePlan);
         const startOfDay = new Date();
         startOfDay.setHours(0, 0, 0, 0);
 
