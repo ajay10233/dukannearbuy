@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import LogoLoader from './LogoLoader';
+import toast from 'react-hot-toast';
 
 export default function FavProfile() {
   const [favorites, setFavorites] = useState([]);
@@ -44,11 +45,16 @@ export default function FavProfile() {
   
       if (res.ok) {
         setFavorites((prev) => prev.filter(item => item.institutionId !== institutionId));
-      }
-    } catch (error) {
-      console.error("Error removing favorite:", error);
+        toast.success('Removed from favorites'); 
+      }else {
+      toast.error('Failed to remove favorite');
     }
-  };
+  } catch (error) {
+    console.error("Error removing favorite:", error);
+    toast.error('Something went wrong');
+  }
+};
+
 
   return (
     <section className="w-full h-screen px-4 pt-15 pb-4 bg-gray-50 rounded-lg flex flex-col gap-y-4">

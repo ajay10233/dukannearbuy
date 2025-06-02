@@ -329,6 +329,7 @@ model Bill {
   items         BillItem[] @relation("BillToBillItem")
   shortBill  ShortBill?
   favoritedByUsers FavoriteBills[]
+  notes BillNote[] @relation("BillToBillNote")
 
   @@map("bills")
 }
@@ -350,6 +351,20 @@ model BillItem {
 
   @@map("bill_items")
 }
+
+model BillNote {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  billId          String   @db.ObjectId
+
+  chief_complaint String?
+  treatment       String?
+  others          String?
+
+  bill            Bill     @relation("BillToBillNote", fields: [billId], references: [id], onDelete: Cascade)
+
+  @@map("bill_notes")
+}
+
 
 
 model ShortBill {

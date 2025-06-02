@@ -6,6 +6,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react"; 
 import axios from "axios";
+import LogoLoader from "../../LogoLoader";
 
 const DotButton = ({ onClick, isSelected }) => (
     <button
@@ -25,14 +26,17 @@ export default function HeroSection() {
   const [images, setImages] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // ✅ Fetch images from your API
   const fetchImages = async () => {
     try {
       const res = await axios.get(`/api/admin-images`);
       setImages(res.data); // assuming res.data is an array of { link, details }
+      setLoading(false);
     } catch (err) {
       console.error("Failed to fetch images:", err);
+      setLoading(false);
     }
   };
 
@@ -45,6 +49,12 @@ export default function HeroSection() {
     setScrollSnaps(emblaApi.scrollSnapList() || []);
     emblaApi.on("select", () => setSelectedIndex(emblaApi.selectedScrollSnap()));
   }, [emblaApi, images]);
+
+  if (loading) {
+    return (
+      <LogoLoader content={"Loading home..."} />
+    );
+  }
 
   return (
     <div className="flex flex-col items-center w-full md:p-4 gap-y-4 py-0 px-2">

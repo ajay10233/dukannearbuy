@@ -240,19 +240,20 @@ export default function ProfileWrapper({ children, images, setImages }) {
           </div>
 
           <div className="flex items-end gap-x-8">
-            <button
-              onClick={handleFavoriteToggle}
-              className="transition cursor-pointer"
-              title={isFavorite ? "Unfavorite" : "Add to favorites"}
-            >
-              <Heart
-                size={20}
-                strokeWidth={1.5}
-                className={`transition-all duration-300 ${
-                  isFavorite ? "fill-red-500 text-red-500" : "stroke-red-500"
-                }`}
-              />
-            </button>
+                {user?.role === "USER" && (
+                  <button
+                    onClick={handleFavoriteToggle}
+                    className="transition cursor-pointer"
+                    title={isFavorite ? "Unfavorite" : "Add to favorites"}
+                  >
+                    <Heart
+                      size={20}
+                      strokeWidth={1.5}
+                      className={`transition-all duration-300 ${isFavorite ? "fill-red-500 text-red-500" : "stroke-red-500"
+                        }`}
+                    />
+                  </button>
+                )}
 
             <button
               onClick={handleShare}

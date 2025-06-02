@@ -177,3 +177,22 @@ input:-webkit-autofill {
 .swiper-button-next::after {
   font-size: 20px !important; /* Make the arrow icon smaller */
 }
+
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  #invoice-print,
+  #invoice-print * {
+    visibility: visible !important;
+  }
+
+  #invoice-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

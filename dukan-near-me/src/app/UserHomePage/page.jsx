@@ -1,4 +1,6 @@
-import React from 'react'
+"use client"
+
+import React, { useEffect, useState } from 'react'
 import Footer from '../components/userProfile/footer/Footer'
 import HeroSection from '../components/userProfile/heroSection/HeroSection'
 import Navbar from '../components/userProfile/navbar/Navbar'
@@ -8,8 +10,24 @@ import Review from '../components/userProfile/review/Review'
 import TopSeller from '../components/userProfile/TopSeller/TopSeller'
 import Subscription from '../components/userProfile/offer/Subscription'
 import PromotionCard from '../components/userProfile/PromotionCard'
+import LogoLoader from '../components/LogoLoader'
 
 export default function page() {
+  //   const [isLoading, setIsLoading] = useState(true);
+
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setIsLoading(false);
+  //   }, 1000);
+
+  //   return () => clearTimeout(timer);
+  // }, []);
+
+  // if (isLoading) {
+  //   return (
+  //       <LogoLoader content={"Loading home page..."} />
+  //   );
+  // }
     
   return (
       <>

@@ -51,10 +51,15 @@ export default function PromotionCard() {
   
   const router = useRouter();
 
-  const handleClick = () => {
+  const handleClick = async () => {
   
     if (!selectedKm) {
       toast.error("Please select a distance before continuing.");
+      return;
+    }
+
+    if (!selectedKm || !kmCosts[selectedKm]) {
+      toast.error("Please select a valid distance before continuing.");
       return;
     }
 
@@ -78,11 +83,52 @@ export default function PromotionCard() {
       return;
     }
 
+    // console.log({
+    //   timeInDays: Number(days),
+    //   distance: Number(selectedKm),
+    //   promotionType,
+    //   isPremium,
+    //   amount: Number(discountedCost),
+    // });
+
+    // try {
+    //   const response = await fetch("/api/paid-promotions", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({
+    //         timeInDays: Number(days),
+    //         distance: Number(selectedKm),
+    //         promotionType,
+    //         isPremium,
+    //         amountPaid: Number(discountedCost),
+
+    //     }),
+    //   });
+
+    //   if (!response.ok) {
+    //     const errorData = await response.json();
+    //     toast.error(errorData.message || "Failed to start promotion.");
+    //     return;
+    //   }
+
+    //   // Assuming API returns { success: true }
+    //   const data = await response.json();
+    //   if (data.success) {
+    //     toast.success("Promotion started successfully!");
+    //     router.push(`/payment?amount=${discountedCost}`);
+    //   } else {
+    //     toast.error("Promotion could not be started.");
+    //   }
+    // } catch (error) {
+    //   toast.error("Something went wrong. Please try again.");
+    //   console.error("Promotion API error:", error);
+    // }
   
     router.push(`/payment?amount=${discountedCost}`);
   };
-  
-  
+
   return (
     <section className="w-full flex flex-col items-center py-10 px-4 gap-y-10" id="promotion">
       <h1 className="text-3xl font-bold mb-6 text-white flex items-center gap-2 text-shadow-md text-shadow-sky-300">Paid Promotion</h1>

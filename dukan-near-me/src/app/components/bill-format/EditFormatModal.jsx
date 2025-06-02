@@ -18,6 +18,8 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
     updates: "",
   });
   const [error, setError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
 
     
   useEffect(() => {
@@ -34,7 +36,7 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
 
           setFormData({
             firmName: institution.firmName || "",
-            address: institution.shopAddress || "",
+            address: institution.address || "",
             contactNo: institution.phone || "",
             gstNo: data.gstNumber || "",
             email: institution.contactEmail || "",
@@ -94,11 +96,17 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
       taxType: "CGST+SGST",
       taxPercentage: `${formData.cgst || 0} + ${formData.sgst || 0}`,
       extraText: `${formData.terms}\n${formData.updates}`,
+      // firmName: formData.firmName,
+  // contactEmail: formData.email,
+  // phone: formData.contactNo,
+  // shopAddress: formData.address,
+
     };
 
     if (formData.proprietorSign) {
       payload["proprietorSign"] = formData.proprietorSign;
 
+      setIsSaving(true);
 
         try {
           const res = await fetch("/api/billFormat", {
@@ -117,7 +125,10 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
         } catch (err) {
           console.error(err);
           toast.error("An error occurred.");
-        }
+        } finally {
+  setIsSaving(false);
+}
+
       // };
       // reader.readAsDataURL(formData.proprietorSign);
           } else {
@@ -137,6 +148,8 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
             } catch (err) {
               console.error(err);
               toast.error("An error occurred.");
+            } finally {
+              setIsSaving(false);
             }
           }
 
@@ -156,10 +169,15 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
       taxType: "CGST+SGST",
       taxPercentage: `${formData.cgst || 0} + ${formData.sgst || 0}`,
       extraText: `${formData.terms}\n${formData.updates}`,
+    //   firmName: formData.firmName,
+    // contactEmail: formData.email,
+    // phone: formData.contactNo,
+    // shopAddress: formData.address,
     };
 
     if (formData.proprietorSign) {
-  payload["proprietorSign"] = formData.proprietorSign;
+      payload["proprietorSign"] = formData.proprietorSign;
+      setIsSaving(true);
 
     try {
       const res = await fetch("/api/billFormat", {
@@ -177,7 +195,9 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
     } catch (err) {
       console.error(err);
       toast.error("An error occurred.");
-    }
+    } finally {
+              setIsSaving(false);
+            }
   // };
   // reader.readAsDataURL(formData.proprietorSign);
 } else {
@@ -197,6 +217,8 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
   } catch (err) {
     console.error(err);
     toast.error("An error occurred.");
+  } finally {
+    setIsSaving(false);
   }
 }
 
@@ -283,7 +305,7 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
               onChange={handleChange}
               min="0"
               max="100"
-              step="0.01"
+              // step="0.01"
               className="border p-2 rounded mt-1"
               placeholder="CGST in %"
             />
@@ -298,7 +320,7 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
               onChange={handleChange}
               min="0"
               max="100"
-              step="0.01"
+              // step="0.01"
               className="border p-2 rounded mt-1"
               placeholder="SGST in %"
             />
@@ -362,9 +384,11 @@ export default function EditFormatModal({ closeModal, onFormDetailsChange, user,
             <button
               type="submit"
               onClick={handleUpdate}
+              disabled={isSaving}
               className="px-8 py-2 rounded cursor-pointer bg-blue-600 text-white transition-all duration-500 ease-in-out hover:bg-blue-800"
             >
-              Save
+                {isSaving ? "Saving..." : "Save Changes"}
+
             </button>
             <button
               type="button"

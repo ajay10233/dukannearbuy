@@ -209,9 +209,9 @@ export default function PaymentOffer() {
           <button
             onClick={() => handleCheckout(selectedCoupon?.id)}
             className={`w-full cursor-pointer mt-4 ${finalPrice === 0
-              ? "bg-green-500 hover:bg-green-600"
+              ? "bg-teal-500 hover:bg-teal-600"
               : "bg-indigo-500 hover:bg-indigo-600"
-              } text-white font-semibold py-3 rounded-xl shadow-md transition-all`}
+              } text-white font-semibold py-3 rounded-xl shadow-md transition-all ease-in-out duration-400`}
           >
             {finalPrice === 0 ? "Upgrade Now for Free" : "Proceed to Pay"}
           </button>

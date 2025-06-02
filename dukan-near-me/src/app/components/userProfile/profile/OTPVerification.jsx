@@ -17,6 +17,8 @@ export default function OTPVerification() {
   const [isLoading, setIsLoading] = useState(false);
   const [invalidAttempt, setInvalidAttempt] = useState(false);
   const [showOTPSection, setShowOTPSection] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+
 
   useEffect(() => {
     if (showOTPSection && timer > 0) {
@@ -46,7 +48,9 @@ export default function OTPVerification() {
       setShowOTPSection(true);
       setTimer(60);
     } catch (err) {
+      setInvalidAttempt(true);
       toast.error(err.response?.data?.error || 'Failed to send OTP. Try again.');
+      clearInputs();
     } finally {
       setIsLoading(false);
     }
@@ -89,6 +93,9 @@ export default function OTPVerification() {
       });
 
       toast.success(res.data?.message || 'OTP Verified');
+      setIsVerified(true);
+      setTimer(0);    
+      
       router.push('/userProfile');
     } catch (err) {
       setInvalidAttempt(true);
@@ -101,6 +108,7 @@ export default function OTPVerification() {
 
   const handleResend = () => {
     setTimer(60);
+    setIsVerified(false);
     clearInputs();
     toast.success('OTP Sent Again');
   };
@@ -121,12 +129,12 @@ export default function OTPVerification() {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 transition-all ease-in-out duration-400 cursor-pointer focus:ring-blue-500"
             />
             <button
               onClick={handleEmailSubmit}
               disabled={isLoading}
-              className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold shadow-md hover:opacity-90 transition"
+              className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold shadow-md hover:opacity-90 transition-all ease-in-out duration-400 cursor-pointer"
             >
               {isLoading ? 'Sending...' : 'Send Verification OTP'}
             </button>
@@ -149,7 +157,7 @@ export default function OTPVerification() {
                   value={digit}
                   onChange={(e) => handleChange(e, i)}
                   onKeyDown={(e) => handleBackspace(e, i)}
-                  className="w-12 h-14 text-center border-2 border-blue-300 rounded-lg text-2xl bg-white shadow focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  className="w-12 h-14 text-center border-2 border-blue-300 rounded-lg text-2xl bg-white shadow focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ease-in-out duration-400 cursor-pointer"
                 />
               ))}
             </div>
@@ -167,14 +175,14 @@ export default function OTPVerification() {
             </button>
 
             <div className="text-center mt-5 text-sm text-gray-600 flex justify-center cursor-pointer">
-              {timer > 0 ? (
+              {(timer > 0 && !isVerified) ? (
                 <p>
                   Resend in <span className="font-medium">{timer}s</span>
                 </p>
               ) : (
                 <button
                   onClick={handleResend}
-                  className="text-blue-600 font-medium hover:underline transition flex items-center gap-2"
+                  className="text-blue-600 font-medium hover:underline transition-all ease-in-out duration-400 cursor-pointer flex items-center gap-2"
                 >
                   <RefreshCcw size={24} color="#1851d8" /> Resend OTP
                 </button>

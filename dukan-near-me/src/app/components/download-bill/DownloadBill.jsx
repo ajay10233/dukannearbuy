@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import LogoLoader from "../LogoLoader";
 
 export default function DownloadBill({ params, searchParams }) {
   const institutionId = searchParams?.institutionId;
@@ -14,20 +15,33 @@ export default function DownloadBill({ params, searchParams }) {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [items, setItems] = useState([{ particulars: '', qty: 0, rate: 0, amount: 0 }]);
+  
 
   const [formDetails, setFormDetails] = useState(null);
 
 
   const fetchBill = async () => {
     try {
-      const res = await axios.get(`/api/bill/${params.id}`);
-      if (!res?.data.success) {
-        return toast.error(res.data.error || "Failed to fetch bill");
-      }
-      const data = res.data;
-      setBill(data.bill);
-      setItems(data.bill.items);
-      console.log(data.bill);
+        const res = await axios.get(`/api/bill/${params.id}`);
+        if (!res?.data.success) {
+            return toast.error(res.data.error || "Failed to fetch bill");
+        }
+
+        const data = res.data;
+
+        const isInstitution = data.bill?.institution?.role === 'INSTITUTION';
+
+        const mappedItems = data.bill.items.map((item) => ({
+            particulars: isInstitution ? item.chiefComplaint || '' : item.name || '',
+            qty: isInstitution ? item.treatment || '' : item.quantity || 0,
+            rate: isInstitution ? item.others || '' : item.price || 0,
+            amount: item.amount || 0,
+        }));
+
+        setBill(data.bill);
+        setItems(mappedItems);
+        console.log(data.bill);
+
     } catch (error) {
       toast.error("Failed to fetch bill");
     } finally {
@@ -146,7 +160,14 @@ export default function DownloadBill({ params, searchParams }) {
   };
 
 
-  const itemsSubtotal = items.reduce((acc, item) => acc + (item.total || 0), 0);
+    //   const itemsSubtotal = items.reduce((acc, item) => acc + (item.total || 0), 0);
+    const itemsSubtotal = items.reduce((acc, item) => {
+        const amount = user?.role === 'INSTITUTION'
+            ? parseFloat(item.amount || 0)
+            : parseFloat(item.qty || 0) * parseFloat(item.rate || 0);
+        return acc + amount;
+    }, 0);
+
 
   const cgstPercent = formDetails?.cgst || 0;
   const sgstPercent = formDetails?.sgst || 0;
@@ -154,13 +175,14 @@ export default function DownloadBill({ params, searchParams }) {
   const cgstAmount = (itemsSubtotal * cgstPercent) / 100;
   const sgstAmount = (itemsSubtotal * sgstPercent) / 100;
 
-  const totalAmount = itemsSubtotal + cgstAmount + sgstAmount;
+const totalAmount = itemsSubtotal + cgstAmount + sgstAmount;
+
 
   const handlePrint = () => {
     window.print();
   };
 
-  if (loading) return <div className="p-4">Loading...</div>;
+  if (loading) return <LogoLoader content={"Loading..."} />;
   if (!bill) return <div className="p-4 text-red-500">Bill not found.</div>;
 
 
@@ -251,37 +273,53 @@ export default function DownloadBill({ params, searchParams }) {
                   <tr key={index} className='text-xs md:text-sm print:text-sm'>
                     <td className="border p-1 md:p-2 text-center print:p-2">{index + 1}</td>
                     <td className="border p-1 md:p-2 print:p-2">
-                      <input
-                        type="text"
-                        readOnly
-                        tabIndex={-1}
-                        value={item?.name || ''}
-                        onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
-                        className="w-full border-none outline-none"
-                      />
+                            
+                        {/* CHIEF COMPLAINT / PARTICULARS */}
+                            {user?.role === 'INSTITUTION' ? (
+                                <input
+                                    type="text"
+                                    readOnly
+                                    tabIndex={-1}
+                                    value={item?.chiefComplaint || item?.name || ''}
+                                    onChange={(e) => handleItemChange(index, 'chiefComplaint', e.target.value)}
+                                    className="w-full border-none outline-none"
+                                />
+                            ) : (
+                                <input
+                                    type="text"
+                                    readOnly
+                                    tabIndex={-1}
+                                    value={item?.particulars || item?.name || ''}
+                                    onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
+                                    className="w-full border-none outline-none"
+                                />
+                            )}
                     </td>
+                        
                     <td className="border p-1 md:p-2 print:p-2">
-                      {user?.role === 'INSTITUTION' ? (
-                        <input
-                          type="text"
-                          readOnly
-                          tabIndex={-1}
-                          value={item?.treatment || ''}
-                          onChange={(e) => handleItemChange(index, 'treatment', e.target.value)}
-                          className="w-full border-none outline-none"
-                        />
+                        
+                        {/* TREATMENT / QUANTITY */}
+                            {user?.role === 'INSTITUTION' ? (
+                                <input
+                                type="text"
+                                readOnly
+                                tabIndex={-1}
+                                value={item?.treatment || ''}
+                                onChange={(e) => handleItemChange(index, 'treatment', e.target.value)}
+                                className="w-full border-none outline-none"
+                                />
 
-                      ) : (
+                            ) : (
 
-                        <input
-                          readOnly
-                          tabIndex={-1}
-                          type="number"
-                          value={item?.quantity ?? ''}
-                          onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
-                          className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
-                        />
-                      )}
+                                <input
+                                readOnly
+                                tabIndex={-1}
+                                type="number"
+                                value={item?.quantity ?? ''}
+                                onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
+                                className="w-full border-none outline-none bg-transparent pointer-events-none select-none"
+                                />
+                            )}
                     </td>
 
                     <td className="border p-1 md:p-2 print:p-2">

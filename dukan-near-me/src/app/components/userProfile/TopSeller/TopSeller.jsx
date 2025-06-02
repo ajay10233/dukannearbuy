@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star, ChevronLeft, ChevronRight, Crown } from "lucide-react";
 import Autoplay from "embla-carousel-autoplay";
+import LogoLoader from "../../LogoLoader";
 
 export default function TopSeller() {
   const [location, setLocation] = useState(null);
@@ -98,7 +99,8 @@ export default function TopSeller() {
         </h2>
 
         {loading ? (
-          <div className="text-center text-gray-400 py-10">Fetching trusted sellers near you...</div>
+          // <div className="text-center text-gray-400 py-10">Fetching trusted sellers near you...</div>
+          <LogoLoader content={"Fetching trusted sellers near you.."}/>
         ) : sellers.length > 0 ? (
             <div className="relative">
               {/* {sellers.length > 4 && ( */}
