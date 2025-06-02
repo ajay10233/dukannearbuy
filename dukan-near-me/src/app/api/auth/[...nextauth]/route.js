@@ -3,11 +3,14 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/utils/db";
 import crypto from "crypto";
-import { ObjectId } from "mongodb";
 
 export const authOptions = {
   session: {
     strategy: "jwt",
+    maxAge: 7 * 24 * 60 * 60,
+  },
+  jwt: {
+    maxAge: 7 * 24 * 60 * 60, // 30 days
   },
   providers: [
     CredentialsProvider({
@@ -41,7 +44,7 @@ export const authOptions = {
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) throw new Error("Invalid credentials");
 
-        const userId = new ObjectId(user.id);
+        const userId = user.id;
         const plan = user.subscriptionPlan?.name?.toLowerCase();
         let maxDevices = 1;
 
