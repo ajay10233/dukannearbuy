@@ -17,6 +17,7 @@ export async function middleware(req) {
 
 
   // Redirect to login if no session token
+  console.log("token: ", token);
   if (!token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
