@@ -17,13 +17,8 @@ export default function PaymentOffer() {
   const [plan, setPlan] = useState(null);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
 
-
-  // const price = planId ? parseInt(planId) : 999;
-  // const finalPrice = discountApplied ? price - discountAmount : price;
-
-    const params = useParams();
-    const planId = params.planId;
-
+  const params = useParams();
+  const planId = params.planId;
 
   useEffect(() => {
     if (!planId) return;
@@ -35,23 +30,6 @@ export default function PaymentOffer() {
       console.log("_+________________________",data);
       setPlan(data);
     })
-
-      // .then((res) => {
-      //   if (!res.ok) throw new Error("Failed to fetch plan");
-      //   return res.json();
-      // })
-      // .then((data) => {
-      //   const foundPlan = data.find(p => p.id === planId);
-      //   if (foundPlan) {
-      //     setPlan(foundPlan);
-      //   } else {
-      //     toast.error('Plan not found');
-      //   }
-      // })
-      // .catch((error) => {
-      //   console.error(error);
-      //   toast.error("Could not load plan details.");
-      // });
   }, [planId]);
 
   if (!plan) {

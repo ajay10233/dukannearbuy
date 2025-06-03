@@ -24,30 +24,27 @@ export default function MyPlans() {
 
         // Include subscription plan if available
         if (data.subscriptionPlan) {
-          const subscribedAt = new Date(data.createdAt);
-          const durationDays = data.subscriptionPlan.durationInDays || 0;
-          const expiryDate = new Date(subscribedAt);
-          expiryDate.setDate(expiryDate.getDate() + durationDays);
-        
-          const isExpired = new Date() > expiryDate;
-        
+          const activatedAt = new Date(data.subscriptionPlan.createdAt);
+          const expiresAt = new Date(data.subscriptionPlan.expiresAt);
+          const isExpired = new Date() > expiresAt;
+
           userPlans.push({
             id: data.subscriptionPlan.id,
             name: data.subscriptionPlan.name,
             type: "subscription",
             status: isExpired ? "expired" : "active",
-            date: `Subscribed on: ${subscribedAt.toLocaleDateString()}\nValid till: ${expiryDate.toLocaleDateString()}`,
+            date: `Activated on: ${activatedAt.toLocaleDateString()}\nValid till: ${expiresAt.toLocaleDateString()}`,
             description: `Plan: ${data.subscriptionPlan.name}, Price: ₹${data.subscriptionPlan.price}`,
           });
         }
-        
+
         // Include paid promotions if available
         if (data.paidPromotions && data.paidPromotions.length > 0) {
           data.paidPromotions.forEach((promo) => {
             const promoStart = new Date(promo.createdAt);
             const promoEnd = new Date(promo.expiresAt);
             const isPromoExpired = new Date() > promoEnd;
-      
+
             userPlans.push({
               id: promo.id,
               name: "Paid Promotion",
@@ -55,10 +52,11 @@ export default function MyPlans() {
               status: isPromoExpired ? "expired" : "active",
               date: `Promotion started on: ${promoStart.toLocaleDateString()}\nValid till: ${promoEnd.toLocaleDateString()}`,
               description: `Amount Paid: ₹${promo.amountPaid}, Range: ${promo.range}` + (promo.notes ? `, Reason: ${promo.notes}` : ""),
+              image: promo.image || null,
             });
           });
         }
-        
+
         setPlans(userPlans);
       } catch (error) {
         console.error(error);
@@ -71,9 +69,7 @@ export default function MyPlans() {
   }, []);
 
   if (loading) {
-    return (
-      <LogoLoader content={"Fetching your plans..."} />
-    );
+    return <LogoLoader content={"Fetching your plans..."} />;
   }
 
   return (
@@ -131,20 +127,27 @@ export default function MyPlans() {
                         )}
                       </span>
                       {plan.status === "expired" && (
-                        <button onClick={() => {
-                          const target = plan.type === "paid" ? "#promotion" : "#subscription";
-                          router.push(`/partnerHome${target}`);
-                        }}
-                        className="inline-flex cursor-pointer items-center text-indigo-600 hover:text-indigo-800 transition font-semibold text-sm">
+                        <button
+                          onClick={() => {
+                            const target = plan.type === "paid" ? "#promotion" : "#subscription";
+                            router.push(`/partnerHome${target}`);
+                          }}
+                          className="inline-flex cursor-pointer items-center text-indigo-600 hover:text-indigo-800 transition font-semibold text-sm"
+                        >
                           Renew <ArrowRight className="h-4 w-4 ml-1" />
-                      </button>
+                        </button>
                       )}
                     </div>
 
-                    {/* Displaying Image for Paid Promotions */}
                     {plan.type === "paid" && plan.image && (
                       <div className="mt-2">
-                        <Image src={plan.image} alt="Promotion Image" width={150} height={150} className="rounded-md shadow-sm" />
+                        <Image
+                          src={plan.image}
+                          alt="Promotion Image"
+                          width={150}
+                          height={150}
+                          className="rounded-md shadow-sm"
+                        />
                       </div>
                     )}
                   </motion.div>
@@ -162,7 +165,8 @@ export default function MyPlans() {
           <Image
             src="/nearbuydukan - watermark.png"
             alt="Watermark"
-            fill sizes="(max-width: 768px) 100px, (min-width: 769px) 150px"
+            fill
+            sizes="(max-width: 768px) 100px, (min-width: 769px) 150px"
             className="object-contain w-17 h-17 md:w-32 md:h-32"
             priority
           />

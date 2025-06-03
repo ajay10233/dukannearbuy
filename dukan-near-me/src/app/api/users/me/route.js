@@ -70,8 +70,8 @@ export async function GET() {
           durationInDays: user.subscriptionPlan.durationInDays,
           features: user.subscriptionPlan.features,
           maxUploadSizeMB: user.subscriptionPlan.maxUploadSizeMB,
-          expiresAt: user.subscriptionPlan.expiresAt,
-          createdAt: user.subscriptionPlan.createdAt,
+          expiresAt: user.planExpiresAt,
+          createdAt: user.planActivatedAt,
         }
       : null,
     pastAddresses: user.pastAddresses.map((address) => ({
@@ -99,7 +99,7 @@ export async function GET() {
       range: promo.range,
     })),
   };
-
+  
   // Override if role is USER
   if (user?.role === "USER") {
     data = {
