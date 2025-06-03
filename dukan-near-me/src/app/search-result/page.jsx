@@ -158,7 +158,7 @@ export default function About({ profileUpdated }) {
   return (
     <div className="flex flex-col items-start w-full bg-white overflow-x-hidden">
           {loading ? (
-            <LogoLoader content="Fetching profile..." />
+            <LogoLoader content={"Fetching profile..."}  />
           ) : (
             <>
               <Navbar />

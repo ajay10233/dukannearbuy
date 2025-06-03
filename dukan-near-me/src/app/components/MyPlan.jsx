@@ -37,7 +37,8 @@ export default function MyPlans() {
             type: "subscription",
             status: isExpired ? "expired" : "active",
             date: `Subscribed on: ${subscribedAt.toLocaleDateString()}\nValid till: ${expiryDate.toLocaleDateString()}`,
-            description: `Plan: ${data.subscriptionPlan.name}, Price: ₹${data.subscriptionPlan.price}`,
+            description: `Plan: ${data.subscriptionPlan.name}, 
+            `,
           });
         }
         
@@ -54,7 +55,7 @@ export default function MyPlans() {
               type: "paid",
               status: isPromoExpired ? "expired" : "active",
               date: `Promotion started on: ${promoStart.toLocaleDateString()}\nValid till: ${promoEnd.toLocaleDateString()}`,
-              description: `Amount Paid: ₹${promo.amountPaid}, Range: ${promo.range}` + (promo.notes ? `, Reason: ${promo.notes}` : ""),
+              description: ` Range: ${promo.range}` + (promo.notes ? `, Reason: ${promo.notes}` : ""),
             });
           });
         }

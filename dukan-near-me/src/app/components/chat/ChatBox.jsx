@@ -497,10 +497,14 @@ export default function ChatBox() {
 
   // Function to fetch the session data
   const fetchSessionAndRedirect = async () => {
+
+    if (!loggedInUser) return;
+
     try {
       // const res = await fetch("/api/users/me");
       // const data = await res.json();
       const data = loggedInUser;
+
       if (data?.role == "USER") {
         router.push("/UserHomePage");
       } else if (data?.role == "INSTITUTION" || data?.role == "SHOP_OWNER") {
