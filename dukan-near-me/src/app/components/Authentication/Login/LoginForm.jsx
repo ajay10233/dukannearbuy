@@ -11,6 +11,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import LogoLoader from "../../LogoLoader";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -157,14 +158,14 @@ const onSubmit = async (data) => {
             </label>
             <span className="absolute right-5 top-1/2 -translate-y-1/2">
               {show ? (
-                <Eye size={20} onClick={() => setShow()} />
+                <Eye size={20} onClick={() => setShow()} className="text-gray-600 md:text-[var(--withdarkinnertext)]" />
               ) : (
-                <EyeClosed size={20} onClick={() => setShow()} />
+                <EyeClosed size={20} onClick={() => setShow()} className="text-gray-600 md:text-[var(--withdarkinnertext)]" />
               )}
             </span>
           </div>
           <div className="flex justify-end px-4">
-            <Link href={`/forgot-password`} className="text-sm">
+            <Link href={`/forgot-password`} className="text-sm text-gray-700 md:text-[var(--withdarkinnertext)]">
               Forgot Password?
             </Link>
           </div>
@@ -179,20 +180,22 @@ const onSubmit = async (data) => {
             }`}
         >
           {isLoading ? (
-            <span className="flex justify-center items-center gap-2">
-              <Loader2 className="animate-spin" size={18} />
-              Logging in...
-            </span>
+            // <span className="flex justify-center items-center gap-2">
+            //   <Loader2 className="animate-spin" size={18} />
+            //   Logging in...
+            // </span>
+            <LogoLoader content={"Logging in..."} />
+
           ) : (
             "Login"
           )}
         </button>
 
-        <span className="text-gray-600 text-sm">- or -</span>
+        <span className="text-gray-700 md:text-gray-600 text-sm">- or -</span>
 
-        <p className="text-gray-600 text-md">
+        <p className="text-gray-700 md:text-gray-600 text-md">
           Don't have an account?{" "}
-          <Link href="/getstarted" className="text-gray-800 font-semibold">
+          <Link href="/getstarted" className="text-blue-800 md:text-gray-800 font-semibold">
             Sign up
           </Link>
         </p>

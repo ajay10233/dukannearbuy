@@ -83,8 +83,9 @@ export default function About({ profileUpdated }) {
 
   const handleChat = () => {
     const institutionId = userData?.id;
+    const role = userData?.role; 
     if (institutionId) {
-      router.push(`/chat?role=institution&to=${institutionId}`);
+      router.push(`/chat?role=${role}&to=${institutionId}`);
     } else {
       toast.error("Institution ID not found");
     }

@@ -9,6 +9,7 @@ import Navbar from "@/app/components/InstitutionHome/navbar/Navbar";
 // import EditFormat from "@/app/components/bill-format/EditFormat";
 import EditFormatModal from "../../components/bill-format/EditFormatModal";
 import { FaEdit } from "react-icons/fa";
+import LogoLoader from '../LogoLoader';
 
 
 export default function EditFormatComponent() {
@@ -35,6 +36,7 @@ export default function EditFormatComponent() {
     const [tokenEnabled, setTokenEnabled] = useState(false); // for toggle switch
     const [token, setToken] = useState(''); // for token input value
 
+    const [loading, setLoading] = useState(true);
 
 
     const handleFormDetailsChange = (updatedForm) => {
@@ -118,81 +120,275 @@ export default function EditFormatComponent() {
     };
 
     const handlePrint = () => {
-        const printContents = billRef.current.innerHTML;
-        const originalContents = document.body.innerHTML;
-        document.body.innerHTML = printContents;
+        // const printContents = billRef.current.innerHTML;
+        // const originalContents = document.body.innerHTML;
+        // document.body.innerHTML = printContents;
+        // window.print();
+        // document.body.innerHTML = originalContents;
+        // window.location.reload();
+
         window.print();
-        document.body.innerHTML = originalContents;
-        window.location.reload();
     };
 
+    // const handleGenerateBill = async () => {
+    //     if (isGenerating) return;
+    //     setIsGenerating(true);
+
+    //     if (!userId) {
+    //         toast.error('Please scan a user QR code first.');
+    //         setIsGenerating(false);
+    //         return;
+    //     }
+    //     console.log('Generating bill with userId:', userId);
+
+
+    //     if (!invoiceNo.trim()) {
+    //         toast.error('Please enter an invoice number.');
+    //         setIsGenerating(false);
+    //         return;
+    //     }
+
+    //     if (!Array.isArray(items) || items.length === 0) {
+    //         toast.error('Please add at least one item to generate a bill.');
+    //         setIsGenerating(false);
+    //         return;
+    //     }
+
+
+    //     try {
+
+    //         const checkResponse = await axios.get('/api/bill', {
+    //             params: { invoiceNumber: invoiceNo }
+    //         });
+
+
+    //         // const today = new Date().toISOString().slice(0, 10); 
+
+    //         const existingBills = checkResponse.data.bills.filter(bill => {
+    //             // const billDate = new Date(bill.createdAt).toISOString().slice(0, 10);
+    //             return bill.invoiceNumber === invoiceNo;
+    //         });
+
+
+    //         if (existingBills.length > 0) {
+    //             toast.error('A bill with this invoice number already exists.');
+    //             setIsGenerating(false);
+    //             return;
+    //         }
+
+    //         const hasFile = file !== null;
+    //         let data;
+
+    //         if (hasFile) {
+    //             const formData = new FormData();
+    //             formData.append('userId', userId);
+    //             formData.append('name', `${username.firstName} ${username.lastName}`);
+    //             formData.append('phoneNumber', mobile);
+    //             formData.append('invoiceNumber', invoiceNo);
+    //             formData.append('remarks', '');
+    //             formData.append('otherCharges', '0');
+    //             formData.append('file', file);
+    //             formData.append('generateShortBill', shortBill);
+    //             formData.append('report', isReport);
+    //             formData.append('generationToken', tokenEnabled);
+
+
+    //             if (user?.role === 'INSTITUTION') {
+    //                 const notesPayload = items.map(item => ({
+    //                     chief_complaint: item.particulars || '',
+    //                     treatment: item.treatment || '',
+    //                     others: item.others || ''
+    //                 }));
+    //                 formData.append('notes', JSON.stringify(notesPayload));
+    //             } else {
+    //                 formData.append('items', JSON.stringify(items.map(item => ({
+    //                     name: item.particulars,
+    //                     quantity: Number(item.qty),
+    //                     price: Number(item.rate),
+    //                 }))));
+    //             }
+
+
+    //             data = await axios.post('/api/bill', formData, {
+    //                 headers: {
+    //                     'Content-Type': 'multipart/form-data',
+    //                 },
+    //             });
+    //         } else {
+    //             // const payload = {
+    //             //     userId,
+    //             //     name: `${username.firstName} ${username.lastName}`,
+    //             //     phoneNumber: mobile,
+    //             //     invoiceNumber: invoiceNo,
+    //             //     items: items.map((item) => ({
+    //             //         name: item.particulars,
+    //             //         quantity: Number(item.qty),
+    //             //         price: Number(item.rate),
+    //             //     })),
+    //             //     remarks: '',
+    //             //     otherCharges: 0,
+    //             //     generateShortBill: shortBill,
+    //             //     generationToken: tokenEnabled,
+    //             // };
+
+    //                         let payload;
+
+    //         if (user?.role === 'INSTITUTION') {
+    //             payload = {
+    //                 userId,
+    //                 name: `${username.firstName} ${username.lastName}`,
+    //                 phoneNumber: mobile,
+    //                 invoiceNumber: invoiceNo,
+    //                 notes: items.map(item => ({
+    //                     chief_complaint: item.particulars || '',
+    //                     treatment: item.treatment || '',
+    //                     others: item.others || '',
+    //                 })),
+    //                 remarks: '',
+    //                 otherCharges: 0,
+    //                 generateShortBill: shortBill,
+    //                 generationToken: tokenEnabled,
+    //             };
+    //         } else {
+    //             payload = {
+    //                 userId,
+    //                 name: `${username.firstName} ${username.lastName}`,
+    //                 phoneNumber: mobile,
+    //                 invoiceNumber: invoiceNo,
+    //                 items: items.map(item => ({
+    //                     name: item.particulars,
+    //                     quantity: Number(item.qty),
+    //                     price: Number(item.rate),
+    //                 })),
+    //                 remarks: '',
+    //                 otherCharges: 0,
+    //                 generateShortBill: shortBill,
+    //                 generationToken: tokenEnabled,
+    //             };
+    //         }
+
+
+    //             data = await axios.post('/api/bill', payload);
+    //         }
+    //         console.log(data.data);
+    //         if (data?.data?.shortBill) {
+    //             setShortBillDetails(data.data.shortBill); // Save shortBill data to state
+    //         }
+
+    //         toast.success('Bill generated successfully!');
+    //         console.log('Generated bill:', data);
+    //     } catch (error) {
+    //         console.error('Error generating bill:', error);
+    //         toast.error(error.response?.data?.error || 'Error generating bill');
+    //     } finally {
+    //         setIsGenerating(false);
+    //     }
+    // };
+
     const handleGenerateBill = async () => {
-        if (isGenerating) return;
-        setIsGenerating(true);
+    if (isGenerating) return;
+    setIsGenerating(true);
 
-        if (!userId) {
-            toast.error('Please scan a user QR code first.');
+    if (!userId) {
+        toast.error('Please scan a user QR code first.');
+        setIsGenerating(false);
+        return;
+    }
+
+    if (!invoiceNo.trim()) {
+        toast.error('Please enter an invoice number.');
+        setIsGenerating(false);
+        return;
+    }
+
+    // Validate items before proceeding
+    if (!Array.isArray(items) || items.length === 0) {
+        toast.error('Please add at least one item to generate a bill.');
+        setIsGenerating(false);
+        return;
+    }
+
+    const safeItems = Array.isArray(items) ? items : [];
+
+    try {
+        // Check if invoice number already exists
+        const checkResponse = await axios.get('/api/bill', {
+            params: { invoiceNumber: invoiceNo }
+        });
+
+        const existingBills = checkResponse.data.bills.filter(bill => {
+            return bill.invoiceNumber === invoiceNo;
+        });
+
+        if (existingBills.length > 0) {
+            toast.error('A bill with this invoice number already exists.');
             setIsGenerating(false);
             return;
         }
-        console.log('Generating bill with userId:', userId);
 
+        const hasFile = file !== null;
+        let data;
 
-        if (!invoiceNo.trim()) {
-            toast.error('Please enter an invoice number.');
-            setIsGenerating(false);
-            return;
-        }
+        if (hasFile) {
+            const formData = new FormData();
+            formData.append('userId', userId);
+            formData.append('name', `${username.firstName} ${username.lastName}`);
+            formData.append('phoneNumber', mobile);
+            formData.append('invoiceNumber', invoiceNo);
+            formData.append('remarks', '');
+            formData.append('otherCharges', '0');
+            formData.append('file', file);
+            formData.append('generateShortBill', shortBill);
+            formData.append('report', isReport);
+            formData.append('generationToken', tokenEnabled);
 
-        try {
-
-            const checkResponse = await axios.get('/api/bill', {
-                params: { invoiceNumber: invoiceNo }
-            });
-
-
-            // const today = new Date().toISOString().slice(0, 10); 
-
-            const existingBills = checkResponse.data.bills.filter(bill => {
-                // const billDate = new Date(bill.createdAt).toISOString().slice(0, 10);
-                return bill.invoiceNumber === invoiceNo;
-            });
-
-
-            if (existingBills.length > 0) {
-                toast.error('A bill with this invoice number already exists.');
-                setIsGenerating(false);
-                return;
+            if (user?.role === 'INSTITUTION') {
+                const notesPayload = safeItems.map(item => ({
+                    chief_complaint: item.chiefComplaint || '',
+                    treatment: item.treatment || '',
+                    others: item.others || ''
+                }));
+                formData.append('notes', JSON.stringify(notesPayload));
+            } else {
+                formData.append('items', JSON.stringify(safeItems.map(item => ({
+                    name: item.particulars,
+                    quantity: Number(item.qty),
+                    price: Number(item.rate),
+                }))));
             }
 
-            const hasFile = file !== null;
-            let data;
+            data = await axios.post('/api/bill', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
 
-            if (hasFile) {
-                const formData = new FormData();
-                formData.append('userId', userId);
-                formData.append('name', `${username.firstName} ${username.lastName}`);
-                formData.append('phoneNumber', mobile);
-                formData.append('invoiceNumber', invoiceNo);
-                formData.append('remarks', '');
-                formData.append('otherCharges', '0');
-                formData.append('file', file);
-                formData.append('generateShortBill', shortBill);
-                formData.append('report', isReport);
-                formData.append('generationToken', tokenEnabled);
+        } else {
+            let payload;
 
-                data = await axios.post('/api/bill', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-            } else {
-                const payload = {
+            if (user?.role === 'INSTITUTION') {
+                payload = {
                     userId,
                     name: `${username.firstName} ${username.lastName}`,
                     phoneNumber: mobile,
                     invoiceNumber: invoiceNo,
-                    items: items.map((item) => ({
+                    notes: safeItems.map(item => ({
+                        chief_complaint: item.chiefComplaint || '',
+                        treatment: item.treatment || '',
+                        others: item.others || '',
+                    })),
+                    remarks: '',
+                    otherCharges: 0,
+                    generateShortBill: shortBill,
+                    generationToken: tokenEnabled,
+                };
+            } else {
+                payload = {
+                    userId,
+                    name: `${username.firstName} ${username.lastName}`,
+                    phoneNumber: mobile,
+                    invoiceNumber: invoiceNo,
+                    items: safeItems.map(item => ({
                         name: item.particulars,
                         quantity: Number(item.qty),
                         price: Number(item.rate),
@@ -202,24 +398,27 @@ export default function EditFormatComponent() {
                     generateShortBill: shortBill,
                     generationToken: tokenEnabled,
                 };
-
-                data = await axios.post('/api/bill', payload);
-            }
-            console.log(data.data);
-            if (data?.data?.shortBill) {
-                setShortBillDetails(data.data.shortBill); // Save shortBill data to state
             }
 
-            toast.success('Bill generated successfully!');
-            console.log('Generated bill:', data);
-        } catch (error) {
-            console.error('Error generating bill:', error);
-            toast.error(error.response?.data?.error || 'Error generating bill');
-        } finally {
-            setIsGenerating(false);
+            data = await axios.post('/api/bill', payload);
         }
-    };
 
+        if (data?.data?.shortBill) {
+            setShortBillDetails(data.data.shortBill); // Save shortBill data to state
+        }
+
+        toast.success('Bill generated successfully!');
+        console.log('Generated bill:', data);
+
+    } catch (error) {
+        console.error('Error generating bill:', error);
+        toast.error(error.response?.data?.error || 'Error generating bill');
+    } finally {
+        setIsGenerating(false);
+    }
+};
+
+    
     useEffect(() => {
         fetchUserDetails();
     }, []);
@@ -228,13 +427,14 @@ export default function EditFormatComponent() {
     useEffect(() => {
         const fetchFormatDetails = async () => {
             try {
+                setLoading(true);
                 const response = await fetch('/api/billFormat');
-                if (response.ok) {
-                    const data = await response.json();
-
-                    // Split tax and extra text for internal handling
-                    const [cgst, sgst] = data.taxPercentage?.split('+').map((val) => val.trim()) || [0, 0];
-                    const [terms = '', updates = ''] = data.extraText?.split('\n') || ['', ''];
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Split tax and extra text for internal handling
+                const [cgst, sgst] = data.taxPercentage?.split('+').map((val) => val.trim()) || [0, 0];
+                const [terms = '', updates = ''] = data.extraText?.split('\n') || ['', ''];
 
                     const institution = data.institutionRelation || {};
 
@@ -255,8 +455,10 @@ export default function EditFormatComponent() {
                     toast.error(error?.error || 'Failed to fetch format');
                 }
             } catch (err) {
-                console.error('Error fetching format details:', err);
-                toast.error('Error fetching format details');
+            console.error('Error fetching format details:', err);
+            toast.error('Error fetching format details');
+            } finally {
+                setLoading(false); // hide loader
             }
         };
 
@@ -322,6 +524,10 @@ export default function EditFormatComponent() {
     const sgstAmount = (itemsSubtotal * sgstPercent) / 100;
 
     const totalAmount = itemsSubtotal + cgstAmount + sgstAmount;
+
+    if (loading ) {
+        return <LogoLoader content={"Loading bill format..."} />;
+    }
 
 
     return (
@@ -444,10 +650,10 @@ export default function EditFormatComponent() {
                 </div>
                 {/* Create bill */}
 
-                <div className="p-4 relative">
+                <div className="p-4 relative" id="invoice-print" ref={billRef}>
                     <div
                         className="max-w-5xl mx-auto p-4 bg-white shadow-md border text-sm text-black"
-                        ref={billRef}
+                        // ref={billRef}
                     >
                         {/* Header Section */}
                         <div className="relative flex justify-center items-center my-4 md:my-8">
@@ -650,50 +856,65 @@ export default function EditFormatComponent() {
                                             <td className="border p-1 md:p-2 text-center print:p-2">{index + 1}</td>
 
                                             <td className="border p-1 md:p-2 print:p-2">
-                                                <input
-                                                    type="text"
-                                                    value={item.particulars}
-                                                    onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
-                                                    className="w-full border-none outline-none"
-                                                />
+
+                                                {/* CHIEF COMPLAINT / PARTICULARS */}
+                                                    {user?.role === 'INSTITUTION' ? (
+                                                        <input
+                                                            type="text"
+                                                            value={item.chiefComplaint || ''}
+                                                            onChange={(e) => handleItemChange(index, 'chiefComplaint', e.target.value)}
+                                                            className="w-full border-none outline-none"
+                                                        />
+                                                    ) : (
+                                                        <input
+                                                            type="text"
+                                                            value={item.particulars || ''}
+                                                            onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
+                                                            className="w-full border-none outline-none"
+                                                        />
+                                                    )}
                                             </td>
 
                                             <td className="border p-1 md:p-2 print:p-2">
-                                                {user?.role === 'INSTITUTION' ? (
-                                                    <input
-                                                        type="text"
-                                                        value={item.treatment || item.qty || ''}
-                                                        onChange={(e) => handleItemChange(index, 'treatment', e.target.value)}
-                                                        className="w-full border-none outline-none"
-                                                    />
-                                                ) : (
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        value={item.qty}
-                                                        onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
-                                                        className="w-full border-none outline-none"
-                                                    />
-                                                )}
+
+                                                {/* TREATMENT / QUANTITY */}
+                                                    {user?.role === 'INSTITUTION' ? (
+                                                        <input
+                                                            type="text"
+                                                            value={item.treatment || ''}
+                                                            onChange={(e) => handleItemChange(index, 'treatment', e.target.value)}
+                                                            className="w-full border-none outline-none"
+                                                        />
+                                                    ) : (
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={item.qty}
+                                                            onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
+                                                            className="w-full border-none outline-none"
+                                                        />
+                                                    )}
                                             </td>
 
                                             <td className="border p-1 md:p-2 print:p-2">
-                                                {user?.role === 'INSTITUTION' ? (
-                                                    <input
-                                                        type="text"
-                                                        value={item.others || item.rate || ''}
-                                                        onChange={(e) => handleItemChange(index, 'others', e.target.value)}
-                                                        className="w-full border-none outline-none"
-                                                    />
-                                                ) : (
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        value={item.rate}
-                                                        onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
-                                                        className="w-full border-none outline-none"
-                                                    />
-                                                )}
+
+                                                {/* OTHERS / RATE */}
+                                                    {user?.role === 'INSTITUTION' ? (
+                                                        <input
+                                                            type="text"
+                                                            value={item.others || ''}
+                                                            onChange={(e) => handleItemChange(index, 'others', e.target.value)}
+                                                            className="w-full border-none outline-none"
+                                                        />
+                                                    ) : (
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={item.rate}
+                                                            onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
+                                                            className="w-full border-none outline-none"
+                                                        />
+                                                    )}
                                             </td>
                                             <td className="border p-1 md:p-2 text-center print:p-2">
                                                 {user?.role === 'INSTITUTION' ? (
@@ -735,14 +956,6 @@ export default function EditFormatComponent() {
                                 </tbody>
                             </table>
                         </div>
-
-                        {/* Other Charges */}
-                        {/* <div className="mb-4">
-                            <h3 className="font-bold mb-2">Other Charges</h3>
-                            <button className="px-3 py-1 bg-[#9fc9de] cursor-pointer text-white text-sm rounded">
-                                Add Other Charge
-                            </button>
-                        </div> */}
 
                         {/* Total Amount */}
                         <div className="text-sm md:text-lg print:text-lg text-right font-bold">Total Amount: ₹{totalAmount.toFixed(2)}</div>

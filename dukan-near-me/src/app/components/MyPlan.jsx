@@ -4,6 +4,7 @@ import Head from "next/head";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import LogoLoader from "./LogoLoader";
 
 export default function MyPlans() {
   const [plans, setPlans] = useState([]);
@@ -71,9 +72,7 @@ export default function MyPlans() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-600 text-lg">Loading...</p>
-      </div>
+      <LogoLoader content={"Fetching your plans..."} />
     );
   }
 

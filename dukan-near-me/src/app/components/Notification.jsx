@@ -6,20 +6,25 @@ import Head from "next/head";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { TfiAnnouncement } from "react-icons/tfi";
+import LogoLoader from "./LogoLoader";
 
 
 export default function Notification() {
   const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
+        setLoading(true); 
         const res = await fetch("/api/notification"); 
         const data = await res.json();
         console.log(data);
         setNotifications(data);
       } catch (error) {
         console.error("Failed to fetch notifications", error);
+      } finally {
+        setLoading(false); // loading end
       }
     };
 
@@ -59,6 +64,10 @@ export default function Notification() {
       toast.error("Failed to delete");
     }
   };
+
+  if (loading) {
+    return <LogoLoader content={"Loading notifications..."} />;
+  }
 
   return (
     <>

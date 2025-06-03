@@ -7,6 +7,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import LogoLoader from "../LogoLoader";
 
 export default function BillHistoryTable({ setDates }) {
   const [showDateFilter, setShowDateFilter] = useState(false);
@@ -79,7 +80,7 @@ export default function BillHistoryTable({ setDates }) {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LogoLoader content={"Fetching bill history..."} />;
   }
 
   return (

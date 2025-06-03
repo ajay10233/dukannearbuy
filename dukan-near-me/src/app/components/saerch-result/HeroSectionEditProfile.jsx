@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import useEmblaCarousel from "embla-carousel-react";
 import { Plus, RefreshCcwDot, Store, Crown, X, ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "axios";
+import LogoLoader from "../LogoLoader";
 
 
 export default function HeroSectionEditProfile() {
@@ -119,6 +120,24 @@ export default function HeroSectionEditProfile() {
         setImages((prev) => [...prev, ...data.urls]); // Add the image URL to the images state
         setImageCount((prev) => prev + 1);
         toast.success(`Uploaded ${file.name}`);
+
+        if (images.length === 0 && data.urls.length > 0) {
+          try {
+            const result = await axios.put("/api/institutions/primary-image", { url: data.urls[0] });
+            if (result.status === 200) {
+              toast.success("Primary image set automatically!");
+              setUser((prev) => ({
+                ...prev,
+                profilePhoto: data.urls[0],
+              }));
+            } else {
+              toast.error("Failed to set primary image.");
+            }
+          } catch (error) {
+            console.error("Auto-set primary image failed", error);
+          }
+        }
+
       } catch (error) {
         toast.error("Error uploading image: " + error.message);
       }
@@ -166,7 +185,7 @@ export default function HeroSectionEditProfile() {
       if (result.status === 200) {
         toast.success("Primary image updated!");
 
-        setProfile((prev) => ({
+        setUser((prev) => ({
         ...prev,
         profilePhoto: image_url,
         }));
@@ -183,9 +202,7 @@ export default function HeroSectionEditProfile() {
 
   if (!user) {
     return (
-      <div className="text-center">
-        <p>Loading user data...</p>
-      </div>
+      <LogoLoader content={"fetching profile images..."} />
     );
   }
 

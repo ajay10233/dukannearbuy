@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import Navbar from "@/app/components/userProfile/navbar/Navbar";
+import LogoLoader from "@/app/components/LogoLoader";
 
 export default function Review({ user }) {
     const { institutionId } = useParams();
@@ -24,7 +25,7 @@ export default function Review({ user }) {
     const [selectedReviewId, setSelectedReviewId] = useState(null);
     const [sortOption, setSortOption] = useState("all");
     const [showForm, setShowForm] = useState(false);
-
+    const [loading, setLoading] = useState(false);
 
     const router = useRouter();
     const pathname = usePathname();
@@ -38,6 +39,8 @@ export default function Review({ user }) {
         // if (role === "USER" && !institutionId) return;
 
         const fetchReviews = async () => {
+            setLoading(true);
+
             try {
             // For USER role, fetch by institutionId from URL param
             // For SHOP_OWNER or INSTITUTION role, fetch by session.user.id
@@ -48,7 +51,10 @@ export default function Review({ user }) {
             setReviews(res.data);
             } catch {
             toast.error("Failed to fetch reviews");
+            } finally {
+                setLoading(false);
             }
+
         };
 
         fetchReviews();
@@ -219,84 +225,89 @@ return (
 
             {/* Reviews List Scrollable */}
                 <div className="overflow-y-auto dialogScroll pr-1 max-h-[80vh] sm:max-h-[70vh]" >
-                    {reviews.length > 0 ? (
-                        <ul className="flex flex-col gap-3">
-                            {/* {reviews
-                            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) */}
-                                    
-                            {[...reviews]
-                                .sort((a, b) => {
-                                    if (sortOption === "latest")
-                                return new Date(b.updatedAt > b.createdAt ? b.updatedAt : b.createdAt) - new Date(a.updatedAt > a.createdAt ? a.updatedAt : a.createdAt);
+                    
+                    {loading ? (
+                        <LogoLoader content={"Fetching all reviews..."} /> 
+    
 
-                                if (sortOption === "oldest")
-                                return new Date(a.updatedAt > a.createdAt ? a.updatedAt : a.createdAt) - new Date(b.updatedAt > b.createdAt ? b.updatedAt : b.createdAt);
+                    ) :   reviews.length > 0 ? (
+                            <ul className="flex flex-col gap-3">
+                                {/* {reviews
+                                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) */}
+                                        
+                                {[...reviews]
+                                    .sort((a, b) => {
+                                        if (sortOption === "latest")
+                                    return new Date(b.updatedAt > b.createdAt ? b.updatedAt : b.createdAt) - new Date(a.updatedAt > a.createdAt ? a.updatedAt : a.createdAt);
 
-                                    if (sortOption === "highest") return b.rating - a.rating;
-                                    if (sortOption === "lowest") return a.rating - b.rating;
-                                    return 0;
-                                })        
-                                .map((review, i) => (
-                                <li key={i} className="p-3 bg-gray-50 border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
-                                <div className="flex items-center justify-between">
-                                    {/* Profile Section */}
-                                    <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 relative rounded-full overflow-hidden">
-                                        <Image
-                                        src={review?.user?.profilePhoto || "/default-img.jpg"}
-                                        alt="User Profile"
-                                        fill
-                                        className="object-cover"
-                                        priority
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="font-medium text-sm md:text-base">{review?.user?.firstName} {review?.user?.lastName}</p>
-                                        <p className="text-xs text-gray-500">
-                                        {new Date(review?.updatedAt > review?.createdAt ? review?.updatedAt : review?.createdAt).toLocaleDateString()}
-                                        </p>
-                                    </div>
-                                    </div>
+                                    if (sortOption === "oldest")
+                                    return new Date(a.updatedAt > a.createdAt ? a.updatedAt : a.createdAt) - new Date(b.updatedAt > b.createdAt ? b.updatedAt : b.createdAt);
 
-                                    {/* Rating and Options */}
-                                    <div className="flex items-center gap-2">
-                                        <div className="flex">
-                                            {[...Array(Math.floor(review?.rating))].map((_, idx) => (
-                                            <Star key={idx} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                            ))}
+                                        if (sortOption === "highest") return b.rating - a.rating;
+                                        if (sortOption === "lowest") return a.rating - b.rating;
+                                        return 0;
+                                    })        
+                                    .map((review, i) => (
+                                    <li key={i} className="p-3 bg-gray-50 border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
+                                    <div className="flex items-center justify-between">
+                                        {/* Profile Section */}
+                                        <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 relative rounded-full overflow-hidden">
+                                            <Image
+                                            src={review?.user?.profilePhoto || "/default-img.jpg"}
+                                            alt="User Profile"
+                                            fill
+                                            className="object-cover"
+                                            priority
+                                            />
                                         </div>
-                                        <div className="relative">
-                                            <button onClick={() => handleShowOptions(review.id)} className="cursor-pointer">
-                                            <EllipsisVertical className="w-5 h-5 text-gray-500" />
-                                            </button>
+                                        <div>
+                                            <p className="font-medium text-sm md:text-base">{review?.user?.firstName} {review?.user?.lastName}</p>
+                                            <p className="text-xs text-gray-500">
+                                            {new Date(review?.updatedAt > review?.createdAt ? review?.updatedAt : review?.createdAt).toLocaleDateString()}
+                                            </p>
+                                        </div>
+                                        </div>
 
-                                            {showOptions === review.id && (
-                                                <div className="absolute right-0 mt-2 w-28 bg-white border cursor-pointer border-gray-200 rounded shadow-md z-10">
-                                                    {session?.user?.id === review?.userId && (
-                                                    <button
+                                        {/* Rating and Options */}
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex">
+                                                {[...Array(Math.floor(review?.rating))].map((_, idx) => (
+                                                <Star key={idx} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                                                ))}
+                                            </div>
+                                            <div className="relative">
+                                                <button onClick={() => handleShowOptions(review.id)} className="cursor-pointer">
+                                                <EllipsisVertical className="w-5 h-5 text-gray-500" />
+                                                </button>
+
+                                                {showOptions === review.id && (
+                                                    <div className="absolute right-0 mt-2 w-28 bg-white border cursor-pointer border-gray-200 rounded shadow-md z-10">
+                                                        {session?.user?.id === review?.userId && (
+                                                        <button
+                                                            className="block w-full text-left px-4 py-2 text-sm transition-all ease-in-out duration-400 cursor-pointer hover:bg-gray-100"
+                                                            onClick={() => handleEdit(review)}
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        )}
+                                                        <button
                                                         className="block w-full text-left px-4 py-2 text-sm transition-all ease-in-out duration-400 cursor-pointer hover:bg-gray-100"
-                                                        onClick={() => handleEdit(review)}
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                    )}
-                                                    <button
-                                                    className="block w-full text-left px-4 py-2 text-sm transition-all ease-in-out duration-400 cursor-pointer hover:bg-gray-100"
-                                                    onClick={() => confirmReport(review.id)}
-                                                    >
-                                                    Report
-                                                    </button>
-                                                </div>
-                                            )}
+                                                        onClick={() => confirmReport(review.id)}
+                                                        >
+                                                        Report
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <p className="mt-2 text-gray-700 text-sm md:text-[15px] whitespace-pre-line">{review.comment}</p>
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p className="text-gray-500 text-center my-4">No reviews yet.</p>
+                                    <p className="mt-2 text-gray-700 text-sm md:text-[15px] whitespace-pre-line">{review.comment}</p>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-gray-500 text-center my-4">No reviews yet.</p>
                     )}
                 </div>
 

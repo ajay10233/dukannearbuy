@@ -4,9 +4,11 @@ import QRCodeComponent from '../components/QRCodeComponent'
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from '../components/InstitutionHome/navbar/Navbar';
+import LogoLoader from '../components/LogoLoader';
 
 const page = () => {
-    const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null);
+  
     useEffect(() => {
         const fetchUserDetails = async () => {
           try {
@@ -19,7 +21,12 @@ const page = () => {
         };
     
         fetchUserDetails();
-      }, []);
+    }, []);
+  
+  if (!user) {
+    return <LogoLoader content={"Loading user details..."} />;
+  }
+  
   return (
     <div>
       {/* <QRCodeComponent params={{ id: user?.id }} /> */}
@@ -35,4 +42,4 @@ const page = () => {
   )
 }
 
-export default page
+export default page;

@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 
 const Map = dynamic(() => import("./MapComponent"), { ssr: false });
 
-export default function LocationSelector({ onSave }) {
+export default function LocationSelector({ onSave, role }) {
   const {
     register,
     handleSubmit,
@@ -72,6 +72,9 @@ export default function LocationSelector({ onSave }) {
     }
   };
 
+    const showForm = !(role === "INSTITUTION" || role === "SHOP_OWNER");
+
+
   const onSubmit = async (data) => {
     console.log("Submitting location data:", data);
     await fetch("/api/users/location", {
@@ -83,7 +86,7 @@ export default function LocationSelector({ onSave }) {
   };
 
   return (
-    <div className="flex flex-col p-6 space-y-6 bg-gray-100 rounded-lg shadow-md w-full">
+<div className={`w-full ${role === "INSTITUTION" || role === "SHOP_OWNER" ? "h-screen" : ""} flex flex-col items-center justify-center p-6 space-y-6 bg-gray-100 rounded-lg shadow-md`}>
       <Map 
         setLocation={(newLocation) => {
           setValue("lat", newLocation.lat);
@@ -98,6 +101,7 @@ export default function LocationSelector({ onSave }) {
           setValue("zipCode", newLocation.zipCode || "");
         }} 
         location={{ lat: getValues("lat"), lng: getValues("lng") }}
+        role={role} 
       />
 
       <button
@@ -110,22 +114,30 @@ export default function LocationSelector({ onSave }) {
       </button>
 
       {/* Address Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 rounded-lg shadow">
-        <input {...register("houseNumber")} placeholder="House Number" className="border p-2 rounded-md" />
-        <input {...register("street")} placeholder="Street" className="border p-2 rounded-md" />
-        <input {...register("buildingName")} placeholder="Building Name" className="border p-2 rounded-md" />
-        <input {...register("landmark")} placeholder="Landmark" className="border p-2 rounded-md" />
-        <input {...register("city")} placeholder="City" className="border p-2 rounded-md" />
-        <input {...register("state")} placeholder="State" className="border p-2 rounded-md" />
-        <input {...register("country")} placeholder="Country" className="border p-2 rounded-md" />
-        <input {...register("zipCode")} placeholder="Zip Code" className="border p-2 rounded-md" />
-        
-        <div className="col-span-1 md:col-span-2 flex justify-center">
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 cursor-pointer rounded-md transition-all duration-300 ease-in-out hover:bg-blue-600 ">
-            Save Location
-          </button>
-        </div>
-      </form>
+
+      {showForm && (
+
+        <form onSubmit={handleSubmit(onSubmit)} className="w-[90%] grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 rounded-lg shadow">
+          <input {...register("houseNumber")} placeholder="House Number" className="border p-2 rounded-md" />
+          <input {...register("street")} placeholder="Street" className="border p-2 rounded-md" />
+          <input {...register("buildingName")} placeholder="Building Name" className="border p-2 rounded-md" />
+          <input {...register("landmark")} placeholder="Landmark" className="border p-2 rounded-md" />
+          <input {...register("city")} placeholder="City" className="border p-2 rounded-md" />
+          <input {...register("state")} placeholder="State" className="border p-2 rounded-md" />
+          <input {...register("country")} placeholder="Country" className="border p-2 rounded-md" />
+          <input {...register("zipCode")} placeholder="Zip Code" className="border p-2 rounded-md" />
+          
+          <div className="col-span-1 md:col-span-2 flex justify-center">
+            <button type="submit" className="bg-blue-500 text-white px-4 py-2 cursor-pointer rounded-md transition-all duration-300 ease-in-out hover:bg-blue-600 ">
+              Save Location
+            </button>
+          </div>
+        </form>
+
+         )}
     </div>
   );
 }
+
+
+

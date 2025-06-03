@@ -8,9 +8,12 @@ import "swiper/css/navigation";
 import { Star, StarHalf } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import LogoLoader from "../../LogoLoader";
 
 const Review = () => {
   const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -24,11 +27,14 @@ const Review = () => {
           setReviews(data);
         } catch (err) {
           console.error("Error fetching reviews:", err);
+        } finally {
+          setLoading(false);
         }
       },
       (error) => {
         console.error("Geolocation error:", error);
-      }
+        setLoading(false);
+      } 
     );
   }, []);
 
@@ -64,12 +70,16 @@ const Review = () => {
         </div>
 
         <div className="relative">
-          {reviews.length > 0 ? (
+
+          {loading ? (
+            <LogoLoader content={"Loading reviews..."} />
+          ) : reviews.length > 0 ? (
 
           <Swiper
             modules={[SwiperNavigation, SwiperAutoplay]}
             spaceBetween={30}
             slidesPerView={1}
+            // centeredSlides={reviews.length < 3} // will center the slides in the container
             autoplay={{ delay: 3000, disableOnInteraction: false }}
             breakpoints={{
               640: { slidesPerView: 1 },

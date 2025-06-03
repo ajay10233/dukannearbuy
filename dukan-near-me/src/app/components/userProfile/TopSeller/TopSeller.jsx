@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star, ChevronLeft, ChevronRight, Crown } from "lucide-react";
 import Autoplay from "embla-carousel-autoplay";
+import LogoLoader from "../../LogoLoader";
 
 export default function TopSeller() {
   const [location, setLocation] = useState(null);
@@ -98,7 +99,8 @@ export default function TopSeller() {
         </h2>
 
         {loading ? (
-          <div className="text-center text-gray-400 py-10">Fetching trusted sellers near you...</div>
+          // <div className="text-center text-gray-400 py-10">Fetching trusted sellers near you...</div>
+          <LogoLoader content={"Fetching trusted sellers near you.."}/>
         ) : sellers.length > 0 ? (
             <div className="relative">
               {/* {sellers.length > 4 && ( */}
@@ -123,13 +125,27 @@ export default function TopSeller() {
                     <Link href={`/partnerProfile/${seller?.user?.id}`} className="block cursor-pointer">
                       <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col justify-center relative">
                         <div className="relative w-full h-52 border-b border-gray-400">
-                          <Image
+                          {/* <Image
                             src={seller?.user?.photos?.[0] || "/default-img.jpg"}
                             alt={seller?.user?.firmName || "Default Image"}
                             fill
                             className="object-cover"
                             priority
+                          /> */}
+                          <Image
+                            src={
+                              seller?.user?.profilePhoto && seller?.user?.profilePhoto !== "null"
+                                ? seller.user.profilePhoto
+                                : seller?.user?.photos?.length > 0
+                                  ? seller.user.photos[0]
+                                  : "/default-img.jpg"
+                            }
+                            alt={seller?.user?.firmName || "Default Image"}
+                            fill
+                            className="object-cover"
+                            priority
                           />
+
                         </div>
                         <div className="px-4 py-2 flex flex-col gap-1">
                           <div className="flex justify-between items-center">

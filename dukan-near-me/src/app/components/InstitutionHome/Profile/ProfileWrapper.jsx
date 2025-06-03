@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import LogoLoader from "../../LogoLoader";
 
 export default function ProfileWrapper({ children, images, setImages }) {
   const [showModal, setShowModal] = useState(false);
@@ -18,6 +19,8 @@ export default function ProfileWrapper({ children, images, setImages }) {
   const [profileUpdated, setProfileUpdated] = useState(false);
   const [message, setMessage] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const [user, setUser] = useState(null);
   const router = useRouter();
   const { data: session } = useSession();
@@ -51,6 +54,7 @@ export default function ProfileWrapper({ children, images, setImages }) {
     username: ''
   });
   const fetchUserData = async () => {
+    setLoading(true);
     try {
       const res = await fetch("/api/users/me");
       const data = await res.json();
@@ -62,6 +66,8 @@ export default function ProfileWrapper({ children, images, setImages }) {
     } catch (error) {
       console.error("Error fetching user data:", error);
       toast.error("Failed to fetch user data.");
+    } finally {
+      setLoading(false); 
     }
   };
   
@@ -72,12 +78,12 @@ export default function ProfileWrapper({ children, images, setImages }) {
   }, [pathname]);
 
   
-  const handleEditClick = () => {
+  // const handleEditClick = () => {
     
-      router.push("/institution-edit-profile");
+  //     router.push("/institution-edit-profile");
 
-    // setShowModal(true);
-  };
+  //   setShowModal(true);
+  // };
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -200,66 +206,71 @@ export default function ProfileWrapper({ children, images, setImages }) {
 
   return (
     <>
-      <div className="w-full px-4 pb-2 md:px-8 pt-14 flex justify-between items-center py-2 flex-end">
-        {/* <button
-          onClick={handleEditClick}
-          className="flex items-center cursor-pointer text-blue-600 hover:text-blue-700 transition"
-        >
-          <FaEdit size={20} strokeWidth={1.5} />
-        </button> */}
-        <div className="py-2">
-            {/* <Link href="/UserHomePage"
+      {loading ? (
+        <LogoLoader content="Fetching profile..." />
+      ) : (
+        <>
+          <div className="w-full px-4 pb-2 md:px-8 pt-14 flex justify-between items-center py-2 flex-end">
+            {/* <button
+              onClick={handleEditClick}
+              className="flex items-center cursor-pointer text-blue-600 hover:text-blue-700 transition"
+            >
+              <FaEdit size={20} strokeWidth={1.5} />
+            </button> */}
+            <div className="py-2">
+              {/* <Link href="/UserHomePage"
               className="flex items-center gap-2 text-blue-600 rounded-md transition ease-in-out duration-400 hover:text-blue-700">
                 <MoveLeft size={20} strokeWidth={1.5} /> Back
             </Link> */}
-          {user?.role && (
-            <Link
-              href={
-                user.role === "USER"
-                  ? "/UserHomePage"
-                  : user.role === "SHOP_OWNER" || user.role === "INSTITUTION"
-                  ? "/partnerHome"
-                  : "/login"
-              }
-              className="flex items-center gap-2 text-blue-600 rounded-md transition ease-in-out duration-400 hover:text-blue-700"
+            {user?.role && (
+              <Link
+                href={
+                  user.role === "USER"
+                    ? "/UserHomePage"
+                    : user.role === "SHOP_OWNER" || user.role === "INSTITUTION"
+                    ? "/partnerHome"
+                    : "/login"
+                }
+                className="flex items-center gap-2 text-blue-600 rounded-md transition ease-in-out duration-400 hover:text-blue-700"
+              >
+                <MoveLeft size={20} strokeWidth={1.5} /> Back
+              </Link>
+            )}
+
+          </div>
+
+          <div className="flex items-end gap-x-8">
+                {user?.role === "USER" && (
+                  <button
+                    onClick={handleFavoriteToggle}
+                    className="transition cursor-pointer"
+                    title={isFavorite ? "Unfavorite" : "Add to favorites"}
+                  >
+                    <Heart
+                      size={20}
+                      strokeWidth={1.5}
+                      className={`transition-all duration-300 ${isFavorite ? "fill-red-500 text-red-500" : "stroke-red-500"
+                        }`}
+                    />
+                  </button>
+                )}
+
+            <button
+              onClick={handleShare}
+              className="cursor-pointer text-gray-800 hover:text-gray-500 transition"
             >
-              <MoveLeft size={20} strokeWidth={1.5} /> Back
-            </Link>
-          )}
+              <Share2 size={20} strokeWidth={1.5} />
+            </button>
 
-        </div>
-
-        <div className="flex items-end gap-x-8">
-          <button
-            onClick={handleFavoriteToggle}
-            className="transition cursor-pointer"
-            title={isFavorite ? "Unfavorite" : "Add to favorites"}
-          >
-            <Heart
+            {/* <X
               size={20}
               strokeWidth={1.5}
-              className={`transition-all duration-300 ${
-                isFavorite ? "fill-red-500 text-red-500" : "stroke-red-500"
-              }`}
-            />
-          </button>
-
-          <button
-            onClick={handleShare}
-            className="cursor-pointer text-gray-800 hover:text-gray-500 transition"
-          >
-            <Share2 size={20} strokeWidth={1.5} />
-          </button>
-
-          {/* <X
-            size={20}
-            strokeWidth={1.5}
-            className="cursor-pointer text-gray-800 hover:text-gray-500 transition"
-            title="Delete Image"
-            onClick={() => handleDeleteImageWrapper(0)}
-          /> */}
+              className="cursor-pointer text-gray-800 hover:text-gray-500 transition"
+              title="Delete Image"
+              onClick={() => handleDeleteImageWrapper(0)}
+            /> */}
+          </div>
         </div>
-      </div>
 
       {children}
 
@@ -275,6 +286,8 @@ export default function ProfileWrapper({ children, images, setImages }) {
           setShowModal={setShowModal}
           setProfileUpdated={setProfileUpdated}
         />
+          )}
+        </>
       )}
     </>
   );

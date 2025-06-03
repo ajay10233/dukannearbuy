@@ -16,6 +16,7 @@ import { ChevronLeft } from "lucide-react";
 import axios from "axios";
 import { useUser } from "@/context/UserContext";
 import toast from "react-hot-toast";
+import LogoLoader from "../LogoLoader";
 
 export default function ChatBox() {
   const searchParams = useSearchParams();
@@ -31,6 +32,8 @@ export default function ChatBox() {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isMsgRequest, setIsMsgRequest] = useState(false);
   const [messageRequests, setMessageRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+
 
   // const [loggedInUser, setLoggedInUser] = useState(null);
 
@@ -147,6 +150,7 @@ export default function ChatBox() {
     if (!session) return;
 
     const fetchConversations = async () => {
+      setLoading(true);
       try {
         const res = await fetch(`/api/conversations/all`);
         const data = await res.json();
@@ -177,7 +181,10 @@ export default function ChatBox() {
 
       } catch (error) {
         console.error("❌ Failed to fetch conversations:", error);
-      }
+      } finally {
+      setLoading(false); 
+    }
+
     };
 
 
@@ -377,6 +384,9 @@ export default function ChatBox() {
   }, []);
 
 
+  if (loading) {
+    return <LogoLoader content={"Loading conversations..."} />;
+  }
 
   if (status === "loading")
     return <p className="text-center text-gray-500">Loading...</p>;

@@ -11,7 +11,7 @@ export default function Faq() {
             <div className="w-full max-w-sm md:max-w-5xl bg-white shadow-none md:shadow-md rounded-md p-3 md:p-6">
                 <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value="item-1">
-                        <AccordionTrigger className="py-2 md:py-4 text-sm md:text-md font-semibold cursor-pointer hover:no-underline">
+                        <AccordionTrigger className="p-3 md:py-4 text-sm md:text-md font-semibold cursor-pointer hover:no-underline">
                             <div className="flex items-center gap-x-2">
                                 <CircleDashed className="w-5 h-5 md:w-6 md:h-6" strokeWidth={1.5} color="#187DE6" />
                                 <span>What is the inspiration behind this platform?</span>
@@ -40,7 +40,7 @@ export default function Faq() {
                     </AccordionItem>
 
                     <AccordionItem value="item-2">
-                        <AccordionTrigger className="py-2 md:py-4 text-sm md:text-md font-semibold cursor-pointer hover:no-underline">
+                        <AccordionTrigger className="p-3 md:py-4 text-sm md:text-md font-semibold cursor-pointer hover:no-underline">
                             <div className="flex items-center gap-x-2">
                                 <CircleDashed className="w-5 h-5 md:w-6 md:h-6" strokeWidth={1.5} color="#187DE6" />
                                 <span>What is the social impact of our partnership?</span>
@@ -86,7 +86,7 @@ export default function Faq() {
                     </AccordionItem>
 
                     <AccordionItem value="item-3">
-                        <AccordionTrigger className="py-2 md:py-4 text-sm md:text-md font-semibold cursor-pointer hover:no-underline">
+                        <AccordionTrigger className="p-3 md:py-4 text-sm md:text-md font-semibold cursor-pointer hover:no-underline">
                             <div className="flex items-center gap-x-2">
                                 <CircleDashed className="w-5 h-5 md:w-6 md:h-6" strokeWidth={1.5} color="#187DE6" />
                                 <span>What is the role of the local market in GDP?</span>
@@ -124,7 +124,7 @@ export default function Faq() {
                     </AccordionItem>
 
                     <AccordionItem value="item-4">
-                        <AccordionTrigger className="py-2 md:py-4 text-sm md:text-md font-semibold cursor-pointer hover:no-underline">
+                        <AccordionTrigger className="p-3 md:py-4 text-sm md:text-md font-semibold cursor-pointer hover:no-underline">
                             <div className="flex items-center gap-x-2">
                                 <CircleDashed className="w-4.5 h-4.5 md:w-6 md:h-6" strokeWidth={1.5} color="#187DE6" />
                                 <span>Is this platform trustable?</span>

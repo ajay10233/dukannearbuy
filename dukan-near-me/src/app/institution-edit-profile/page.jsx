@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -31,16 +31,45 @@ export default function EditProfilePage() {
     upi_id: '',
     scanner_image: null,
     currentLocation: '',
-    shopOpenDays: []  // <-- ADD THIS
+    shopOpenDays: []  
   });
 
   
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
+  const [usernameAvailable, setUsernameAvailable] = useState(true);
+  const [checkingUsername, setCheckingUsername] = useState(false);
+  const debounceTimeout = useRef(null);
+
   
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday"];
 
- const handleChange = (e) => {
+   const checkUsernameAvailability = async (username) => {
+  if (!username) {
+    setUsernameAvailable(true);
+    return;
+  }
+
+  setCheckingUsername(true);
+  try {
+    const res = await fetch(`/api/users/?search=${encodeURIComponent(username)}`);
+    const data = await res.json();
+
+    const otherUsersWithUsername = data.data?.filter(u =>
+      u.id !== form.id && u.username?.toLowerCase() === username.toLowerCase()
+    ) || [];
+
+    setUsernameAvailable(otherUsersWithUsername.length === 0);
+  } catch (error) {
+    console.error("Error checking username:", error);
+    setUsernameAvailable(true); // Assume available if error
+  }
+
+  setCheckingUsername(false);
+};
+
+ 
+  const handleChange = (e) => {
   const { name, value } = e.target;
 
   // Address field handling
@@ -154,6 +183,16 @@ export default function EditProfilePage() {
     fetchProfileData();
   }, []);
 
+  useEffect(() => {
+  if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+  debounceTimeout.current = setTimeout(() => {
+    checkUsernameAvailability(form.username?.trim().toLowerCase());
+  }, 1000);
+
+  return () => clearTimeout(debounceTimeout.current);
+}, [form.username]);
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSaving(true);
@@ -260,9 +299,25 @@ export default function EditProfilePage() {
               value={form?.username || ''}
               onChange={handleChange}
               placeholder="Type your User Id"
-              className="border p-2 rounded w-full"
+              className={`p-2 border rounded w-full transition ${
+                !usernameAvailable ? 'border-red-500' : ''
+              }`}  autoComplete="off"
               required
             />
+
+            {checkingUsername && (
+              <p className="text-gray-500 text-xs mt-1">Checking username availability...</p>
+            )}
+            {!checkingUsername && !usernameAvailable && (
+              <p className="text-red-500 text-sm mt-1">
+                This username is already taken, please choose another.
+              </p>
+            )}
+            {!checkingUsername && usernameAvailable && form.username?.trim() && (
+              <p className="text-green-600 text-sm mt-1">
+                Username is available!
+              </p>
+            )}
           </div>
 
           {/* Detailed Address Fields */}

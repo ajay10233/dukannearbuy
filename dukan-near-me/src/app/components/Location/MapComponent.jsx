@@ -15,7 +15,7 @@ const customIcon = new L.Icon({
 	shadowSize: [41, 41],
 });
 
-export default function MapComponent({ setLocation }) {
+export default function MapComponent({ setLocation, role }) {
 	const [position, setPosition] = useState({ lat: 28.6139, lng: 77.209 }); // Default to Delhi
 
 	// Function to get the saved user location from the database
@@ -62,23 +62,24 @@ export default function MapComponent({ setLocation }) {
 
 	function LocationMarker({ position }) {
 		const map = useMapEvents({
-		  click: async (e) => {
-			const { lat, lng } = e.latlng;
-			setPosition({ lat, lng });
-			const addressData = await fetchAddress(lat, lng);
-			setLocation({ lat, lng, ...addressData });
-		  },
+			click: async (e) => {
+				if (role !== "USER") return;
+
+				const { lat, lng } = e.latlng;
+				setPosition({ lat, lng });
+				const addressData = await fetchAddress(lat, lng);
+				setLocation({ lat, lng, ...addressData });
+			},
 		});
-	  
+
 		useEffect(() => {
-		  if (position.lat && position.lng) {
+			if (position.lat && position.lng) {
 			map.setView(position, 13); // Center the map when position changes
 		  }
 		}, [position, map]);
 	  
 		return <Marker position={position} icon={customIcon} />;
-	  }
-	  
+	}
 
 	return (
 		<MapContainer center={position} zoom={13} className="h-96" style={{ width: "80vw" }}>

@@ -5,6 +5,8 @@ import { Heart } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
+import LogoLoader from './LogoLoader';
+import toast from 'react-hot-toast';
 
 export default function FavProfile() {
   const [favorites, setFavorites] = useState([]);
@@ -43,11 +45,16 @@ export default function FavProfile() {
   
       if (res.ok) {
         setFavorites((prev) => prev.filter(item => item.institutionId !== institutionId));
-      }
-    } catch (error) {
-      console.error("Error removing favorite:", error);
+        toast.success('Removed from favorites'); 
+      }else {
+      toast.error('Failed to remove favorite');
     }
-  };
+  } catch (error) {
+    console.error("Error removing favorite:", error);
+    toast.error('Something went wrong');
+  }
+};
+
 
   return (
     <section className="w-full h-screen px-4 pt-15 pb-4 bg-gray-50 rounded-lg flex flex-col gap-y-4">
@@ -71,7 +78,8 @@ export default function FavProfile() {
       {/* <div className="flex flex-col gap-3 h-[60vh] overflow-y-scroll dialogScroll pr-0 md:pr-2"> */}
       <div className="flex flex-col gap-3 h-[60vh] dialogScroll pr-0 md:pr-2">
         {loading ? (
-          <div className="text-center text-gray-500 mt-4">Loading favorites...</div>
+          // <div className="text-center text-gray-500 mt-4">Loading favorites...</div>
+           <LogoLoader content={"Loading favorites profiles..."} />
         ) : favorites.length === 0 ? (
           <div className="text-center text-gray-500 mt-4">No favorites found</div>
         ) : (

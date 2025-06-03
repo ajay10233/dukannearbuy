@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
+import LogoLoader from '../../LogoLoader';
 
 
 export default function Report() {
@@ -62,45 +63,6 @@ export default function Report() {
     return favorites.some(fav => fav.billId === billId);
   };
   
-// const toggleFavorite = async (billId, isCurrentlyFav) => {
-//   try {
-//     if (isCurrentlyFav) {
-//       // Delete favorite
-//       const res = await fetch('/api/favorite-bills', {
-//         method: 'DELETE',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ billId, userId: session?.user?.id }),
-//       });
-//       if (res.ok) {
-//         setFavorites(prev => prev.filter(item => item.billId !== billId));
-//       }
-//     } else {
-//       // Add favorite
-//       const res = await fetch('/api/favorite-bills', {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ billId, userId: session?.user?.id }),
-//       });
-//       if (res.ok) {
-//         const data = await res.json();
-//         if (data.message === "Already favorited") {
-
-//           setFavorites(prev => {
-//             if (!prev.some(fav => fav.billId === billId)) {
-//               return [...prev, { billId, id: data.favorite.id }];
-//             }
-//             return prev;
-//           });
-//         } else {
-//           setFavorites(prev => [...prev, { billId, id: data.favorite.id }]);
-//         }
-//       }
-//     }
-//   } catch (error) {
-//     console.error("Toggle error:", error);
-//   }
-// };
-
    const toggleFavorite = async (billId) => {
       const favorite = favorites.find(fav => fav.billId === billId);
 
@@ -171,7 +133,10 @@ const filteredReports = reports.filter((report) => {
     setIsDropdownOpen(false); 
   };
 
-  if (loading) return <div className="p-4 text-center text-slate-600">Loading reports...</div>;
+  if (loading) {
+    return <LogoLoader content={"Loading reports..."} />;
+  }
+  
   if (error) return <div className="p-4 text-center text-red-500">{error}</div>;
 
 

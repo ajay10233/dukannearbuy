@@ -1,12 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import QrScanner from '../components/qr-scanner/QrScanner';
 import Navbar from '../components/InstitutionHome/navbar/Navbar';
 import Link from 'next/link';
 import { MoveLeft } from 'lucide-react'; 
+import LogoLoader from '../components/LogoLoader';
 
 function Page() {
+  const [scannerReady, setScannerReady] = useState(false);
+  
+      useEffect(() => {
+        const timer = setTimeout(() => setScannerReady(true), 500);
+        return () => clearTimeout(timer);
+      }, []);
+  
+    if (!scannerReady) {
+      return (
+        <LogoLoader content={"Initializing QR scanner..."} />
+      );
+  }
+  
   return (
     <>
       <Navbar />
