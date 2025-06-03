@@ -103,6 +103,7 @@ export default function LogoutButton() {
       return;
     }
 
+    setShowModal(false); 
     setIsLoggingOut(true);
 
     try {
