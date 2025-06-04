@@ -178,11 +178,11 @@ export default function LogoutButton() {
       </button>
 
           {typeof window !== "undefined" &&
-      createPortal(modalContent, document.body)}
+          createPortal(modalContent, document.body)}
 
-    {isLoggingOut &&
-      typeof window !== "undefined" &&
-        createPortal(<LogoLoader content={"Logging out..."} />, document.body)}
+          {isLoggingOut &&
+            typeof window !== "undefined" &&
+              createPortal(<LogoLoader content={"Logging out..."} />, document.body)}
       
     </>
   );
