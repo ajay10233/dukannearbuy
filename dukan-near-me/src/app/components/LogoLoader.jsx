@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 export default function LogoLoader({content}) {
   return (
-    <div className="fixed inset-0 z-5000 bg-black/50 flex flex-col items-center justify-center">
+    <div className="fixed inset-0 z-5000 bg-black/40 flex flex-col items-center justify-center">
       <div className="relative w-24 h-24">
         {/* Spinning circle around the logo */}
         <motion.div

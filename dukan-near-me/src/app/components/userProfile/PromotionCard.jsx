@@ -83,50 +83,9 @@ export default function PromotionCard() {
       return;
     }
 
-    // console.log({
-    //   timeInDays: Number(days),
-    //   distance: Number(selectedKm),
-    //   promotionType,
-    //   isPremium,
-    //   amount: Number(discountedCost),
-    // });
+    // router.push(`/payment?amount=${discountedCost}`);
+    router.push(`/promotion-payment?km=${selectedKm}&days=${days}&type=${promotionType}`);
 
-    // try {
-    //   const response = await fetch("/api/paid-promotions", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //         timeInDays: Number(days),
-    //         distance: Number(selectedKm),
-    //         promotionType,
-    //         isPremium,
-    //         amountPaid: Number(discountedCost),
-
-    //     }),
-    //   });
-
-    //   if (!response.ok) {
-    //     const errorData = await response.json();
-    //     toast.error(errorData.message || "Failed to start promotion.");
-    //     return;
-    //   }
-
-    //   // Assuming API returns { success: true }
-    //   const data = await response.json();
-    //   if (data.success) {
-    //     toast.success("Promotion started successfully!");
-    //     router.push(`/payment?amount=${discountedCost}`);
-    //   } else {
-    //     toast.error("Promotion could not be started.");
-    //   }
-    // } catch (error) {
-    //   toast.error("Something went wrong. Please try again.");
-    //   console.error("Promotion API error:", error);
-    // }
-  
-    router.push(`/payment?amount=${discountedCost}`);
   };
 
   return (

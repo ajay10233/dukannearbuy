@@ -135,9 +135,10 @@ export async function POST(req) {
 
       return NextResponse.json({ success: true, bill });
     }
-
+    
     // Handle JSON request
     const body = await req.json();
+    console.log("body", body);
     const {
       userId,
       tokenId,
@@ -152,13 +153,19 @@ export async function POST(req) {
       notes = [],
     } = body;
 
+
     const parsedCharges = typeof otherCharges === 'string' ? parseFloat(otherCharges) : otherCharges;
     if (isNaN(parsedCharges)) {
       return NextResponse.json({ success: false, error: 'Invalid otherCharges' }, { status: 400 });
     }
-
-    const itemTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const totalAmount = itemTotal + (parsedCharges || 0);
+    let totalAmount = 0;
+    if (items){
+      const itemTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      totalAmount = itemTotal + (parsedCharges || 0);
+    }else{
+      const notesTotal = notes.reduce((sum,note)=> sum + note.price, 0);
+      totalAmount = notesTotal + (parsedCharges||0);
+    }
 
     const billData = {
       user: { connect: { id: userId } },

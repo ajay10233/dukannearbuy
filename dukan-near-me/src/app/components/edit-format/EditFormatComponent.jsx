@@ -346,7 +346,9 @@ export default function EditFormatComponent() {
                 const notesPayload = safeItems.map(item => ({
                     chief_complaint: item.chiefComplaint || '',
                     treatment: item.treatment || '',
-                    others: item.others || ''
+                    others: item.others || '',
+                    amount: item.amount || 0
+
                 }));
                 formData.append('notes', JSON.stringify(notesPayload));
             } else {
@@ -376,6 +378,8 @@ export default function EditFormatComponent() {
                         chief_complaint: item.chiefComplaint || '',
                         treatment: item.treatment || '',
                         others: item.others || '',
+                        amount: item.amount || 0
+
                     })),
                     remarks: '',
                     otherCharges: 0,

@@ -4,10 +4,10 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import LogoLoader from "../LogoLoader";
 
-export default function PaymentOffer() {
+export default function Payment() {
   const [coupon, setCoupon] = useState("");
   const [discountApplied, setDiscountApplied] = useState(false);
   const [invalidCoupon, setInvalidCoupon] = useState(false);
@@ -17,20 +17,21 @@ export default function PaymentOffer() {
   const [plan, setPlan] = useState(null);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
 
-  const params = useParams();
-  const planId = params.planId;
+    const searchParams = useSearchParams();
+    
+    useEffect(() => {
+        const km = searchParams.get("km");
+        const days = searchParams.get("days");
+        const type = searchParams.get("type");
 
-  useEffect(() => {
-    if (!planId) return;
-
-    fetch(`/api/plans/${planId}`, { method: "GET" }).then((res) => {
-      if (!res.ok) throw new Error("Failed to fetch plan");
-      return res.json();
-    }).then((data) => {
-      console.log("_+________________________",data);
-      setPlan(data);
-    })
-  }, [planId]);
+    if (km && days && type) {
+        setPlan({
+            km: parseFloat(km),
+            days: parseInt(days),
+            type: type,
+        });
+    }
+    }, [searchParams]);
 
   if (!plan) {
     return <LogoLoader content={"Loading plan details..."}/>;
@@ -85,7 +86,13 @@ export default function PaymentOffer() {
       const res = await fetch("/api/plans/upgrade/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ couponId, planId }),
+          body: JSON.stringify({
+                couponId,
+                promotionType: plan?.type,
+                days: plan?.days,
+                km: plan?.km,
+                price: finalPrice
+          }),
       });
 
       const data = await res.json();
@@ -114,7 +121,7 @@ export default function PaymentOffer() {
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="text-lg font-semibold text-gray-700">Selected Offer</h3>
-                <p className="text-sm text-gray-600">{plan?.name + " Plan" || ""}</p>
+                <p className="text-sm text-gray-600">{plan?.type + " Promotion" || ""}</p>
               </div>
               <div className="text-right">
                 {discountApplied ? (
