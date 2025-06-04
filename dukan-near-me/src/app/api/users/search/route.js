@@ -49,6 +49,16 @@ export async function GET(req) {
           lastName: true,
           username: true,
           email: true,
+          planExpiresAt: true,
+          subscriptionPlan: {
+            select: {
+              id: true,
+              name: true,
+              price: true,
+              durationInDays: true,
+            },
+          },
+
         },
       });
 
@@ -72,6 +82,16 @@ export async function GET(req) {
           lastName: true,
           username: true,
           email: true,
+          planExpiresAt: true,
+          subscriptionPlan: {
+            select: {
+              id: true,
+              name: true,
+              price: true,
+              durationInDays: true,
+            },
+          },
+
         },
       });
 
@@ -113,6 +133,16 @@ export async function GET(req) {
           lastName: true,
           username: true,
           email: true,
+          planExpiresAt: true,
+          subscriptionPlan: {
+            select: {
+              id: true,
+              name: true,
+              price: true,
+              durationInDays: true,
+            },
+          },
+
         },
       });
 

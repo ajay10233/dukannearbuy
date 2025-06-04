@@ -30,6 +30,7 @@ export const GET = async (req) => {
             profilePhoto: true,
             firmName: true,
             role: true,
+            planExpiresAt: true,
             subscriptionPlan: {
               select: {
                 id: true,
@@ -48,6 +49,7 @@ export const GET = async (req) => {
             profilePhoto: true,
             firmName: true,
             role: true,
+            planExpiresAt: true,
             subscriptionPlan: {
               select: {
                 id: true,
@@ -61,7 +63,6 @@ export const GET = async (req) => {
       },
       orderBy: { updatedAt: "desc" },
     });
-    
 
     if (!conversations || conversations.length === 0) {
       return NextResponse.json({ message: "No accepted conversations found." }, { status: 200 });
@@ -70,7 +71,7 @@ export const GET = async (req) => {
     const formattedConversations = conversations.map((conversation) => {
       const otherUser = conversation.user1?.id === userId ? conversation.user2 : conversation.user1;
       if (!otherUser) return null;
-    
+
       return {
         conversationId: conversation.id,
         accepted: conversation.accepted,
@@ -84,14 +85,17 @@ export const GET = async (req) => {
           firmName: otherUser.firmName || null,
           role: otherUser.role,
           subscriptionPlan: otherUser.subscriptionPlan || null,
+          planExpiresAt: otherUser.planExpiresAt || null,
         },
         lastMessage: conversation.messages[0] || null,
         updatedAt: conversation.updatedAt,
       };
     }).filter(Boolean);
-    
 
-    return NextResponse.json({ message: "Accepted conversations fetched successfully!", data: formattedConversations }, { status: 200 });
+    return NextResponse.json(
+      { message: "Accepted conversations fetched successfully!", data: formattedConversations },
+      { status: 200 }
+    );
 
   } catch (error) {
     console.error("Fetch Accepted Conversations Error:", error);
