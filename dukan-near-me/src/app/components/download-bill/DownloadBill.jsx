@@ -31,16 +31,37 @@ export default function DownloadBill({ params, searchParams }) {
 
         const isInstitution = data.bill?.institution?.role === 'INSTITUTION';
 
-        const mappedItems = data.bill.items.map((item) => ({
-            particulars: isInstitution ? item.chiefComplaint || '' : item.name || '',
-            qty: isInstitution ? item.treatment || '' : item.quantity || 0,
-            rate: isInstitution ? item.others || '' : item.price || 0,
-            amount: item.amount || 0,
-        }));
+        // const mappedItems = data.bill.items.map((item) => ({
+        //     particulars: isInstitution ? item.chiefComplaint || '' : item.name || '',
+        //     qty: isInstitution ? item.treatment || '' : item.quantity || 0,
+        //     rate: isInstitution ? item.others || '' : item.price || 0,
+        //     amount: item.amount || 0,
+      // }));
+      let mappedItems = [];
+
+      if (isInstitution) {
+      mappedItems = data.bill.notes?.map((note) => ({
+        particulars: note.chief_complaint || '',
+        qty: note.treatment || '',
+        rate: note.others || '',
+        amount: note.amount || 0, 
+      })) || [];
+    } else {
+      mappedItems = data.bill.items?.map((item) => ({
+        particulars: item.name || '',
+        qty: item.quantity || 0,
+        rate: item.price || 0,
+        amount: item.amount || 0,
+      })) || [];
+    }
+
 
         setBill(data.bill);
-        setItems(mappedItems);
-        console.log(data.bill);
+      console.log(data.bill);
+      
+      setItems(mappedItems);
+      console.log("mapped items", mappedItems);
+        
 
     } catch (error) {
       toast.error("Failed to fetch bill");
@@ -269,18 +290,18 @@ const totalAmount = itemsSubtotal + cgstAmount + sgstAmount;
                 </tr>
               </thead>
               <tbody>
-                {bill?.items.map((item, index) => (
+        {(bill?.notes?.length ? bill.notes : bill.items).map((item, index) => (
                   <tr key={index} className='text-xs md:text-sm print:text-sm'>
                     <td className="border p-1 md:p-2 text-center print:p-2">{index + 1}</td>
                     <td className="border p-1 md:p-2 print:p-2">
                             
                         {/* CHIEF COMPLAINT / PARTICULARS */}
-                            {user?.role === 'INSTITUTION' ? (
+                            {bill?.institution?.role === 'INSTITUTION' ? (
                                 <input
                                     type="text"
                                     readOnly
                                     tabIndex={-1}
-                                    value={item?.chiefComplaint || item?.name || ''}
+                                    value={item?.chief_complaint || item?.name || ''}
                                     onChange={(e) => handleItemChange(index, 'chiefComplaint', e.target.value)}
                                     className="w-full border-none outline-none"
                                 />
@@ -299,7 +320,7 @@ const totalAmount = itemsSubtotal + cgstAmount + sgstAmount;
                     <td className="border p-1 md:p-2 print:p-2">
                         
                         {/* TREATMENT / QUANTITY */}
-                            {user?.role === 'INSTITUTION' ? (
+                            {bill?.institution?.role === 'INSTITUTION' ? (
                                 <input
                                 type="text"
                                 readOnly
@@ -323,7 +344,7 @@ const totalAmount = itemsSubtotal + cgstAmount + sgstAmount;
                     </td>
 
                     <td className="border p-1 md:p-2 print:p-2">
-                      {user?.role === 'INSTITUTION' ? (
+                      {bill?.institution?.role === 'INSTITUTION' ? (
                         <input
                           type="text"
                           value={item.others || item.price || ''}
@@ -344,7 +365,7 @@ const totalAmount = itemsSubtotal + cgstAmount + sgstAmount;
                     </td>
 
                     <td className="border p-1 md:p-2 text-center print:p-2">
-                      {user?.role === 'INSTITUTION' ? (
+                      {bill?.institution?.role === 'INSTITUTION' ? (
                         <input
                           type="number"
                           readOnly

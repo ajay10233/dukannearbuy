@@ -45,7 +45,7 @@ export default function TopSeller() {
       const response = await fetch(
         `/api/top-profiles?latitude=${latitude}&longitude=${longitude}`
       );
-      const nearbySellers = await response.json();
+      const nearbySellers = (await response.json()).filter((seller) => seller.rating >= 4 );
       console.log("Nearby sellers:", nearbySellers);
       setSellers(nearbySellers);
     } catch (error) {
