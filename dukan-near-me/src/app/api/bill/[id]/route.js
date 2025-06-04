@@ -23,6 +23,7 @@ export async function GET(req, { params }) {
         items: true,    
         user: true,
         institution: true,
+        notes:true,
       },
     });
 

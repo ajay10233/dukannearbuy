@@ -68,7 +68,7 @@ export const GET = async (req, { params }) => {
                     durationInDays: user.subscriptionPlan.durationInDays,
                     features: user.subscriptionPlan.features,
                     maxUploadSizeMB: user.subscriptionPlan.maxUploadSizeMB,
-                    expiresAt: user.subscriptionPlan.expiresAt,
+                    expiresAt: user.planExpiresAt,
                 }
                 : null,
             paidPromotions: user.paidProfilesGiven.map((promo) => ({
