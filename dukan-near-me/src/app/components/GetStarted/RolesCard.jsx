@@ -46,10 +46,10 @@ export default function RolesCard() {
           );
         })}
 
-        <div className="flex flex-col justify-around items-end p-2">
-          <p className="text-gray-700 text-sm md:text-[16px]">
-            Already existing customers?{" "}
-            <Link href="/login" className="text-gray-800 font-semibold">
+        <div className="flex flex-col justify-around items-center p-2">
+          <p className="text-gray-800 font-medium text-sm md:text-[16px]">
+            Already Registered?{" "}
+            <Link href="/login" className="text-blue-800 font-semibold">
               Login
             </Link>
           </p>

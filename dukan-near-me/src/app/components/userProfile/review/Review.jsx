@@ -72,7 +72,7 @@ const Review = () => {
         <div className="relative">
 
           {loading ? (
-            <LogoLoader content={"Loading reviews..."} />
+            <LogoLoader content={"Loading home..."} />
           ) : reviews.length > 0 ? (
 
           <Swiper

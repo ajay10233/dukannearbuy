@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Crown } from "lucide-react";
 import Image from "next/image";
+import LogoLoader from "../../LogoLoader";
+import { useSession } from "next-auth/react";
 
 export default function SearchBar() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -13,6 +15,9 @@ export default function SearchBar() {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("foryou");
   const [location, setLocation] = useState({ latitude: null, longitude: null });
+
+  const { data: session } = useSession();
+  const user = session?.user;
 
 
   const distanceOptions = [
@@ -117,6 +122,13 @@ export default function SearchBar() {
 
   const handleRedirect = (profile) => {
     setResults([]);
+
+      // Check if the selected profile is the logged-in user's profile
+      if (profile.id === user.id) {
+        router.push('/partnerProfile');
+        return;
+      }
+
     if (profile.role === "INSTITUTION" || profile.role === "SHOP_OWNER") {
       router.push(`/partnerProfile/${profile.id}`);
     } else {
@@ -183,7 +195,8 @@ export default function SearchBar() {
         <Search size={22} strokeWidth={1.5} color="#afacac" className="mr-4" />
       </form>
 
-      {loading && <p className="text-sm text-gray-500 text-center p-2">Searching...</p>}
+      {/* {loading && <p className="text-sm text-gray-500 text-center p-2">Searching...</p>} */}
+      {loading && <LogoLoader content={"Searching..."} /> }
 
       {/* Results dropdown */}
       {!loading && results.length > 0 && (
@@ -254,12 +267,12 @@ export default function SearchBar() {
                         {profile?.firmName || profile?.firstName}
 
                         {profile?.subscriptionPlan?.name === "PREMIUM" &&
-                          new Date(profile?.subscriptionPlan?.expiresAt) > new Date() && (
+                          new Date(profile?.planExpiresAt) && (
                             <Crown size={16} fill="#f0d000" className="text-yellow-500" />
                           )}
 
                         {profile?.subscriptionPlan?.name === "BUSINESS" &&
-                          new Date(profile?.subscriptionPlan?.expiresAt) > new Date() && (
+                          new Date(profile?.planExpiresAt) && (
                             <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
                           )}
                       </p>

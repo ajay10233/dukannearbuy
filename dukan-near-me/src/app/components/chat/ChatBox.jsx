@@ -498,8 +498,6 @@ export default function ChatBox() {
   // Function to fetch the session data
   const fetchSessionAndRedirect = async () => {
 
-    if (!loggedInUser) return;
-
     try {
       // const res = await fetch("/api/users/me");
       // const data = await res.json();
@@ -615,13 +613,13 @@ export default function ChatBox() {
                         <span className="inline-flex items-center gap-1">
                           {getDisplayName(partner)}
 
-                          {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" &&
-                            new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                          {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" &&  (
+                            // new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
                               <Crown size={16} fill="#f0d000" className="text-yellow-500" />
                             )}
 
-                          {partner.otherUser?.subscriptionPlan?.name === "BUSINESS" &&
-                            new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                          {partner.otherUser?.subscriptionPlan?.name === "BUSINESS" && (
+                            // new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
                               <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
                             )}
                         </span>
@@ -687,13 +685,13 @@ export default function ChatBox() {
                         <span className="inline-flex items-center gap-1">
                           {getDisplayName(partner)}
 
-                          {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" &&
-                            new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                          {partner.otherUser?.subscriptionPlan?.name === "PREMIUM" && (
+                            // new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
                               <Crown size={16} fill="#f0d000" className="text-yellow-500" />
                             )}
 
-                          {partner.otherUser?.subscriptionPlan?.name === "BUSINESS" &&
-                            new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
+                          {partner.otherUser?.subscriptionPlan?.name === "BUSINESS" && (
+                            // new Date(partner.otherUser?.subscriptionPlan?.expiresAt) > new Date() && (
                               <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
                             )}
                         </span>

@@ -17,68 +17,74 @@ export default function Payment() {
   const [plan, setPlan] = useState(null);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
 
-    const searchParams = useSearchParams();
+  const searchParams = useSearchParams();
+  
+  const kmCosts = { 5: 99, 20: 199, 50: 500, 100: 800 };
     
     useEffect(() => {
         const km = searchParams.get("km");
         const days = searchParams.get("days");
         const type = searchParams.get("type");
 
-    if (km && days && type) {
-        setPlan({
-            km: parseFloat(km),
-            days: parseInt(days),
-            type: type,
-        });
-    }
+        if (km && days && type) {
+            const costPerKm = kmCosts[km] || 0;
+            const price = costPerKm * days;
+
+            setPlan({
+                km,
+                days,
+                type,
+                price,
+            });
+        }
     }, [searchParams]);
 
-  if (!plan) {
-    return <LogoLoader content={"Loading plan details..."}/>;
-  }
-
-  const price = plan.price;
-  const finalPrice = discountApplied ? price - discountAmount : price;
-
-
-  const handleApplyCoupon = async () => {
-    if (!coupon.trim()) {
-      toast.error("Please enter a coupon code");
-      return;
+    if (!plan) {
+        return <LogoLoader content={"Loading plan details..."}/>;
     }
 
-    try {
-      const response = await fetch("/api/coupons", { method: "GET" });
-      if (!response.ok) throw new Error("Failed to fetch coupons");
+    const price = plan.price;
+    const finalPrice = discountApplied ? price - discountAmount : price;
 
-      const coupons = await response.json();
 
-      const matchedCoupon = coupons.find(
-        (c) => c.name.toLowerCase() === coupon.trim().toLowerCase()
-      );
+    const handleApplyCoupon = async () => {
+        if (!coupon.trim()) {
+        toast.error("Please enter a coupon code");
+        return;
+        }
 
-      if (matchedCoupon) {
-        setSelectedCoupon(matchedCoupon); // 🔥 Save full coupon object
-        setDiscountApplied(true);
-        setInvalidCoupon(false);
-        setDiscountAmount(Math.round((price * matchedCoupon.discountPercentage) / 100));
+        try {
+        const response = await fetch("/api/coupons", { method: "GET" });
+        if (!response.ok) throw new Error("Failed to fetch coupons");
 
-        toast.success(`Coupon "${matchedCoupon.name}" applied! 🎉`);
-        setShowSuccessAnim(true);
-        setTimeout(() => setShowSuccessAnim(false), 1500);
-      } else {
-        setInvalidCoupon(true);
-        setDiscountApplied(false);
-        setDiscountAmount(0);
-        setShake(true);
-        toast.error("Invalid coupon code ❌");
-        setTimeout(() => setShake(false), 500);
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong while applying coupon.");
-    }
-  };
+        const coupons = await response.json();
+
+        const matchedCoupon = coupons.find(
+            (c) => c.name.toLowerCase() === coupon.trim().toLowerCase()
+        );
+
+        if (matchedCoupon) {
+            setSelectedCoupon(matchedCoupon); // 🔥 Save full coupon object
+            setDiscountApplied(true);
+            setInvalidCoupon(false);
+            setDiscountAmount(Math.round((price * matchedCoupon.discountPercentage) / 100));
+
+            toast.success(`Coupon "${matchedCoupon.name}" applied! 🎉`);
+            setShowSuccessAnim(true);
+            setTimeout(() => setShowSuccessAnim(false), 1500);
+        } else {
+            setInvalidCoupon(true);
+            setDiscountApplied(false);
+            setDiscountAmount(0);
+            setShake(true);
+            toast.error("Invalid coupon code ❌");
+            setTimeout(() => setShake(false), 500);
+        }
+        } catch (error) {
+        console.error(error);
+        toast.error("Something went wrong while applying coupon.");
+        }
+    };
 
 
   const handleCheckout = async (couponId=null) => {

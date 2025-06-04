@@ -100,7 +100,7 @@ export default function TopSeller() {
 
         {loading ? (
           // <div className="text-center text-gray-400 py-10">Fetching trusted sellers near you...</div>
-          <LogoLoader content={"Fetching trusted sellers near you.."}/>
+          <LogoLoader content={"Loading home..."} />
         ) : sellers.length > 0 ? (
             <div className="relative">
               {/* {sellers.length > 4 && ( */}

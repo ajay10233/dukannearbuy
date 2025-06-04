@@ -309,33 +309,6 @@ export default function HeroSectionEditProfile() {
 
       <div className="flex w-full p-4 md:px-12 justify-between items-start">
         <div className="flex flex-col gap-1">
-          {/* <h1 className="text-2xl md:text-3xl pb-1 font-bold text-blue-600 flex items-center gap-2">
-            {user.role === "INSTITUTION" ? (
-              <>
-                <Plus size={30} strokeWidth={2.5} color="#ff0000" />
-                {user.firmName || "Medical Institute"}
-
-                {user.subscriptionPlan?.name === "PREMIUM" && (
-                  <Crown size={24} fill="#f0d000" className="text-yellow-500" />
-                )}
-                {user.subscriptionPlan?.name === "BUSINESS" && (
-                  <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
-                )}
-              </>
-            ) : user.role === "SHOP_OWNER" ? (
-              <>
-                <Store size={30} strokeWidth={2.5} color="#1751c4" />
-                {user.firmName || "Shop Owner"}
-
-                {user.subscriptionPlan?.name === "PREMIUM" && (
-                  <Crown size={24} fill="#f0d000" className="text-yellow-500" />
-                )}
-                {user.subscriptionPlan?.name === "BUSINESS" && (
-                  <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
-                )}
-              </>
-            ) : null}
-          </h1> */}
 
           <h1 className="text-2xl md:text-3xl pb-1 font-bold text-blue-600 flex items-center gap-2">
             {user.role === "INSTITUTION" ? (

@@ -179,16 +179,9 @@ const onSubmit = async (data) => {
           className={`py-2 md:py-3 w-full text-white text-sm md:text-base rounded-full font-bold cursor-pointer transition-all ${isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600"
             }`}
         >
-          {isLoading ? (
-            // <span className="flex justify-center items-center gap-2">
-            //   <Loader2 className="animate-spin" size={18} />
-            //   Logging in...
-            // </span>
-            <LogoLoader content={"Logging in..."} />
+          {isLoading && <LogoLoader content={"Logging in..."} />} 
 
-          ) : (
-            "Login"
-          )}
+          Login
         </button>
 
         <span className="text-gray-700 md:text-gray-600 text-sm">- or -</span>
