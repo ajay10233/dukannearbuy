@@ -525,6 +525,7 @@ export default function ChatBox() {
     return message;
   };
 
+
   return (
     <div className="flex min-h-screen bg-white font-[var(--font-plus-jakarta)]">
       {/* Left Sidebar */}
@@ -562,7 +563,7 @@ export default function ChatBox() {
               }`}
             onClick={() => setIsMsgRequest(false)}
           >
-            Select a seller
+              {loggedInUser?.role === "USER" ? "Select a Seller" : "All Chats"}
           </button>
           <button
             className={`w-1/2 flex items-center justify-center text-center py-3 px-4 gap-2.5 rounded-tr-xl rounded-br-xl transition-all duration-500 cursor-pointer ${isMsgRequest
@@ -771,7 +772,9 @@ export default function ChatBox() {
                     {selectedPartner
                       &&
                       (
-                        <Link href=
+                      
+                      <Link
+                        href=
                           {
                             selectedPartner?.otherUser
                               ?

@@ -210,7 +210,7 @@ const totalAmount = itemsSubtotal + cgstAmount + sgstAmount;
   return (
 
     <div className="p-4 relative">
-      <div className="max-w-5xl mx-auto p-4 bg-white shadow-md border text-sm text-black" >
+      <div id="invoice-print"  className="max-w-5xl mx-auto p-4 bg-white shadow-md border text-sm text-black" >
         <div className="flex justify-between items-center my-4 md:my-8">
           <h1 className="text-2xl font-bold text-center w-full uppercase">Invoice</h1>
         </div>
@@ -271,7 +271,9 @@ const totalAmount = itemsSubtotal + cgstAmount + sgstAmount;
 
         {/* Bill Items Table */}
         <div className="overflow-x-auto mb-4">
-          {bill?.items &&
+          {!bill?.fileUrl && (bill?.items?.length > 0 || bill?.notes?.length > 0) && (
+
+          // {bill?.items &&
 
             <table className="w-full border-collapse border text-left">
               <thead>
@@ -290,7 +292,7 @@ const totalAmount = itemsSubtotal + cgstAmount + sgstAmount;
                 </tr>
               </thead>
               <tbody>
-        {(bill?.notes?.length ? bill.notes : bill.items).map((item, index) => (
+                {(bill?.notes?.length ? bill.notes : bill.items).map((item, index) => (
                   <tr key={index} className='text-xs md:text-sm print:text-sm'>
                     <td className="border p-1 md:p-2 text-center print:p-2">{index + 1}</td>
                     <td className="border p-1 md:p-2 print:p-2">
@@ -405,40 +407,45 @@ const totalAmount = itemsSubtotal + cgstAmount + sgstAmount;
 
               </tbody>
             </table>
-          }
+          // }
+        )}
         </div>
 
         {/* Total Amount */}
-        <div className="text-sm md:text-lg print:text-lg text-right font-bold">Total Amount: ₹{totalAmount.toFixed(2)}</div>
+        {!bill?.fileUrl && (bill?.items?.length > 0 || bill?.notes?.length > 0) && (
+          <div className="text-sm md:text-lg print:text-lg text-right font-bold">Total Amount: ₹{totalAmount.toFixed(2)}</div>
+        )}
+
         {/* proprietorSign */}
 
         {/* {formDetails?.proprietorSign && ( */}
-        {formDetails?.proprietorSign && typeof formDetails.proprietorSign === 'string' && formDetails.proprietorSign.length > 0 && (
-
-          <div className="flex justify-end mt-4">
-            <div className="p-2 w-full max-w-[100px]">
-              <img
-                src={formDetails?.proprietorSign || ''}
-                alt="Proprietor Signature"
-                width={100}
-                height={100}
-                className="object-contain"
-              // priority
-              />
+        {!bill?.fileUrl &&
+          formDetails?.proprietorSign && typeof formDetails.proprietorSign === 'string' && formDetails.proprietorSign.length > 0 && (
+            <div className="flex justify-end mt-4">
+              <div className="p-2 w-full max-w-[100px]">
+                <img
+                  src={formDetails?.proprietorSign || ''}
+                  alt="Proprietor Signature"
+                  width={100}
+                  height={100}
+                  className="object-contain"
+                // priority
+                />
+              </div>
             </div>
-          </div>
-        )}
+          )
+        }
 
         {/* File Preview */}
         {bill?.fileUrl && (
           <div className="mb-3">
             <h2 className="text-lg font-bold mb-2">File Attachment</h2>
             {bill?.fileType?.startsWith("image/") ? (
-              <div className="relative w-40 h-40">
+              <div className="relative w-60 h-60">
                 <Image
                   src={bill.fileUrl}
                   alt="Attached Image" fill
-                  className="w-40 h-40 max-w-md mx-auto border rounded shadow" priority
+                  className="w-60 h-60 max-w-md mx-auto border rounded shadow" priority
                 />
               </div>
             ) : bill?.fileType === "application/pdf" ? (
