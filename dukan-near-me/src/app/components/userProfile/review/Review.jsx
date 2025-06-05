@@ -97,8 +97,10 @@ const Review = () => {
                       <Image
                           src={review?.user?.profilePhoto || "/default-img.jpg"}
                           alt={review?.user?.firstName || "Profile"}                        
-                        fill size="64px"
-                        className="rounded-full object-cover" priority
+                          fill
+                          // sizes="64px"
+                          sizes="(max-width: 768px) 48px, 64px"
+                          className="rounded-full object-cover" priority
                       />
                     </div>
 

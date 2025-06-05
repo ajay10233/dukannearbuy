@@ -71,10 +71,9 @@ export default function HeroSection() {
               <Image
                 src={img.link}
                 alt={img.details || `Promotion image ${index + 1}`}
-                layout="fill"
-                // objectFit="contain"
-                objectFit="contain sm:cover"
-                className="transition-opacity duration-500"
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 50vw"
+                className="object-contain md:object-cover transition-opacity duration-500"
                 priority
               />
               {index !== selectedIndex && (

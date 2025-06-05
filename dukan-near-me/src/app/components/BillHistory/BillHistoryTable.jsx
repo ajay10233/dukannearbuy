@@ -48,11 +48,13 @@ export default function BillHistoryTable({ setDates }) {
 
     fetchBillData();
   }, []);
-
- useEffect(() => {
+  
+  useEffect(() => {
   if (fromDate && toDate) {
     const from = new Date(fromDate);
-    const to = new Date(toDate); // No need to set hours now
+    const to = new Date(toDate);
+    // Set "to" date to end of the day to include full day
+    to.setHours(23, 59, 59, 999);
 
     const filtered = billData.filter((bill) => {
       const billDate = new Date(bill.createdAt);
@@ -66,6 +68,7 @@ export default function BillHistoryTable({ setDates }) {
     setDates({ startDate: "", endDate: "" });
   }
 }, [fromDate, toDate, billData]);
+
 
 
   const sortAmount = (order) => {

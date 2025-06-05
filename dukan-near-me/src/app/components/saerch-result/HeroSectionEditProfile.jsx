@@ -211,6 +211,7 @@ export default function HeroSectionEditProfile() {
       
       {/* {user.paidPromotions?.[0]?.notes && ( */}
       {user.paidPromotions?.[0]?.notes &&
+        user.paidPromotions[0].expiresAt &&
         new Date(user.paidPromotions[0].expiresAt) > new Date() && (
 
         <div

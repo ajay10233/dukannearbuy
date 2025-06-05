@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import Image from "next/image";
+import LogoLoader from "../LogoLoader";
 
 export default function Feedback() {
   const [formData, setFormData] = useState({
@@ -14,6 +15,17 @@ export default function Feedback() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false); 
+    }, 500); 
+
+    return () => clearTimeout(timer);
+  }, []);
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -42,6 +54,11 @@ export default function Feedback() {
       setIsSubmitting(false);
     }
   };
+
+    if (loading) {
+    return <LogoLoader content={"Loading page, please wait..."} />;
+  }
+
 
   return (
     <div className="h-screen relative flex flex-col items-center justify-center bg-gradient-to-br from-teal-50 via-slate-100 to-white-200 p-6"> 
@@ -97,7 +114,7 @@ export default function Feedback() {
           placeholder="Your Name"
           value={formData.name}
           onChange={handleChange}
-          className="w-full border border-gray-300 p-2 rounded-md cursor-pointer transition-all ease-in-out duration-400 focus:outline-none focus:ring-2 focus:ring-blue-700"
+          className="w-full border capitalize border-gray-300 p-2 rounded-md cursor-pointer transition-all ease-in-out duration-400 focus:outline-none focus:ring-2 focus:ring-blue-700"
           required
         />
 

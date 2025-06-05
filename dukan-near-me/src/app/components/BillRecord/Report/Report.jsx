@@ -116,9 +116,16 @@ const filteredReports = reports.filter((report) => {
     (favoriteFilter === true && favorites.some(fav => fav.billId === report.id)) ||
     (favoriteFilter === false && !favorites.some(fav => fav.billId === report.id));
 
+  // const isDateValid =
+  // (!dateFrom || new Date(report.createdAt) >= new Date(dateFrom)) &&
+  // (!dateTo || new Date(report.createdAt) <= new Date(dateTo));
+  const reportDate = new Date(report.createdAt);
+  const from = dateFrom ? new Date(dateFrom) : null;
+  const to = dateTo ? new Date(new Date(dateTo).setHours(23, 59, 59, 999)) : null;
   const isDateValid =
-  (!dateFrom || new Date(report.createdAt) >= new Date(dateFrom)) &&
-  (!dateTo || new Date(report.createdAt) <= new Date(dateTo));
+    (!from || reportDate >= from) &&
+    (!to || reportDate <= to);
+
 
   const query = searchTerm.toLowerCase();
   const matchesSearch =

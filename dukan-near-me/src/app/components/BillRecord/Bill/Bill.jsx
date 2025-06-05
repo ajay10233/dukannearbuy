@@ -117,9 +117,17 @@ export default function Bill() {
   const firmName = bill.institution?.firmName || bill.institution?.firmName || '';
   const matchesSearch = firmName.toLowerCase().includes(search.toLowerCase());
 
+  // const isDateValid =
+  //   (!dateFrom || new Date(bill.createdAt) >= new Date(dateFrom)) &&
+    //   (!dateTo || new Date(bill.createdAt) <= new Date(dateTo));
+    // Date filter with end of day fix for dateTo
+  const billDate = new Date(bill.createdAt);
+  const from = dateFrom ? new Date(dateFrom) : null;
+  const to = dateTo ? new Date(new Date(dateTo).setHours(23, 59, 59, 999)) : null;
   const isDateValid =
-    (!dateFrom || new Date(bill.createdAt) >= new Date(dateFrom)) &&
-    (!dateTo || new Date(bill.createdAt) <= new Date(dateTo));
+    (!from || billDate >= from) &&
+    (!to || billDate <= to);
+
 
   const isRoleValid =
   roleFilter === '' ||

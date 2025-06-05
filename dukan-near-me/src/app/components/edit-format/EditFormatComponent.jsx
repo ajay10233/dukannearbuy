@@ -35,6 +35,7 @@ export default function EditFormatComponent() {
     const [formDetails, setFormDetails] = useState(null);
     const [tokenEnabled, setTokenEnabled] = useState(false); // for toggle switch
     const [token, setToken] = useState(''); // for token input value
+const fileInputRef = useRef(null);
 
     const [loading, setLoading] = useState(true);
 
@@ -130,161 +131,7 @@ export default function EditFormatComponent() {
         window.print();
     };
 
-    // const handleGenerateBill = async () => {
-    //     if (isGenerating) return;
-    //     setIsGenerating(true);
-
-    //     if (!userId) {
-    //         toast.error('Please scan a user QR code first.');
-    //         setIsGenerating(false);
-    //         return;
-    //     }
-    //     console.log('Generating bill with userId:', userId);
-
-
-    //     if (!invoiceNo.trim()) {
-    //         toast.error('Please enter an invoice number.');
-    //         setIsGenerating(false);
-    //         return;
-    //     }
-
-    //     if (!Array.isArray(items) || items.length === 0) {
-    //         toast.error('Please add at least one item to generate a bill.');
-    //         setIsGenerating(false);
-    //         return;
-    //     }
-
-
-    //     try {
-
-    //         const checkResponse = await axios.get('/api/bill', {
-    //             params: { invoiceNumber: invoiceNo }
-    //         });
-
-
-    //         // const today = new Date().toISOString().slice(0, 10); 
-
-    //         const existingBills = checkResponse.data.bills.filter(bill => {
-    //             // const billDate = new Date(bill.createdAt).toISOString().slice(0, 10);
-    //             return bill.invoiceNumber === invoiceNo;
-    //         });
-
-
-    //         if (existingBills.length > 0) {
-    //             toast.error('A bill with this invoice number already exists.');
-    //             setIsGenerating(false);
-    //             return;
-    //         }
-
-    //         const hasFile = file !== null;
-    //         let data;
-
-    //         if (hasFile) {
-    //             const formData = new FormData();
-    //             formData.append('userId', userId);
-    //             formData.append('name', `${username.firstName} ${username.lastName}`);
-    //             formData.append('phoneNumber', mobile);
-    //             formData.append('invoiceNumber', invoiceNo);
-    //             formData.append('remarks', '');
-    //             formData.append('otherCharges', '0');
-    //             formData.append('file', file);
-    //             formData.append('generateShortBill', shortBill);
-    //             formData.append('report', isReport);
-    //             formData.append('generationToken', tokenEnabled);
-
-
-    //             if (user?.role === 'INSTITUTION') {
-    //                 const notesPayload = items.map(item => ({
-    //                     chief_complaint: item.particulars || '',
-    //                     treatment: item.treatment || '',
-    //                     others: item.others || ''
-    //                 }));
-    //                 formData.append('notes', JSON.stringify(notesPayload));
-    //             } else {
-    //                 formData.append('items', JSON.stringify(items.map(item => ({
-    //                     name: item.particulars,
-    //                     quantity: Number(item.qty),
-    //                     price: Number(item.rate),
-    //                 }))));
-    //             }
-
-
-    //             data = await axios.post('/api/bill', formData, {
-    //                 headers: {
-    //                     'Content-Type': 'multipart/form-data',
-    //                 },
-    //             });
-    //         } else {
-    //             // const payload = {
-    //             //     userId,
-    //             //     name: `${username.firstName} ${username.lastName}`,
-    //             //     phoneNumber: mobile,
-    //             //     invoiceNumber: invoiceNo,
-    //             //     items: items.map((item) => ({
-    //             //         name: item.particulars,
-    //             //         quantity: Number(item.qty),
-    //             //         price: Number(item.rate),
-    //             //     })),
-    //             //     remarks: '',
-    //             //     otherCharges: 0,
-    //             //     generateShortBill: shortBill,
-    //             //     generationToken: tokenEnabled,
-    //             // };
-
-    //                         let payload;
-
-    //         if (user?.role === 'INSTITUTION') {
-    //             payload = {
-    //                 userId,
-    //                 name: `${username.firstName} ${username.lastName}`,
-    //                 phoneNumber: mobile,
-    //                 invoiceNumber: invoiceNo,
-    //                 notes: items.map(item => ({
-    //                     chief_complaint: item.particulars || '',
-    //                     treatment: item.treatment || '',
-    //                     others: item.others || '',
-    //                 })),
-    //                 remarks: '',
-    //                 otherCharges: 0,
-    //                 generateShortBill: shortBill,
-    //                 generationToken: tokenEnabled,
-    //             };
-    //         } else {
-    //             payload = {
-    //                 userId,
-    //                 name: `${username.firstName} ${username.lastName}`,
-    //                 phoneNumber: mobile,
-    //                 invoiceNumber: invoiceNo,
-    //                 items: items.map(item => ({
-    //                     name: item.particulars,
-    //                     quantity: Number(item.qty),
-    //                     price: Number(item.rate),
-    //                 })),
-    //                 remarks: '',
-    //                 otherCharges: 0,
-    //                 generateShortBill: shortBill,
-    //                 generationToken: tokenEnabled,
-    //             };
-    //         }
-
-
-    //             data = await axios.post('/api/bill', payload);
-    //         }
-    //         console.log(data.data);
-    //         if (data?.data?.shortBill) {
-    //             setShortBillDetails(data.data.shortBill); // Save shortBill data to state
-    //         }
-
-    //         toast.success('Bill generated successfully!');
-    //         console.log('Generated bill:', data);
-    //     } catch (error) {
-    //         console.error('Error generating bill:', error);
-    //         toast.error(error.response?.data?.error || 'Error generating bill');
-    //     } finally {
-    //         setIsGenerating(false);
-    //     }
-    // };
-
+ 
     const handleGenerateBill = async () => {
     if (isGenerating) return;
     setIsGenerating(true);
@@ -631,7 +478,7 @@ export default function EditFormatComponent() {
                             </div>
 
                             {/* Preview */}
-                            {file && (
+                            {/* {file && (
                                 <div className="flex items-start gap-4 border p-3 rounded-md bg-gray-50">
                                     {previewUrl ? (
                                         <Image
@@ -645,7 +492,55 @@ export default function EditFormatComponent() {
                                         <p className="text-sm text-gray-500">📄 {file.name}</p>
                                     )}
                                 </div>
-                            )}
+                            )} */}
+
+                            {file && (
+  <div className="flex items-start gap-4 border p-3 rounded-md bg-gray-50">
+    {previewUrl ? (
+      <div className="relative">
+        <Image
+          src={previewUrl}
+          alt="Preview"
+          width={100}
+          height={100}
+          className="rounded object-cover"
+        />
+        {/* Cross icon button inside image box */}
+        <button
+          onClick={() => {
+            setFile(null);
+            setPreviewUrl('');
+            if (fileInputRef.current) {
+              fileInputRef.current.value = ''; 
+            }
+          }}
+          className="absolute top-1 right-1 p-1 bg-black bg-opacity-60 rounded-full hover:bg-opacity-80"
+          aria-label="Remove file"
+          type="button"
+        >
+          <X size={16} color="white" />
+        </button>
+      </div>
+    ) : (
+      <div className="relative flex items-center">
+        <p className="text-sm text-gray-500">📄 {file.name}</p>
+        {/* Cross icon for PDF or file */}
+        <button
+          onClick={() => {
+            setFile(null);
+            setPreviewUrl('');
+          }}
+          className="absolute top-1 right-1 p-1 bg-black bg-opacity-60 rounded-full hover:bg-opacity-80"
+          aria-label="Remove file"
+          type="button"
+        >
+          <X size={16} color="white" />
+        </button>
+      </div>
+    )}
+  </div>
+)}
+
                         </div>
 
                         {/* <UploadPdfImage /> */}

@@ -130,21 +130,22 @@ export default function  HeroSection({id}) {
 
   return (
     <div className={`w-full relative ${user.role === "INSTITUTION" ? "bg-gradient-to-tr from-white to-sky-100" : user.role === "SHOP_OWNER" ? "bg-gradient-to-tl from-lime-100 to-white" : ""}`}>
-      {user?.paidPromotions?.[0]?.notes && (
-        <div
-          className={`absolute top-3 md:top-6 right-3 md:right-10 z-10 py-1 px-4 text-white text-sm rounded-lg animate-bounce rounded-tl-2xl rounded-bl-sm rounded-br-2xl rounded-tr-sm
-            ${user.paidPromotions[0].notes === 'On Sale' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
-            ${user.paidPromotions[0].notes === 'New Shop opening' ? 'bg-gradient-to-br from-blue-500 via-green-500 to-teal-500' : ''}
-            ${user.paidPromotions[0].notes === 'Festive Offer' ? 'bg-gradient-to-tl from-orange-500 via-yellow-500 to-red-500' : ''}
-            ${user.paidPromotions[0].notes === 'New Product' ? 'bg-gradient-to-bl from-purple-500 via-pink-500 to-red-500' : ''}
-            ${user.paidPromotions[0].notes === 'New Service' ? 'bg-gradient-to-tr from-pink-300 via-purple-500 to-blue-500' : ''}
-            ${user.paidPromotions[0].notes === 'Exclusive Seller' ? 'bg-gradient-to-tr from-red-500 via-orange-500 to-yellow-500' : ''}
-            ${user.paidPromotions[0].notes === 'Promotion' ? 'bg-gradient-to-tr from-indigo-400 via-purple-500 to-pink-500' : ''}
-            ${user.paidPromotions[0].notes === 'Reloacate' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
-          `}
-        >
-          {user?.paidPromotions[0].notes}
-        </div>
+      {user?.paidPromotions?.[0]?.notes && 
+        user.paidPromotions[0].expiresAt &&
+        new Date(user.paidPromotions[0].expiresAt) > new Date() && (
+          <div
+            className={`absolute top-3 md:top-6 right-3 md:right-10 z-10 py-1 px-4 text-white text-sm rounded-lg animate-bounce rounded-tl-2xl rounded-bl-sm rounded-br-2xl rounded-tr-sm
+              ${user.paidPromotions[0].notes === 'On Sale' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
+              ${user.paidPromotions[0].notes === 'New Shop opening' ? 'bg-gradient-to-br from-blue-500 via-green-500 to-teal-500' : ''}
+              ${user.paidPromotions[0].notes === 'Festive Offer' ? 'bg-gradient-to-tl from-orange-500 via-yellow-500 to-red-500' : ''}
+              ${user.paidPromotions[0].notes === 'New Product' ? 'bg-gradient-to-bl from-purple-500 via-pink-500 to-red-500' : ''}
+              ${user.paidPromotions[0].notes === 'New Service' ? 'bg-gradient-to-tr from-pink-300 via-purple-500 to-blue-500' : ''}
+              ${user.paidPromotions[0].notes === 'Exclusive Seller' ? 'bg-gradient-to-tr from-red-500 via-orange-500 to-yellow-500' : ''}
+              ${user.paidPromotions[0].notes === 'Promotion' ? 'bg-gradient-to-tr from-indigo-400 via-purple-500 to-pink-500' : ''}
+              ${user.paidPromotions[0].notes === 'Reloacate' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
+            `}>
+            {user?.paidPromotions[0].notes}
+          </div>
       )}
       
       <div className="w-full h-60 md:h-100 relative overflow-hidden shadow-inner">
@@ -222,13 +223,15 @@ export default function  HeroSection({id}) {
                 <Plus size={30} strokeWidth={2.5} color="#ff0000" />
                 {user.firmName || "Medical Institute"}
 
-                {user.subscriptionPlan?.name === "PREMIUM" && (
-                  // new Date(user.subscriptionPlan?.expiresAt) > new Date() && (
+                {user.subscriptionPlan?.name === "PREMIUM" && 
+                  user.subscriptionPlan?.expiresAt &&
+                  new Date(user.subscriptionPlan?.expiresAt) > new Date() && (
                     <Crown size={24} fill="#f0d000" className="text-yellow-500" />
                 )}
 
-                {user.subscriptionPlan?.name === "BUSINESS" && (
-                  // new Date(user.subscriptionPlan?.expiresAt) > new Date() && (
+                {user.subscriptionPlan?.name === "BUSINESS" && 
+                  user.subscriptionPlan?.expiresAt &&
+                  new Date(user.subscriptionPlan?.expiresAt) > new Date() && (
                     <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
                 )}
 
@@ -239,14 +242,16 @@ export default function  HeroSection({id}) {
                 {user.firmName || "Shop Owner"}
 
                 {/* Show PREMIUM badge if active */}
-                {user.subscriptionPlan?.name === "PREMIUM" && (
-                  // new Date(user.subscriptionPlan.expiresAt) > new Date() && (
+                  {user.subscriptionPlan?.name === "PREMIUM" && 
+                    user.subscriptionPlan?.expiresAt &&
+                    new Date(user.subscriptionPlan.expiresAt) > new Date() && (
                     <Crown size={24} fill="#f0d000" className="text-yellow-500" />
                 )}
 
                 {/* Show BUSINESS badge if active */}
-                {user.subscriptionPlan?.name === "BUSINESS" && (
-                  // new Date(user.subscriptionPlan.expiresAt) > new Date() && (
+                  {user.subscriptionPlan?.name === "BUSINESS" && 
+                    user.subscriptionPlan?.expiresAt &&
+                  new Date(user.subscriptionPlan.expiresAt) > new Date() && (
                     <Crown size={24} fill="#AFAFAF" className="text-gray-400" />
                 )}
               </>
