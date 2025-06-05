@@ -144,20 +144,20 @@ export default function LogoutButton() {
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 50, opacity: 0 }}
-            className="bg-white rounded-lg p-6 w-full max-w-sm shadow-lg"
+            className="bg-white rounded-lg p-6 w-[300px] md:w-full md:max-w-sm shadow-lg"
           >
-            <h3 className="text-lg font-semibold mb-4">Confirm Logout</h3>
-            <p className="mb-6 text-gray-700">Are you sure you want to log out?</p>
+            <h3 className="text-md md:text-lg font-semibold mb-2 md:mb-4">Confirm Logout</h3>
+            <p className="mb-4 md:mb-6 text-gray-700 text-sm md:text-[16px]">Are you sure you want to log out?</p>
             <div className="flex justify-end gap-4">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 rounded bg-gray-50 border-gray-300 border transition-all ease-in-out duration-400 cursor-pointer hover:bg-gray-100"
+                className="px-4 py-2 rounded bg-gray-50 text-sm md:text-[16px] border-gray-300 border transition-all ease-in-out duration-400 cursor-pointer hover:bg-gray-100"
               >
                 Cancel
               </button>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 rounded bg-red-500 text-white transition-all ease-in-out duration-400 cursor-pointer hover:bg-red-600"
+                className="px-4 py-2 rounded bg-red-500 text-sm md:text-[16px] text-white transition-all ease-in-out duration-400 cursor-pointer hover:bg-red-600"
               >
                 Yes, Logout
               </button>

@@ -35,7 +35,6 @@ export default function EditFormatComponent() {
     const [formDetails, setFormDetails] = useState(null);
     const [tokenEnabled, setTokenEnabled] = useState(false); // for toggle switch
     const [token, setToken] = useState(''); // for token input value
-const fileInputRef = useRef(null);
 
     const [loading, setLoading] = useState(true);
 
@@ -478,7 +477,7 @@ const fileInputRef = useRef(null);
                             </div>
 
                             {/* Preview */}
-                            {/* {file && (
+                            {file && (
                                 <div className="flex items-start gap-4 border p-3 rounded-md bg-gray-50">
                                     {previewUrl ? (
                                         <Image
@@ -492,55 +491,7 @@ const fileInputRef = useRef(null);
                                         <p className="text-sm text-gray-500">📄 {file.name}</p>
                                     )}
                                 </div>
-                            )} */}
-
-                            {file && (
-  <div className="flex items-start gap-4 border p-3 rounded-md bg-gray-50">
-    {previewUrl ? (
-      <div className="relative">
-        <Image
-          src={previewUrl}
-          alt="Preview"
-          width={100}
-          height={100}
-          className="rounded object-cover"
-        />
-        {/* Cross icon button inside image box */}
-        <button
-          onClick={() => {
-            setFile(null);
-            setPreviewUrl('');
-            if (fileInputRef.current) {
-              fileInputRef.current.value = ''; 
-            }
-          }}
-          className="absolute top-1 right-1 p-1 bg-black bg-opacity-60 rounded-full hover:bg-opacity-80"
-          aria-label="Remove file"
-          type="button"
-        >
-          <X size={16} color="white" />
-        </button>
-      </div>
-    ) : (
-      <div className="relative flex items-center">
-        <p className="text-sm text-gray-500">📄 {file.name}</p>
-        {/* Cross icon for PDF or file */}
-        <button
-          onClick={() => {
-            setFile(null);
-            setPreviewUrl('');
-          }}
-          className="absolute top-1 right-1 p-1 bg-black bg-opacity-60 rounded-full hover:bg-opacity-80"
-          aria-label="Remove file"
-          type="button"
-        >
-          <X size={16} color="white" />
-        </button>
-      </div>
-    )}
-  </div>
-)}
-
+                            )}
                         </div>
 
                         {/* <UploadPdfImage /> */}
