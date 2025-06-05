@@ -86,7 +86,7 @@ export default function LocationSelector({ onSave, role }) {
   };
 
   return (
-<div className={`w-full ${role === "INSTITUTION" || role === "SHOP_OWNER" ? "h-screen" : ""} flex flex-col items-center justify-center p-6 space-y-6 bg-gray-100 rounded-lg shadow-md`}>
+<div className={`w-full ${role === "INSTITUTION" || role === "SHOP_OWNER" ? "h-screen" : ""} flex flex-col items-center justify-center p-6 space-y-6 bg-gray-50`}>
       <Map 
         setLocation={(newLocation) => {
           setValue("lat", newLocation.lat);
@@ -104,14 +104,15 @@ export default function LocationSelector({ onSave, role }) {
         role={role} 
       />
 
-      <button
-        onClick={() => {
-          fetchCurrentLocation();
-        }}
-        className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
-      >
-        Use Current Location     
-      </button>
+      {role === "USER" && (
+        <button
+          onClick={() => {
+            fetchCurrentLocation();
+          }}
+          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-all ease-in-out duration-400 cursor-pointer">
+          Use Current Location
+        </button>
+      )}
 
       {/* Address Form */}
 

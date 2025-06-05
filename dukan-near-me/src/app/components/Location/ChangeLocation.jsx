@@ -3,6 +3,7 @@ import LocationSelector from "@/app/components/Location/LocationSelector";
 import { MoveLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import LogoLoader from "../LogoLoader";
 
 export default function ChangeLocationPage() {
   const router = useRouter();
@@ -39,9 +40,14 @@ export default function ChangeLocationPage() {
 
     const heading =
     role === "SHOP_OWNER" || role === "INSTITUTION"
-      ? "Your Live Location"
+      ? "Your Current Location"
       : "Select Your Location";
-
+  
+  if (!role) {
+    return (
+      <LogoLoader content={"Fetching location..."} />
+    );
+  }
 
   return (
     <div className="h-screen relative flex flex-col items-center gap-4">
