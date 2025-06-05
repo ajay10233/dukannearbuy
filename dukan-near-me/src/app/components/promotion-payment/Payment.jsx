@@ -18,87 +18,90 @@ export default function Payment() {
   const [selectedCoupon, setSelectedCoupon] = useState(null);
 
   const searchParams = useSearchParams();
-  
+
   const kmCosts = { 5: 99, 20: 199, 50: 500, 100: 800 };
-    
-    useEffect(() => {
-        const km = searchParams.get("km");
-        const days = searchParams.get("days");
-        const type = searchParams.get("type");
 
-        if (km && days && type) {
-            const costPerKm = kmCosts[km] || 0;
-            const price = costPerKm * days;
+  useEffect(() => {
+    const km = searchParams.get("km");
+    const days = searchParams.get("days");
+    const type = searchParams.get("type");
 
-            setPlan({
-                km,
-                days,
-                type,
-                price,
-            });
-        }
-    }, [searchParams]);
+    if (km && days && type) {
+      const costPerKm = kmCosts[km] || 0;
+      const price = costPerKm * days;
 
-    if (!plan) {
-        return <LogoLoader content={"Loading plan details..."}/>;
+      setPlan({
+        km,
+        days,
+        type,
+        price,
+      });
+    }
+  }, [searchParams]);
+
+  if (!plan) {
+    return <LogoLoader content={"Loading plan details..."} />;
+  }
+
+  const price = plan.price;
+  const finalPrice = discountApplied ? price - discountAmount : price;
+
+
+  const handleApplyCoupon = async () => {
+    if (!coupon.trim()) {
+      toast.error("Please enter a coupon code");
+      return;
     }
 
-    const price = plan.price;
-    const finalPrice = discountApplied ? price - discountAmount : price;
-
-
-    const handleApplyCoupon = async () => {
-        if (!coupon.trim()) {
-        toast.error("Please enter a coupon code");
-        return;
-        }
-
-        try {
-        const response = await fetch("/api/coupons", { method: "GET" });
-        if (!response.ok) throw new Error("Failed to fetch coupons");
-
-        const coupons = await response.json();
-
-        const matchedCoupon = coupons.find(
-            (c) => c.name.toLowerCase() === coupon.trim().toLowerCase()
-        );
-
-        if (matchedCoupon) {
-            setSelectedCoupon(matchedCoupon); // 🔥 Save full coupon object
-            setDiscountApplied(true);
-            setInvalidCoupon(false);
-            setDiscountAmount(Math.round((price * matchedCoupon.discountPercentage) / 100));
-
-            toast.success(`Coupon "${matchedCoupon.name}" applied! 🎉`);
-            setShowSuccessAnim(true);
-            setTimeout(() => setShowSuccessAnim(false), 1500);
-        } else {
-            setInvalidCoupon(true);
-            setDiscountApplied(false);
-            setDiscountAmount(0);
-            setShake(true);
-            toast.error("Invalid coupon code ❌");
-            setTimeout(() => setShake(false), 500);
-        }
-        } catch (error) {
-        console.error(error);
-        toast.error("Something went wrong while applying coupon.");
-        }
-    };
-
-
-  const handleCheckout = async (couponId=null) => {
     try {
-      const res = await fetch("/api/plans/upgrade/", {
+      const response = await fetch(
+        `/api/coupons?search=${coupon.trim()}&purpose=PROMOTION`,
+        { method: "GET" }
+      );
+
+      if (!response.ok) throw new Error("Failed to validate coupon");
+
+      const data = await response.json();
+
+      if (data.isValid && data.coupon) {
+        const matchedCoupon = data.coupon;
+        
+        setSelectedCoupon(matchedCoupon); // 🔥 Save full coupon object
+        setDiscountApplied(true);
+        setInvalidCoupon(false);
+        setDiscountAmount(Math.round((price * matchedCoupon.discountPercentage) / 100));
+
+        toast.success(`Coupon "${matchedCoupon.name}" applied! 🎉`);
+        setShowSuccessAnim(true);
+        setTimeout(() => setShowSuccessAnim(false), 1500);
+      } else {
+        setInvalidCoupon(true);
+        setDiscountApplied(false);
+        setDiscountAmount(0);
+        setShake(true);
+        toast.error("Invalid coupon code ❌");
+        setTimeout(() => setShake(false), 500);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong while applying coupon.");
+    }
+  };
+
+
+  const handleCheckout = async (couponId = null) => {
+    try {
+      const range = plan?.km ? parseInt(plan?.km) : 5;
+      const res = await fetch("/api/paid-promotions/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-                couponId,
-                promotionType: plan?.type,
-                days: plan?.days,
-                km: plan?.km,
-                price: finalPrice
-          }),
+        body: JSON.stringify({
+          couponId,
+          notes: plan?.type,
+          timeInDays: plan?.days,
+          range: range,
+          image:null
+        }),
       });
 
       const data = await res.json();
@@ -106,10 +109,10 @@ export default function Payment() {
       if (!res.ok) throw new Error(data.error || "Something went wrong");
 
       if (data.upgraded) {
-        toast.success(`Successfully upgraded to ${plan?.name} 🎉`);
-        window.location.href = "/";
+        toast.success(`Successfully addded paid promotion 🎉`);
+        window.location.href = "/partnerHome";
       } else if (data.stripeUrl) {
-        window.location.href = data.stripeUrl; // ⚡ Future Stripe redirection
+        window.location.href = data.stripeUrl;
       }
     } catch (err) {
       toast.error(err.message);
@@ -196,7 +199,7 @@ export default function Payment() {
             </div>
           </div>
 
-         
+
           <button
             onClick={() => handleCheckout(selectedCoupon?.id)}
             className={`w-full cursor-pointer mt-4 ${finalPrice === 0
@@ -204,9 +207,9 @@ export default function Payment() {
               : "bg-indigo-500 hover:bg-indigo-600"
               } text-white font-semibold py-3 rounded-xl shadow-md transition-all ease-in-out duration-400`}
           >
-            {finalPrice === 0 ? "Upgrade Now for Free" : "Proceed to Pay"}
+            {finalPrice === 0 ? "Promote for Free" : "Proceed to Pay"}
           </button>
-      
+
 
         </div>
 

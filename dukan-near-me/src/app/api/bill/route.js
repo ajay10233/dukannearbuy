@@ -23,7 +23,6 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Institution not found' }, { status: 404 });
     }
 
-    // Bill count constraint for Free plan
     const isFreePlan = institution.subscriptionPlan == null ? true : institution.subscriptionPlan?.name === 'BASIC';
     if (isFreePlan) {
       const startOfMonth = new Date();
@@ -136,7 +135,6 @@ export async function POST(req) {
       return NextResponse.json({ success: true, bill });
     }
     
-    // Handle JSON request
     const body = await req.json();
     console.log("body", body);
     const {
@@ -225,7 +223,7 @@ export async function POST(req) {
       shortBill = await prisma.shortBill.create({
         data: {
           billId: bill.id,
-          summary: `ShortBill for ${name || `${user?.firstName || 'Unknown'} ${user?.lastName || ''}`} with ${items.length} items`,
+          summary: `ShortBill for ${name || `${user?.firstName || 'Unknown'} ${user?.lastName || ''}`} with ${items ? items?.length : (notes ? notes?.length : 0)} items`,
           userName: `${user?.firstName || ''} ${user?.lastName || ''}`.trim(),
           userPhone: user?.phone || phoneNumber || null,
           total: totalAmount,

@@ -40,44 +40,49 @@ export default function PaymentOffer() {
   const finalPrice = discountApplied ? price - discountAmount : price;
 
 
-  const handleApplyCoupon = async () => {
-    if (!coupon.trim()) {
-      toast.error("Please enter a coupon code");
-      return;
-    }
+const handleApplyCoupon = async () => {
+  if (!coupon.trim()) {
+    toast.error("Please enter a coupon code");
+    return;
+  }
 
-    try {
-      const response = await fetch("/api/coupons", { method: "GET" });
-      if (!response.ok) throw new Error("Failed to fetch coupons");
+  try {
+    const response = await fetch(
+      `/api/coupons?search=${coupon.trim()}&purpose=PLAN`,
+      { method: "GET" }
+    );
 
-      const coupons = await response.json();
+    if (!response.ok) throw new Error("Failed to validate coupon");
 
-      const matchedCoupon = coupons.find(
-        (c) => c.name.toLowerCase() === coupon.trim().toLowerCase()
+    const data = await response.json();
+
+    if (data.isValid && data.coupon) {
+      const matchedCoupon = data.coupon;
+      setSelectedCoupon(matchedCoupon);
+      setDiscountApplied(true);
+      setInvalidCoupon(false);
+
+      const discount = Math.round(
+        (price * matchedCoupon.discountPercentage) / 100
       );
+      setDiscountAmount(discount);
 
-      if (matchedCoupon) {
-        setSelectedCoupon(matchedCoupon); // 🔥 Save full coupon object
-        setDiscountApplied(true);
-        setInvalidCoupon(false);
-        setDiscountAmount(Math.round((price * matchedCoupon.discountPercentage) / 100));
-
-        toast.success(`Coupon "${matchedCoupon.name}" applied! 🎉`);
-        setShowSuccessAnim(true);
-        setTimeout(() => setShowSuccessAnim(false), 1500);
-      } else {
-        setInvalidCoupon(true);
-        setDiscountApplied(false);
-        setDiscountAmount(0);
-        setShake(true);
-        toast.error("Invalid coupon code ❌");
-        setTimeout(() => setShake(false), 500);
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong while applying coupon.");
+      toast.success(`Coupon "${matchedCoupon.name}" applied! 🎉`);
+      setShowSuccessAnim(true);
+      setTimeout(() => setShowSuccessAnim(false), 1500);
+    } else {
+      setInvalidCoupon(true);
+      setDiscountApplied(false);
+      setDiscountAmount(0);
+      setShake(true);
+      toast.error("Invalid or expired coupon ❌");
+      setTimeout(() => setShake(false), 500);
     }
-  };
+  } catch (error) {
+    console.error(error);
+    toast.error("Something went wrong while applying coupon.");
+  }
+};
 
 
   const handleCheckout = async (couponId=null) => {
@@ -94,7 +99,7 @@ export default function PaymentOffer() {
 
       if (data.upgraded) {
         toast.success(`Successfully upgraded to ${plan?.name} 🎉`);
-        window.location.href = "/";
+        window.location.href = "/partnerHome";
       } else if (data.stripeUrl) {
         window.location.href = data.stripeUrl; // ⚡ Future Stripe redirection
       }
