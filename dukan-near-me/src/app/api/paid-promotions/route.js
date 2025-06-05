@@ -64,7 +64,7 @@ export async function POST(req) {
   }
   const userId = session.user.id;
   try {
-    const { amountPaid, notes, timeInDays,image,userId,range } = await req.json();
+    const { amountPaid, notes, timeInDays,image,range } = await req.json();
     let image_src = null;
     if (!amountPaid || !timeInDays) {
       return NextResponse.json({ error: "Amount and timeInDays are required" }, { status: 400 });

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/utils/db";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"; 
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { ObjectId } from "mongodb";
 
 export const GET = async (req) => {
@@ -83,10 +83,13 @@ export const GET = async (req) => {
         profilePhoto: otherUser.profilePhoto || null,
         firmName: otherUser.firmName || null,
         role: otherUser.role,
+        planExpiresAt: otherUser.planExpiresAt || null,
+        subscriptionPlan: otherUser.subscriptionPlan || null,
       },
       messages: conversation.messages,
       updatedAt: conversation.updatedAt,
     };
+
 
     return NextResponse.json(
       { message: "Conversation fetched successfully!", data: formattedConversation },
@@ -108,4 +111,14 @@ const userSelection = () => ({
   profilePhoto: true,
   firmName: true,
   role: true,
+  planExpiresAt: true,
+  subscriptionPlan: {
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      durationInDays: true,
+    },
+  },
 });
+
