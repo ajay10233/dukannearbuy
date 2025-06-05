@@ -101,8 +101,9 @@ export async function GET(req) {
         notes,
       };
     })
-    .filter(p => p.distance <= radiusKm)
+    .filter(p => p.distance <= radiusKm && p.averageRating >= 4 && p.averageRating <= 5)
     .sort((a, b) => a.distance - b.distance);
+
 
   // Step 6: Enrich free users if needed
   let enrichedFree = [];
@@ -123,10 +124,11 @@ export async function GET(req) {
           isPaid: false,
         };
       })
-      .filter(p => p.distance <= radiusKm)
+      .filter(p => p.distance <= radiusKm && p.averageRating >= 4 && p.averageRating <= 5)
       .sort((a, b) => a.distance - b.distance)
       .slice(0, 10 - enrichedPaid.length);
   }
+
 
   const finalResult = [...enrichedPaid, ...enrichedFree].slice(0, 10);
   return NextResponse.json(finalResult, { status: 200 });

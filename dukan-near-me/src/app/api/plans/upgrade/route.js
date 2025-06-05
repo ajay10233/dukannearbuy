@@ -18,6 +18,9 @@ export async function POST(req) {
     if (!coupon) {
       return NextResponse.json({ error: "Invalid coupon" }, { status: 400 });
     }
+
+    coupon.limit -= 1;
+    await prisma.coupon.update({ where: { id: couponId }, data: { limit: coupon.limit } });
   }
 
 

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/utils/db';
 import cloudinary from "@/utils/cloudinary";
+import { addDays } from "date-fns";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -56,39 +57,75 @@ export async function GET() {
   }
 }
 
+const kmCosts = { 5: 99, 20: 199, 50: 500, 100: 800 };
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   const userId = session.user.id;
+
   try {
-    const { amountPaid, notes, timeInDays,image,range } = await req.json();
+    const { couponId, notes, timeInDays, range, image } = await req.json();
+
+    if (!range || !timeInDays || !notes) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    const baseCostPerKm = kmCosts[range];
+    if (!baseCostPerKm) {
+      return NextResponse.json({ error: "Invalid range selected" }, { status: 400 });
+    }
+
+    const basePrice = baseCostPerKm * timeInDays;
+
+    let finalPrice = basePrice;
+    let coupon = null;
+
+    if (couponId) {
+      coupon = await prisma.coupon.findUnique({ where: { id: couponId } });
+      if (!coupon) {
+        return NextResponse.json({ error: "Invalid coupon" }, { status: 400 });
+      }
+      const discount = Math.round((basePrice * coupon.discountPercentage) / 100);
+      finalPrice = basePrice - discount;
+      coupon.limit -= 1;
+      await prisma.coupon.update({ where: { id: couponId }, data: { limit: coupon.limit } });
+    }
+
+    const expiresAt = addDays(new Date(), timeInDays);
+
+    // Optional image upload
     let image_src = null;
-    if (!amountPaid || !timeInDays) {
-      return NextResponse.json({ error: "Amount and timeInDays are required" }, { status: 400 });
+    if (image) {
+      const result = await cloudinary.v2.uploader.upload(image, { folder: "paid_profiles" });
+      image_src = result.secure_url;
     }
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + timeInDays);
-    if(image){
-        let result = await cloudinary.v2.uploader.upload(image, { folder: "paid_profiles" });
-        image_src = result.secure_url;
+
+    // If free, create directly
+    if (finalPrice <= 0) {
+      const paidProfile = await prisma.paidProfile.create({
+        data: {
+          userId,
+          amountPaid: 0,
+          notes: notes || "",
+          expiresAt,
+          range,
+          image: image_src,
+        },
+      });
+      return NextResponse.json({ upgraded: true, paidProfile });
     }
-    const paidProfile = await prisma.paidProfile.create({
-      data: {
-        userId,
-        amountPaid: parseFloat(amountPaid),
-        notes: notes || "",
-        expiresAt,
-        range:range||5,
-      },
+
+    // Future Stripe logic (for paid promotions)
+    return NextResponse.json({
+      upgraded: false,
+      finalPrice,
+      message: "Proceed to Stripe payment",
     });
 
-    return NextResponse.json({ success: true, paidProfile });
   } catch (error) {
-    console.error('Error creating paid promotion:', error);
-    return NextResponse.json({ success: false, error: 'Failed to create paid promotion' }, { status: 500 });                            
+    console.error('Error processing payment:', error);
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
-
