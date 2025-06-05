@@ -10,9 +10,13 @@ import Navbar from "@/app/components/InstitutionHome/navbar/Navbar";
 import EditFormatModal from "../../components/bill-format/EditFormatModal";
 import { FaEdit } from "react-icons/fa";
 import LogoLoader from '../LogoLoader';
+import { useUser } from '@/context/UserContext';
+import { useSession } from 'next-auth/react';
 
 
 export default function EditFormatComponent() {
+    const {data:session} = useSession();
+    const { socket  } = useUser();
     const [shortBill, setShortBill] = useState(false);
     const [isReport, setIsReport] = useState(false);
     const [userId, setUserId] = useState('');
@@ -258,6 +262,7 @@ export default function EditFormatComponent() {
         }
 
         toast.success('Bill generated successfully!');
+        socket?.emit("sendNotification",{toUserId:userId,message:"You have a new bill generated",fromUserId:session?.user?.id,status:"generated"});
         console.log('Generated bill:', data);
 
     } catch (error) {
