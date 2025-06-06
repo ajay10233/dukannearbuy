@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bell, CheckCircle, AlertCircle, Trash, Scan, Loader, RefreshCw, CheckCheck } from "lucide-react";
+import { Bell, CheckCircle, AlertCircle, Trash, Scan, Loader, RefreshCw, CheckCheck, ReceiptIndianRupee } from "lucide-react";
 import Head from "next/head";
 import Image from "next/image";
 import toast from "react-hot-toast";
@@ -74,7 +74,7 @@ export default function Notification() {
       <Head>
         <title>Notifications</title>
       </Head>
-      <section className="h-screen flex flex-col items-center bg-gradient-to-br from-gray-50 to-gray-200 pt-20 px-6 pb-6 md:px-12 md:pb-12 md:pt-20">
+      <section className="h-screen flex flex-col items-center bg-gradient-to-br from-gray-50 to-gray-200 pt-16 px-6 pb-6 md:px-12 md:pb-12 md:pt-20">
           <div className="flex-1 w-full max-w-7xl flex flex-col overflow-hidden shadow-xl rounded-3xl">
             <div className={`w-full max-w-7xl mx-auto bg-transparent overflow-hidden flex flex-col ${notifications.length > 0 ? "rounded-3xl shadow-xl" : ""} `}>
               <div className="p-4 md:p-6 sticky top-0 bg-white z-10 shadow-sm">
@@ -106,17 +106,19 @@ export default function Notification() {
                             <AlertCircle className="h-5 w-5 text-yellow-600" />
                           )}
     */}
-                          
-                            {n.type === "completed" ? (
-                              <CheckCircle className="h-5 w-5 text-green-600" />
-                            ) : n.type === "processing" ? (
-                              <Loader className="h-5 w-5 text-yellow-600 animate-spin [animation-duration:2000ms]" />
-                            ) : n.type === "generated" ? (
-                              <RefreshCw className="h-5 w-5 text-blue-600 animate-spin [animation-duration:2000ms]" />
-                            ) : (
-                              <AlertCircle className="h-5 w-5 text-yellow-600" />
-                            )}
-                          
+                           
+                          {n.type === "completed" ? (
+                            <CheckCircle className="h-5 w-5 text-green-600" />
+                          ) : n.type === "processing" ? (
+                            <Loader className="h-5 w-5 text-yellow-600 animate-spin [animation-duration:3000ms]" />
+                          ) : n.type === "generated" ? (
+                            <RefreshCw className="h-5 w-5 text-blue-600 animate-spin [animation-duration:4000ms]" />
+                          ) : n.type === "bill-generated" ? (
+                            <ReceiptIndianRupee className="h-5 w-5 text-purple-700" />
+                          ) : (
+                            <AlertCircle className="h-5 w-5 text-yellow-600" />
+                          )}
+
                         </div>
 
                         <div className="flex-1">

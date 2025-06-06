@@ -134,7 +134,7 @@ export default function UserSidebar({ isOpen, onClose }) {
                     </Link> */}
                     <Link href="#"
                         className="flex items-center gap-2 text-sm md:text-[16px] text-red-500">
-                            <LogoutButton/>
+                            <LogoutButton onClose={onClose}/>
                     </Link>
                 </div>
             </div>

@@ -151,13 +151,6 @@ export default function EditFormatComponent() {
         return;
     }
 
-    // Validate items before proceeding
-    if (!Array.isArray(items) || items.length === 0) {
-        toast.error('Please add at least one item to generate a bill.');
-        setIsGenerating(false);
-        return;
-    }
-
     const safeItems = Array.isArray(items) ? items : [];
 
     try {

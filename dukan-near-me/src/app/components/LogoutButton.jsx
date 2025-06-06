@@ -91,7 +91,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import { LogOut } from 'lucide-react';
 
-export default function LogoutButton() {
+export default function LogoutButton({ onClose}) {
   const router = useRouter();
   const { data: session } = useSession();
   const [showModal, setShowModal] = useState(false);
@@ -103,6 +103,7 @@ export default function LogoutButton() {
       return;
     }
 
+    onClose(); 
     setShowModal(false); 
     setIsLoggingOut(true);
 
@@ -150,7 +151,8 @@ export default function LogoutButton() {
             <p className="mb-4 md:mb-6 text-gray-700 text-sm md:text-[16px]">Are you sure you want to log out?</p>
             <div className="flex justify-end gap-4">
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => setShowModal(false)  
+                }
                 className="px-4 py-2 rounded bg-gray-50 text-sm md:text-[16px] border-gray-300 border transition-all ease-in-out duration-400 cursor-pointer hover:bg-gray-100"
               >
                 Cancel
