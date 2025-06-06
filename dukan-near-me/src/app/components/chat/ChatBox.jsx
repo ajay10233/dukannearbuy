@@ -534,9 +534,9 @@ export default function ChatBox() {
         className={`${selectedPartner ? "hidden md:flex" : "flex"
           } flex-col gap-2 sm:gap-4 w-full md:w-[30%] bg-[#F5FAFC] p-4`}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 md:gap-2">
           <button
-            className="p-2 cursor-pointer"
+            className="py-2 md:p-2 cursor-pointer"
             onClick={fetchSessionAndRedirect}
           >
             <MoveLeft size={20} strokeWidth={1.5} />
@@ -776,11 +776,20 @@ export default function ChatBox() {
                       const isSubscriptionActive = hasSubscription
                         ? new Date(loggedInUser.subscriptionPlan.expiresAt) > new Date()
                         : false;
+                      
+                      // Check accepted only for USER role
+                      const accepted =
+                        // selectedPartner?.accepted === true &&
+                        selectedPartner?.accepted === true ||
+                        selectedPartner?.otherUser?.accepted === true;
+
+                      const isAcceptedForUser = userRole === "USER" ? accepted : true;
 
                       const canRedirect =
                         userRole === "INSTITUTION" || userRole === "SHOP_OWNER"
                           ? hasSubscription && isSubscriptionActive
-                          : true; // If role is not institution/shop, allow
+                          // : true; // If role is not institution/shop, allow
+                       : isAcceptedForUser;
 
                       const isPartnerInstitutionOrShop =
                         selectedPartner?.otherUser
