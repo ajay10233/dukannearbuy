@@ -837,7 +837,17 @@ export default function ChatBox() {
                           )}
                         </Link>
                       ) : (
-                        <span className="inline-flex items-center gap-1 opacity-50 cursor-not-allowed">
+                          <span className="inline-flex items-center gap-1 opacity-70 cursor-not-allowed"
+                            onClick={() => {
+                              if (
+                                (userRole === "INSTITUTION" || userRole === "SHOP_OWNER") &&
+                                (!hasSubscription || !isSubscriptionActive)
+                              ) {
+                                toast.error("Please upgrade your plan in order to see customer profile");
+                              }
+                            }}
+
+                          >
                           {getDisplayName(selectedPartner)}
                         </span>
                       );
