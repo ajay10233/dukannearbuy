@@ -784,12 +784,15 @@ export default function ChatBox() {
                         selectedPartner?.otherUser?.accepted === true;
 
                       const isAcceptedForUser = userRole === "USER" ? accepted : true;
+                      const bothUsersAreNormalUsers =
+                        userRole === "USER" &&
+                        (selectedPartner?.role === "USER" || selectedPartner?.otherUser?.role === "USER");
 
-                      const canRedirect =
-                        userRole === "INSTITUTION" || userRole === "SHOP_OWNER"
-                          ? hasSubscription && isSubscriptionActive
-                          // : true; // If role is not institution/shop, allow
-                       : isAcceptedForUser;
+                        const canRedirect =
+                          userRole === "INSTITUTION" || userRole === "SHOP_OWNER"
+                            ? hasSubscription && isSubscriptionActive
+                            // : true; // If role is not institution/shop, allow
+                        : isAcceptedForUser && !bothUsersAreNormalUsers;
 
                       const isPartnerInstitutionOrShop =
                         selectedPartner?.otherUser

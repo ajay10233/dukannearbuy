@@ -681,154 +681,161 @@ export default function EditFormatComponent() {
                         </div>
 
                         {/* Bill Items Table */}
-                        <div className="overflow-x-auto mb-4">
-                            <table className="w-full border-collapse border text-left">
-                                <thead>
-                                    <tr className="text-xs md:text-sm print:text-sm bg-[#CFEBF9]">
-                                        <th className="border p-1 md:p-2 print:p-2">S.NO</th>
-                                        <th className="border p-1 md:p-2 print:p-2">
-                                            {user?.role === 'INSTITUTION' ? 'CHIEF COMPLAINT' : 'PARTICULARS'}
-                                        </th>
-                                        <th className="border p-1 md:p-2 print:p-2">
-                                            {user?.role === 'INSTITUTION' ? 'TREATMENT' : 'QUANTITY'}
-                                        </th>
-                                        <th className="border p-1 md:p-2 print:p-2">
-                                            {user?.role === 'INSTITUTION' ? 'OTHERS' : 'RATE'}
-                                        </th>
-                                        <th className="border p-1 md:p-2 print:p-2">AMOUNT</th>
-                                    </tr>
-                                </thead>    
-                                <tbody>
-                                    {items.map((item, index) => (
-                                        <tr key={index} className='text-xs md:text-sm print:text-sm'>
-                                            <td className="border p-1 md:p-2 text-center print:p-2">{index + 1}</td>
 
-                                            <td className="border p-1 md:p-2 print:p-2">
-
-                                                {/* CHIEF COMPLAINT / PARTICULARS */}
-                                                    {user?.role === 'INSTITUTION' ? (
-                                                        <input
-                                                            type="text"
-                                                            value={item.chiefComplaint || ''}
-                                                            onChange={(e) => handleItemChange(index, 'chiefComplaint', e.target.value)}
-                                                            className="w-full border-none outline-none"
-                                                        />
-                                                    ) : (
-                                                        <input
-                                                            type="text"
-                                                            value={item.particulars || ''}
-                                                            onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
-                                                            className="w-full border-none outline-none"
-                                                        />
-                                                    )}
-                                            </td>
-
-                                            <td className="border p-1 md:p-2 print:p-2">
-
-                                                {/* TREATMENT / QUANTITY */}
-                                                    {user?.role === 'INSTITUTION' ? (
-                                                        <input
-                                                            type="text"
-                                                            value={item.treatment || ''}
-                                                            onChange={(e) => handleItemChange(index, 'treatment', e.target.value)}
-                                                            className="w-full border-none outline-none"
-                                                        />
-                                                    ) : (
-                                                        <input
-                                                            type="number"
-                                                            min="0"
-                                                            value={item.qty}
-                                                            onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
-                                                            className="w-full border-none outline-none"
-                                                        />
-                                                    )}
-                                            </td>
-
-                                            <td className="border p-1 md:p-2 print:p-2">
-
-                                                {/* OTHERS / RATE */}
-                                                    {user?.role === 'INSTITUTION' ? (
-                                                        <input
-                                                            type="text"
-                                                            value={item.others || ''}
-                                                            onChange={(e) => handleItemChange(index, 'others', e.target.value)}
-                                                            className="w-full border-none outline-none"
-                                                        />
-                                                    ) : (
-                                                        <input
-                                                            type="number"
-                                                            min="0"
-                                                            value={item.rate}
-                                                            onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
-                                                            className="w-full border-none outline-none"
-                                                        />
-                                                    )}
-                                            </td>
-                                            <td className="border p-1 md:p-2 text-center print:p-2">
-                                                {user?.role === 'INSTITUTION' ? (
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        value={item.amount || ''}
-                                                        onChange={(e) => handleItemChange(index, 'amount', e.target.value)}
-                                                        className="w-full border-none outline-none text-center"
-                                                    />
-                                                ) : (
-                                                    item?.amount?.toFixed(2)
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    <tr>
-                                        <td colSpan="4" className="text-xs md:text-sm print:text-sm border p-2 text-right font-bold">Items Subtotal</td>
-                                        <td className="text-xs md:text-sm print:text-sm border p-2 text-center font-bold">{itemsSubtotal.toFixed(2)}</td>
-                                    </tr>
-
-                                    {formDetails && formDetails?.cgst && formDetails?.sgst && (
-                                        <>
-                                            <tr className='text-xs md:text-sm print:text-sm'>
-                                                <td className="border p-2 text-center" rowSpan={2}></td>
-                                                <td className="border p-2 font-semibold" rowSpan={2}>Tax</td>
-                                                <td className="border p-2">CGST</td>
-                                                <td className="border p-2 text-center">{formDetails.cgst}%</td>
-                                                <td className="border p-2 text-center">{cgstAmount.toFixed(2)}</td>
+                        {!file && (
+                            <>
+                                <div className="overflow-x-auto mb-4">
+                                    <table className="w-full border-collapse border text-left">
+                                        <thead>
+                                            <tr className="text-xs md:text-sm print:text-sm bg-[#CFEBF9]">
+                                                <th className="border p-1 md:p-2 print:p-2">S.NO</th>
+                                                <th className="border p-1 md:p-2 print:p-2">
+                                                    {user?.role === 'INSTITUTION' ? 'CHIEF COMPLAINT' : 'PARTICULARS'}
+                                                </th>
+                                                <th className="border p-1 md:p-2 print:p-2">
+                                                    {user?.role === 'INSTITUTION' ? 'TREATMENT' : 'QUANTITY'}
+                                                </th>
+                                                <th className="border p-1 md:p-2 print:p-2">
+                                                    {user?.role === 'INSTITUTION' ? 'OTHERS' : 'RATE'}
+                                                </th>
+                                                <th className="border p-1 md:p-2 print:p-2">AMOUNT</th>
                                             </tr>
-                                            <tr className='text-xs md:text-sm print:text-sm'>
-                                                <td className="border p-2">SGST</td>
-                                                <td className="border p-2 text-center">{formDetails.sgst}%</td>
-                                                <td className="border p-2 text-center">{sgstAmount.toFixed(2)}</td>
+                                        </thead>    
+                                        <tbody>
+                                            {items.map((item, index) => (
+                                                <tr key={index} className='text-xs md:text-sm print:text-sm'>
+                                                    <td className="border p-1 md:p-2 text-center print:p-2">{index + 1}</td>
+
+                                                    <td className="border p-1 md:p-2 print:p-2">
+
+                                                        {/* CHIEF COMPLAINT / PARTICULARS */}
+                                                            {user?.role === 'INSTITUTION' ? (
+                                                                <input
+                                                                    type="text"
+                                                                    value={item.chiefComplaint || ''}
+                                                                    onChange={(e) => handleItemChange(index, 'chiefComplaint', e.target.value)}
+                                                                    className="w-full border-none outline-none"
+                                                                />
+                                                            ) : (
+                                                                <input
+                                                                    type="text"
+                                                                    value={item.particulars || ''}
+                                                                    onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
+                                                                    className="w-full border-none outline-none"
+                                                                />
+                                                            )}
+                                                    </td>
+
+                                                    <td className="border p-1 md:p-2 print:p-2">
+
+                                                        {/* TREATMENT / QUANTITY */}
+                                                            {user?.role === 'INSTITUTION' ? (
+                                                                <input
+                                                                    type="text"
+                                                                    value={item.treatment || ''}
+                                                                    onChange={(e) => handleItemChange(index, 'treatment', e.target.value)}
+                                                                    className="w-full border-none outline-none"
+                                                                />
+                                                            ) : (
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    value={item.qty}
+                                                                    onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
+                                                                    className="w-full border-none outline-none"
+                                                                />
+                                                            )}
+                                                    </td>
+
+                                                    <td className="border p-1 md:p-2 print:p-2">
+
+                                                        {/* OTHERS / RATE */}
+                                                            {user?.role === 'INSTITUTION' ? (
+                                                                <input
+                                                                    type="text"
+                                                                    value={item.others || ''}
+                                                                    onChange={(e) => handleItemChange(index, 'others', e.target.value)}
+                                                                    className="w-full border-none outline-none"
+                                                                />
+                                                            ) : (
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    value={item.rate}
+                                                                    onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
+                                                                    className="w-full border-none outline-none"
+                                                                />
+                                                            )}
+                                                    </td>
+                                                    <td className="border p-1 md:p-2 text-center print:p-2">
+                                                        {user?.role === 'INSTITUTION' ? (
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                value={item.amount || ''}
+                                                                onChange={(e) => handleItemChange(index, 'amount', e.target.value)}
+                                                                className="w-full border-none outline-none text-center"
+                                                            />
+                                                        ) : (
+                                                            item?.amount?.toFixed(2)
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            <tr>
+                                                <td colSpan="4" className="text-xs md:text-sm print:text-sm border p-2 text-right font-bold">Items Subtotal</td>
+                                                <td className="text-xs md:text-sm print:text-sm border p-2 text-center font-bold">{itemsSubtotal.toFixed(2)}</td>
                                             </tr>
-                                        </>
-                                    )}
 
-                                </tbody>
-                            </table>
-                        </div>
+                                            {formDetails && formDetails?.cgst && formDetails?.sgst && (
+                                                <>
+                                                    <tr className='text-xs md:text-sm print:text-sm'>
+                                                        <td className="border p-2 text-center" rowSpan={2}></td>
+                                                        <td className="border p-2 font-semibold" rowSpan={2}>Tax</td>
+                                                        <td className="border p-2">CGST</td>
+                                                        <td className="border p-2 text-center">{formDetails.cgst}%</td>
+                                                        <td className="border p-2 text-center">{cgstAmount.toFixed(2)}</td>
+                                                    </tr>
+                                                    <tr className='text-xs md:text-sm print:text-sm'>
+                                                        <td className="border p-2">SGST</td>
+                                                        <td className="border p-2 text-center">{formDetails.sgst}%</td>
+                                                        <td className="border p-2 text-center">{sgstAmount.toFixed(2)}</td>
+                                                    </tr>
+                                                </>
+                                            )}
 
-                        {/* Total Amount */}
-                        <div className="text-sm md:text-lg print:text-lg text-right font-bold">Total Amount: ₹{totalAmount.toFixed(2)}</div>
-
-                        {/* proprietorSign */}
-                        {/* {formDetails?.proprietorSign && ( */}
-                        {formDetails?.proprietorSign && typeof formDetails.proprietorSign === 'string' && formDetails.proprietorSign.length > 0 && (
-
-                            <div className="flex justify-end mt-4">
-                                <div className="p-2 w-full max-w-[100px]">
-                                    <img
-                                        src={formDetails?.proprietorSign || ''}
-                                        alt="Proprietor Signature"
-                                        width={100}
-                                        height={100}
-                                        className="object-contain"
-                                    // priority
-                                    />
+                                        </tbody>
+                                    </table>
                                 </div>
-                            </div>
+                        
+                                {/* Total Amount */}
+                                <div className="text-sm md:text-lg print:text-lg text-right font-bold">Total Amount: ₹{totalAmount.toFixed(2)}</div>
+
+                                {/* proprietorSign */}
+                                {/* {formDetails?.proprietorSign && ( */}
+                                {formDetails?.proprietorSign && typeof formDetails.proprietorSign === 'string' && formDetails.proprietorSign.length > 0 && (
+
+                                    <div className="flex justify-end mt-4">
+                                        <div className="p-2 w-full max-w-[100px]">
+                                            <img
+                                                src={formDetails?.proprietorSign || ''}
+                                                alt="Proprietor Signature"
+                                                width={100}
+                                                height={100}
+                                                className="object-contain"
+                                            // priority
+                                            />
+                                        </div>
+                                    </div>
+                                    )}
+                            </>
                         )}
 
                         {/* Action Buttons */}
                         <div className="flex space-x-4 mt-4">
-                            <button onClick={addItemRow} className="bg-yellow-500 cursor-pointer transition-all ease-in-out duration-400 hover:bg-amber-500 print:hidden text-white px-2 py-1 rounded text-sm">Add Item</button>
+                            {!file && (
+                                <button onClick={addItemRow} className="bg-yellow-500 cursor-pointer transition-all ease-in-out duration-400 hover:bg-amber-500 print:hidden text-white px-2 py-1 rounded text-sm">Add Item</button>
+                            )}
                             <button
                                 onClick={handlePrint}
                                 className="px-3 py-1 bg-indigo-500 cursor-pointer transition-all ease-in-out duration-400 hover:bg-indigo-600 print:hidden text-white text-sm rounded"

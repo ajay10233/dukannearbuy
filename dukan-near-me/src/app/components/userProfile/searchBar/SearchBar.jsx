@@ -75,6 +75,7 @@ export default function SearchBar() {
   // Fetch data when debouncedQuery updates
   useEffect(() => {
     if (debouncedQuery.trim() !== "") {
+      setSelectedDistance("All");
       handleSearch(debouncedQuery);
     } else {
       setResults([]);
@@ -87,6 +88,7 @@ export default function SearchBar() {
     setResults([]);
     setSuggestions([]);
 
+    
     try {
       const params = new URLSearchParams({ search: query });
       console.log("params:", params, "long", longitude, "lat", latitude, "range", selectedDistance);
