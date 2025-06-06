@@ -21,7 +21,7 @@ import LogoLoader from "../LogoLoader";
 export default function ChatBox() {
   const searchParams = useSearchParams();
   const { socket, user: loggedInUser } = useUser();
-
+  
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [conversations, setConversations] = useState([]);
@@ -526,6 +526,7 @@ export default function ChatBox() {
   };
 
 
+
   return (
     <div className="flex min-h-screen bg-white font-[var(--font-plus-jakarta)]">
       {/* Left Sidebar */}
@@ -769,55 +770,69 @@ export default function ChatBox() {
                 </div>
                 <div>
                   <p className="text-[var(--chatText-color)] text-[16px] md:text-lg flex items-center gap-0 md:gap-2 capitalize">
-                    {selectedPartner
-                      &&
-                      (
-                      
-                      <Link
-                        href=
-                          {
-                            selectedPartner?.otherUser
-                              ?
-                              selectedPartner?.otherUser?.role === "INSTITUTION" ||
-                                selectedPartner?.otherUser?.role === "SHOP_OWNER"
-                                ? `/partnerProfile/${selectedPartner.otherUser.id}`
-                                : `/userProfile/${selectedPartner.otherUser.id}`
+                    {selectedPartner && (() => {
+                      const userRole = loggedInUser?.role;
+                      const hasSubscription = loggedInUser?.subscriptionPlan;
+                      const isSubscriptionActive = hasSubscription
+                        ? new Date(loggedInUser.subscriptionPlan.expiresAt) > new Date()
+                        : false;
 
-                              :
-                              selectedPartner?.role === "INSTITUTION" ||
-                                selectedPartner?.role === "SHOP_OWNER"
-                                ? `/partnerProfile/${selectedPartner.id}`
-                                : `/userProfile/${selectedPartner.id}`
-                          }
-                          className="inline-flex items-center gap-1">
-                        {getDisplayName(selectedPartner)}
-                        
-                          {selectedPartner?.subscriptionPlan?.name === "PREMIUM" &&
+                      const canRedirect =
+                        userRole === "INSTITUTION" || userRole === "SHOP_OWNER"
+                          ? hasSubscription && isSubscriptionActive
+                          : true; // If role is not institution/shop, allow
+
+                      const isPartnerInstitutionOrShop =
+                        selectedPartner?.otherUser
+                          ? selectedPartner.otherUser.role === "INSTITUTION" ||
+                            selectedPartner.otherUser.role === "SHOP_OWNER"
+                          : selectedPartner.role === "INSTITUTION" ||
+                            selectedPartner.role === "SHOP_OWNER";
+
+                      const targetHref =
+                        selectedPartner?.otherUser
+                          ? isPartnerInstitutionOrShop
+                            ? `/partnerProfile/${selectedPartner.otherUser.id}`
+                            : `/userProfile/${selectedPartner.otherUser.id}`
+                          : isPartnerInstitutionOrShop
+                          ? `/partnerProfile/${selectedPartner.id}`
+                          : `/userProfile/${selectedPartner.id}`;
+
+                      return canRedirect ? (
+                        <Link href={targetHref} className="inline-flex items-center gap-1">
+                          {getDisplayName(selectedPartner)}
+
+                          {/* Crown display based on partner plan */}
+                          {(selectedPartner?.subscriptionPlan?.name === "PREMIUM" &&
                             selectedPartner?.planExpiresAt &&
-                            new Date(selectedPartner?.planExpiresAt) > new Date() && (
+                            new Date(selectedPartner.planExpiresAt) > new Date()) && (
                               <Crown size={16} fill="#f0d000" className="text-yellow-500" />
-                            )}
+                          )}
 
-                          {selectedPartner?.subscriptionPlan?.name === "BUSINESS" &&
+                          {(selectedPartner?.subscriptionPlan?.name === "BUSINESS" &&
                             selectedPartner?.planExpiresAt &&
-                            new Date(selectedPartner?.planExpiresAt) > new Date() && (
+                            new Date(selectedPartner.planExpiresAt) > new Date()) && (
                               <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
-                            )}
+                          )}
 
-                          {selectedPartner.otherUser?.subscriptionPlan?.name === "PREMIUM" &&
+                          {(selectedPartner.otherUser?.subscriptionPlan?.name === "PREMIUM" &&
                             selectedPartner.otherUser?.planExpiresAt &&
-                            new Date(selectedPartner.otherUser?.planExpiresAt) > new Date() && (
+                            new Date(selectedPartner.otherUser.planExpiresAt) > new Date()) && (
                               <Crown size={16} fill="#f0d000" className="text-yellow-500" />
-                            )}
+                          )}
 
-                          {selectedPartner.otherUser?.subscriptionPlan?.name === "BUSINESS" &&
+                          {(selectedPartner.otherUser?.subscriptionPlan?.name === "BUSINESS" &&
                             selectedPartner.otherUser?.planExpiresAt &&
-                            new Date(selectedPartner.otherUser?.planExpiresAt) > new Date() && (
+                            new Date(selectedPartner.otherUser.planExpiresAt) > new Date()) && (
                               <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
-                            )}
-
+                          )}
                         </Link>
-                      )}
+                      ) : (
+                        <span className="inline-flex items-center gap-1 opacity-50 cursor-not-allowed">
+                          {getDisplayName(selectedPartner)}
+                        </span>
+                      );
+                    })()}
                   </p>
                 </div>
               </div>
@@ -851,17 +866,23 @@ export default function ChatBox() {
             </header>
 
             {/* Message Area */}
-            <div className="flex-1 pt-2 pb-4 px-4 overflow-y-auto flex flex-col gap-3 h-[calc(100vh-40px)]">
-              {/* <div className="flex justify-center"> */}
+            <div className="flex-1 pt-2 pb-4 px-4 overflow-y-auto flex flex-col gap-3 h-[calc(100vh-40px)]">      
+              <div className="flex justify-center">
+                {loggedInUser ? (() => {
+                  const user = loggedInUser;
 
-                {/* {(() => {
-                  // const partner = selectedPartner?.otherUser || selectedPartner;
+                  const isInstitutionOrShop =
+                    user?.role === "INSTITUTION" || user?.role === "SHOP_OWNER";
 
-                  const isPremium =
-                    loggedInUser?.subscriptionPlan?.name === "PREMIUM" &&
-                    new Date(loggedInUser?.planExpiresAt) > new Date();
+                  const hasSubscription = !!user?.subscriptionPlan;
+                  const isPremium = hasSubscription && user.subscriptionPlan.name === "PREMIUM";
+                  const isSubscriptionActive = isPremium
+                    ? new Date(user.subscriptionPlan.expiresAt) > new Date()
+                    : false;
 
-                  return isPremium ? (
+                  const showEndToEndMsg = isInstitutionOrShop && isPremium && isSubscriptionActive;
+
+                  return showEndToEndMsg ? (
                     <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
                       <LockKeyhole size={20} strokeWidth={1.5} />
                       Messages are end-to-end encrypted.
@@ -872,27 +893,8 @@ export default function ChatBox() {
                       Chats will be automatically deleted after 48 hours of last activity.
                     </span>
                   );
-                })()} */}
-              
-{loggedInUser && (
-  <div className="flex justify-center">
-    {loggedInUser?.subscriptionPlan?.name === "PREMIUM" &&
-    new Date(loggedInUser?.planExpiresAt) > new Date() ? (
-      <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
-        <LockKeyhole size={20} strokeWidth={1.5} />
-        Messages are end-to-end encrypted.
-      </span>
-    ) : (
-      <span className="bg-[var(--secondary-color)] text-[var(--withdarkinnertext)] sm:text-sm text-[8px] py-2.5 px-3.5 flex items-center gap-2 rounded-xl">
-        <LockKeyhole size={20} strokeWidth={1.5} />
-        Chats will be automatically deleted after 48 hours of last activity.
-      </span>
-    )}
-  </div>
-)}
-
-
-              {/* </div> */}
+                })() : null}
+              </div>
 
               {messages.length > 0 ? (
                 messages.map((msg, index) => {
