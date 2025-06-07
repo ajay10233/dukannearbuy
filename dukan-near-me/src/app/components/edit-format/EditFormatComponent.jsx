@@ -255,7 +255,7 @@ export default function EditFormatComponent() {
         }
 
         toast.success('Bill generated successfully!');
-        socket?.emit("sendNotification",{toUserId:userId,message:"You have a new bill generated",fromUserId:session?.user?.id,status:"generated"});
+        socket?.emit("sendNotification",{toUserId:userId,message:"You have a new bill generated",fromUserId:session?.user?.id,status:"bill-generated"});
         console.log('Generated bill:', data);
 
     } catch (error) {
@@ -915,7 +915,6 @@ export default function EditFormatComponent() {
                                 </div>
                             </div>
                         )}
-
 
                     </div>
 

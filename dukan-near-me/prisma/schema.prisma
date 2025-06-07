@@ -359,7 +359,7 @@ model BillNote {
   chief_complaint String?
   treatment       String?
   others          String?
-
+  amount          Int?
   bill            Bill     @relation("BillToBillNote", fields: [billId], references: [id], onDelete: Cascade)
 
   @@map("bill_notes")
