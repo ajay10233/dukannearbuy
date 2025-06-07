@@ -59,8 +59,6 @@ useEffect(() => {
   modalEmblaApi.reInit();
 }, [isModalOpen, modalEmblaApi]);
 
-  
-  
     // for preview images
   const scrollPrev = useCallback(() => {
     if (modalEmblaApi) modalEmblaApi.scrollPrev();
