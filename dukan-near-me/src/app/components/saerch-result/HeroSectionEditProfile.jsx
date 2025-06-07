@@ -20,6 +20,8 @@ export default function HeroSectionEditProfile() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+  const [modalEmblaRef, modalEmblaApi] = useEmblaCarousel({ loop: true }); // modal carousel
+
 
   const autoplay = useCallback(() => {
     if (!emblaApi) return;
@@ -44,15 +46,29 @@ export default function HeroSectionEditProfile() {
     emblaApi.on('select', updateIndex);
     updateIndex(); // initialize
   }, [emblaApi]);
+
+  // For main carousel
+useEffect(() => {
+  if (!emblaApi) return;
+  emblaApi.reInit();
+}, [images, emblaApi]);
+
+// For modal carousel
+useEffect(() => {
+  if (!modalEmblaApi) return;
+  modalEmblaApi.reInit();
+}, [isModalOpen, modalEmblaApi]);
+
+  
   
     // for preview images
   const scrollPrev = useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev();
-  }, [emblaApi]);
+    if (modalEmblaApi) modalEmblaApi.scrollPrev();
+  }, [modalEmblaApi]);
 
   const scrollNext = useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext();
-  }, [emblaApi]);
+    if (modalEmblaApi) modalEmblaApi.scrollNext();
+  }, [modalEmblaApi]);
 
 
   // Fetch logged-in user details from the API
@@ -255,13 +271,12 @@ export default function HeroSectionEditProfile() {
                     priority
                   />
 
-                  {index === 0 && (
+                  {img === user?.profilePhoto && (
                     <span className="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full shadow">
                       Primary
                     </span>
                   )}
 
-                  {(user.role === "INSTITUTION" || user.role === "SHOP_OWNER") && images.includes(img) && index !== 0 && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation(); 
@@ -272,7 +287,6 @@ export default function HeroSectionEditProfile() {
                     >
                       <RefreshCcwDot size={20} color="#000000" strokeWidth={1.5} />
                     </button>
-                  )}
                 </div>
               )))}
             </div>
@@ -359,7 +373,7 @@ export default function HeroSectionEditProfile() {
             </button>
 
               {/* Carousel with navigation */}
-              <div className="relative w-full max-w-4xl h-[500px] overflow-hidden rounded-lg" ref={emblaRef}>
+              <div className="relative w-full max-w-4xl h-[500px] overflow-hidden rounded-lg" ref={modalEmblaRef}>
                 <div className="flex h-full">
                   {images.map((img, index) => (
                     <div key={index} className="flex-[0_0_100%] relative h-full mx-4">
