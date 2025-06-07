@@ -916,7 +916,6 @@ export default function EditFormatComponent() {
                             </div>
                         )}
 
-
                     </div>
 
                     {/* Modal for QR Scanner */}

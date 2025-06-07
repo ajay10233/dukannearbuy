@@ -125,13 +125,12 @@ export default function Faq() {
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="text-gray-600 text-xs md:text-sm overflow-hidden transition-all duration-500 ease-out">
-                        Fast response times show customers that you value their time. Use greetings and polite language.
-                        <br /><br />
-                        Better products and service quality means better reviews which increase your credibility.
-                        <br /><br />
-                        Paid promotions can also help in customer reach in your area.
-                        <br /><br />
-                        <span className="font-semibold">Customer is the king, Be true and honest with them!</span>
+                        <ul className="list-disc list-inside space-y-1">
+                            <li>Fast response times show customers that you value their time. Use greetings and polite language.</li>
+                            <li>Better products and service quality means better reviews which increase your credibility.</li>
+                            <li>Paid promotions can also help in customer reach in your area.</li>
+                        </ul>
+                        <p className="font-semibold mt-2">Customer is the king, Be true and honest with them!</p>
                     </AccordionContent>
                     </AccordionItem>
                 </Accordion>
