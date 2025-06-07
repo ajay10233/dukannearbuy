@@ -189,31 +189,6 @@ export default function DownloadBill({ params, searchParams }) {
   ? items.reduce((acc, item) => acc + (item.amount || 0), 0)
   : items.reduce((acc, item) => acc + (parseFloat(item.qty || 0) * parseFloat(item.rate || 0)), 0);
 
-  
-    // const itemsSubtotal = items.reduce((acc, item) => {
-    //     const amount = user?.role === 'INSTITUTION'
-    //         ? parseFloat(item.amount || 0)
-    //         : parseFloat(item.qty || 0) * parseFloat(item.rate || 0);
-    //     return acc + amount;
-    // }, 0);
-
-  // const itemsSubtotal = items
-  // .filter(item => item.amount && !isNaN(parseFloat(item.amount))) // only valid rows
-  // .reduce((acc, item) => acc + parseFloat(item.amount), 0);
-
-// const itemsSubtotal = items.reduce((acc, item) => {
-//   let amount = 0;
-//   if (user?.role === 'INSTITUTION') {
-//     const val = parseFloat(item.amount);
-//     amount = !isNaN(val) ? val : 0;
-//   } else {
-//     const qty = parseFloat(item.qty);
-//     const rate = parseFloat(item.rate);
-//     amount = (!isNaN(qty) && !isNaN(rate)) ? qty * rate : 0;
-//   }
-//   return acc + amount;
-// }, 0);
-
 
   const cgstPercent = formDetails?.cgst || 0;
   const sgstPercent = formDetails?.sgst || 0;
@@ -223,10 +198,7 @@ export default function DownloadBill({ params, searchParams }) {
   const cgstAmount = (subtotal * cgstPercent) / 100;
   const sgstAmount = (subtotal * sgstPercent) / 100;
 
-const totalAmount = subtotal + cgstAmount + sgstAmount;
-
-console.log('subtotal:', subtotal, 'cgstPercent:', cgstPercent, 'sgstPercent:', sgstPercent);
-console.log('cgstAmount:', cgstAmount, 'sgstAmount:', sgstAmount, 'totalAmount:', totalAmount);
+  const totalAmount = subtotal + cgstAmount + sgstAmount;
 
 
   const handlePrint = () => {
