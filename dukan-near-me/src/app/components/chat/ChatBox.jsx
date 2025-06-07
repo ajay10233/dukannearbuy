@@ -268,6 +268,8 @@ export default function ChatBox() {
     fetchMessages();
   }, [selectedPartner]);
 
+  
+
   const checkForParams = async (allConversations = conversations) => {
     const toParam = searchParams.get("to");
     if (toParam == null || toParam === session.user.id) return;
@@ -382,6 +384,7 @@ export default function ChatBox() {
 
     fetchMessageRequests();
   }, []);
+  
 
 
   if (loading) {
@@ -558,23 +561,36 @@ export default function ChatBox() {
         {/* Toggle Tab */}
         <div className="flex items-stretch justify-center w-full">
           <button
-            className={`w-1/2 flex items-center justify-center text-center py-3 px-4 gap-2.5 rounded-tl-xl rounded-bl-xl transition-all duration-500 cursor-pointer ${!isMsgRequest
-              ? "bg-[var(--chart-2)] text-white font-semibold"
-              : "bg-white text-[var(--withdarktext)] font-normal"
-              }`}
+            // className={`w-1/2 flex items-center justify-center text-center py-3 px-4 gap-2.5 rounded-tl-xl rounded-bl-xl transition-all duration-500 cursor-pointer ${!isMsgRequest
+            //   ? "bg-[var(--chart-2)] text-white font-semibold"
+            //   : "bg-white text-[var(--withdarktext)] font-normal"
+            //   }`}
+
+            className={`${
+              loggedInUser?.role === "INSTITUTION" || loggedInUser?.role === "SHOP_OWNER"
+                ? "w-full rounded-xl "
+                : "w-1/2 rounded-tl-xl rounded-bl-xl cursor-pointer"
+            } flex items-center justify-center text-center py-3 px-4 gap-2.5 transition-all duration-500 ${
+              !isMsgRequest
+                ? "bg-[var(--chart-2)] text-white font-semibold"
+                : "bg-white text-[var(--withdarktext)] font-normal"
+            }`}
+
             onClick={() => setIsMsgRequest(false)}
           >
               {loggedInUser?.role === "USER" ? "Select a Seller" : "All Chats"}
           </button>
-          <button
-            className={`w-1/2 flex items-center justify-center text-center py-3 px-4 gap-2.5 rounded-tr-xl rounded-br-xl transition-all duration-500 cursor-pointer ${isMsgRequest
-              ? "bg-[var(--chart-2)] text-white font-semibold"
-              : "bg-white text-[var(--withdarktext)] font-normal"
-              }`}
-            onClick={() => setIsMsgRequest(true)}
-          >
-            Message requests
-          </button>
+          {loggedInUser?.role !== "INSTITUTION" && loggedInUser?.role !== "SHOP_OWNER" && (
+            <button
+              className={`w-1/2 flex items-center justify-center text-center py-3 px-4 gap-2.5 rounded-tr-xl rounded-br-xl transition-all duration-500 cursor-pointer ${isMsgRequest
+                ? "bg-[var(--chart-2)] text-white font-semibold"
+                : "bg-white text-[var(--withdarktext)] font-normal"
+                }`}
+              onClick={() => setIsMsgRequest(true)}
+            >
+              Message requests
+            </button>
+          )}
         </div>
 
         {/* Conversations List */}
