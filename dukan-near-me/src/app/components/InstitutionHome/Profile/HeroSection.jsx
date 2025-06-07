@@ -17,6 +17,8 @@ export default function  HeroSection({id}) {
   const [activeImage, setActiveImage] = useState(null);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+  const [modalEmblaRef, modalEmblaApi] = useEmblaCarousel({ loop: true }); // modal carousel
+  
 
   const autoplay = useCallback(() => {
     if (!emblaApi) return;
@@ -31,14 +33,21 @@ export default function  HeroSection({id}) {
     return stop;
   }, [autoplay]);
 
-   // for preview images
+  // For modal carousel
+useEffect(() => {
+  if (!modalEmblaApi) return;
+  modalEmblaApi.reInit();
+}, [isModalOpen, modalEmblaApi]);
+
+    // for preview images
   const scrollPrev = useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev();
-  }, [emblaApi]);
+    if (modalEmblaApi) modalEmblaApi.scrollPrev();
+  }, [modalEmblaApi]);
 
   const scrollNext = useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext();
-  }, [emblaApi]);
+    if (modalEmblaApi) modalEmblaApi.scrollNext();
+  }, [modalEmblaApi]);
+
 
   // Fetch logged-in user details from the API
   useEffect(() => {
@@ -272,7 +281,7 @@ export default function  HeroSection({id}) {
                   </button>
       
                     {/* Carousel with navigation */}
-                    <div className="relative w-full max-w-4xl h-[500px] overflow-hidden rounded-lg" ref={emblaRef}>
+                    <div className="relative w-full max-w-4xl h-[500px] overflow-hidden rounded-lg" ref={modalEmblaRef}>
                       <div className="flex h-full">
                         {images.map((img, index) => (
                           <div key={index} className="flex-[0_0_100%] relative h-full mx-4">
