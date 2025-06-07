@@ -161,7 +161,7 @@ export async function POST(req) {
       const itemTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
       totalAmount = itemTotal + (parsedCharges || 0);
     }else{
-      const notesTotal = notes.reduce((sum,note)=> sum + note.price, 0);
+      const notesTotal = notes.reduce((sum,note)=> sum + note.amount, 0);
       totalAmount = notesTotal + (parsedCharges||0);
     }
 
@@ -184,6 +184,7 @@ export async function POST(req) {
           chief_complaint: note.chief_complaint || null,
           treatment: note.treatment || null,
           others: note.others || null,
+          amount: note.amount,
         })),
       };
     } else {
