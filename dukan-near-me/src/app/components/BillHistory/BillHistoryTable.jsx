@@ -86,7 +86,7 @@ export default function BillHistoryTable({ setDates }) {
   }
 
   return (
-    <div className="flex flex-col gap-3 w-full h-full px-2 py-4 md:p-4">
+    <div className="flex flex-col gap-3 w-full h-full py-4 md:p-4">
       <div className="relative">
         <input
           type="text"

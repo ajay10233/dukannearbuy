@@ -587,7 +587,7 @@ export default function EditFormatComponent() {
                                     <h2 className="text-lg font-bold text-[#0D6A9C] capitalize">
                                         {formDetails?.firmName || "N/A"}
                                     </h2>
-                                    <p>
+                                    <p className='break-words whitespace-pre-wrap word-wrap'>
                                         {formDetails?.address || "Address: N/A"}
                                     </p>
                                     <p> Mobile: <span className='text-gray-600'>{formDetails?.contactNo || "N/A"}</span></p>
@@ -642,7 +642,7 @@ export default function EditFormatComponent() {
                                             type="text"
                                             value={address}
                                             onChange={(e) => setAddress(e.target.value)}
-                                            className="w-full text-sm text-gray-600 outline-none"
+                                            className="w-full text-sm text-gray-600 outline-none resize-none whitespace-pre-wrap break-words"
                                             placeholder="Enter Address" />
                                     </div>
                                     <div className="flex items-start">
