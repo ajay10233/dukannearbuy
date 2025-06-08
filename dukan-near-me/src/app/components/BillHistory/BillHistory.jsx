@@ -54,7 +54,7 @@ export default function BillHistory() {
     }
   }
   return (
-    <main className="flex flex-col items-center gap-y-6 px-3 md:px-5 bg-[#F0F0F0] h-screen">
+    <main className="flex flex-col items-center gap-y-3 md:gap-y-6 px-3 md:px-5 bg-[#F0F0F0] h-screen">
         <div className="flex flex-col w-11/12 mt-16 md:mt-20">
             <div className="flex justify-center py-3 text-slate-500">
                 <h1 className="font-semibold text-xl capitalize">Bill history</h1>
@@ -71,9 +71,9 @@ export default function BillHistory() {
                 </div>
             </div>
         </div>
-        <div className="flex justify-center w-11/12 h-[410px] overflow-hidden">
+        <div className="flex justify-center w-11/12 h-auto overflow-hidden">
             <BillHistoryTable setDates={setDates}/>
-          </div>
+        </div>
           {/* <div className="absolute bottom-1 right-4 w-17 h-17 md:w-32 md:h-32">
                   <Image src="/nearbuydukan - watermark.png" alt="Watermark" fill sizes="120" className="object-contain w-17 h-17 md:w-32 md:h-32" priority />
             </div> */}
