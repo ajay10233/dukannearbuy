@@ -67,7 +67,7 @@ export const config = {
   matcher: [
     "/billGenerator/:path*",
     "/((?!sitemap.xml|robots.txt|favicon.ico|_next|images|icons|api|login|otp-verify|getstarted).*)",
-    "/((?!sitemap.xml|robots.txt|...).*)"
+    "/((?!sitemap.xml|robots.txt|...).*)",
 
     "/change-location/:path*",
     "/dashboard/:path*",
