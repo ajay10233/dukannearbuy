@@ -5,9 +5,9 @@ const PUBLIC_PATHS = [
   "/sitemap.xml",
   "/robots.txt",
   "/aboutus",
-  "/UserHomePage",
+  // "/UserHomePage",
   "/bill-generation-page",
-  "/favicon.ico",
+  "/",
 ];
 
 export async function middleware(req) {
