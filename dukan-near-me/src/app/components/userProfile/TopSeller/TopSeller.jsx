@@ -193,7 +193,7 @@ export default function TopSeller() {
                           <div
                             className={`absolute top-2 right-2 py-1 px-4 text-white text-sm rounded-lg animate-bounce rounded-tl-2xl rounded-bl-sm rounded-br-2xl rounded-tr-sm
                             ${seller?.notes === 'On Sale' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
-                            ${seller?.notes === 'New Shop opening' ? 'bg-gradient-to-br from-blue-500 via-green-500 to-teal-500' : ''}
+                            ${seller?.notes === 'New Shop' ? 'bg-gradient-to-br from-blue-500 via-green-500 to-teal-500' : ''}
                             ${seller?.notes === 'Festive Offer' ? 'bg-gradient-to-tl from-orange-500 via-yellow-500 to-red-500' : ''}
                             ${seller?.notes === 'New Product' ? 'bg-gradient-to-bl from-purple-500 via-pink-500 to-red-500' : ''}
                             ${seller?.notes === 'New Service' ? 'bg-gradient-to-tr from-pink-300 via-purple-500 to-blue-500' : ''}
@@ -201,7 +201,7 @@ export default function TopSeller() {
                             ${seller?.notes === 'Promotion' ? 'bg-gradient-to-tr from-indigo-400 via-purple-500 to-pink-500' : ''} 
                             ${seller?.notes === 'Reloacate' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
                           `}>
-                            {seller.notes}
+                            {seller.notes === 'Popular Reach' ? 'Most Visited' : seller.notes}
                           </div>
                         )}
                       </div>
