@@ -6,8 +6,9 @@ const PUBLIC_PATHS = [
   "/robots.txt",
   "/aboutus",
   // "/UserHomePage",
-  "/bill-generation-page",
+  // "/bill-generation-page",
   "/",
+  "/favicon.ico",
 ];
 
 export async function middleware(req) {
@@ -84,9 +85,6 @@ export async function middleware(req) {
 export const config = {
   matcher: [
     "/billGenerator/:path*",
-    "/((?!sitemap.xml|robots.txt|favicon.ico|_next|images|icons|api|login|otp-verify|getstarted).*)",
-    "/((?!sitemap.xml|robots.txt|...).*)",
-    "/((?!_next|api|favicon.ico|sitemap.xml|robots.txt|images|icons).*)",
     "/change-location/:path*",
     "/dashboard/:path*",
     "/payments/:path*",
