@@ -442,7 +442,7 @@ export default function ChatBox() {
       const updatedConversation = {
         otherUser: {
           id: selectedPartner?.otherUser ? selectedPartner?.otherUser.id : selectedPartner.id,
-          // name: getDisplayName(selectedPartner),
+          name: getDisplayName(selectedPartner),
           firstName: selectedPartner?.otherUser ? selectedPartner?.otherUser.firstName || null : selectedPartner?.firstName,
           lastName: selectedPartner?.otherUser ? selectedPartner?.otherUser.lastName || null : selectedPartner?.lastName,
           profilePhoto: selectedPartner?.otherUser ? selectedPartner?.otherUser.profilePhoto || selectedPartner?.profilePhoto : "",
