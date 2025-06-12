@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://nearbuydukan.com
+
+# Sitemaps
+Sitemap: https://nearbuydukan.com/sitemap.xml

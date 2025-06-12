@@ -72,6 +72,24 @@ export async function POST(req) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    // 🛑 Check if user already has an active paid promotion
+    const now = new Date();
+    const existingPromotion = await prisma.paidProfile.findFirst({
+      where: {
+        userId,
+        expiresAt: {
+          gt: now, // still active
+        },
+      },
+    });
+
+    if (existingPromotion) {
+      return NextResponse.json(
+        { error: "You already have an active paid promotion." },
+        { status: 403 }
+      );
+    }
+
     const baseCostPerKm = kmCosts[range];
     if (!baseCostPerKm) {
       return NextResponse.json({ error: "Invalid range selected" }, { status: 400 });
