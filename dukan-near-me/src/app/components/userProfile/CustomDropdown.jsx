@@ -52,7 +52,7 @@ export default function CustomDropdown({ promotionType, setPromotionType }) {
             onClick={() => handleSelectChange("Popular Reach")}
           >
             <BadgeCheck color="#14b909" />
-            <span>Reach</span>
+            <span>Popular Reach</span>
           </div>
           <div
             className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"

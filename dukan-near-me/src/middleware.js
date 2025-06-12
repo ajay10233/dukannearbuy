@@ -1,27 +1,47 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
+const PUBLIC_PATHS = [
+  "/sitemap.xml",
+  "/robots.txt",
+  "/aboutus",
+  // "/UserHomePage",
+  // "/bill-generation-page",
+  "/",
+  "/favicon.ico",
+];
+
 export async function middleware(req) {
   const { nextUrl } = req;
   const { pathname, origin } = nextUrl;
 
-  // ✅ Allow public access to sitemap.xml and robots.txt
-  if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
+  // ✅ Allow public paths without auth
+  if (PUBLIC_PATHS.includes(pathname)) {
     return NextResponse.next();
   }
 
-  // ✅ Get session token using NextAuth
+  // ✅ Skip middleware for static files & Next.js internals
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/images") ||
+    pathname.startsWith("/icons") ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/otp-verify") ||
+    pathname.startsWith("/getstarted")
+  ) {
+    return NextResponse.next();
+  }
+
   const token = await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
   });
 
-  // ✅ Redirect to login if not logged in
   if (!token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // ✅ Validate the session
   try {
     const validateRes = await fetch(`${origin}/api/validate-session`, {
       method: "POST",
@@ -50,7 +70,6 @@ export async function middleware(req) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // ✅ Role-based redirection on root access
   if (pathname === "/") {
     if (token.role === "USER") {
       return NextResponse.redirect(new URL("/UserHomePage", req.url));
@@ -59,9 +78,9 @@ export async function middleware(req) {
     }
   }
 
-  // ✅ Proceed with normal flow
   return NextResponse.next();
 }
+
 
 export const config = {
   matcher: [

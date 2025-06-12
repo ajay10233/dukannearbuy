@@ -1,8 +1,20 @@
-// next-sitemap.config.js
+/** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: 'https://nearbuydukan.com',
+  siteUrl: 'https://nearbuydukaan.com',
   generateRobotsTxt: true,
-  changefreq: 'weekly',
-  priority: 0.7,
-  sitemapSize: 5000,
+  exclude: [
+    '/login',
+    '/dashboard/*',
+    '/partnerHome',
+    '/userProfile/*',
+    '/admin/*',
+  ],
+  robotsTxtOptions: {
+    policies: [
+      { userAgent: '*', allow: '/' },
+    ],
+    additionalSitemaps: [
+      'https://nearbuydukaan.com/sitemap-0.xml',
+    ],
+  },
 };

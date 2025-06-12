@@ -7,7 +7,7 @@ export default async function Page({params,searchParams }){
     return(
         
         <Suspense fallback={<p className="text-center text-gray-500">Loading...</p>}>
-            <DownloadBill params={param} searchParams={searchparam}/>
+            <DownloadBill params={param} searchParams={searchparam}/>                             
         </Suspense>
     )
 }

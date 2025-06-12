@@ -97,7 +97,14 @@ export default function FavProfile() {
                     <div className="relative w-8 h-8 md:w-10 md:h-10 flex-shrink-0">
                       <Image
                           // src={institution?.photos?.[0] || "/default-img.jpg"}
-                          src={institution?.photos?.length > 0 ? institution.photos[0] : institution?.profilePhoto && institution.profilePhoto !== "null" ? institution.profilePhoto : '/default-img.jpg'}
+                          src={
+                            // institution?.photos?.length > 0 ? institution.photos[0] : institution?.profilePhoto && institution.profilePhoto !== "null" ? institution.profilePhoto : '/default-img.jpg'
+                            institution?.profilePhoto && institution?.profilePhoto !== "null"
+                            ? institution?.profilePhoto
+                            : institution.photos?.length > 0
+                              ? institution.photos[0]
+                              : "/default-img.jpg"
+                          }
                         alt="Profile"
                         fill sizes={40}
                         className="rounded-full w-8 h-8 md:w-12 md:h-12 object-cover border border-blue-500" priority

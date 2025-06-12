@@ -42,14 +42,22 @@ export default function MyToken() {
         </h1>
 
         <div className="shadow-xl rounded-xl border border-slate-300 bg-white backdrop-blur-sm">
+          <div className="relative">
+            {/* Info Button absolutely positioned */}
+            <button
+              onClick={() => setShowModal(true)}
+              className="absolute top-3 left-0 md:left-2 z-10 text-white cursor-pointer transition-all duration-400 ease-in-out hover:text-yellow-300 text-xl"
+              title="Token Info">
+              <Info size={18} strokeWidth={1.5} />
+            </button>
           <table className="md:min-w-full flex flex-col justify-start text-sm text-left text-gray-700">
             <thead className="text-xs uppercase bg-gradient-to-r from-blue-700 to-teal-500 text-white">
               <tr className="text-center flex flex-row justify-evenly">
-                <th className="px-2 py-3 md:px-6 md:py-4">
+                {/* <th className="px-2 py-3 md:px-6 md:py-4">
                   <button onClick={() => setShowModal(true)} className="text-white cursor-pointer transition-all duration-400 ease-in-out hover:text-yellow-300 text-xl" title="Token Info">
                     <Info size={20} strokeWidth={1.5} />
                   </button>
-                </th>
+                </th> */}
                 <th className="px-2 py-3 md:px-6 md:py-4">Token No.</th>
                 <th className="px-2 py-3 md:px-6 md:py-4 hidden md:table-cell">Firm Name</th>
                 <th className="px-2 py-3 md:px-6 md:py-4">Assigned By</th>
@@ -66,6 +74,7 @@ export default function MyToken() {
             ) : ( 
               tokens.map((token) => (
                 <tr key={token.id} className="hover:bg-gray-50 *:w-2/5  transition duration-200 flex flex-row items-center justify-evenly">
+                  
                   <td className="p-3 md:px-6 md:py-4 font-semibold text-blue-700">{token.tokenNumber}</td>
                   <td className="p-3 md:px-6 md:py-4 hidden md:table-cell">
                     <Link href={`/partnerProfile/${token.institutionId}`}>
@@ -86,7 +95,7 @@ export default function MyToken() {
             )}
             </tbody>
           </table>
-
+        </div>
         </div>
       </div>
 
