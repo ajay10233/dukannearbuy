@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://nearbuydukan.com
+Host: https://nearbuydukaan.com
 
 # Sitemaps
-Sitemap: https://nearbuydukan.com/sitemap.xml
+Sitemap: https://nearbuydukaan.com/sitemap.xml
