@@ -8,6 +8,8 @@ import toast from "react-hot-toast";
 export default function EditProfilePage() {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false); 
+  const [rawHashtagInput, setRawHashtagInput] = useState("");
+
   const [form, setForm] = useState({
     firmName: '',
     contactEmail: '',
@@ -94,18 +96,22 @@ export default function EditProfilePage() {
     }));
   }
     
-     // Hashtags field
-  else if (name === "hashtags") {
+  // Hashtags field
+    else if (name === "hashtags") {
+    setRawHashtagInput(value); 
+
     const tags = value
-      .split(/[ ,]+/)               
-      .filter(Boolean)              
-      .map((tag) => tag.toLowerCase());
+      .split(",")
+      .map(tag => tag.trim())
+      .filter(Boolean)
+      .map(tag => tag.toLowerCase());
 
     setForm((prev) => ({
       ...prev,
       hashtags: tags,
     }));
   }
+
   
   else {
     setForm((prev) => ({
@@ -171,6 +177,7 @@ export default function EditProfilePage() {
         
         if (response.ok) {
           setForm(data);
+          setRawHashtagInput(data.hashtags?.join(", ") || "");
           toast.success("Profile data loaded!");
         } else {
           toast.error(data?.message || "Failed to load profile data");
@@ -209,6 +216,13 @@ export default function EditProfilePage() {
     formData.set('hashtags', JSON.stringify(hashtagsArray));
     formData.set('shopOpenDays', JSON.stringify(form.shopOpenDays));
     formData.set('address', JSON.stringify(form.address));
+    formData.set('latitude', form.latitude);
+    formData.set('longitude', form.longitude);
+
+    // formData.set('currentLocation', form.currentLocation); 
+
+    console.log("Sending form data:", formData);
+
 
     try {
       const response = await fetch('/api/institutions/edit-details', {
@@ -221,7 +235,7 @@ export default function EditProfilePage() {
         toast.success(result.message || "Profile updated successfully");
         console.log("Profile updated successfully:", result);
 
-        router.push('/search-result');
+        router.push('/partnerProfile');
       } else {
         toast.error(result?.error || "Failed to update profile");
       }
@@ -328,7 +342,7 @@ export default function EditProfilePage() {
                 name="houseNumber"
                 value={form?.address?.houseNumber || ""}
                 onChange={handleChange}
-                placeholder="Enter House Number"
+                placeholder="Enter Shop Number"
                 className="border p-2 rounded w-full"
                 required
               />
@@ -455,7 +469,7 @@ export default function EditProfilePage() {
             <label className="font-medium text-gray-700">Hashtags</label>
             <input
               name="hashtags"
-              value={form?.hashtags || ""}
+              value={rawHashtagInput}
               onChange={handleChange}
               placeholder="Comma separated (e.g. doctor, clinic)"
               className="border p-2 rounded w-full lowercase"

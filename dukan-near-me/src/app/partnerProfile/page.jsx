@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import {
   MessageCircleMore,
   Mail,
@@ -83,6 +83,7 @@ export default function About({ profileUpdated }) {
       // const response = await fetch("/api/users/me");
       if (response.ok) {
         const data = await response.json();
+        console.log("Fetched userData:", data);
 
         // Merge address data properly
         setUserData({
@@ -92,6 +93,8 @@ export default function About({ profileUpdated }) {
           // Ensure address object exists
           address: data.address || {},
         });
+
+        setUserData(data);
 
         setCurrentAddress({
           houseNo: data?.address?.houseNumber || "",
@@ -368,7 +371,7 @@ export default function About({ profileUpdated }) {
                       <div className="flex items-start gap-x-2">
                         <span className="font-semibold flex items-center gap-x-1">
                           <MapPin size={20} strokeWidth={1.5} color="#1751c4" />
-                          Direction:
+                          Direction: 
                         </span>
                         {userData?.latitude && userData?.longitude ? (
                           <Link
@@ -383,6 +386,7 @@ export default function About({ profileUpdated }) {
                           "Location not set"
                         )}
                       </div>
+                  
                     </div>
                   </div>
                 )}

@@ -149,11 +149,11 @@ useEffect(() => {
               ${user.paidPromotions[0].notes === 'Festive Offer' ? 'bg-gradient-to-tl from-orange-500 via-yellow-500 to-red-500' : ''}
               ${user.paidPromotions[0].notes === 'New Product' ? 'bg-gradient-to-bl from-purple-500 via-pink-500 to-red-500' : ''}
               ${user.paidPromotions[0].notes === 'New Service' ? 'bg-gradient-to-tr from-pink-300 via-purple-500 to-blue-500' : ''}
-              ${user.paidPromotions[0].notes === 'Exclusive Seller' ? 'bg-gradient-to-tr from-red-500 via-orange-500 to-yellow-500' : ''}
+              ${user.paidPromotions[0].notes === 'Popular Reach' ? 'bg-gradient-to-tr from-red-500 via-orange-500 to-yellow-500' : ''}
               ${user.paidPromotions[0].notes === 'Promotion' ? 'bg-gradient-to-tr from-indigo-400 via-purple-500 to-pink-500' : ''}
               ${user.paidPromotions[0].notes === 'Reloacate' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
             `}>
-            {user?.paidPromotions[0].notes}
+                {user.paidPromotions[0].notes === 'Popular Reach' ? 'Most Visited' : user.paidPromotions[0].notes}
           </div>
       )}
       
