@@ -72,8 +72,11 @@ export default function BillHistoryTable({ setDates }) {
 
   const sortAmount = (order) => {
     const sorted = [...filteredData].sort((a, b) => {
-      const aNum = parseFloat(a.totalAmount.toString().replace(/[^\d.]/g, ""));
-      const bNum = parseFloat(b.totalAmount.toString().replace(/[^\d.]/g, ""));
+      const aRaw = a.totalAmount ?? "0";
+      const bRaw = b.totalAmount ?? "0";
+
+      const aNum = parseFloat(aRaw.toString().replace(/[^\d.]/g, ""));
+      const bNum = parseFloat(bRaw.toString().replace(/[^\d.]/g, ""));
       return order === "asc" ? aNum - bNum : bNum - aNum;
     });
 

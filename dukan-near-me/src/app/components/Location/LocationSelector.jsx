@@ -11,6 +11,7 @@ export default function LocationSelector({ onSave, role }) {
     handleSubmit,
     setValue,
     getValues,
+    watch
   } = useForm({
     defaultValues: {
       lat: 0,
@@ -25,6 +26,16 @@ export default function LocationSelector({ onSave, role }) {
       zipCode: "",
     },
   });
+
+  const houseNumber = watch("houseNumber");
+  const buildingName = watch("buildingName");
+  const street = watch("street");
+  const landmark = watch("landmark");
+  const city = watch("city");
+  const state = watch("state");
+  const country = watch("country");
+  const zipCode = watch("zipCode");
+
 
   useEffect(() => {
     const fetchUserLocation = async () => {
@@ -87,6 +98,7 @@ export default function LocationSelector({ onSave, role }) {
 
   return (
 <div className={`w-full ${role === "INSTITUTION" || role === "SHOP_OWNER" ? "h-screen" : ""} flex flex-col items-center justify-center p-6 space-y-6 bg-gray-50`}>
+    <div className="relative group cursor-pointer inline-block">
       <Map 
         setLocation={(newLocation) => {
           setValue("lat", newLocation.lat);
@@ -102,7 +114,16 @@ export default function LocationSelector({ onSave, role }) {
         }} 
         location={{ lat: getValues("lat"), lng: getValues("lng") }}
         role={role} 
-      />
+        />
+        
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1 z-10 whitespace-nowrap shadow-md">
+          {/* {`${buildingName ? buildingName + ", " : ""}${street || ""}, ${city || ""}, ${state || ""} - ${zipCode || ""}`} */}
+          
+          {`${houseNumber ? houseNumber + ", " : ""}${buildingName ? buildingName + ", " : ""}${street || ""},${landmark ? landmark + ", " : ""}${city || ""}, ${state || ""} - ${zipCode || ""}, ${country || ""}`}
+
+        </div>
+    </div>
+
 
       {role === "USER" && (
         <button

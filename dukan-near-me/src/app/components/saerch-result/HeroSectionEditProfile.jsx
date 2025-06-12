@@ -237,7 +237,7 @@ useEffect(() => {
             ${user.paidPromotions[0].notes === 'New Service' ? 'bg-gradient-to-tr from-pink-300 via-purple-500 to-blue-500' : ''}
             ${user.paidPromotions[0].notes === 'Exclusive Seller' ? 'bg-gradient-to-tr from-red-500 via-orange-500 to-yellow-500' : ''}
           `}>
-            {user.paidPromotions[0].notes}
+              {user.paidPromotions[0].notes === 'Popular Reach' ? 'Most Visited' : user.paidPromotions[0].notes}
         </div>
         
       )}
