@@ -34,13 +34,14 @@ export async function GET(req) {
 
   // Step 1: Get distinct paid user IDs from PaidProfile with notes
   const paidProfiles = await prisma.paidProfile.findMany({
-    select: { userId: true, notes: true },
+    select: { userId: true, notes: true, range: true },
     distinct: ['userId']
   });
 
-  const paidUserNotesMap = new Map(
-    paidProfiles.map(p => [p.userId, p.notes])
+  const paidUserMetaMap = new Map(
+    paidProfiles.map(p => [p.userId, { notes: p.notes, range: p.range }])
   );
+
 
   const paidUserIds = paidProfiles.map(p => p.userId);
 
@@ -90,7 +91,9 @@ export async function GET(req) {
         averageRating: 0,
         reviewCount: 0,
       };
-      const notes = paidUserNotesMap.get(user.id) || null;
+      const meta = paidUserMetaMap.get(user.id) || {};
+      const notes = meta.notes || null;
+      const customRange = meta.range ?? radiusKm;
 
       return {
         user,
@@ -99,10 +102,12 @@ export async function GET(req) {
         reviewCount: ratingInfo.reviewCount,
         isPaid: true,
         notes,
+        customRange,
       };
     })
-    .filter(p => p.distance <= radiusKm && p.averageRating >= 4 && p.averageRating <= 5)
+    .filter(p => p.distance <= p.customRange && p.averageRating >= 4 && p.averageRating <= 5)
     .sort((a, b) => a.distance - b.distance);
+
 
 
   // Step 6: Enrich free users if needed
