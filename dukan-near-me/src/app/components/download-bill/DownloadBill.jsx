@@ -386,7 +386,7 @@ export default function DownloadBill({ params, searchParams }) {
                   </tr>
                 ))}
                 <tr>
-                  <td colSpan="4" className="text-xs md:text-sm print:text-sm border p-2 text-right font-bold">Items Subtotal</td>
+                  <td colSpan="4" className="text-xs md:text-sm print:text-sm border p-2 text-right font-bold">Subtotal</td>
                   <td className="text-xs md:text-sm print:text-sm border p-2 text-center font-bold">{bill?.totalAmount}</td>
                 </tr>
 

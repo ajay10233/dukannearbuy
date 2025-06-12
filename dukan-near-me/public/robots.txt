@@ -7,3 +7,4 @@ Host: https://nearbuydukaan.com
 
 # Sitemaps
 Sitemap: https://nearbuydukaan.com/sitemap.xml
+Sitemap: https://nearbuydukaan.com/sitemap-0.xml
