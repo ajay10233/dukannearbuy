@@ -39,6 +39,8 @@ export default function EditFormatComponent() {
     const [formDetails, setFormDetails] = useState(null);
     const [tokenEnabled, setTokenEnabled] = useState(false); // for toggle switch
     const [token, setToken] = useState(''); // for token input value
+    const [fetchingToken, setFetchingToken] = useState(false);
+
 
     const [loading, setLoading] = useState(true);
 
@@ -316,6 +318,7 @@ export default function EditFormatComponent() {
     const handleFetchingToken = async () => {
         if (!token) return toast.error("Please enter a token number");
 
+        setFetchingToken(true); 
         try {
             const response = await fetch(`/api/token/${token}/`);
             const data = await response.json();
@@ -341,6 +344,8 @@ export default function EditFormatComponent() {
             setAddress('');
             setMobile('');
             toast.error("Something went wrong.");
+        } finally {
+            setFetchingToken(false); 
         }
     };
 
@@ -530,7 +535,8 @@ export default function EditFormatComponent() {
                                             onClick={handleFetchingToken}
                                             className="px-3 py-2 bg-blue-600 cursor-pointer text-white rounded-md hover:bg-blue-800 transition-all duration-500 ease-in-out"
                                         >
-                                            Fetch
+                                            {/* Fetch */}
+                                            {fetchingToken ? "Fetching..." : "Fetch"}
                                         </button>
                                     </>
 
@@ -562,7 +568,8 @@ export default function EditFormatComponent() {
                                             onClick={handleFetchingToken}
                                             className="p-1.5 md:px-3 md:py-2 bg-blue-600 cursor-pointer text-white rounded-md hover:bg-blue-800 transition-all duration-500 ease-in-out"
                                         >
-                                            Fetch
+                                            {/* Fetch */}
+                                            {fetchingToken ? "Fetching..." : "Fetch"}
                                         </button>
                                     </>
                                 )}
@@ -587,7 +594,7 @@ export default function EditFormatComponent() {
                                     <h2 className="text-lg font-bold text-[#0D6A9C] capitalize">
                                         {formDetails?.firmName || "N/A"}
                                     </h2>
-                                    <p>
+                                    <p className='break-words whitespace-pre-wrap word-wrap'>
                                         {formDetails?.address || "Address: N/A"}
                                     </p>
                                     <p> Mobile: <span className='text-gray-600'>{formDetails?.contactNo || "N/A"}</span></p>
@@ -642,7 +649,7 @@ export default function EditFormatComponent() {
                                             type="text"
                                             value={address}
                                             onChange={(e) => setAddress(e.target.value)}
-                                            className="w-full text-sm text-gray-600 outline-none"
+                                            className="w-full text-sm text-gray-600 outline-none resize-none whitespace-pre-wrap break-words"
                                             placeholder="Enter Address" />
                                     </div>
                                     <div className="flex items-start">
@@ -783,7 +790,7 @@ export default function EditFormatComponent() {
                                                 </tr>
                                             ))}
                                             <tr>
-                                                <td colSpan="4" className="text-xs md:text-sm print:text-sm border p-2 text-right font-bold">Items Subtotal</td>
+                                                <td colSpan="4" className="text-xs md:text-sm print:text-sm border p-2 text-right font-bold">Subtotal</td>
                                                 <td className="text-xs md:text-sm print:text-sm border p-2 text-center font-bold">{itemsSubtotal.toFixed(2)}</td>
                                             </tr>
 

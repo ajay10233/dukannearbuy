@@ -86,22 +86,27 @@ export default function BillHistoryTable({ setDates }) {
   }
 
   return (
-    <div className="flex flex-col gap-3 w-full h-full px-2 py-4 md:p-4">
+    <div className="flex flex-col gap-3 w-full h-full py-4 md:p-4">
       <div className="relative">
         <input
           type="text"
-          placeholder="Search by username..."
+          placeholder="Search by invoice no. or userid..."
           value={search}
           // onChange={(e) => setSearch(e.target.value)}
            onChange={(e) => {
             const keyword = e.target.value;
             setSearch(keyword);
 
-            const filtered = billData.filter((bill) =>
-              (bill.user?.username || "")
-                .toLowerCase()
-                .includes(keyword.toLowerCase())
-            );
+            // const filtered = billData.filter((bill) =>
+            //   (bill.user?.username || "")
+            //     .toLowerCase()
+            //     .includes(keyword.toLowerCase())
+             // );
+            const filtered = billData.filter((bill) => {
+              const username = (bill.user?.username || "").toLowerCase();
+              const invoice = (bill.invoiceNumber || "").toLowerCase();
+              return username.includes(keyword.toLowerCase()) || invoice.includes(keyword.toLowerCase());
+            });
 
             setFilteredData(filtered);
           }}
@@ -112,7 +117,7 @@ export default function BillHistoryTable({ setDates }) {
       <div className="flex flex-col gap-y-3 cursor-default w-full overflow-hidden h-full">
         <div className="flex items-center text-sm capitalize text-slate-600 px-2 py-3 bg-white/30 border border-gray-300 rounded-xl shadow-sm">
           <ul className="flex *:w-1/5 w-full justify-around whitespace-nowrap font-semibold">
-            <li className="justify-center md:flex hidden">Invoice ID</li>
+            <li className="justify-center md:flex hidden">Invoice No.</li>
 
             {/* Billing Date Filter */}
             <li className="flex flex-col items-center justify-center relative cursor-pointer">

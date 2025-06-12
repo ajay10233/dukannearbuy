@@ -153,12 +153,18 @@ export default function TopSeller() {
                               {seller?.user?.firmName}
 
                               {seller?.subscriptionPlan?.name === "PREMIUM" &&
+                                seller.subscriptionPlan?.expiresAt &&
+                                // seller?.planExpiresAt &&
                                 new Date(seller?.subscriptionPlan?.expiresAt) > new Date() && (
+                                // new Date(seller?.planExpiresAt) > new Date() && (
                                   <Crown size={18} fill="#f0d000" className="text-yellow-500" />
                               )}
 
                               {seller?.subscriptionPlan?.name === "BUSINESS" &&
+                                seller.subscriptionPlan?.expiresAt &&
+                                // seller?.planExpiresAt &&
                                 new Date(seller?.subscriptionPlan?.expiresAt) > new Date() && (
+                                // new Date(seller?.planExpiresAt) > new Date() && (
                                   <Crown size={18} fill="#AFAFAF" className="text-gray-400" />
                               )}
                             </h3>

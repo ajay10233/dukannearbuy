@@ -221,7 +221,7 @@ export default function DownloadBill({ params, searchParams }) {
         <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2  gap-4 border-b pb-2 mb-4">
           <div className="p-2 pb-4 border-b md:border-r md:border-gray-400 print:border-b-0 print:border-r ">
             <h1 className="text-lg font-bold text-[#0D6A9C] capitalize">{bill?.institution?.firmName}</h1>
-            <p>{`${bill?.institution.houseNumber}, ${bill?.institution.address?.buildingName ? bill?.institution.buildingName + ', ' : ''}${bill?.institution.street}, ${bill?.institution.landmark}, ${bill?.institution.city}, ${bill?.institution.state} - ${bill?.institution.zipCode}, ${bill?.institution.country}`}</p>
+            <p className="break-words whitespace-pre-wrap word-wrap">{`${bill?.institution.houseNumber}, ${bill?.institution.address?.buildingName ? bill?.institution.buildingName + ', ' : ''}${bill?.institution.street}, ${bill?.institution.landmark}, ${bill?.institution.city}, ${bill?.institution.state} - ${bill?.institution.zipCode}, ${bill?.institution.country}`}</p>
             <p>Mobile: {bill?.institution?.mobileNumber}</p>
             {formDetails?.email ? (
                 <p>Email: <span className='text-gray-600'>{formDetails?.email}</span></p>
@@ -246,7 +246,7 @@ export default function DownloadBill({ params, searchParams }) {
               <p className="flex items-start">
                 <span className="font-medium">Address:&nbsp;</span>
                 {bill?.user ? (
-                  <span className="w-full text-sm text-gray-600 outline-none">
+                  <span className="w-full text-sm text-gray-600 outline-none break-words whitespace-pre-wrap word-wrap">
                     {(bill?.user?.houseNumber || bill?.user?.street || bill?.user?.buildingName || bill?.user?.city || bill?.user?.state || bill?.user?.zipCode)
                       ? `${bill?.user?.houseNumber}, ${bill?.user?.street}, ${bill?.user?.buildingName}, ${bill?.user?.city}, ${bill?.user?.state}, ${bill?.user?.zipCode}`
                       : "N/A"}
@@ -386,7 +386,7 @@ export default function DownloadBill({ params, searchParams }) {
                   </tr>
                 ))}
                 <tr>
-                  <td colSpan="4" className="text-xs md:text-sm print:text-sm border p-2 text-right font-bold">Items Subtotal</td>
+                  <td colSpan="4" className="text-xs md:text-sm print:text-sm border p-2 text-right font-bold">Subtotal</td>
                   <td className="text-xs md:text-sm print:text-sm border p-2 text-center font-bold">{bill?.totalAmount}</td>
                 </tr>
 
