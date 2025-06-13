@@ -183,7 +183,7 @@ export const authOptions = {
         session.user.longitude = token.longitude;
         session.user.allowedRoutes = token.allowedRoutes;
         session.user.subscriptionPlan = token.subscriptionPlan;
-        session.accessToken = token.accessToken:
+        session.accessToken = token.accessToken;
       }
       return session;
     },
