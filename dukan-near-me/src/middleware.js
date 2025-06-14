@@ -17,7 +17,7 @@ export async function middleware(req) {
 
 
   // Redirect to login if no session token
-  // console.log("token: ", token);
+  console.log("middle ware token: ", token);
   if (!token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
@@ -27,7 +27,7 @@ export async function middleware(req) {
     const validateRes = await fetch(`${origin}/api/validate-session`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionToken: token.sessionToken }),
+      body: JSON.stringify({ sessionToken: token.accessToken }),
     });
 
     const { isValid } = await validateRes.json();
