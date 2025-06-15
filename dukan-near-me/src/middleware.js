@@ -33,7 +33,7 @@ export async function middleware(req) {
     });
 
     const { isValid } = await validateRes.json();
-
+    // console.log("isValid: ", isValid);
     if (!isValid) {
       const response = NextResponse.redirect(new URL("/login", req.url));
 
