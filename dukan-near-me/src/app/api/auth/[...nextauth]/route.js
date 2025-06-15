@@ -106,7 +106,7 @@ export const authOptions = {
           latitude: user.latitude,
           longitude: user.longitude,
           allowedRoutes: user.role === "ADMIN" ? ["/", "/dashboard", "/admin"] : ["/", "/dashboard"],
-          sessionToken,
+          accessToken:sessionToken,
           subscriptionPlan: user.subscriptionPlan ? {
             id: user.subscriptionPlan.id,
             name: user.subscriptionPlan.name,
@@ -151,6 +151,7 @@ export const authOptions = {
         token.allowedRoutes = user.allowedRoutes;
         token.sessionToken = user.sessionToken;
         token.subscriptionPlan = user.subscriptionPlan;
+        token.accessToken = user.accessToken;
       }
       return token;
     },
@@ -182,6 +183,7 @@ export const authOptions = {
         session.user.longitude = token.longitude;
         session.user.allowedRoutes = token.allowedRoutes;
         session.user.subscriptionPlan = token.subscriptionPlan;
+        session.accessToken = token.accessToken;
       }
       return session;
     },

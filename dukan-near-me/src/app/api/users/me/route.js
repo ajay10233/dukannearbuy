@@ -2,14 +2,25 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/utils/db";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { ObjectId } from 'mongodb';
+
 
 export async function GET() {
   const session = await getServerSession(authOptions);
 
-  if (!session || !session.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const userId = session.user.id;
+
+  // 🔒 Validate ObjectId format
+  if (!ObjectId.isValid(userId)) {
+    return NextResponse.json(
+      { error: 'Invalid user ID format; expected a 24‑hex ObjectId' },
+      { status: 400 }
+    );
+  }
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     include: {

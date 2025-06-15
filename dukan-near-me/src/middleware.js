@@ -1,58 +1,41 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const PUBLIC_PATHS = [
-  "/sitemap.xml",
-  "/robots.txt",
-  "/aboutus",
-  // "/UserHomePage",
-  // "/bill-generation-page",
-  "/",
-  "/favicon.ico",
-];
-
 export async function middleware(req) {
   const { nextUrl } = req;
   const { pathname, origin } = nextUrl;
-
-  // ✅ Allow public paths without auth
-  if (PUBLIC_PATHS.includes(pathname)) {
-    return NextResponse.next();
-  }
-
-  // ✅ Skip middleware for static files & Next.js internals
-  if (
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/images") ||
-    pathname.startsWith("/icons") ||
-    pathname.startsWith("/api") ||
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/otp-verify") ||
-    pathname.startsWith("/getstarted")
-  ) {
-    return NextResponse.next();
-  }
-
+  
+  // Get session token using NextAuth
+  // console.log("req.url: ", req.url);
+  // if(req.url.includes("/login")) return NextResponse.next();
   const token = await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
+    // raw: true, // Optional: gives you raw token value
+    // secureCookie: process.env.NODE_ENV === "production",
   });
 
+
+  // Redirect to login if no session token
+  // console.log("token: ", token);
   if (!token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
+  // Optional: Validate the session token against server logic
   try {
     const validateRes = await fetch(`${origin}/api/validate-session`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionToken: token.sessionToken }),
+      body: JSON.stringify({ sessionToken: token.accessToken }),
     });
 
     const { isValid } = await validateRes.json();
-
+    // console.log("isValid: ", isValid);
     if (!isValid) {
       const response = NextResponse.redirect(new URL("/login", req.url));
+
+      // Expire session-related cookies
       response.cookies.set("next-auth.session-token", "", {
         path: "/",
         httpOnly: true,
@@ -63,6 +46,7 @@ export async function middleware(req) {
         httpOnly: true,
         maxAge: 0,
       });
+
       return response;
     }
   } catch (error) {
@@ -70,20 +54,24 @@ export async function middleware(req) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
+  // Redirect to role-specific homepage only if visiting the root "/"
   if (pathname === "/") {
     if (token.role === "USER") {
       return NextResponse.redirect(new URL("/UserHomePage", req.url));
-    } else if (token.role === "INSTITUTION" || token.role === "SHOP_OWNER") {
+    } else if (token.role === "INSTITUTION"|| token.role === "SHOP_OWNER") {
       return NextResponse.redirect(new URL("/partnerHome", req.url));
     }
   }
 
+  // Allow all other requests to proceed
   return NextResponse.next();
 }
 
-
+// Route matcher config
 export const config = {
   matcher: [
+    // "/",
+    // "/((?!login|otp-verify|getstarted|api|_next|favicon.ico|images|icons).*)",
     "/billGenerator/:path*",
     "/change-location/:path*",
     "/dashboard/:path*",

@@ -1,60 +1,60 @@
-import { prisma } from '@/utils/db'
-import { NextResponse } from 'next/server'
+import { prisma } from '@/utils/db';
+import { NextResponse } from 'next/server';
 
 function getClosestMatch(word, options) {
   const levenshtein = (a, b) => {
     const dp = Array.from({ length: a.length + 1 }, () =>
       Array(b.length + 1).fill(0)
-    )
-    for (let i = 0; i <= a.length; i++) dp[i][0] = i
-    for (let j = 0; j <= b.length; j++) dp[0][j] = j
+    );
+    for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+    for (let j = 0; j <= b.length; j++) dp[0][j] = j;
 
     for (let i = 1; i <= a.length; i++) {
       for (let j = 1; j <= b.length; j++) {
         dp[i][j] =
           a[i - 1] === b[j - 1]
             ? dp[i - 1][j - 1]
-            : Math.min(dp[i - 1][j - 1] + 1, dp[i][j - 1] + 1, dp[i - 1][j] + 1)
+            : Math.min(dp[i - 1][j - 1] + 1, dp[i][j - 1] + 1, dp[i - 1][j] + 1);
       }
     }
-    return dp[a.length][b.length]
-  }
+    return dp[a.length][b.length];
+  };
 
-  let minDistance = Infinity
-  let bestMatch = null
+  let minDistance = Infinity;
+  let bestMatch = null;
   for (const option of options) {
-    const distance = levenshtein(word.toLowerCase(), option.toLowerCase())
+    const distance = levenshtein(word.toLowerCase(), option.toLowerCase());
     if (distance < minDistance) {
-      minDistance = distance
-      bestMatch = option
+      minDistance = distance;
+      bestMatch = option;
     }
   }
-  return minDistance <= 2 ? bestMatch : null
+  return minDistance <= 2 ? bestMatch : null;
 }
 
 function getBoundingBox(lat, lon, radiusInKm) {
-  const latR = radiusInKm / 111.32
-  const lonR = radiusInKm / (111.32 * Math.cos(lat * (Math.PI / 180)))
+  const latR = radiusInKm / 111.32;
+  const lonR = radiusInKm / (111.32 * Math.cos(lat * (Math.PI / 180)));
   return {
     minLat: lat - latR,
     maxLat: lat + latR,
     minLon: lon - lonR,
     maxLon: lon + lonR,
-  }
+  };
 }
 
 export async function GET(req) {
-  const params = new URL(req.url).searchParams
-  const search = params.get('search')
-  const lat = parseFloat(params.get('latitude'))
-  const lon = parseFloat(params.get('longitude'))
-  const rangeParam = params.get('range')
+  const params = new URL(req.url).searchParams;
+  const search = params.get('search');
+  const lat = parseFloat(params.get('latitude'));
+  const lon = parseFloat(params.get('longitude'));
+  const rangeParam = params.get('range');
 
   if (!search) {
-    return NextResponse.json({ message: 'Search query is required' }, { status: 400 })
+    return NextResponse.json({ message: 'Search query is required' }, { status: 400 });
   }
 
-  const keywords = search.split(/\s+/).filter(Boolean)
+  const keywords = search.split(/\s+/).filter(Boolean);
 
   const conditions = keywords.flatMap((word) => [
     { city: { contains: word, mode: 'insensitive' } },
@@ -69,21 +69,22 @@ export async function GET(req) {
     { street: { contains: word, mode: 'insensitive' } },
     { buildingName: { contains: word, mode: 'insensitive' } },
     { username: { contains: word, mode: 'insensitive' } },
-  ])
+  ]);
 
-  const useRange = rangeParam !== 'all' && !isNaN(lat) && !isNaN(lon) && !isNaN(parseFloat(rangeParam))
-  let locationFilter = {}
+  const useRange = rangeParam !== 'all' && !isNaN(lat) && !isNaN(lon) && !isNaN(parseFloat(rangeParam));
+  let locationFilter = {};
 
   if (useRange) {
-    const range = parseFloat(rangeParam)
-    const box = getBoundingBox(lat, lon, range)
+    const range = parseFloat(rangeParam);
+    const box = getBoundingBox(lat, lon, range);
     locationFilter = {
       latitude: { gte: box.minLat, lte: box.maxLat },
       longitude: { gte: box.minLon, lte: box.maxLon },
-    }
+    };
   }
 
-  const results = await prisma.user.findMany({
+  // Step 1: Get users based on search and location filters
+  const users = await prisma.user.findMany({
     where: {
       role: { in: ['INSTITUTION', 'SHOP_OWNER'] },
       AND: [
@@ -105,6 +106,8 @@ export async function GET(req) {
       latitude: true,
       longitude: true,
       role: true,
+      planActivatedAt: true,
+      planExpiresAt: true,
       subscriptionPlan: {
         select: {
           id: true,
@@ -115,13 +118,32 @@ export async function GET(req) {
           image: true,
         },
       },
-      planActivatedAt: true,
-      planExpiresAt: true,
     },
-  })
+  });
 
-  let suggestions = []
-  if (results.length === 0) {
+  // Step 2: Fetch PaidProfile notes for matched user IDs
+  const userIds = users.map(u => u.id);
+  const paidProfiles = await prisma.paidProfile.findMany({
+    where: {
+      userId: { in: userIds },
+    },
+    select: {
+      userId: true,
+      notes: true,
+    },
+  });
+
+  const notesMap = new Map(paidProfiles.map(p => [p.userId, p.notes]));
+
+  // Step 3: Add notes to users if available
+  const enrichedUsers = users.map(user => ({
+    ...user,
+    notes: notesMap.get(user.id) || null,
+  }));
+
+  // Step 4: Suggestions logic (unchanged)
+  let suggestions = [];
+  if (enrichedUsers.length === 0) {
     const sampleValues = await prisma.user.findMany({
       where: { role: { in: ['INSTITUTION', 'SHOP_OWNER'] } },
       take: 100,
@@ -136,12 +158,12 @@ export async function GET(req) {
         houseNumber: true,
         street: true,
         buildingName: true,
-        hashtags: true,
         username: true,
+        hashtags: true,
       },
-    })
+    });
 
-    const allWords = new Set()
+    const allWords = new Set();
     for (const item of sampleValues) {
       const fields = [
         item.firmName,
@@ -156,19 +178,19 @@ export async function GET(req) {
         item.buildingName,
         item.username,
         ...(item.hashtags || []),
-      ]
+      ];
       fields.forEach((f) => {
-        if (f) allWords.add(f)
-      })
+        if (f) allWords.add(f);
+      });
     }
 
     keywords.forEach((word) => {
-      const match = getClosestMatch(word, [...allWords])
+      const match = getClosestMatch(word, [...allWords]);
       if (match && !suggestions.includes(match)) {
-        suggestions.push(match)
+        suggestions.push(match);
       }
-    })
+    });
   }
 
-  return NextResponse.json({ results, suggestions })
+  return NextResponse.json({ results: enrichedUsers, suggestions });
 }
