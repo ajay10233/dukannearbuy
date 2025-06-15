@@ -152,19 +152,19 @@ export default function TopSeller() {
                             <h3 className="text-lg font-semibold flex items-center gap-1">
                               {seller?.user?.firmName}
 
-                              {seller?.subscriptionPlan?.name === "PREMIUM" &&
-                                seller.subscriptionPlan?.expiresAt &&
-                                // seller?.planExpiresAt &&
-                                new Date(seller?.subscriptionPlan?.expiresAt) > new Date() && (
-                                // new Date(seller?.planExpiresAt) > new Date() && (
+                              {seller?.user?.subscriptionPlan?.name === "PREMIUM" &&
+                                // seller.subscriptionPlan?.expiresAt &&
+                                seller?.user?.planExpiresAt &&
+                                // new Date(seller?.subscriptionPlan?.expiresAt) > new Date() && (
+                                new Date(seller?.user?.planExpiresAt) > new Date() && (
                                   <Crown size={18} fill="#f0d000" className="text-yellow-500" />
                               )}
 
-                              {seller?.subscriptionPlan?.name === "BUSINESS" &&
-                                seller.subscriptionPlan?.expiresAt &&
-                                // seller?.planExpiresAt &&
-                                new Date(seller?.subscriptionPlan?.expiresAt) > new Date() && (
-                                // new Date(seller?.planExpiresAt) > new Date() && (
+                              {seller?.user?.subscriptionPlan?.name === "BUSINESS" &&
+                                // seller.subscriptionPlan?.expiresAt &&
+                                seller?.user?.planExpiresAt &&
+                                // new Date(seller?.subscriptionPlan?.expiresAt) > new Date() && (
+                                new Date(seller?.user?.planExpiresAt) > new Date() && (
                                   <Crown size={18} fill="#AFAFAF" className="text-gray-400" />
                               )}
                             </h3>
@@ -203,7 +203,7 @@ export default function TopSeller() {
                             ${seller?.notes === 'Festive Offer' ? 'bg-gradient-to-tl from-orange-500 via-yellow-500 to-red-500' : ''}
                             ${seller?.notes === 'New Product' ? 'bg-gradient-to-bl from-purple-500 via-pink-500 to-red-500' : ''}
                             ${seller?.notes === 'New Service' ? 'bg-gradient-to-tr from-pink-300 via-purple-500 to-blue-500' : ''}
-                            ${seller?.notes === 'Exclusive Seller' ? 'bg-gradient-to-tr from-red-500 via-orange-500 to-yellow-500' : ''}
+                            ${seller?.notes === 'Popular Reach' ? 'bg-gradient-to-tr from-red-500 via-orange-500 to-yellow-500' : ''}
                             ${seller?.notes === 'Promotion' ? 'bg-gradient-to-tr from-indigo-400 via-purple-500 to-pink-500' : ''} 
                             ${seller?.notes === 'Reloacate' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
                           `}>
