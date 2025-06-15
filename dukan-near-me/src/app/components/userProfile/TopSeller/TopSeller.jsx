@@ -152,19 +152,19 @@ export default function TopSeller() {
                             <h3 className="text-lg font-semibold flex items-center gap-1">
                               {seller?.user?.firmName}
 
-                              {seller?.subscriptionPlan?.name === "PREMIUM" &&
+                              {seller?.user?.subscriptionPlan?.name === "PREMIUM" &&
                                 // seller.subscriptionPlan?.expiresAt &&
-                                seller?.planExpiresAt &&
+                                seller?.user?.planExpiresAt &&
                                 // new Date(seller?.subscriptionPlan?.expiresAt) > new Date() && (
-                                new Date(seller?.planExpiresAt) > new Date() && (
+                                new Date(seller?.user?.planExpiresAt) > new Date() && (
                                   <Crown size={18} fill="#f0d000" className="text-yellow-500" />
                               )}
 
-                              {seller?.subscriptionPlan?.name === "BUSINESS" &&
+                              {seller?.user?.subscriptionPlan?.name === "BUSINESS" &&
                                 // seller.subscriptionPlan?.expiresAt &&
-                                seller?.planExpiresAt &&
+                                seller?.user?.planExpiresAt &&
                                 // new Date(seller?.subscriptionPlan?.expiresAt) > new Date() && (
-                                new Date(seller?.planExpiresAt) > new Date() && (
+                                new Date(seller?.user?.planExpiresAt) > new Date() && (
                                   <Crown size={18} fill="#AFAFAF" className="text-gray-400" />
                               )}
                             </h3>
