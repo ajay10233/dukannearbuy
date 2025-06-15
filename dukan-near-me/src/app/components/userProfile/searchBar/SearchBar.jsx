@@ -265,7 +265,7 @@ export default function SearchBar() {
                     </div>
 
                     <div className="flex flex-col">
-                      <p className="text-sm font-medium text-gray-200 flex items-center gap-1">
+                      <div className="text-sm font-medium text-gray-200 flex items-center gap-1 flex-wrap">
                         {profile?.firmName || profile?.firstName}
 
                         {profile?.subscriptionPlan?.name === "PREMIUM" &&
@@ -277,7 +277,26 @@ export default function SearchBar() {
                           new Date(profile?.planExpiresAt) && (
                             <Crown size={16} fill="#AFAFAF" className="text-gray-400" />
                           )}
-                      </p>
+                        
+                        {profile?.notes &&
+                          // profile?.planExpiresAt &&
+                          // new Date(profile?.planExpiresAt) > new Date() && (
+
+                          <div
+                            className={`ml-2  z-10 py-0.5 px-2 text-white text-xs rounded-lg rounded-tl-2xl rounded-bl-sm rounded-br-2xl rounded-tr-sm
+                              ${profile?.notes === 'On Sale' ? 'bg-gradient-to-tr from-yellow-500 via-red-500 to-pink-500' : ''}
+                              ${profile?.notes === 'New Shop' ? 'bg-gradient-to-br from-blue-500 via-green-500 to-teal-500' : ''}
+                              ${profile?.notes === 'Festive Offer' ? 'bg-gradient-to-tl from-orange-500 via-yellow-500 to-red-500' : ''}
+                              ${profile?.notes === 'New Product' ? 'bg-gradient-to-bl from-purple-500 via-pink-500 to-red-500' : ''}
+                              ${profile?.notes === 'New Service' ? 'bg-gradient-to-tr from-pink-300 via-purple-500 to-blue-500' : ''}
+                              ${profile?.notes === 'Popular Reach' ? 'bg-gradient-to-tr from-red-500 via-orange-500 to-yellow-500' : ''}
+                            `}>
+                                {profile?.notes === 'Popular Reach' ? 'Most Visited' : profile?.notes}
+                          </div>
+                          
+                        // )
+                        }
+                      </div>
                       <p className="text-xs text-gray-200">
                         {profile.city}, {profile.state} - {profile.zipCode}
                       </p>
