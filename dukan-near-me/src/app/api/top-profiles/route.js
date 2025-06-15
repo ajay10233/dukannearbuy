@@ -53,6 +53,35 @@ export async function GET(req) {
       latitude: { not: null },
       longitude: { not: null },
     },
+      select: {
+    id: true,
+    firmName: true,
+    city: true,
+    state: true,
+    zipCode: true,
+    country: true,
+    shopAddress: true,
+    username: true,
+    hashtags: true,
+    profilePhoto: true,
+    latitude: true,
+    longitude: true,
+    role: true,
+    // if you need subscription info
+    subscriptionPlan: {
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        durationInDays: true,
+        features: true,
+        image: true,
+      }
+    },
+    planActivatedAt: true,
+    planExpiresAt: true,
+    // *no* `password` field in here!
+  },
   });
 
   // Step 3: Get free users
