@@ -27,11 +27,11 @@ export async function middleware(req) {
     const validateRes = await fetch(`${origin}/api/validate-session`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionToken: token.sessionToken }),
+      body: JSON.stringify({ sessionToken: token.accessToken }),
     });
 
     const { isValid } = await validateRes.json();
-
+    // console.log("isValid: ", isValid);
     if (!isValid) {
       const response = NextResponse.redirect(new URL("/login", req.url));
 
