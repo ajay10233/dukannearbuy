@@ -59,6 +59,8 @@ const Review = () => {
     return stars;
   };
 
+  // const topRatedReviews = reviews.filter((review) => review.rating === 5);
+
   return (
     <div className="h-full py-16 px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-y-10 max-w-7xl mx-auto">
@@ -88,7 +90,8 @@ const Review = () => {
             }}
             className="pb-12">
             
-            {reviews.filter((review) => review.rating === 5)
+                {reviews
+                  .filter((review) => review.rating === 5)
               .map((review) => (
               <SwiperSlide key={review.id} className="h-50">
                 <div className="bg-white rounded-lg shadow-lg p-3 md:p-6 transform transition-transform duration-300 hover:scale-105">

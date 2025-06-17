@@ -23,6 +23,7 @@ export default function Bill() {
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [showTypeFilter, setShowTypeFilter] = useState(false);
   const [showFavFilter, setShowFavFilter] = useState(false);
+  const [showFavFilterMobile, setShowFavFilterMobile] = useState(false); 
   const [favorites, setFavorites] = useState([]);
   const { data: session } = useSession();
 
@@ -149,6 +150,21 @@ export default function Bill() {
     setIsDropdownOpen(false); 
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setFavoriteFilter(null); 
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+
   if (loading) {
     return <LogoLoader content={"Loading bills..."} />
   }
@@ -221,13 +237,6 @@ export default function Bill() {
                 setShowFavFilter(false);
               }}
             />
-            {/* {showTypeFilter && (
-              <select value={typeFilter} onChange={(e) => { setTypeFilter(e.target.value); setShowTypeFilter(false); }} className="absolute top-6 w-40 bg-white border border-gray-300 rounded-lg shadow-md p-2 text-sm">
-                <option value="">All</option>
-                <option value="Medical">Institition</option>
-                <option value="Shop Owner">Shop Owner</option>
-              </select>
-            )} */}
 
             {showTypeFilter && (
               <div className="absolute top-6 w-40 bg-white border border-gray-300 rounded-lg shadow-md p-2 text-sm flex flex-col gap-1 z-10">
@@ -241,11 +250,35 @@ export default function Bill() {
 
           <li className='hidden md:flex justify-center items-center'>₹Amount</li>
           <li className="flex justify-center items-center">
-            <MoreVertical size={20} className="cursor-pointer md:hidden" onClick={() => setIsDropdownOpen(!isDropdownOpen)} />
+            
+            <MoreVertical size={20} className="cursor-pointer md:hidden" onClick={() => { setIsDropdownOpen(!isDropdownOpen); setShowFavFilterMobile(false); }} />
+             {selectedAction === 'favorite' && (
+              <Heart
+                fill="#ec0909"
+                stroke="#ec0909"
+                className="ml-1 w-4 h-4 cursor-pointer md:hidden"
+                onClick={() => {
+                  setShowFavFilterMobile(prev => !prev);
+                  setShowTypeFilter(false);
+                  setShowDateFilter(false);
+                  setIsDropdownOpen(false); // close 3-dots if open
+                }}
+              />
+            )}
+
+            {/* Filter dropdown for favorites (Mobile) */}
+            {showFavFilterMobile && (
+              <div className="absolute top-6 right-0 bg-white w-28 text-sm border border-gray-300 rounded-md shadow-md p-2 flex flex-col cursor-pointer z-50">
+                <label><input type="radio" checked={favoriteFilter === null} onChange={() => { setFavoriteFilter(null); setShowFavFilterMobile(false); }} className="mr-1 cursor-pointer" />All</label>
+                <label><input type="radio" checked={favoriteFilter === true} onChange={() => { setFavoriteFilter(true); setShowFavFilterMobile(false); }} className="mr-1 cursor-pointer" />Favourites</label>
+                <label><input type="radio" checked={favoriteFilter === false} onChange={() => { setFavoriteFilter(false); setShowFavFilterMobile(false);}} className="mr-1 cursor-pointer" />Others</label>
+              </div>
+            )}
+
             <span className='hidden md:block justify-center items-center'>Download</span>
             <div className={`absolute top-6 right-0 bg-white w-32 text-sm border ${isDropdownOpen ? 'block' : 'hidden'} md:hidden border-gray-300 rounded-md shadow-md p-2`}>
-              <button onClick={() => handleDropdownChange('favorite')} className="w-full text-left p-2 hover:bg-gray-100">Favorite</button>
-              <button onClick={() => handleDropdownChange('download')} className="w-full text-left p-2 hover:bg-gray-100">Download</button>
+              <button onClick={() => { handleDropdownChange('favorite');  setIsDropdownOpen(false); }} className="w-full text-left p-2 hover:bg-gray-100">Favorite</button>
+              <button onClick={() => { handleDropdownChange('download');  setIsDropdownOpen(false); }} className="w-full text-left p-2 hover:bg-gray-100">Download</button>
             </div>
           </li>
         </ul>
