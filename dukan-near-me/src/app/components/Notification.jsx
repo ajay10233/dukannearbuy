@@ -76,7 +76,7 @@ export default function Notification() {
       </Head>
       <section className="h-screen flex flex-col items-center bg-gradient-to-br from-gray-50 to-gray-200 pt-16 px-6 pb-6 md:px-12 md:pb-12 md:pt-20">
           <div className="flex-1 w-full max-w-7xl flex flex-col overflow-hidden shadow-xl rounded-3xl">
-            <div className={`w-full max-w-7xl mx-auto bg-transparent overflow-hidden flex flex-col ${notifications.length > 0 ? "rounded-3xl shadow-xl" : ""} `}>
+            <div className={`w-full max-w-7xl mx-auto bg-transparent overflow-hidden flex flex-col ${notifications.length > 4 ? "rounded-3xl shadow-xl" : ""} `}>
               <div className="p-4 md:p-6 sticky top-0 bg-white z-10 shadow-sm">
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-2">
                   <Bell className="h-8 w-8 text-blue-500" />
