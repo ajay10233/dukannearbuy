@@ -660,6 +660,7 @@ export default function About({ profileUpdated }) {
                         </div>
                       </div>
                     )}
+                    
 
                     {/* PAYMENT DETAILS */}
                     {userData?.upi_id && (
