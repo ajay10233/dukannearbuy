@@ -12,6 +12,7 @@ export async function POST(req) {
 
     try {
         const formData = await req.formData();
+      
         const updateData = {};
 
         const fields = [
@@ -20,7 +21,8 @@ export async function POST(req) {
             "country", "zipCode", "mobileNumber", "upi_id", "profilePhoto",
             "firmName", "shopAddress", "contactEmail", "paymentDetails",
             "description", "hashtags", "photos", "shopOpenTime",
-            "shopCloseTime", "shopOpenDays"
+            "shopCloseTime", "shopOpenDays",
+            "latitude", "longitude"
         ];
 
         const uniqueFields = ["phone", "email", "username"];
@@ -39,7 +41,11 @@ export async function POST(req) {
                         console.error(`Error parsing ${field}:`, error);
                         updateData[field] = [];
                     }
-                } else {
+                }else if (["latitude", "longitude"].includes(field)) {
+                    const parsed = parseFloat(value);
+                    if (!isNaN(parsed)) updateData[field] = parsed;
+                } 
+                else {
                     updateData[field] = value;
                 }
             }

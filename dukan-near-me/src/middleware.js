@@ -15,11 +15,6 @@ export async function middleware(req) {
     // secureCookie: process.env.NODE_ENV === "production",
   });
 
-  console.log("process.env.NEXTAUTH_SECRETs  : ", process.env.NEXTAUTH_SECRET);
-
-
-  // Redirect to login if no session token
-  console.log("middle ware token: ", token);
   if (!token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
