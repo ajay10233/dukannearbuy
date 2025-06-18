@@ -20,6 +20,8 @@ export default function Report() {
 
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [showFavFilter, setShowFavFilter] = useState(false);
+  const [showFavFilterMobile, setShowFavFilterMobile] = useState(false); 
+
   const [selectedAction, setSelectedAction] = useState(''); 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [favorites, setFavorites] = useState([]);
@@ -140,6 +142,20 @@ const filteredReports = reports.filter((report) => {
     setIsDropdownOpen(false); 
   };
 
+    useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setFavoriteFilter(null); 
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   if (loading) {
     return <LogoLoader content={"Loading reports..."} />;
   }
@@ -161,47 +177,48 @@ const filteredReports = reports.filter((report) => {
       {/* Header with Filters */}
       <div className="flex text-sm text-slate-400 font-medium pr-8 relative z-10">
         <ul className="flex w-full *:w-1/5 justify-between relative">
-        <li className="hidden md:flex justify-center items-center relative">
-            Favourite
-            <Heart fill='#ec0909' stroke='#ec0909'
-              className="ml-1 w-4 h-4 cursor-pointer"
-              onClick={() => {
-                setShowFavFilter(!showFavFilter);
-                setShowDateFilter(false);
-              }}
-            />
-            {showFavFilter && (
-              <div className="absolute top-6 bg-white w-28 text-sm border border-gray-300 rounded-md shadow-md p-2 flex flex-col">
-                <label>
-                  <input
-                    type="radio"
-                    checked={favoriteFilter === null}
-                    onChange={() => setFavoriteFilter(null)}
-                    className="mr-1 cursor-pointer"
-                  />
-                  All
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    checked={favoriteFilter === true}
-                    onChange={() => setFavoriteFilter(true)}
-                    className="mr-1 cursor-pointer"
-                  />
-                  Favourites
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    checked={favoriteFilter === false}
-                    onChange={() => setFavoriteFilter(false)}
-                    className="mr-1 cursor-pointer"
-                  />
-                  Others
-                </label>
-              </div>
-            )}
+          <li className="hidden md:flex justify-center items-center relative">
+              Favourite
+              <Heart fill='#ec0909' stroke='#ec0909'
+                className="ml-1 w-4 h-4 cursor-pointer"
+                onClick={() => {
+                  setShowFavFilter(!showFavFilter);
+                  setShowDateFilter(false);
+                }}
+              />
+              {showFavFilter && (
+                <div className="absolute top-6 bg-white w-28 text-sm border border-gray-300 rounded-md shadow-md p-2 flex flex-col">
+                  <label>
+                    <input
+                      type="radio"
+                      checked={favoriteFilter === null}
+                      onChange={() => setFavoriteFilter(null)}
+                      className="mr-1 cursor-pointer"
+                    />
+                    All
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      checked={favoriteFilter === true}
+                      onChange={() => setFavoriteFilter(true)}
+                      className="mr-1 cursor-pointer"
+                    />
+                    Favourites
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      checked={favoriteFilter === false}
+                      onChange={() => setFavoriteFilter(false)}
+                      className="mr-1 cursor-pointer"
+                    />
+                    Others
+                  </label>
+                </div>
+              )}
           </li>
+          
           <li className="hidden md:flex justify-center items-center">Invoice No.</li>
 
           <li className="flex justify-center items-center relative">
@@ -236,26 +253,50 @@ const filteredReports = reports.filter((report) => {
           <li className="flex justify-center items-center relative">Institution</li>
           {/* <li className="flex justify-center items-center relative">Report</li> */}
           <li className="flex justify-center items-center">
-            {/* MoreVertical icon shown on small screen */}
+
             <MoreVertical
               size={20}
               className="cursor-pointer md:hidden"
               // onClick={() => handleDropdownChange(selectedAction === 'favorite' ? 'download' : 'favorite')}
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              onClick={() => {
+                setIsDropdownOpen(!isDropdownOpen); 
+                setShowFavFilterMobile(false); 
+              }}
             />
+
+            {selectedAction === 'favorite' && (
+              <Heart
+                fill="#ec0909"
+                stroke="#ec0909"
+                className="ml-1 w-4 h-4 cursor-pointer md:hidden"
+                onClick={() => {
+                  setShowFavFilterMobile(prev => !prev);
+                  setShowDateFilter(false);
+                  setIsDropdownOpen(false); // close 3-dots if open
+                }}
+              />
+            )}
+
+            {/* Filter dropdown for favorites (Mobile) */}
+            {showFavFilterMobile && (
+              <div className="absolute top-6 right-0 bg-white w-28 text-sm border border-gray-300 rounded-md shadow-md p-2 flex flex-col cursor-pointer z-50">
+                <label><input type="radio" checked={favoriteFilter === null} onChange={() => { setFavoriteFilter(null); setShowFavFilterMobile(false); }} className="mr-1 cursor-pointer" />All</label>
+                <label><input type="radio" checked={favoriteFilter === true} onChange={() => { setFavoriteFilter(true); setShowFavFilterMobile(false); }} className="mr-1 cursor-pointer" />Favourites</label>
+                <label><input type="radio" checked={favoriteFilter === false} onChange={() => { setFavoriteFilter(false); setShowFavFilterMobile(false);}} className="mr-1 cursor-pointer" />Others</label>
+              </div>
+            )}
             
-            {/* Download icon shown on large screen */}
             <span className='hidden md:block justify-center items-center'>Download</span>
             
             {/* Dropdown for selecting action */}
             <div className={`absolute top-6 right-0 bg-white w-32 text-sm border ${isDropdownOpen ? 'block' : 'hidden'} md:hidden border-gray-300 rounded-md shadow-md p-2`}>
               <button
-                onClick={() => handleDropdownChange('favorite')}
+                onClick={() => { handleDropdownChange('favorite'); setIsDropdownOpen(false);}}
                 className="w-full text-left p-2 transition-all duration-300 ease-in-out hover:bg-gray-100 cursor-pointer">
                 Favorite
               </button>
               <button
-                onClick={() => handleDropdownChange('download')}
+                onClick={() => { handleDropdownChange('download'); setIsDropdownOpen(false);}}
                 className="w-full text-left p-2 transition-all duration-300 ease-in-out hover:bg-gray-100 cursor-pointer">
                 Download
               </button>
