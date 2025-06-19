@@ -123,8 +123,8 @@ export default function TopSeller() {
                     className="px-2 flex-[0_0_100%] sm:flex-[0_0_50%] md:flex-[0_0_33.3333%] xl:flex-[0_0_25%]"
                   >
                     <Link href={`/partnerProfile/${seller?.user?.id}`} className="block cursor-pointer">
-                      <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col justify-center relative">
-                        <div className="relative w-full h-52 border-b border-gray-400">
+                      <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col justify-center relative border border-amber-300">
+                        <div className="relative w-full h-52 border-b border-amber-300">
                           {/* <Image
                             src={seller?.user?.photos?.[0] || "/default-img.jpg"}
                             alt={seller?.user?.firmName || "Default Image"}

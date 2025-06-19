@@ -659,8 +659,26 @@ export default function About({ profileUpdated }) {
                           )}
                         </div>
                       </div>
-                    )}
-                    
+                  )}
+                
+                      <div className="flex items-start gap-x-2">
+                        <span className="font-semibold flex items-center gap-x-1">
+                          <MapPin size={20} strokeWidth={1.5} color="#1751c4" />
+                          Direction: 
+                        </span>
+                        {userData?.latitude && userData?.longitude ? (
+                          <Link
+                            href={`https://www.google.com/maps?q=${userData.latitude},${userData.longitude}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 flex items-center gap-x-1 cursor-pointer hover:text-blue-500 transition ease-in-out"
+                          >
+                            View on Map
+                          </Link>
+                        ) : (
+                          "Location not set"
+                        )}
+                      </div>
 
                     {/* PAYMENT DETAILS */}
                     {userData?.upi_id && (

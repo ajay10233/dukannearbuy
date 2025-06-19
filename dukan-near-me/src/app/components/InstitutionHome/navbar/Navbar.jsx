@@ -91,13 +91,30 @@ export default function Navbar() {
         }
     };
 
-    useEffect(() => {
-        const fetchLocation = async () => {
+    // useEffect(() => {
+    //     const fetchLocation = async () => {
+    //         await fetchSavedLocation();
+    //         setHasFetchedSavedLocation(true);
+    //     };
+    //     fetchLocation();
+    // }, []);
+
+useEffect(() => {
+    handleSidebar(); // set the role first
+}, []);
+
+useEffect(() => {
+    const fetchLocationBasedOnRole = async () => {
+        if (role === "INSTITUTION" || role === "SHOP_OWNER") {
+            fetchCurrentLocation();
+        } else if (role === "USER") {
             await fetchSavedLocation();
             setHasFetchedSavedLocation(true);
-        };
-        fetchLocation();
-    }, []);
+        }
+    };
+    if (role) fetchLocationBasedOnRole();
+}, [role]);
+
         
     useEffect(() => {
             if (

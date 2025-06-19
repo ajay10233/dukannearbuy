@@ -252,7 +252,7 @@ export default function EditProfilePage() {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Edit Profile Details</h1>
           <button 
-            onClick={() => router.push('/search-result')}
+            onClick={() => router.push('/partnerProfile')}
             className="text-gray-600 hover:text-red-600 cursor-pointer"
           >
             Back

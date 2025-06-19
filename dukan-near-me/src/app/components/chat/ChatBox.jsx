@@ -531,7 +531,7 @@ export default function ChatBox() {
 
 
   return (
-    <div className="flex min-h-screen bg-white font-[var(--font-plus-jakarta)]">
+    <div className="flex h-[100dvh] overflow-hidden bg-white font-[var(--font-plus-jakarta)]">
       {/* Left Sidebar */}
       <div
         className={`${selectedPartner ? "hidden md:flex" : "flex"
@@ -764,7 +764,7 @@ export default function ChatBox() {
         {selectedPartner ? (
           <>
             {/* Chat Header */}
-            <header className="flex items-center justify-between gap-1 md:gap-0 p-2 md:p-4 bg-[#F7F7FC]">
+            <header className="sticky top-0 z-10 flex items-center justify-between gap-1 md:gap-0 p-2 md:p-4 bg-[#F7F7FC]">  {/* add sticky top-0 z-10  */}
               <div className="flex items-center gap-2 md:gap-3">
                 <button
                   onClick={() => setSelectedPartner(null)}
@@ -904,7 +904,7 @@ export default function ChatBox() {
             </header>
 
             {/* Message Area */}
-            <div className="flex-1 pt-2 pb-4 px-4 overflow-y-auto flex flex-col gap-3 h-[calc(100vh-40px)]">      
+            <div className="flex-1 pt-2 pb-4 px-4 overflow-y-auto flex flex-col gap-3 dialogScroll"> {/* h-[calc(100vh-40px)] */}
               <div className="flex justify-center">
                 {loggedInUser ? (() => {
                   const user = loggedInUser;
@@ -1110,7 +1110,7 @@ export default function ChatBox() {
             {selectedPartner && selectedPartner.accepted && (
               <>
                 {/* chat footer  */}
-                <footer className="p-4 flex items-center bg-[#F6F6F6] gap-1 md:gap-3">
+                <footer className="p-4 flex items-center bg-[#F6F6F6] gap-1 md:gap-3 sticky bottom-0 z-10">  {/* add sticky bottom-0 z-10  */}
                   <div className="flex gap-2 md:gap-4">
                     <button
                       className="p-0.5 md:p-2 cursor-pointer"

@@ -27,7 +27,7 @@ export default function Footer() {
         if (role === "USER") {
         router.push("/userProfile");
         } else if (role === "SHOP_OWNER" || role === "INSTITUTION") {
-        router.push("/search-result");
+        router.push("/partnerProfile");
         } else {
         router.push("/login");
         }

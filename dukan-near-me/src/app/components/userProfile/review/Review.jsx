@@ -59,7 +59,7 @@ const Review = () => {
     return stars;
   };
 
-  // const topRatedReviews = reviews.filter((review) => review.rating === 5);
+  const topRatedReviews = reviews.filter((review) => review.rating === 5);
 
   return (
     <div className="h-full py-16 px-4 sm:px-6 lg:px-8">
@@ -75,7 +75,7 @@ const Review = () => {
 
           {loading ? (
             <LogoLoader content={"Loading home..."} />
-          ) : reviews.length > 0 ? (
+          ) : topRatedReviews.length > 0 ? (
 
           <Swiper
             modules={[SwiperNavigation, SwiperAutoplay]}
@@ -90,8 +90,8 @@ const Review = () => {
             }}
             className="pb-12">
             
-                {reviews
-                  .filter((review) => review.rating === 5)
+            {topRatedReviews
+                  // .filter((review) => review.rating === 5)
               .map((review) => (
               <SwiperSlide key={review.id} className="h-50">
                 <div className="bg-white rounded-lg shadow-lg p-3 md:p-6 transform transition-transform duration-300 hover:scale-105">
@@ -148,7 +148,7 @@ const Review = () => {
             ))}
             </Swiper>
           ) : (
-              <div className="text-center text-gray-400 text-lg py-20">
+              <div className="text-center text-gray-400 text-md py-20">
                 No top reviews available at the moment.
               </div>
             )}
