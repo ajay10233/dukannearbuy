@@ -7,7 +7,7 @@ import LogoLoader from "../LogoLoader";
 
 export default function ChangeLocationPage() {
   const router = useRouter();
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState(null);
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -23,7 +23,8 @@ export default function ChangeLocationPage() {
     fetchUserRole();
   }, []);
 
-   const handleLocationSave = () => {
+  const handleLocationSave = () => {
+     window.location.reload();
     redirectBasedOnRole();
   };
 

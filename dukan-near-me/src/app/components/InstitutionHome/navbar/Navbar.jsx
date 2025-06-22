@@ -26,21 +26,49 @@ export default function Navbar() {
     const [hasFetchedSavedLocation, setHasFetchedSavedLocation] = useState(false);
     const [role, setRole] = useState(null);
 
-        const handleSidebar = async () => {
-            try {
-                const res = await fetch("/api/users/me");
-                const data = await res.json();
-                if (data?.role) {
-                    setRole(data.role);
-                }
-            } catch (err) {
-                console.error("Failed to fetch user role:", err);
-            }
-        };
+        // const handleSidebar = async () => {
+        //     try {
+        //         const res = await fetch("/api/users/me");
+        //         const data = await res.json();
+        //         if (data?.role) {
+        //             setRole(data.role);
+        //         }
+        //     } catch (err) {
+        //         console.error("Failed to fetch user role:", err);
+        //     }
+        // };
         
-        useEffect(() => {
-            handleSidebar();
-        }, []);
+        // useEffect(() => {
+        //     handleSidebar();
+    // }, []);
+    
+    useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const res = await fetch("/api/users/me");
+            const data = await res.json();
+            if (data?.role) {
+                setRole(data.role);
+
+                // if (data.role === "INSTITUTION" || data.role === "SHOP_OWNER") {
+                //     fetchCurrentLocation();
+                // } else if (data.role === "USER") {
+                //     await fetchSavedLocation();
+                //     setHasFetchedSavedLocation(true);
+                // }
+                if (data.role === "USER") {
+                    await fetchSavedLocation();
+                    setHasFetchedSavedLocation(true);
+                }
+            }
+        } catch (err) {
+            console.error("Failed to fetch user role:", err);
+        }
+    };
+
+    fetchData();
+}, []);
+
     
     const fetchSavedLocation = async () => {
         try {
@@ -58,61 +86,39 @@ export default function Navbar() {
         }
     };
 
-    const fetchCurrentLocation = async () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    const { latitude, longitude } = position.coords;
-                    try {
-                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-                        const data = await res.json();
-                        const address = data.address || {};
+    useEffect(() => {
+    if ((role === "INSTITUTION" || role === "SHOP_OWNER") && navigator.geolocation) {
+        const watchId = navigator.geolocation.watchPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+                    const data = await res.json();
+                    const address = data.address || {};
 
-                        setLocation({
-                            houseNumber: address.house_number || "",
-                            street: address.road || "",
-                            buildingName: "",
-                            landMark: "",
-                            city: address.city || address.town || address.village || "",
-                            state: address.state || "",
-                            country: address.country || "",
-                            zipCode: address.postcode || "",
-                        });
-                    } catch (error) {
-                        console.error("Error fetching address details:", error);
-                    }
-                },
-                (error) => {
-                    console.error("Error getting geolocation:", error);
+                    setLocation({
+                        houseNumber: address.house_number || "",
+                        street: address.road || "",
+                        buildingName: "",
+                        landMark: "",
+                        // city: address.city || address.town || address.village || "",
+                        city: address.city || address.town || address.village || address.suburb || address.neighbourhood || address.county || "",
+                        state: address.state || "",
+                        country: address.country || "",
+                        zipCode: address.postcode || "",
+                    });
+                } catch (error) {
+                    console.error("Error fetching address details:", error);
                 }
-            );
-        } else {
-            alert("Geolocation is not supported by this browser");
-        }
-    };
+            },
+            (error) => {
+                console.error("Error watching geolocation:", error);
+            },
+            { enableHighAccuracy: true }
+        );
 
-    // useEffect(() => {
-    //     const fetchLocation = async () => {
-    //         await fetchSavedLocation();
-    //         setHasFetchedSavedLocation(true);
-    //     };
-    //     fetchLocation();
-    // }, []);
-
-useEffect(() => {
-    handleSidebar(); // set the role first
-}, []);
-
-useEffect(() => {
-    const fetchLocationBasedOnRole = async () => {
-        if (role === "INSTITUTION" || role === "SHOP_OWNER") {
-            fetchCurrentLocation();
-        } else if (role === "USER") {
-            await fetchSavedLocation();
-            setHasFetchedSavedLocation(true);
-        }
-    };
-    if (role) fetchLocationBasedOnRole();
+        return () => navigator.geolocation.clearWatch(watchId); // cleanup on unmount
+    }
 }, [role]);
 
         
@@ -187,9 +193,13 @@ useEffect(() => {
             {/* Sidebar Component */}
             {/* <Sidebar isOpen={isSidebar} onClose={() => setIsSidebar(false)} /> */}
             {role === "USER" ? (
-                <UserSidebar isOpen={isSidebar} onClose={() => setIsSidebar(false)} onClick={handleSidebar} />
+                <UserSidebar isOpen={isSidebar} onClose={() => setIsSidebar(false)}
+                    // onClick={handleSidebar}
+                />
                     ) : (
-                <InstitutionSidebar isOpen={isSidebar} onClose={() => setIsSidebar(false)} onClick={handleSidebar}/>
+                    <InstitutionSidebar isOpen={isSidebar} onClose={() => setIsSidebar(false)}
+                        // onClick={handleSidebar}
+                    />
                 )}
         </header>
     );

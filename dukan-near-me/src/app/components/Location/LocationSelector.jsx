@@ -1,7 +1,8 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import dynamic from "next/dynamic";
+import LogoLoader from "../LogoLoader";
 
 const Map = dynamic(() => import("./MapComponent"), { ssr: false });
 
@@ -26,6 +27,8 @@ export default function LocationSelector({ onSave, role }) {
       zipCode: "",
     },
   });
+
+  const [isLoading, setIsLoading] = useState(true);
 
   const houseNumber = watch("houseNumber");
   const buildingName = watch("buildingName");
@@ -54,6 +57,8 @@ export default function LocationSelector({ onSave, role }) {
   }, [setValue]);
 
   const fetchCurrentLocation = () => {
+    setIsLoading(true); 
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async (position) => {
         const { latitude, longitude } = position.coords;
@@ -74,16 +79,28 @@ export default function LocationSelector({ onSave, role }) {
           setValue("zipCode", address.postcode || "");
         } catch (error) {
           console.error("Error fetching address details:", error);
+        } finally {
+          setIsLoading(false); // stop loader
         }
       }, (error) => {
         console.error("Error getting geolocation:", error);
+        setIsLoading(false);
       });
     } else {
       alert("Geolocation is not supported by this browser.");
     }
   };
 
-    const showForm = !(role === "INSTITUTION" || role === "SHOP_OWNER");
+useEffect(() => {
+  if (role === "INSTITUTION" || role === "SHOP_OWNER") {
+    fetchCurrentLocation();
+  } else {
+    setIsLoading(false); 
+  }
+}, [role]);
+
+
+  const showForm = !(role === "INSTITUTION" || role === "SHOP_OWNER");
 
 
   const onSubmit = async (data) => {
@@ -95,6 +112,13 @@ export default function LocationSelector({ onSave, role }) {
     });
     onSave();
   };
+
+  if (isLoading) {
+  return (
+      <LogoLoader content={"Fetching location..."} />
+  );
+}
+
 
   return (
 <div className={`w-full ${role === "INSTITUTION" || role === "SHOP_OWNER" ? "h-screen" : ""} flex flex-col items-center justify-center p-6 space-y-6 bg-gray-50`}>
@@ -116,7 +140,7 @@ export default function LocationSelector({ onSave, role }) {
         role={role} 
         />
         
-        {role === "USER" && (
+       {role === "USER" && (
           <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1 z-10 whitespace-nowrap shadow-md">
             {/* {`${buildingName ? buildingName + ", " : ""}${street || ""}, ${city || ""}, ${state || ""} - ${zipCode || ""}`} */}
             
