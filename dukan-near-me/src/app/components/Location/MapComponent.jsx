@@ -15,26 +15,29 @@ const customIcon = new L.Icon({
 	shadowSize: [41, 41],
 });
 
-export default function MapComponent({ setLocation, role }) {
+export default function MapComponent({ setLocation, location, role }) {
 	const [position, setPosition] = useState({ lat: 28.6139, lng: 77.209 }); // Default to Delhi
 
 	// Function to get the saved user location from the database
 	useEffect(() => {
-		const fetchUserLocation = async () => {
-			try {
-				const res = await fetch("/api/users/location");
-				const data = await res.json();
-				if (res.ok && data.latitude && data.longitude) {
-					setPosition({ lat: data.latitude, lng: data.longitude });
-					setLocation({ lat: data.latitude, lng: data.longitude, ...data });
+		if (location?.lat && location?.lng) {
+			setPosition({ lat: location.lat, lng: location.lng });
+		} else {
+			const fetchUserLocation = async () => {
+				try {
+					const res = await fetch("/api/users/location");
+					const data = await res.json();
+					if (res.ok && data.latitude && data.longitude) {
+						setPosition({ lat: data.latitude, lng: data.longitude });
+						setLocation({ lat: data.latitude, lng: data.longitude, ...data });
+					}
+				} catch (error) {
+					console.error("Error fetching user location:", error);
 				}
-			} catch (error) {
-				console.error("Error fetching user location:", error);
-			}
-		};
-
-		fetchUserLocation();
-	}, []);
+			};
+			fetchUserLocation();
+		}
+	}, [location]);
 
 	const fetchAddress = async (lat, lng) => {
 		try {

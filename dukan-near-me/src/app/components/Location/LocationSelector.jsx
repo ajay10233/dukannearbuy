@@ -39,8 +39,63 @@ export default function LocationSelector({ onSave, role }) {
   const country = watch("country");
   const zipCode = watch("zipCode");
 
+  const lat = watch("lat");
+  const lng = watch("lng");
+
+
+  // useEffect(() => {
+  //   const fetchUserLocation = async () => {
+  //     try {
+  //       const res = await fetch("/api/users/location");
+  //       const data = await res.json();
+  //       if (res.ok) {
+  //         Object.keys(data).forEach((key) => setValue(key, data[key]));
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching user location:", error);
+  //     }
+  //   };
+
+  //   fetchUserLocation();
+  // }, [setValue]);
 
   useEffect(() => {
+  if (role === "INSTITUTION" || role === "SHOP_OWNER") {
+    const watchId = navigator.geolocation.watchPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        setValue("lat", latitude);
+        setValue("lng", longitude);
+
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+          const data = await res.json();
+          const address = data.address || {};
+
+          setValue("houseNumber", address.house_number || "");
+          setValue("street", address.road || "");
+          setValue("buildingName", "");
+          setValue("landmark", "");
+          setValue("city", address.city || address.town || address.village || address.suburb || address.neighbourhood || address.county || "");
+          setValue("state", address.state || "");
+          setValue("country", address.country || "");
+          setValue("zipCode", address.postcode || "");
+        } catch (error) {
+          console.error("Error fetching address:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      },
+      (error) => {
+        console.error("watchPosition error:", error);
+        setIsLoading(false);
+      },
+      { enableHighAccuracy: true }
+    );
+
+    return () => navigator.geolocation.clearWatch(watchId);
+  } else {
+    // For USER role, load saved location
     const fetchUserLocation = async () => {
       try {
         const res = await fetch("/api/users/location");
@@ -50,11 +105,15 @@ export default function LocationSelector({ onSave, role }) {
         }
       } catch (error) {
         console.error("Error fetching user location:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchUserLocation();
-  }, [setValue]);
+  }
+}, [role, setValue]);
+
 
   const fetchCurrentLocation = () => {
     setIsLoading(true); 
@@ -73,7 +132,7 @@ export default function LocationSelector({ onSave, role }) {
           setValue("street", address.road || "");
           setValue("buildingName", "");
           setValue("landmark", "");
-          setValue("city", address.city || address.town || address.village || "");
+          setValue("city", address.city || address.town || address.village || address.suburb || address.neighbourhood || address.county || "");
           setValue("state", address.state || "");
           setValue("country", address.country || "");
           setValue("zipCode", address.postcode || "");
@@ -90,7 +149,7 @@ export default function LocationSelector({ onSave, role }) {
       alert("Geolocation is not supported by this browser.");
     }
   };
-
+  
 useEffect(() => {
   if (role === "INSTITUTION" || role === "SHOP_OWNER") {
     fetchCurrentLocation();
@@ -136,7 +195,9 @@ useEffect(() => {
           setValue("country", newLocation.country || "");
           setValue("zipCode", newLocation.zipCode || "");
         }} 
-        location={{ lat: getValues("lat"), lng: getValues("lng") }}
+          // location={{ lat: getValues("lat"), lng: getValues("lng") }}
+          location={{ lat, lng }}
+
         role={role} 
         />
         

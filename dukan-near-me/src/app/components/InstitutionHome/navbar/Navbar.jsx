@@ -17,6 +17,9 @@ export default function Navbar() {
         buildingName: "",
         landMark: "",
         city: "",
+        suburb: "",
+        neighbourhood: "",
+        county: "",
         state: "",
         country: "",
         zipCode: "",
@@ -101,8 +104,11 @@ export default function Navbar() {
                         street: address.road || "",
                         buildingName: "",
                         landMark: "",
-                        // city: address.city || address.town || address.village || "",
-                        city: address.city || address.town || address.village || address.suburb || address.neighbourhood || address.county || "",
+                        city: address.city || address.town || address.village || "",
+                        // city: address.city || address.town || address.village || address.suburb || address.neighbourhood || address.county || "",
+                        suburb: address.suburb || "",
+                        neighbourhood: address.neighbourhood || "",
+                        county: address.county || "",
                         state: address.state || "",
                         country: address.country || "",
                         zipCode: address.postcode || "",
@@ -168,7 +174,16 @@ export default function Navbar() {
                                 <span className="hidden sm:inline">
                                     {location.houseNumber && `${location.houseNumber}, `}
                                     {location.street && `${location.street}, `}
-                                    {location.city && `${location.city}, `}
+                                    
+                                    {/*    {location.city && `${location.city}, `}  */}
+                                        
+                                        {[
+                                            location.city,
+                                            location.suburb,
+                                            location.neighbourhood,
+                                            location.county
+                                        ].filter(Boolean).join(", ")}, 
+
                                     {location.state && `${location.state} - `}
                                     {location.zipCode}
                                 </span>
