@@ -82,6 +82,7 @@ const Review = () => {
             spaceBetween={30}
             slidesPerView={1}
             // centeredSlides={reviews.length < 3} // will center the slides in the container
+            centeredSlides={topRatedReviews.length < 3} 
             autoplay={{ delay: 3000, disableOnInteraction: false }}
             breakpoints={{
               640: { slidesPerView: 1 },

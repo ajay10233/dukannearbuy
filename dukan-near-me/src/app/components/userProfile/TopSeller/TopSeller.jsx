@@ -12,6 +12,8 @@ export default function TopSeller() {
   const [sellers, setSellers] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [screenWidth, setScreenWidth] = useState(0);
+
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, align: "start", slidesToScroll: 1 },
     [Autoplay({ delay: 2500, stopOnInteraction: false })]
@@ -87,8 +89,24 @@ export default function TopSeller() {
   };
 
   useEffect(() => {
-    fetchCurrentLocation();
+      fetchCurrentLocation();
   }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+
+  handleResize(); // Initial check
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  
+  const shouldShowChevron =
+  (screenWidth <= 768 && sellers.length > 1) ||  // mobile
+  (screenWidth > 768 && screenWidth <= 1000 && sellers.length > 3) || // mid
+  (screenWidth > 1000 && sellers.length > 4); // large screen
+
 
   
   return (
@@ -103,19 +121,22 @@ export default function TopSeller() {
           <LogoLoader content={"Loading home..."} />
         ) : sellers.length > 0 ? (
             <div className="relative">
-              {/* {sellers.length > 4 && ( */}
+
+              {/* {((screenWidth <= 768 && sellers.length > 1) || (screenWidth > 768 && sellers.length > 4)) && ( */}
+              {shouldShowChevron && (
                 <button
                   onClick={() => emblaApi?.scrollPrev()}
                   className="absolute -left-4 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white/20 hover:bg-white/25 transition-all ease-in-out duration-400 rounded-full p-2 shadow-md"
                 >
                   <ChevronLeft className="text-yellow-300" />
                 </button>
-              {/* )} */}
+                )}
 
             <div className="overflow-hidden" ref={emblaRef}>
               {/* <div className={`flex flex-row ${
                   sellers.length < 4 ? "justify-center gap-4" : ""
                 }`}> */}
+
                 <div className={`flex flex-row md:justify-center`}>
                 {sellers.map((seller, i) => (
                   <div
@@ -217,14 +238,15 @@ export default function TopSeller() {
               </div>
             </div>
 
-              {/* {sellers.length > 4 && ( */}
+              {/* {((screenWidth <= 768 && sellers.length > 1) || (screenWidth > 768 && sellers.length > 4)) && ( */}
+              {shouldShowChevron && (
                 <button
                   onClick={() => emblaApi?.scrollNext()}
                   className="absolute -right-4 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white/20 hover:bg-white/25 transition-all ease-in-out duration-400 rounded-full p-2 shadow-md"
                 >
                   <ChevronRight className="text-yellow-300" />
                 </button>
-              {/* )} */}
+              )}
           </div>
         ) : (
           <div className="text-center text-gray-500 py-10">No sellers found near you.</div>

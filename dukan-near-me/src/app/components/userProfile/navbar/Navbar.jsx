@@ -134,8 +134,10 @@ export default function Navbar() {
             <div className='flex items-center p-0 md:pl-4 md:pr-2 text-[var(--secondary-foreground)] text-sm font-medium gap-1 md:gap-2'>
                 <button className="p-2 cursor-pointer relative w-12.5 h-12.5">
                     <Image src="/nearbuydukan-Logo/Logo.svg" alt="nearbuydukan" fill sizes='50px' priority />
-                </button>    
-                <button className="text-gray-700 font-medium text-sm cursor-pointer">
+                </button>  
+                
+                <button className="text-gray-700 font-medium text-sm cursor-pointer"
+                    onClick={() => router.push("/change-location")} >
                     <span>
                         {/* display live location */}
                         {Object.values(location).every(value => !value) ? (
@@ -156,6 +158,7 @@ export default function Navbar() {
                         )} 
                     </span>
                 </button>
+                
                 <button className="p-1 cursor-pointer">
                     <ChevronDown size={28} strokeWidth={1.5} color="#187DE6" onClick={() => router.push("/change-location")} />
                 </button>    
