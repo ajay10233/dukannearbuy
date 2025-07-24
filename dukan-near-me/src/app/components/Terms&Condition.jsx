@@ -290,7 +290,7 @@ export default function TermsAndConditions() {
         </div>
             
         <PrivacyPolicy />
-        <RefundPolicy />
+        {/* <RefundPolicy /> */}
           
         <div className="absolute bottom-1 right-4 w-17 h-17 md:w-32 md:h-32">
             <Image src="/nearbuydukan - watermark.png"
